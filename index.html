@@ -251,7 +251,7 @@
     <p>© 2026 LR AgroSense • Smart Farming • AI • IoT • Empowering Farmers Through Technology</p>
   </footer>
 
-  <!-- Native JavaScript Engine -->
+  <!-- Native JavaScript Engine with Dynamic Multi-Language Voice Selection -->
   <script>
     // Live Telemetry Simulator
     setInterval(() => {
@@ -292,7 +292,17 @@
       const text = voiceAlerts[selectedLang];
       const utt = new SpeechSynthesisUtterance(text);
 
-      let targetVoice = voices.find(v => v.lang.startsWith('te') || v.name.toLowerCase().includes('telugu'));
+      const langCodeMap = {
+        Telugu: 'te',
+        Hindi: 'hi',
+        English: 'en',
+        Tamil: 'ta',
+        Kannada: 'kn'
+      };
+
+      const prefix = langCodeMap[selectedLang] || 'en';
+      let targetVoice = voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+
       if (!targetVoice) {
         targetVoice = voices.find(v => v.lang.includes('IN') || v.name.toLowerCase().includes('india'));
       }
@@ -301,12 +311,17 @@
         utt.voice = targetVoice;
         utt.lang = targetVoice.lang;
       } else {
-        utt.lang = selectedLang === 'Telugu' ? 'te-IN' : 'en-IN';
+        utt.lang = prefix + '-IN';
       }
 
       utt.rate = 0.85;
       utt.pitch = 1.0;
       window.speechSynthesis.speak(utt);
+    }
+
+    // Pre-load browser voices
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     }
   </script>
 
