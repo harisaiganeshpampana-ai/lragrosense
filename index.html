@@ -282,7 +282,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Student Internship Application Form -->
+  <!-- MODAL 2: Student Internship Application Form (Clean Empty Inputs) -->
   <div id="modal-apply" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
     <div class="relative w-full max-w-xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
       <button onclick="toggleApplyModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
@@ -294,28 +294,28 @@
         <form onsubmit="handleApplySubmit(event)" class="space-y-3 text-xs mt-4">
           <div>
             <label class="font-semibold text-slate-300 block mb-1">Full Name *</label>
-            <input id="input-name" type="text" required placeholder="e.g. Ramesh Kumar" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+            <input id="input-name" type="text" required placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="font-semibold text-slate-300 block mb-1">Email Address *</label>
-              <input id="input-email" type="email" required placeholder="yourname@gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+              <input id="input-email" type="email" required placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
             </div>
             <div>
               <label class="font-semibold text-slate-300 block mb-1">Phone / WhatsApp *</label>
-              <input id="input-phone" type="tel" required placeholder="+91 9876543210" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+              <input id="input-phone" type="tel" required placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="font-semibold text-slate-300 block mb-1">Current Pursuing Course *</label>
-              <input id="input-course" type="text" required placeholder="e.g. B.Sc. Agriculture, B.Tech, MBA" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+              <input id="input-course" type="text" required placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
             </div>
             <div>
               <label class="font-semibold text-slate-300 block mb-1">College / University Name *</label>
-              <input id="input-college" type="text" required placeholder="e.g. ANGRAU / TNAU / College" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+              <input id="input-college" type="text" required placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
             </div>
           </div>
 
@@ -330,9 +330,17 @@
             </select>
           </div>
 
+          <!-- File Resume Upload Option -->
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <label class="font-semibold text-emerald-400 block">📁 Upload Resume File (Optional)</label>
+            <input id="input-resume-file" type="file" accept=".pdf,.doc,.docx,.txt" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer" />
+            <p class="text-[10px] text-slate-400">Supports PDF, DOCX, TXT files.</p>
+          </div>
+
+          <!-- Text Resume Statement Option -->
           <div>
-            <label class="font-semibold text-slate-300 block mb-1">Paste Resume Summary / Key Skills *</label>
-            <textarea id="input-resume" rows="3" required placeholder="Paste your skills, coursework, past projects, or resume text for AI screening..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400"></textarea>
+            <label class="font-semibold text-slate-300 block mb-1">Paste Skills Statement / Notes (Optional)</label>
+            <textarea id="input-resume" rows="2" placeholder="" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400"></textarea>
           </div>
 
           <!-- Mandatory Disclaimers Checkbox -->
@@ -344,7 +352,7 @@
           </div>
 
           <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-            Submit & Run AI Resume Screening 🚀
+            Submit Application 🚀
           </button>
         </form>
       </div>
@@ -357,10 +365,10 @@
         <h3 class="text-2xl font-bold text-white">Application Received!</h3>
         <div class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 text-left text-xs space-y-1">
           <div class="flex justify-between font-bold text-emerald-300">
-            <span>🤖 AI Resume Screener Match:</span>
+            <span>🤖 AI Candidate Match Rating:</span>
             <span id="res-score-badge" class="text-sm font-extrabold text-emerald-400">92% Match</span>
           </div>
-          <p id="res-score-desc" class="text-slate-300">Profile submitted to Founder Pampana Hari Sai Ganesh for review!</p>
+          <p id="res-score-desc" class="text-slate-300">Application submitted directly to Founder Pampana Hari Sai Ganesh for review!</p>
         </div>
         <button onclick="toggleApplyModal(false)" class="px-6 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">
           Close Window
@@ -384,8 +392,8 @@
         <p class="text-xs text-slate-400">Enter founder passcode to access candidate applications & AI resume ratings.</p>
         
         <form onsubmit="handleAdminLogin(event)" class="space-y-3">
-          <input id="admin-passcode" type="password" required placeholder="Enter Founder Passcode (lragrosense2026)..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-xs outline-none focus:border-emerald-400" />
-          <p id="admin-login-err" class="hidden text-xs text-rose-400 font-bold">Incorrect passcode! Try: lragrosense2026</p>
+          <input id="admin-passcode" type="password" required placeholder="Enter Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-xs outline-none focus:border-emerald-400" />
+          <p id="admin-login-err" class="hidden text-xs text-rose-400 font-bold">Incorrect passcode!</p>
           <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
             Access Founder Portal
           </button>
@@ -439,6 +447,7 @@
                 <th class="p-3">Candidate</th>
                 <th class="p-3">Course & College</th>
                 <th class="p-3">Domain</th>
+                <th class="p-3">Resume Attachment</th>
                 <th class="p-3">AI Score</th>
                 <th class="p-3">Status</th>
                 <th class="p-3 text-right">Actions</th>
@@ -457,11 +466,14 @@
 
   <!-- Native JavaScript Functions -->
   <script>
+    // 🔑 YOUR CUSTOM FOUNDER PASSWORD (Change this anytime to whatever password you want!)
+    const FOUNDER_PASSWORD = 'harisai2026';
+
     // Initial Seed Data
     let applicantsData = [
-      { id: 'APP-101', name: 'Ananya Verma', email: 'ananya.v@gmail.com', phone: '+91 9845123789', course: 'B.Sc. Agriculture (3rd Year)', college: 'TNAU Coimbatore', domain: 'Agriculture Science', resume: 'Coursework in soil chemistry, plant pathology, and precision agronomy. Conducted field trials on organic NPK fertilizers.', score: 95, status: 'Shortlisted' },
-      { id: 'APP-102', name: 'Rohan Kulkarni', email: 'rohan.k@tech.edu', phone: '+91 9712345678', course: 'B.Tech Computer Science', college: 'IIIT Hyderabad', domain: 'Agritech & AI', resume: 'Full-stack developer with experience in Python, IoT MQTT protocols, and ML models for crop disease detection.', score: 92, status: 'Under Review' },
-      { id: 'APP-103', name: 'Siddharth Rao', email: 'siddharth.rao@gmail.com', phone: '+91 9900112233', course: 'MBA Innovation', college: 'IIM Visakhapatnam', domain: 'Startup Building', resume: 'MBA student focused on agritech market research, investor pitch decks, and rural supply chain strategy.', score: 88, status: 'Under Review' }
+      { id: 'APP-101', name: 'Ananya Verma', email: 'ananya.v@gmail.com', phone: '+91 9845123789', course: 'B.Sc. Agriculture (3rd Year)', college: 'TNAU Coimbatore', domain: 'Agriculture Science', resumeFile: 'Ananya_Resume.pdf', resume: 'Coursework in soil chemistry, plant pathology, and precision agronomy. Conducted field trials on organic NPK fertilizers.', score: 95, status: 'Shortlisted' },
+      { id: 'APP-102', name: 'Rohan Kulkarni', email: 'rohan.k@tech.edu', phone: '+91 9712345678', course: 'B.Tech Computer Science', college: 'IIIT Hyderabad', domain: 'Agritech & AI', resumeFile: 'Rohan_CV.pdf', resume: 'Full-stack developer with experience in Python, IoT MQTT protocols, and ML models for crop disease detection.', score: 92, status: 'Under Review' },
+      { id: 'APP-103', name: 'Siddharth Rao', email: 'siddharth.rao@gmail.com', phone: '+91 9900112233', course: 'MBA Innovation', college: 'IIM Visakhapatnam', domain: 'Startup Building', resumeFile: 'None', resume: 'MBA student focused on agritech market research, investor pitch decks, and rural supply chain strategy.', score: 88, status: 'Under Review' }
     ];
 
     // Load saved applicants from localStorage
@@ -500,17 +512,23 @@
       const college = document.getElementById('input-college').value;
       const domain = document.getElementById('input-domain').value;
       const resume = document.getElementById('input-resume').value;
+      const fileInput = document.getElementById('input-resume-file');
+      
+      let resumeFileName = 'No File Attached';
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        resumeFileName = fileInput.files[0].name;
+      }
 
       // AI Match Score Calculation
       let score = 84;
-      const comb = (course + ' ' + resume).toLowerCase();
+      const comb = (course + ' ' + resume + ' ' + resumeFileName).toLowerCase();
       if (comb.includes('agri') || comb.includes('bsc') || comb.includes('soil')) score += 10;
       if (comb.includes('tech') || comb.includes('python') || comb.includes('ai') || comb.includes('code')) score += 4;
       score = Math.min(score, 98);
 
       const newApp = {
         id: 'APP-' + Math.floor(1000 + Math.random() * 9000),
-        name, email, phone, course, college, domain, resume, score, status: 'Under Review'
+        name, email, phone, course, college, domain, resume: resume || 'Applied without written resume text.', resumeFile: resumeFileName, score, status: 'Under Review'
       };
 
       applicantsData.unshift(newApp);
@@ -525,7 +543,7 @@
     function handleAdminLogin(e) {
       e.preventDefault();
       const pass = document.getElementById('admin-passcode').value;
-      if (pass === 'lragrosense2026' || pass === 'admin') {
+      if (pass === FOUNDER_PASSWORD || pass === 'lragrosense2026' || pass === 'admin') {
         document.getElementById('admin-login-err').classList.add('hidden');
         document.getElementById('admin-login-view').classList.add('hidden');
         document.getElementById('admin-dashboard-view').classList.remove('hidden');
@@ -553,6 +571,7 @@
           <td class="p-3 font-bold text-white">${app.name}<div class="text-[10px] text-slate-400 font-normal">${app.email} | ${app.phone}</div></td>
           <td class="p-3">${app.course}<div class="text-[10px] text-emerald-400">${app.college}</div></td>
           <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-[10px]">${app.domain}</span></td>
+          <td class="p-3"><span class="text-[10px] text-cyan-300 font-mono">📁 ${app.resumeFile || 'No file'}</span></td>
           <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${app.score}% Match</span></td>
           <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${app.status === 'Shortlisted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${app.status}</span></td>
           <td class="p-3 text-right">
