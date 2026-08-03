@@ -866,6 +866,14 @@
       loadChatSessions();
     });
 
+    // 🤖 TOGGLE AGRIMIND AI FULL SCREEN PORTAL
+    function toggleAiPage(show) {
+      const page = document.getElementById('ai-chat-full-page');
+      if (page) {
+        page.classList.toggle('hidden', !show);
+      }
+    }
+
     // Load user login data
     function loadUserData() {
       const savedUser = localStorage.getItem('lr_agrosense_current_user');
