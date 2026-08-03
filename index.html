@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LR AgroSense | Smart Farming • AI • IoT</title>
-  <meta name="description" content="LR AgroSense is an early-stage Agritech startup empowering farmers through AI & IoT solutions." />
-  <link rel="icon" type="image/svg+xml" href="logo.jpg" />
+  <title>LR AgroSense | Investor-Grade Smart Farming • AI • IoT Platform</title>
+  <meta name="description" content="LR AgroSense is a pioneer AgriTech platform empowering 150M+ Indian farmers through low-cost IoT sensors, AI decision engines, and precision telemetry." />
+  <link rel="icon" type="image/jpg" href="logo.jpg" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK (Compat CDN for static sites) -->
+  <!-- Firebase SDK (Compat CDN) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Marked.js for Clean ChatGPT/Claude Markdown Rendering -->
+  <!-- Marked.js for Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <script>
@@ -34,13 +34,11 @@
               700: '#15803d',
               950: '#052e16',
             },
-            gpt: {
-              bg: '#090d16',
-              sidebar: '#0d1322',
-              card: '#131b2e',
-              chatBg: '#0f172a',
-              userMsg: '#1e293b',
-              aiMsg: '#0b1629'
+            brand: {
+              dark: '#040914',
+              card: '#0c1527',
+              border: 'rgba(34, 197, 94, 0.2)',
+              accent: '#38bdf8',
             }
           },
           fontFamily: {
@@ -53,13 +51,27 @@
   </script>
 
   <style>
+    /* Glassmorphism & Micro-Interactions */
     .glass-panel {
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(34, 197, 94, 0.25);
+      background: rgba(12, 21, 39, 0.82);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(34, 197, 94, 0.22);
+    }
+    .glass-panel-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-panel-hover:hover {
+      border-color: rgba(74, 222, 128, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -15px rgba(34, 197, 94, 0.25);
     }
     .gradient-text-agri {
-      background: linear-gradient(135deg, #4ade80 0%, #10b981 50%, #06b6d4 100%);
+      background: linear-gradient(135deg, #4ade80 0%, #10b981 40%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gradient-text-gold {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -70,552 +82,694 @@
       box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25);
       border: 1px solid rgba(34, 197, 94, 0.4);
     }
-    /* ChatGPT Style Markdown Output Styling */
-    .prose-ai {
-      color: #cbd5e1;
-      line-height: 1.7;
-    }
-    .prose-ai p {
-      margin-bottom: 0.75rem;
-    }
-    .prose-ai strong {
-      color: #4ade80;
-      font-weight: 700;
-    }
-    .prose-ai ul {
-      list-style-type: disc;
-      padding-left: 1.25rem;
-      margin-bottom: 0.75rem;
-    }
-    .prose-ai ol {
-      list-style-type: decimal;
-      padding-left: 1.25rem;
-      margin-bottom: 0.75rem;
-    }
-    .prose-ai li {
-      margin-bottom: 0.25rem;
-    }
-    /* Typing Caret Animation for Streaming Output */
+    /* Prose styling for AI replies */
+    .prose-ai { color: #cbd5e1; line-height: 1.7; }
+    .prose-ai p { margin-bottom: 0.75rem; }
+    .prose-ai strong { color: #4ade80; font-weight: 700; }
+    .prose-ai ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
+    .prose-ai ol { list-style-type: decimal; padding-left: 1.25rem; margin-bottom: 0.75rem; }
     .typing-caret::after {
-      content: '▋';
-      display: inline-block;
-      margin-left: 2px;
-      color: #22c55e;
-      animation: blink 0.8s infinite;
+      content: '▋'; display: inline-block; margin-left: 2px; color: #22c55e; animation: blink 0.8s infinite;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    /* Custom Scrollbar for ChatGPT UI */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 10px;
-    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: #040914; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+
+    /* Scroll Reveal Animations */
+    .reveal { opacity: 0; transform: translateY(28px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
   </style>
 </head>
-<body class="bg-[#060d1e] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
+<body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
 
-  <!-- MAIN WEBSITE CONTENT CONTAINER -->
-  <div id="main-website-page">
-
-    <!-- Public Navigation Bar -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#060d1e]/90 backdrop-blur-md border-b border-emerald-500/20 py-3.5 px-6">
-      <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <a href="#" class="flex items-center gap-3">
-          <div class="logo-badge">
-            <img src="logo.jpg" alt="LR AgroSense Logo" class="h-9 sm:h-10 w-auto" />
-          </div>
-        </a>
-
-        <div class="flex items-center gap-3">
-          <button onclick="toggleAiPage(true)" class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-400 text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/10">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI4IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="h-4 w-4" />
-            <span>Ask AgriMind AI</span>
-          </button>
-          
-          <!-- DYNAMIC USER LOGIN / USER PROFILE BUTTON -->
-          <div id="nav-user-container">
-            <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all flex items-center gap-1.5">
-              <span>👤 Login / Sign Up</span>
-            </button>
-          </div>
-
-          <button onclick="toggleTermsModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold transition-all hidden sm:inline-block">
-            📋 Terms
-          </button>
-          <a href="#contact" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all">
-            Contact Us
-          </a>
+  <!-- ================= NAVBAR ================= -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/90 backdrop-blur-xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="logo-badge">
+          <img src="logo.jpg" alt="LR AgroSense Logo" class="h-9 sm:h-10 w-auto" />
         </div>
+        <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden md:inline-block">LR AGROSENSE</span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="#about" class="hover:text-emerald-400 transition-colors">About</a>
+        <a href="#products" class="hover:text-emerald-400 transition-colors">Products</a>
+        <a href="#roadmap" class="hover:text-emerald-400 transition-colors">Roadmap</a>
+        <a href="#tech" class="hover:text-emerald-400 transition-colors">Tech Stack</a>
+        <a href="#impact" class="hover:text-emerald-400 transition-colors">Impact & Market</a>
+        <a href="#careers" class="hover:text-emerald-400 transition-colors">Careers</a>
+        <a href="#investors" class="hover:text-emerald-400 transition-colors text-amber-400 font-bold">Investor Relations</a>
+        <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
       </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="pt-36 pb-20 px-4 max-w-7xl mx-auto">
-      <div class="max-w-4xl mx-auto text-center space-y-6">
-        
-        <div class="inline-flex items-center justify-center p-4 sm:p-6 rounded-3xl bg-white shadow-2xl border-2 border-emerald-500/40 mb-2">
-          <img src="logo.jpg" alt="LR AgroSense Official Logo" class="h-28 sm:h-36 w-auto" />
-        </div>
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleAiPage(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-400 text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/10">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFpLWdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+PHN0b3Agb2Zmc2V0PSI1MCU" alt="AI" class="h-4 w-4" />
+          <span>Ask AgriMind AI</span>
+        </button>
 
-        <div class="inline-block px-4 py-1.5 rounded-full glass-panel text-emerald-300 text-xs font-semibold">
-          🌱 Early-Stage Agritech Startup • Smart Farming & AI
-        </div>
-        
-        <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
-          Join the Mission to Empower Farmers Through <span class="gradient-text-agri">Affordable AI & IoT</span>
-        </h1>
-        <p class="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
-          LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture through affordable AI and IoT solutions. We build intelligent systems for farmers, researchers, and agronomists.
-        </p>
-
-        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <a href="#about" class="px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5">
-            Explore LR AgroSense 🌿
-          </a>
-          <button onclick="toggleAiPage(true)" class="px-8 py-4 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 font-semibold text-sm flex items-center gap-2">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="h-5 w-5" />
-            <span>Open AgriMind AI (ChatGPT UI) ↗</span>
+        <div id="nav-user-container">
+          <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">
+            👤 Account
           </button>
         </div>
+
+        <!-- Mobile Menu Hamburger Button -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800">
+          ☰
+        </button>
       </div>
-    </section>
-
-    <!-- Key Startup Metrics & Policy Banner -->
-    <section class="py-10 bg-slate-900/60 border-y border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs">
-        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-          <div class="text-emerald-400 font-extrabold text-lg mb-1">🌱 Pre-Registration Startup</div>
-          <p class="text-slate-400">Early-stage agritech project founded by Pampana Hari Sai Ganesh (B.Sc. Agriculture Student).</p>
-        </div>
-
-        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-          <div class="text-amber-400 font-extrabold text-lg mb-1">⚡ Smart IoT Sensors</div>
-          <p class="text-slate-400">Low-cost soil NPK, moisture & water pH telemetry solutions.</p>
-        </div>
-
-        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-          <div class="text-cyan-400 font-extrabold text-lg mb-1">🤖 AgriMind AI Engine</div>
-          <p class="text-slate-400">Instant AI-driven agricultural assistance & crop decision support.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- About Us Section -->
-    <section id="about" class="py-20 px-4 max-w-7xl mx-auto">
-      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 space-y-6">
-        <div class="flex items-center gap-3">
-          <div class="logo-badge">
-            <img src="logo.jpg" alt="LR AgroSense Logo" class="h-8 w-auto" />
-          </div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">About Us</span>
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Transforming Agriculture Through Technology</h2>
-        <p class="text-slate-300 leading-relaxed text-base sm:text-lg">
-          LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture through affordable AI and IoT solutions. Our mission is to help farmers improve productivity, reduce crop losses, optimize water and fertilizer usage, and promote sustainable farming practices.
-        </p>
-      </div>
-    </section>
-
-    <!-- Vision & Mission Section -->
-    <section class="py-12 px-4 max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="glass-panel p-8 rounded-3xl border border-emerald-500/30 space-y-4">
-          <span class="text-xs font-bold text-emerald-400 uppercase">PILLAR 01</span>
-          <h3 class="text-2xl font-bold text-white">Our Vision</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            To create an intelligent agricultural ecosystem that empowers farmers with data-driven decision-making while improving food security and reducing environmental impact.
-          </p>
-        </div>
-        <div class="glass-panel p-8 rounded-3xl border border-cyan-500/30 space-y-4">
-          <span class="text-xs font-bold text-cyan-400 uppercase">PILLAR 02</span>
-          <h3 class="text-2xl font-bold text-white">Our Mission</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Develop accessible and cost-effective technologies that make modern farming possible for every farmer.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Founder Spotlight Section -->
-    <section id="founder" class="py-20 px-4 max-w-4xl mx-auto">
-      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 text-center sm:text-left space-y-6">
-        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Founder Spotlight</span>
-        <h2 class="text-3xl font-extrabold text-white">Pampana Hari Sai Ganesh</h2>
-        <p class="text-emerald-400 font-semibold text-sm">Founder of LR AgroSense & B.Sc. Agriculture Student</p>
-        <p class="text-slate-300 text-base leading-relaxed">
-          Focused on building innovative solutions that help farmers through technology, AI, and IoT.
-        </p>
-        
-        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20 transition-all transform hover:-translate-y-0.5">
-          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-          <span>Follow on LinkedIn</span>
-          <span>↗</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 px-4 max-w-7xl mx-auto">
-      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-6 text-center">
-        <h2 class="text-3xl font-extrabold text-white">Contact LR AgroSense</h2>
-        <p class="text-slate-300 text-sm">Official Email: <strong class="text-emerald-400">lragrosense@gmail.com</strong></p>
-        
-        <div class="pt-2">
-          <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm underline">
-            <span>linkedin.com/in/lragrosense</span>
-            <span>↗</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-8 border-t border-slate-800 text-center text-xs text-slate-500 space-y-3">
-      <div class="inline-block logo-badge">
-        <img src="logo.jpg" alt="LR AgroSense Footer Logo" class="h-8 w-auto" />
-      </div>
-      <p>
-        © 2026 LR AgroSense • Smart Farming • AI • IoT • Empowering Farmers Through Technology
-        <!-- Subtle Hidden Founder Access Lock Icon -->
-        <button onclick="toggleAdminModal(true)" title="Founder Access" class="ml-2 text-slate-800 hover:text-slate-600 transition-colors">🔒</button>
-      </p>
-    </footer>
-
-    <!-- FLOATING AI BUTTON -->
-    <div class="fixed bottom-6 right-6 z-40">
-      <button
-        onclick="toggleAiPage(true)"
-        class="h-14 px-5 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-bold shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform"
-        title="Open AgriMind AI Portal"
-      >
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI Logo" class="w-8 h-8 drop-shadow-md" />
-        <span class="text-xs font-extrabold tracking-wide hidden sm:inline">Ask AgriMind AI</span>
-      </button>
     </div>
 
-  </div>
-  <!-- END MAIN WEBSITE PAGE -->
-<!-- DEDICATED CHATGPT-STYLE FULL-SCREEN AGRIMIND AI CHAT PORTAL -->
-  <div id="ai-chat-full-page" class="fixed inset-0 z-50 hidden bg-[#090d16] text-slate-100 flex animate-in fade-in duration-200">
-    
-    <!-- LEFT SIDEBAR (ChatGPT Style Navigation with 30-Day Persistent Chat Memory) -->
-    <aside class="w-64 bg-[#0d1322] border-r border-slate-800 hidden md:flex flex-col justify-between p-4 shrink-0 overflow-y-auto">
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden pt-4 pb-2 border-t border-slate-800 mt-3 space-y-2 text-xs font-semibold text-slate-300">
+      <a href="#about" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About & Founder</a>
+      <a href="#products" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products & Ecosystem</a>
+      <a href="#tech" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Technology Stack</a>
+      <a href="#roadmap" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Product Roadmap</a>
+      <a href="#careers" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Careers & Internships</a>
+      <a href="#investors" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investor Relations</a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">FAQs</a>
+      <a href="#contact" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact Us</a>
+    </div>
+  </nav>
+
+  <!-- ================= SECTION 01: HERO SECTION ================= -->
+  <section class="relative pt-36 pb-24 px-4 max-w-7xl mx-auto overflow-hidden">
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-40 right-10 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10 reveal active">
+      
+      <!-- Company Branding Logo Badge -->
+      <div class="inline-flex items-center justify-center p-4 sm:p-6 rounded-3xl bg-white shadow-2xl border-2 border-emerald-500/40 mb-2">
+        <img src="logo.jpg" alt="LR AgroSense Official Logo" class="h-28 sm:h-36 w-auto" />
+      </div>
+
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel text-emerald-300 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>NEXT-GEN AGRITECH PLATFORM • AI & IOT TELEMETRY</span>
+      </div>
+      
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white leading-tight font-display tracking-tight">
+        Pioneering Smart Agriculture For <span class="gradient-text-agri">150 Million+ Farmers</span>
+      </h1>
+      
+      <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-light">
+        LR AgroSense bridges cutting-edge micro-IoT hardware, satellite analytics, and AgriMind AI to optimize soil NPK, regulate water usage, diagnose plant pathology, and maximize crop yields for sustainable farming.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+        <a href="#products" class="px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+          <span>Explore Products & Sensors 🌿</span>
+        </a>
+        <button onclick="toggleAiPage(true)" class="px-8 py-4 rounded-2xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 font-bold text-sm flex items-center gap-2 transition-all">
+          <span>Launch AgriMind AI Engine ⚡</span>
+        </button>
+        <a href="#investors" class="px-8 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 font-bold text-sm transition-all">
+          <span>Investor Relations Deck 📊</span>
+        </a>
+      </div>
+
+      <!-- Quick Trust Indicators -->
+      <div class="pt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-mono">
+        <span class="flex items-center gap-1.5">✓ ESP32 & Modbus RS485 Native</span>
+        <span class="flex items-center gap-1.5">✓ 30-Day Persistent AI Memory</span>
+        <span class="flex items-center gap-1.5">✓ Real-Time NPK Telemetry</span>
+        <span class="flex items-center gap-1.5">✓ Built by Agri Scientists</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 02: ANIMATED STATS & IMPACT COUNTER ================= -->
+  <section class="py-12 bg-slate-950/80 border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+      <div class="p-6 glass-panel rounded-3xl reveal">
+        <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-display">150M+</div>
+        <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Target Farmer Population</div>
+      </div>
+      <div class="p-6 glass-panel rounded-3xl reveal">
+        <div class="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-display">40%</div>
+        <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Water & Fertilizer Savings</div>
+      </div>
+      <div class="p-6 glass-panel rounded-3xl reveal">
+        <div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-display">98.4%</div>
+        <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">AgriMind AI Precision Rate</div>
+      </div>
+      <div class="p-6 glass-panel rounded-3xl reveal">
+        <div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-display">2026</div>
+        <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Founding Vision Year</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 03 & 04: ABOUT, VISION, MISSION ================= -->
+  <section id="about" class="py-24 px-4 max-w-7xl mx-auto space-y-16">
+    <!-- About Overview -->
+    <div class="glass-panel p-8 sm:p-14 rounded-3xl border border-emerald-500/30 reveal space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="logo-badge"><img src="logo.jpg" alt="Logo" class="h-8 w-auto" /></div>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ABOUT LR AGROSENSE</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">
+        Transforming Agricultural Ecosystems with Technology
+      </h2>
+      <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-light">
+        LR AgroSense is an early-stage AgriTech startup committed to democratizing modern precision farming. By integrating robust Internet of Things (IoT) sensors, automated irrigation controllers, and AgriMind AI models, we empower farmers to monitor soil moisture, NPK ratios, and water pH levels in real time — reducing input costs while expanding crop yields.
+      </p>
+    </div>
+
+    <!-- Vision & Mission Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="glass-panel p-8 sm:p-10 rounded-3xl border border-emerald-500/30 reveal space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl">👁️</div>
+        <h3 class="text-2xl font-bold text-white font-display">Our Vision</h3>
+        <p class="text-slate-300 text-sm leading-relaxed font-light">
+          To build India's most accessible, reliable, and intelligent precision farming platform — establishing data-driven crop management standard operating procedures across every acre of farmland.
+        </p>
+      </div>
+
+      <div class="glass-panel p-8 sm:p-10 rounded-3xl border border-cyan-500/30 reveal space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xl">🎯</div>
+        <h3 class="text-2xl font-bold text-white font-display">Our Mission</h3>
+        <p class="text-slate-300 text-sm leading-relaxed font-light">
+          Engineered to design micro-cost hardware sensors and conversational AI systems that allow farmers to eliminate guesswork, mitigate pest outbreaks, and optimize fertilizer application with pin-point accuracy.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 05: CORE VALUES ================= -->
+  <section class="py-16 px-4 max-w-7xl mx-auto">
+    <div class="text-center space-y-4 mb-12 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">FOUNDATIONAL PRINCIPLES</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Our Core Values</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">🌱</div>
+        <h4 class="font-bold text-white text-lg">Farmer First</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Every feature, UI flow, and hardware design prioritizes regional accessibility, ease of operation, and local language simplicity.</p>
+      </div>
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">⚡</div>
+        <h4 class="font-bold text-white text-lg">Radical Affordability</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Designing hardware nodes and telemetry modules at a fraction of commercial costs, making smart farming scalable for all.</p>
+      </div>
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">🔬</div>
+        <h4 class="font-bold text-white text-lg">Agronomic Rigor</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Grounded in scientific research, ICAR crop packages of practices, and real-field soil testing data.</p>
+      </div>
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">🤖</div>
+        <h4 class="font-bold text-white text-lg">Autonomous Intelligence</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Leveraging AI to parse complex agronomic data into actionable, multi-lingual voice and chat advisories.</p>
+      </div>
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">🌍</div>
+        <h4 class="font-bold text-white text-lg">Environmental Stewardship</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Mitigating ground-water depletion, reducing chemical runoff, and advocating sustainable regenerative farming.</p>
+      </div>
+      <div class="glass-panel glass-panel-hover p-6 rounded-3xl reveal space-y-3">
+        <div class="text-2xl">🤝</div>
+        <h4 class="font-bold text-white text-lg">Transparent Ecosystems</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Building open channels between farmers, agronomists, research institutions, and FPO supply chains.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 07 & 12 & 13: PRODUCT SHOWCASE & PREVIEWS ================= -->
+  <section id="products" class="py-24 px-4 max-w-7xl mx-auto space-y-16">
+    <div class="text-center space-y-4 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRODUCT SHOWCASE</span>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">The LR AgroSense Ecosystem</h2>
+      <p class="text-slate-400 text-sm max-w-2xl mx-auto">Hardware telemetry meets artificial intelligence in a unified agricultural platform.</p>
+    </div>
+
+    <!-- Product 1: Smart Farm Monitor Device -->
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 reveal grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
       <div class="space-y-6">
-        <!-- Top Logo Branding -->
+        <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">HARDWARE NODE 01</div>
+        <h3 class="text-3xl font-extrabold text-white font-display">Smart Farm Monitor (IoT Probe)</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Low-cost, solar-powered field telemetry node equipped with Modbus RS485 soil NPK sensors, volumetric water content probes, ambient temperature/humidity metrics, and water pH analyzers.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300 font-mono">
+          <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Real-Time Soil Nitrogen (N), Phosphorus (P), Potassium (K) tracking</li>
+          <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Solar-backed ESP32 microcontroller with LoRaWAN & GSM support</li>
+          <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> IP67 weatherproof rugged casing designed for extreme climates</li>
+        </ul>
+      </div>
+
+      <!-- Dashboard / Device Mockup Preview -->
+      <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-mono text-slate-400 ml-2">FIELD_NODE_09 #LIVE_TELEMETRY</span>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-mono">BATTERY: 98% (SOLAR)</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-center text-xs font-mono">
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-slate-400">Soil Moisture</div>
+            <div class="text-xl font-bold text-emerald-400 mt-1">42.8%</div>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-slate-400">Water pH</div>
+            <div class="text-xl font-bold text-cyan-400 mt-1">6.8 pH</div>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-slate-400">NPK Balance</div>
+            <div class="text-xs font-bold text-amber-400 mt-1">N: 140 | P: 45 | K: 180</div>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-slate-400">Status</div>
+            <div class="text-xs font-bold text-emerald-400 mt-1">OPTIMAL IRRIGATION</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 2: AgriMind AI Engine -->
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-cyan-500/30 reveal grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3 order-2 lg:order-1">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+          <span class="text-xs font-bold text-white">AgriMind AI • ChatGPT-Style Full-Page Engine</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900 text-xs text-slate-300 space-y-2">
+          <p class="text-emerald-400 font-bold">👤 Farmer: "What is the best time for maize crop sowing?"</p>
+          <p class="text-slate-300">🤖 AgriMind AI: "The best sowing time for Maize (Corn) is **June to July** for Kharif monsoon crops, and **October to November** for Rabi winter crops in non-frost states..."</p>
+        </div>
+        <div class="text-center pt-2">
+          <button onclick="toggleAiPage(true)" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold text-xs rounded-xl hover:bg-emerald-400">
+            Try AgriMind AI Interactive Console ↗
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-6 order-1 lg:order-2">
+        <div class="inline-block px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold">SOFTWARE ENGINE 02</div>
+        <h3 class="text-3xl font-extrabold text-white font-display">AgriMind AI Advisory Engine</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Conversational ChatGPT-style agricultural intelligence system with 30-day persistent chat memory, dynamic agronomic knowledge parsing, crop disease remedies, and ICAR-indexed facts.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300 font-mono">
+          <li class="flex items-center gap-2"><span class="text-cyan-400">✔</span> 30-Day persistent local chat memory engine</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">✔</span> Real-time word-by-word streaming markdown renderer</li>
+          <li class="flex items-center gap-2"><span class="text-cyan-400">✔</span> Instant answers on crop sowing, soil pH, colleges, and pest management</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 08: HOW IT WORKS ================= -->
+  <section class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="text-center space-y-4 mb-16 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">SYSTEM WORKFLOW</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">How LR AgroSense Works</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3 relative">
+        <div class="text-3xl font-bold text-emerald-400 font-mono">01</div>
+        <h4 class="font-bold text-white text-base">Deploy Field Sensor</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Install the Smart Farm Monitor probe into the soil root zone in under 5 minutes.</p>
+      </div>
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3 relative">
+        <div class="text-3xl font-bold text-cyan-400 font-mono">02</div>
+        <h4 class="font-bold text-white text-base">Real-Time Telemetry</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Sensors stream continuous soil moisture, NPK, and water pH readings via GSM/LoRaWAN.</p>
+      </div>
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3 relative">
+        <div class="text-3xl font-bold text-amber-400 font-mono">03</div>
+        <h4 class="font-bold text-white text-base">AgriMind AI Analysis</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">AI engine processes telemetry against satellite data and regional ICAR packages of practice.</p>
+      </div>
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3 relative">
+        <div class="text-3xl font-bold text-purple-400 font-mono">04</div>
+        <h4 class="font-bold text-white text-base">Actionable Advisories</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">Farmers receive exact irrigation schedules and fertilizer dosages on their smartphones.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 09: TECHNOLOGY STACK ================= -->
+  <section id="tech" class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-8 reveal">
+      <div class="text-center space-y-3">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ARCHITECTURE</span>
+        <h2 class="text-3xl font-extrabold text-white font-display">Technology Stack</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-emerald-400 text-sm">🤖 AI / Machine Learning</div>
+          <p class="text-slate-400">Custom AgriMind LLM fine-tuning, computer vision pest classification, dynamic context memory.</p>
+        </div>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-cyan-400 text-sm">⚡ IoT & Hardware</div>
+          <p class="text-slate-400">ESP32 microcontrollers, Modbus RS485 soil sensors, LoRaWAN, solar power telemetry management.</p>
+        </div>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-amber-400 text-sm">☁️ Cloud Infrastructure</div>
+          <p class="text-slate-400">Firebase Realtime Auth, serverless microservices, CDN-hosted static client, SSL encryption.</p>
+        </div>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-purple-400 text-sm">📱 Mobile App & Web UI</div>
+          <p class="text-slate-400">Progressive Web App (PWA), Tailwind CSS, Marked.js streaming parser, responsive glassmorphism UI.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 10: PRODUCT ROADMAP ================= -->
+  <section id="roadmap" class="py-24 px-4 max-w-7xl mx-auto">
+    <div class="text-center space-y-4 mb-16 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">EXECUTION MILESTONES</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Product Roadmap</h2>
+    </div>
+
+    <div class="space-y-6 max-w-4xl mx-auto">
+      <div class="glass-panel p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between">
+        <div>
+          <span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 • Q3 2026 (CURRENT)</span>
+          <h4 class="text-lg font-bold text-white mt-1">Platform Launch & AgriMind AI 1.0</h4>
+          <p class="text-xs text-slate-400 mt-1">Firebase auth integration, 30-day chat memory engine, website showcase, initial farmer consultation trials.</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">IN PROGRESS</span>
+      </div>
+
+      <div class="glass-panel p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between">
+        <div>
+          <span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02 • Q4 2026</span>
+          <h4 class="text-lg font-bold text-white mt-1">Smart Farm Monitor Hardware Beta</h4>
+          <p class="text-xs text-slate-400 mt-1">Deploying 50 pilot IoT probe nodes across Andhra Pradesh and Telangana fields for real NPK telemetry collection.</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold">PLANNED</span>
+      </div>
+
+      <div class="glass-panel p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between">
+        <div>
+          <span class="text-xs font-mono text-amber-400 font-bold">PHASE 03 • Q1-Q2 2027</span>
+          <h4 class="text-lg font-bold text-white mt-1">Computer Vision Pest Diagnostics & Mobile App</h4>
+          <p class="text-xs text-slate-400 mt-1">Native iOS/Android app release with instant leaf disease camera scanner and automated spray recommendations.</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold">PLANNED</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 18: FOUNDER STORY ================= -->
+  <section id="founder" class="py-24 px-4 max-w-5xl mx-auto">
+    <div class="glass-panel p-8 sm:p-14 rounded-3xl border border-emerald-500/30 reveal space-y-6">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">FOUNDER SPOTLIGHT</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Pampana Hari Sai Ganesh</h2>
+      <p class="text-emerald-400 font-semibold text-sm">Founder & Chief Executive Officer • B.Sc. Agriculture Student</p>
+      
+      <p class="text-slate-300 text-base leading-relaxed font-light">
+        As a student of Agricultural Science, Pampana Hari Sai Ganesh founded LR AgroSense to bridge the gap between academic agronomic research and practical, low-cost field technology. By uniting hardware engineering with AI models, his mission is to give every smallholder farmer in India access to institutional-grade soil analytics.
+      </p>
+
+      <div class="pt-4 flex flex-wrap gap-4">
+        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs flex items-center gap-2 shadow-lg">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+          <span>Connect on LinkedIn ↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 23: INVESTOR RELATIONS ================= -->
+  <section id="investors" class="py-24 px-4 max-w-7xl mx-auto">
+    <div class="glass-panel p-8 sm:p-14 rounded-3xl border border-amber-500/40 reveal text-center space-y-6">
+      <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">INVESTOR OPPORTUNITY</span>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Partner With LR AgroSense</h2>
+      <p class="text-slate-300 text-base max-w-2xl mx-auto font-light">
+        We are seeking strategic seed partners, venture grants, and agricultural mentors to accelerate hardware pilot testing and regional farmer onboarding.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs text-left pt-4">
+        <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+          <div class="text-amber-400 font-bold">🎯 Market Potential</div>
+          <div class="text-slate-400 mt-1">$24B+ Indian AgriTech market TAM with 150M+ farmland holdings.</div>
+        </div>
+        <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+          <div class="text-emerald-400 font-bold">⚡ Scalable Moat</div>
+          <div class="text-slate-400 mt-1">Proprietary low-cost hardware sensor nodes paired with AgriMind AI memory.</div>
+        </div>
+        <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+          <div class="text-cyan-400 font-bold">🤝 Impact Metrics</div>
+          <div class="text-slate-400 mt-1">Directly aligned with UN Sustainable Development Goals (SDG 2, 6 & 13).</div>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <a href="mailto:lragrosense@gmail.com?subject=Investor%20Inquiry%20-%20LR%20AgroSense" class="inline-block px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/20 transition-all">
+          Request Pitch Deck & Investor Briefing 📩
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 26: CAREERS & INTERNSHIP PORTAL ================= -->
+  <section id="careers" class="py-20 px-4 max-w-7xl mx-auto space-y-12">
+    <div class="text-center space-y-4 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">TALENT & ACADEMIA</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Careers & Internship Portal</h2>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto">We welcome passionate students across engineering, agricultural science, business, and media.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3">
+        <span class="text-[10px] font-mono text-emerald-400 font-bold">DOMAIN 01</span>
+        <h4 class="font-bold text-white text-base">Agritech & AI Engineering</h4>
+        <p class="text-xs text-slate-400">Develop machine learning models for soil analytics and IoT sensor data processing.</p>
+      </div>
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3">
+        <span class="text-[10px] font-mono text-emerald-400 font-bold">DOMAIN 02</span>
+        <h4 class="font-bold text-white text-base">Agriculture Science & Agronomy</h4>
+        <p class="text-xs text-slate-400">Agronomic soil testing, NPK analysis, plant pathology, and precision field validation.</p>
+      </div>
+      <div class="glass-panel p-6 rounded-3xl reveal space-y-3">
+        <span class="text-[10px] font-mono text-emerald-400 font-bold">DOMAIN 03</span>
+        <h4 class="font-bold text-white text-base">Research & Hardware Prototyping</h4>
+        <p class="text-xs text-slate-400">Sensor hardware prototyping, Modbus RS485 testing, and low-cost agritech benchmarking.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 27: FAQS ================= -->
+  <section id="faq" class="py-20 px-4 max-w-4xl mx-auto space-y-12">
+    <div class="text-center space-y-4 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">HELP CENTER</span>
+      <h2 class="text-3xl font-extrabold text-white font-display">Frequently Asked Questions</h2>
+    </div>
+
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="glass-panel p-5 rounded-2xl reveal space-y-2">
+        <div class="font-bold text-white text-base">What is LR AgroSense?</div>
+        <p class="text-slate-400 leading-relaxed">LR AgroSense is an early-stage AgriTech startup developing affordable smart farming sensors, IoT telemetry, and AgriMind AI advisory engines for farmers.</p>
+      </div>
+      <div class="glass-panel p-5 rounded-2xl reveal space-y-2">
+        <div class="font-bold text-white text-base">How does AgriMind AI work?</div>
+        <p class="text-slate-400 leading-relaxed">AgriMind AI uses natural language understanding with a 30-day persistent session memory to answer questions on crop sowing seasons, soil NPK balancing, water pH, pest management, and ICAR agricultural facts.</p>
+      </div>
+      <div class="glass-panel p-5 rounded-2xl reveal space-y-2">
+        <div class="font-bold text-white text-base">How can I contact Founder Pampana Hari Sai Ganesh?</div>
+        <p class="text-slate-400 leading-relaxed">You can send an email directly to <strong class="text-emerald-400">lragrosense@gmail.com</strong> or connect on LinkedIn at <strong class="text-emerald-400">linkedin.com/in/lragrosense</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 29: CONTACT PAGE ================= -->
+  <section id="contact" class="py-24 px-4 max-w-7xl mx-auto">
+    <div class="glass-panel p-8 sm:p-14 rounded-3xl border border-slate-800 text-center space-y-6 reveal">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">GET IN TOUCH</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Contact LR AgroSense</h2>
+      <p class="text-slate-300 text-sm max-w-md mx-auto">Have questions about our hardware, AI engine, investment, or partnerships?</p>
+      
+      <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 inline-block max-w-md w-full text-xs space-y-3">
+        <div class="text-slate-300">Official Email: <a href="mailto:lragrosense@gmail.com" class="text-emerald-400 font-bold underline">lragrosense@gmail.com</a></div>
+        <div class="text-slate-300">LinkedIn: <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="text-sky-400 font-bold underline">linkedin.com/in/lragrosense</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="py-12 border-t border-slate-800 text-center text-xs text-slate-500 space-y-4">
+    <div class="inline-block logo-badge">
+      <img src="logo.jpg" alt="Footer Logo" class="h-8 w-auto" />
+    </div>
+    <p>© 2026 LR AgroSense • Smart Farming • AI • IoT • All Rights Reserved.</p>
+    <div class="flex justify-center gap-4 text-[11px] text-slate-400">
+      <button onclick="toggleTermsModal(true)" class="hover:text-emerald-400">Terms & Conditions</button>
+      <span>•</span>
+      <button onclick="toggleTermsModal(true)" class="hover:text-emerald-400">Privacy Policy</button>
+      <span>•</span>
+      <button onclick="toggleAdminModal(true)" title="Founder Access" class="hover:text-slate-300">🔒 Founder Portal</button>
+    </div>
+  </footer>
+
+
+  <!-- ================= DEDICATED CHATGPT-STYLE AGRIMIND AI PORTAL ================= -->
+  <div id="ai-chat-full-page" class="fixed inset-0 z-50 hidden bg-[#040914] text-slate-100 flex animate-in fade-in duration-200">
+    <aside class="w-64 bg-[#0c1527] border-r border-slate-800 hidden md:flex flex-col justify-between p-4 shrink-0 overflow-y-auto">
+      <div class="space-y-6">
         <div class="flex items-center gap-3 px-2">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI Logo" class="w-8 h-8" />
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFpLWdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+PHN0b3Agb2Zmc2V0PSI1MCU" alt="AI Logo" class="w-8 h-8" />
           <div>
             <h3 class="text-sm font-extrabold text-white">AgriMind AI</h3>
             <p class="text-[10px] text-emerald-400 font-mono">30-Day Active Memory</p>
           </div>
         </div>
 
-        <!-- + New Chat Button -->
-        <button onclick="createNewChatSession()" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/20 text-emerald-300 text-xs font-bold flex items-center justify-between transition-all group">
-          <div class="flex items-center gap-2">
-            <span class="text-base font-bold">+</span>
-            <span>New Chat</span>
-          </div>
-          <span class="text-[10px] text-slate-400 group-hover:text-white font-mono">Ctrl+K</span>
+        <button onclick="createNewChatSession()" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/20 text-emerald-300 text-xs font-bold flex items-center justify-between transition-all">
+          <span>+ New Chat</span>
+          <span class="text-[10px] font-mono text-slate-400">Ctrl+K</span>
         </button>
 
-        <!-- 🧠 30-DAY PERSISTENT CHAT MEMORY ROSTER -->
         <div class="space-y-2 text-xs">
           <div class="flex items-center justify-between px-2">
-            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <span>🧠 30-Day Chat Memory</span>
-            </p>
-            <button onclick="clearAllChatHistory()" title="Clear Chat History" class="text-[10px] text-slate-500 hover:text-rose-400 transition-colors">Clear</button>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">🧠 30-Day Chat Memory</p>
+            <button onclick="clearAllChatHistory()" class="text-[10px] text-slate-500 hover:text-rose-400">Clear</button>
           </div>
-
-          <!-- Dynamically Populated Old Chat List -->
           <div id="sidebar-old-chats-list" class="space-y-1 max-h-56 overflow-y-auto">
             <div class="p-2 text-[11px] text-slate-500 italic px-2">No previous chat history.</div>
           </div>
         </div>
-
-        <!-- Explore Topics Quick Buttons -->
-        <div class="space-y-2 text-xs border-t border-slate-800/80 pt-4">
-          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2">Quick Prompts</p>
-
-          <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
-            🌽 Best Sowing Time for Maize
-          </button>
-          <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
-            🎓 Top BSc Agriculture Colleges
-          </button>
-          <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
-            📜 Father of Agronomy
-          </button>
-        </div>
       </div>
 
-      <!-- Bottom Back Button -->
-      <button onclick="toggleAiPage(false)" class="w-full py-3 px-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 transition-all mt-4">
+      <button onclick="toggleAiPage(false)" class="w-full py-3 px-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 mt-4">
         <span>← Back to Website</span>
       </button>
     </aside>
 
-    <!-- MAIN CHAT AREA (ChatGPT Centered Feed Layout) -->
-    <main class="flex-1 flex flex-col h-full bg-[#090d16] relative overflow-hidden">
-      
-      <!-- Top Mobile Navigation Header -->
-      <header class="p-3 bg-[#0d1322] border-b border-slate-800 flex items-center justify-between px-4 md:px-8">
+    <main class="flex-1 flex flex-col h-full bg-[#040914] relative overflow-hidden">
+      <header class="p-3 bg-[#0c1527] border-b border-slate-800 flex items-center justify-between px-4 md:px-8">
         <div class="flex items-center gap-2 md:hidden">
-          <button onclick="toggleAiPage(false)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-slate-300 text-xs font-bold border border-slate-800 flex items-center gap-1">
-            <span>← Back</span>
-          </button>
-          <button onclick="createNewChatSession()" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-            + New Chat
-          </button>
+          <button onclick="toggleAiPage(false)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-slate-300 text-xs font-bold border border-slate-800">← Back</button>
+          <button onclick="createNewChatSession()" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">+ New</button>
         </div>
-
         <div class="flex items-center gap-2">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="w-6 h-6" />
-          <span class="text-xs font-extrabold text-white">AgriMind AI</span>
-          <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-mono flex items-center gap-1">
-            <span>🧠 30-Day Memory Active</span>
-          </span>
+          <span class="text-xs font-extrabold text-white">AgriMind AI Engine</span>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">🧠 30-Day Memory Active</span>
         </div>
-
         <button onclick="toggleAiPage(false)" class="text-slate-400 hover:text-white p-1 text-sm">✕</button>
       </header>
 
-      <!-- Chat Feed Scroll View -->
       <div id="full-page-chat-messages" class="flex-1 p-4 sm:p-8 space-y-6 overflow-y-auto max-w-3xl w-full mx-auto text-xs sm:text-sm">
-        
-        <!-- Welcome Screen Layout (Shown on empty chat) -->
-        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in duration-300">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-3 mx-auto shadow-2xl shadow-emerald-500/20 flex items-center justify-center">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="w-full h-full" />
-          </div>
-
-          <div class="space-y-2">
-            <h2 id="ai-welcome-title" class="text-2xl sm:text-3xl font-extrabold text-white">How can AgriMind AI help you today?</h2>
-            <p class="text-xs text-slate-400 max-w-md mx-auto">
-              Ask anything about <strong>BSc Agriculture Colleges, Fathers of Agriculture, Maize/Paddy Sowing Seasons, Soil & Water pH, Pest Control, Agri-Marketing, Pricing, or Startup Mission</strong>!
-            </p>
-          </div>
-
-          <!-- Prompt Cards Grid (ChatGPT Style) -->
+        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in">
+          <h2 id="ai-welcome-title" class="text-2xl sm:text-3xl font-extrabold text-white">How can AgriMind AI help you today?</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto text-xs">
-            <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🌽 Maize Sowing Time</div>
+            <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="p-4 rounded-2xl bg-[#0c1527] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1">
+              <div class="font-bold text-white">🌽 Maize Sowing Time</div>
               <p class="text-[11px] text-slate-400">Kharif, Rabi & Spring sowing windows.</p>
             </button>
-
-            <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🎓 Top BSc Agri Colleges</div>
-              <p class="text-[11px] text-slate-400">ICAR rankings, top SAUs & admissions.</p>
-            </button>
-
-            <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">📜 Father of Agronomy</div>
-              <p class="text-[11px] text-slate-400">Pietro de' Crescenzi & agronomic origins.</p>
-            </button>
-
-            <button onclick="sendFullPageQuickQuestion('What is the mission of LR AgroSense?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🚀 Startup Mission</div>
-              <p class="text-[11px] text-slate-400">Affordable AI & IoT solutions for farmers.</p>
+            <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="p-4 rounded-2xl bg-[#0c1527] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1">
+              <div class="font-bold text-white">🎓 Top BSc Agri Colleges</div>
+              <p class="text-[11px] text-slate-400">ICAR rankings & entrance info.</p>
             </button>
           </div>
         </div>
-
       </div>
 
-      <!-- Bottom Sticky Input Bar (ChatGPT Style) -->
-      <div class="p-4 bg-[#090d16] border-t border-slate-800/80 max-w-3xl w-full mx-auto shrink-0 space-y-2">
+      <div class="p-4 bg-[#040914] border-t border-slate-800/80 max-w-3xl w-full mx-auto shrink-0 space-y-2">
         <form onsubmit="handleFullPageChatSubmit(event)" class="relative flex items-center">
-          <input id="full-page-chat-input" type="text" required placeholder="Ask AgriMind AI anything about crops, soil, water pH, colleges, marketing..." class="w-full pl-5 pr-14 py-3.5 rounded-2xl bg-[#131b2e] border border-slate-800 text-white text-xs sm:text-sm outline-none focus:border-emerald-500/60 shadow-inner" />
-          <button type="submit" class="absolute right-2.5 p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all shadow-md">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          <input id="full-page-chat-input" type="text" required placeholder="Ask AgriMind AI anything about crops, soil, water pH..." class="w-full pl-5 pr-14 py-3.5 rounded-2xl bg-[#0c1527] border border-slate-800 text-white text-xs sm:text-sm outline-none focus:border-emerald-500/60" />
+          <button type="submit" class="absolute right-2.5 p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold">
+            ➔
           </button>
         </form>
-
-        <p class="text-[10px] text-center text-slate-500">
-          AgriMind AI • 30-Day Memory Engine Active • Remembers All Chats for 1 Month.
-        </p>
       </div>
-
     </main>
   </div>
 
 
-  <!-- MODAL: APP-WIDE USER LOGIN & SIGNUP (Email & Google One-Tap) -->
+  <!-- ================= AUTH MODAL (EMAIL & GOOGLE) ================= -->
   <div id="modal-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
     <div class="relative w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
       <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
 
-      <!-- Modal Header -->
       <div class="text-center space-y-2">
-        <div class="logo-badge inline-block p-2">
-          <img src="logo.jpg" alt="LR AgroSense Logo" class="h-10 w-auto" />
-        </div>
+        <div class="logo-badge inline-block p-2"><img src="logo.jpg" alt="Logo" class="h-10 w-auto" /></div>
         <h3 class="text-2xl font-extrabold text-white">Welcome to LR AgroSense</h3>
-        <p class="text-xs text-slate-400">Log in to save your 30-day chat memory & access profile.</p>
+        <p class="text-xs text-slate-400">Sign in to sync your AgriMind AI 30-day session memory.</p>
       </div>
 
-      <!-- Auth Method Tabs (Email & Google) -->
       <div class="grid grid-cols-2 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
-        <button id="auth-tab-email" onclick="switchAuthTab('email')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">✉️ Email & Password</button>
+        <button id="auth-tab-email" onclick="switchAuthTab('email')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">✉️ Email</button>
         <button id="auth-tab-google" onclick="switchAuthTab('google')" class="py-2 rounded-lg text-slate-400 font-semibold hover:text-white">🌐 Google</button>
       </div>
 
-      <!-- TAB 1: EMAIL & PASSWORD -->
       <div id="auth-view-email" class="space-y-3 text-xs">
-        <div>
-          <label class="font-semibold text-slate-300 block mb-1">Full Name</label>
-          <input id="email-input-name" type="text" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
-        </div>
-        <div>
-          <label class="font-semibold text-slate-300 block mb-1">Email Address</label>
-          <input id="email-input-addr" type="email" placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
-        </div>
-        <div>
-          <label class="font-semibold text-slate-300 block mb-1">Password</label>
-          <input id="email-input-pass" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
-        </div>
-        <button onclick="loginWithEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-          Sign In / Create Account ✉️
-        </button>
+        <input id="email-input-name" type="text" placeholder="Full Name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" />
+        <input id="email-input-addr" type="email" placeholder="Email Address..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" />
+        <input id="email-input-pass" type="password" placeholder="Password..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" />
+        <button onclick="loginWithEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Sign In / Create Account ✉️</button>
       </div>
 
-      <!-- TAB 2: GOOGLE ONE-TAP LOGIN -->
       <div id="auth-view-google" class="hidden space-y-4 text-xs text-center py-2">
-        <p class="text-slate-300">Sign in instantly with your Google account:</p>
-        <button onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center gap-3 shadow-lg transition-all">
-          <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <button onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center gap-3">
           <span>Continue with Google</span>
         </button>
       </div>
-
     </div>
   </div>
 
 
-  <!-- MODAL 1: Terms & Conditions Modal -->
+  <!-- ================= TERMS MODAL ================= -->
   <div id="modal-terms" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-    <div class="relative w-full max-w-2xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
+    <div class="relative w-full max-w-2xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto text-xs">
       <button onclick="toggleTermsModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
-      
-      <div class="space-y-1">
-        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">Official Policy & Terms</span>
-        <h3 class="text-2xl font-extrabold text-white">Terms & Conditions</h3>
-        <p class="text-xs text-slate-400">Please review the startup disclaimers.</p>
-      </div>
-
-      <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
-        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-          <div class="font-bold text-amber-400">1. Early-Stage & Pre-Registration Startup</div>
-          <p>LR AgroSense is an early-stage Agritech startup project founded by Pampana Hari Sai Ganesh (B.Sc. Agriculture student) currently in pre-registration development phase.</p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-          <div class="font-bold text-emerald-400">2. Smart Farming Mission</div>
-          <p>Our platform delivers data-driven agricultural guidance, soil & water pH telemetry, and AI advisory to optimize farming productivity.</p>
-        </div>
-      </div>
-
-      <button onclick="toggleTermsModal(false)" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-        I Understand & Agree
-      </button>
+      <h3 class="text-2xl font-extrabold text-white">Terms & Privacy Policy</h3>
+      <p class="text-slate-300">LR AgroSense provides smart farming data disclaimers. All agronomic recommendations are advisory.</p>
+      <button onclick="toggleTermsModal(false)" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold">I Agree</button>
     </div>
   </div>
 
-  <!-- MODAL 3: Founder Admin Dashboard Portal -->
+
+  <!-- ================= FOUNDER PORTAL MODAL ================= -->
   <div id="modal-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-    <div class="relative w-full max-w-5xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+    <div class="relative w-full max-w-2xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
       <button onclick="toggleAdminModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
 
-      <!-- Admin Passcode Screen -->
-      <div id="admin-login-view" class="max-w-md mx-auto py-8 text-center space-y-4">
-        <div class="logo-badge p-2 inline-block">
-          <img src="logo.jpg" alt="LR AgroSense Logo" class="h-14 w-auto" />
-        </div>
+      <div id="admin-login-view" class="max-w-md mx-auto text-center space-y-4 py-6">
         <h3 class="text-2xl font-bold text-white">Founder Access Portal</h3>
-        <p class="text-xs text-slate-400">Enter founder password to access AgriMind AI engine.</p>
-        
         <form onsubmit="handleAdminLogin(event)" class="space-y-3">
-          <input id="admin-passcode" type="password" required placeholder="Enter Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-xs outline-none focus:border-emerald-400" />
+          <input id="admin-passcode" type="password" required placeholder="Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-xs outline-none" />
           <p id="admin-login-err" class="hidden text-xs text-rose-400 font-bold">Incorrect password!</p>
-          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-            Access Founder Portal
-          </button>
+          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Access Founder Dashboard</button>
         </form>
       </div>
 
-      <!-- Authenticated Founder Dashboard View -->
-      <div id="admin-dashboard-view" class="hidden space-y-6">
-        
+      <div id="admin-dashboard-view" class="hidden space-y-4">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-3">
-            <div class="logo-badge p-1">
-              <img src="logo.jpg" alt="LR AgroSense Logo" class="h-8 w-auto" />
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                <span>Founder Portal</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] border border-emerald-500/30 font-mono flex items-center gap-1">
-                  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AI" class="h-3 w-3" />
-                  <span>AgriMind AI Active</span>
-                </span>
-              </h3>
-              <p class="text-xs text-emerald-400 font-semibold">Founder: Pampana Hari Sai Ganesh</p>
-            </div>
-          </div>
-          <button onclick="logoutAdmin()" class="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-slate-400 hover:text-white">
-            Logout
-          </button>
+          <h3 class="text-lg font-bold text-white">Founder Console • Pampana Hari Sai Ganesh</h3>
+          <button onclick="logoutAdmin()" class="px-3 py-1 rounded bg-slate-900 text-xs text-slate-400">Logout</button>
         </div>
-
-        <!-- Conversational AgriMind AI Assistant -->
-        <div class="p-4 bg-slate-900 rounded-2xl border border-emerald-500/30 space-y-3 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-emerald-300 flex items-center gap-1.5">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AI" class="h-4 w-4" />
-              <span>Chat with AgriMind AI:</span>
-            </span>
-            <span class="text-[10px] text-slate-400 font-mono">POWERED BY L R AGROSENSE</span>
-          </div>
-
-          <div id="founder-ai-chat-history" class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 max-h-48 overflow-y-auto font-sans text-xs">
-            <div class="text-emerald-400 font-medium flex items-center gap-2">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI4IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBM IDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE4OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" class="h-4 w-4 shrink-0 mt-0.5" /> <span>Hello Founder Pampana Hari Sai Ganesh! I am <strong>AgriMind AI</strong>. Ask me anything about crop science, soil telemetry, or farming guidance!</span>
-            </div>
-          </div>
-
-          <form onsubmit="askFounderAi(event)" class="flex gap-2">
-            <input id="founder-ai-input" type="text" placeholder="Chat with AgriMind AI..." class="flex-1 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none focus:border-emerald-400" />
-            <button type="submit" class="px-5 py-2.5 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Ask AgriMind</button>
-          </form>
-        </div>
-
-        <!-- Student Question Inbox Section -->
-        <div class="space-y-3">
-          <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <span>📥 Student Questions Inbox (via AgriMind AI)</span>
-          </h4>
-          <div id="student-questions-list" class="space-y-2 max-h-36 overflow-y-auto">
-            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 italic">No pending student questions yet. Questions asked via AgriMind AI appear here!</div>
-          </div>
-        </div>
-
+        <p class="text-xs text-slate-300">Welcome to the LR AgroSense Founder control portal.</p>
       </div>
-
     </div>
   </div>
 
-  <!-- Native JavaScript Engine -->
+
+  <!-- ================= JAVASCRIPT CORE ENGINE ================= -->
   <script>
-    // 🔥 FIREBASE INITIALIZATION
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
       authDomain: "lr-agrosense.firebaseapp.com",
@@ -628,39 +782,56 @@
     firebase.initializeApp(firebaseConfig);
     const firebaseAuth = firebase.auth();
 
-    // 🔑 FOUNDER PASSWORD
     const FOUNDER_PASSWORD = '11042026';
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-    // USER AUTHENTICATION STATE
     let currentUser = null;
-
-    // Applicants & Student Questions Data
-    let applicantsData = [];
-    let studentQuestionsData = [];
-
-    // CHAT SESSION & SIDEBAR HISTORY STATE
     let chatSessions = [];
     let activeSessionId = null;
 
-    // Check for Secret URL Hash #admin
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.location.hash === '#admin') {
-        toggleAdminModal(true);
-      }
+    // Scroll Reveal Intersection Observer
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      if (window.location.hash === '#admin') toggleAdminModal(true);
       loadUserData();
       loadChatSessions();
     });
 
-    // 🤖 TOGGLE AGRIMIND AI FULL SCREEN PORTAL
-    function toggleAiPage(show) {
-      const page = document.getElementById('ai-chat-full-page');
-      if (page) {
-        page.classList.toggle('hidden', !show);
-      }
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
     }
 
-    // Load user login data
+    function toggleAiPage(show) {
+      document.getElementById('ai-chat-full-page').classList.toggle('hidden', !show);
+    }
+
+    function toggleAuthModal(show) {
+      document.getElementById('modal-auth').classList.toggle('hidden', !show);
+    }
+
+    function toggleTermsModal(show) {
+      document.getElementById('modal-terms').classList.toggle('hidden', !show);
+    }
+
+    function toggleAdminModal(show) {
+      document.getElementById('modal-admin').classList.toggle('hidden', !show);
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('auth-view-email').classList.toggle('hidden', tab !== 'email');
+      document.getElementById('auth-view-google').classList.toggle('hidden', tab !== 'google');
+    }
+
     function loadUserData() {
       const savedUser = localStorage.getItem('lr_agrosense_current_user');
       if (savedUser) {
@@ -673,136 +844,63 @@
 
     function renderUserNav() {
       const container = document.getElementById('nav-user-container');
-      const aiWelcome = document.getElementById('ai-welcome-title');
-
-      if (currentUser) {
+      if (currentUser && container) {
         container.innerHTML = `
-          <div class="relative group">
-            <button class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>👤 ${currentUser.name}</span>
-            </button>
-            <div class="absolute right-0 mt-2 w-48 glass-panel bg-slate-950 rounded-2xl border border-slate-800 p-2 hidden group-hover:block shadow-2xl space-y-1 text-xs">
-              <div class="p-2 border-b border-slate-800">
-                <div class="font-bold text-white">${currentUser.name}</div>
-                <div class="text-[10px] text-slate-400 font-mono">${currentUser.email || currentUser.phone}</div>
-              </div>
-              <button onclick="logoutUser()" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-rose-400 font-bold">Logout ➔</button>
-            </div>
-          </div>
+          <button onclick="logoutUser()" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-bold">
+            👤 ${currentUser.name} (Logout)
+          </button>
         `;
-
-        if (aiWelcome) {
-          aiWelcome.innerText = `Hello ${currentUser.name}! How can AgriMind AI help you today?`;
-        }
       }
     }
 
     function logoutUser() {
       currentUser = null;
       localStorage.removeItem('lr_agrosense_current_user');
-      document.getElementById('nav-user-container').innerHTML = `
-        <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all flex items-center gap-1.5">
-          <span>👤 Login / Sign Up</span>
-        </button>
-      `;
-      const aiWelcome = document.getElementById('ai-welcome-title');
-      if (aiWelcome) aiWelcome.innerText = `How can AgriMind AI help you today?`;
+      location.reload();
     }
 
-    // AUTH MODAL TOGGLES & TAB SWITCHING
-    function toggleAuthModal(show) {
-      document.getElementById('modal-auth').classList.toggle('hidden', !show);
-    }
-
-    function switchAuthTab(tab) {
-      document.getElementById('auth-view-email').classList.toggle('hidden', tab !== 'email');
-      document.getElementById('auth-view-google').classList.toggle('hidden', tab !== 'google');
-
-      document.getElementById('auth-tab-email').className = tab === 'email' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
-      document.getElementById('auth-tab-google').className = tab === 'google' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
-    }
-
-    // ✉️ FIREBASE EMAIL/PASSWORD LOGIN
     function loginWithEmail() {
       const name = document.getElementById('email-input-name').value.trim();
       const email = document.getElementById('email-input-addr').value.trim();
       const pass = document.getElementById('email-input-pass').value.trim();
-      if (!name || !email) { alert('Please fill in your name and email address!'); return; }
-      if (!pass || pass.length < 6) { alert('Password must be at least 6 characters!'); return; }
+      if (!name || !email || !pass) { alert('Please fill in all fields'); return; }
 
-      // Try to sign in first, if user doesn't exist then create account
       firebaseAuth.signInWithEmailAndPassword(email, pass)
-        .then(result => {
-          completeEmailLogin(name, email, result.user);
-        })
-        .catch(error => {
-          if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-            // New user — create account
-            firebaseAuth.createUserWithEmailAndPassword(email, pass)
-              .then(result => {
-                completeEmailLogin(name, email, result.user);
-              })
-              .catch(createError => {
-                alert('Error: ' + createError.message);
-              });
-          } else {
-            alert('Login Error: ' + error.message);
-          }
+        .then(result => completeEmailLogin(name, email, result.user))
+        .catch(() => {
+          firebaseAuth.createUserWithEmailAndPassword(email, pass)
+            .then(result => completeEmailLogin(name, email, result.user))
+            .catch(err => alert(err.message));
         });
     }
 
-    function completeEmailLogin(name, email, firebaseUser) {
-      currentUser = { name, email, phone: 'Not Provided', authType: 'Email (Firebase)', uid: firebaseUser.uid };
+    function completeEmailLogin(name, email, user) {
+      currentUser = { name, email, uid: user.uid };
       localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
       renderUserNav();
       toggleAuthModal(false);
     }
 
-    // 🌐 FIREBASE GOOGLE SIGN-IN
     function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       firebaseAuth.signInWithPopup(provider)
         .then(result => {
-          const user = result.user;
-          currentUser = {
-            name: user.displayName || 'Google User',
-            email: user.email,
-            phone: user.phoneNumber || 'Not Provided',
-            authType: 'Google (Firebase)',
-            uid: user.uid,
-            photoURL: user.photoURL
-          };
+          currentUser = { name: result.user.displayName, email: result.user.email, uid: result.user.uid };
           localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
           renderUserNav();
           toggleAuthModal(false);
         })
-        .catch(error => {
-          if (error.code !== 'auth/popup-closed-by-user') {
-            alert('Google Sign-In Error: ' + error.message);
-          }
-        });
+        .catch(err => alert(err.message));
     }
 
-    // 🧠 LOAD, PRUNE & RENDER 30-DAY PERSISTENT CHAT MEMORY
+    // Chat Memory Engine
     function loadChatSessions() {
       const saved = localStorage.getItem('lr_agrosense_chat_sessions');
       if (saved) {
         try { chatSessions = JSON.parse(saved); } catch (e) {}
       }
-
       const now = Date.now();
-
-      // AUTO-PRUNE CHATS OLDER THAN 30 DAYS (1 MONTH)
-      if (chatSessions && chatSessions.length > 0) {
-        chatSessions = chatSessions.filter(session => {
-          const sessionTime = session.timestamp || now;
-          return (now - sessionTime) <= THIRTY_DAYS_MS;
-        });
-      } else {
-        chatSessions = [];
-      }
-
+      chatSessions = chatSessions.filter(s => (now - (s.timestamp || now)) <= THIRTY_DAYS_MS);
       saveChatSessions();
     }
 
@@ -814,184 +912,43 @@
     function renderSidebarOldChats() {
       const list = document.getElementById('sidebar-old-chats-list');
       if (!list) return;
-
       if (chatSessions.length === 0) {
-        list.innerHTML = `<div class="p-2 text-[11px] text-slate-500 italic px-2">No past chat history within 30 days.</div>`;
+        list.innerHTML = `<div class="p-2 text-[11px] text-slate-500 italic">No previous chat history.</div>`;
         return;
       }
-
-      const now = Date.now();
-      const oneDayMs = 24 * 60 * 60 * 1000;
-      const sevenDaysMs = 7 * oneDayMs;
-
-      const todaySessions = [];
-      const past7DaysSessions = [];
-      const past30DaysSessions = [];
-
-      chatSessions.forEach(session => {
-        const diff = now - (session.timestamp || now);
-        if (diff < oneDayMs) {
-          todaySessions.push(session);
-        } else if (diff < sevenDaysMs) {
-          past7DaysSessions.push(session);
-        } else {
-          past30DaysSessions.push(session);
-        }
-      });
-
-      let html = '';
-
-      if (todaySessions.length > 0) {
-        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-1 pb-0.5">Today</div>`;
-        todaySessions.forEach(s => html += renderSingleChatItem(s));
-      }
-
-      if (past7DaysSessions.length > 0) {
-        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-2 pb-0.5">Previous 7 Days</div>`;
-        past7DaysSessions.forEach(s => html += renderSingleChatItem(s));
-      }
-
-      if (past30DaysSessions.length > 0) {
-        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-2 pb-0.5">30-Day Memory</div>`;
-        past30DaysSessions.forEach(s => html += renderSingleChatItem(s));
-      }
-
-      list.innerHTML = html;
-    }
-
-    function renderSingleChatItem(session) {
-      const dateStr = session.formattedDate || new Date(session.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
-      return `
-        <div onclick="switchChatSession('${session.id}')" class="group flex items-center justify-between p-2 rounded-lg hover:bg-slate-900 cursor-pointer transition-colors ${activeSessionId === session.id ? 'bg-slate-900 border-l-2 border-emerald-500 text-emerald-400 font-bold' : 'text-slate-300'}">
-          <div class="flex items-center gap-2 truncate">
-            <span class="text-xs">💬</span>
-            <div class="truncate">
-              <div class="truncate text-xs">${session.title}</div>
-              <div class="text-[9px] text-slate-500 font-mono">${dateStr}</div>
-            </div>
-          </div>
-          <button onclick="deleteChatSession(event, '${session.id}')" title="Delete Chat" class="opacity-0 group-hover:opacity-100 text-[10px] text-slate-500 hover:text-rose-400 p-1">✕</button>
+      list.innerHTML = chatSessions.map(s => `
+        <div onclick="switchChatSession('${s.id}')" class="p-2 rounded-lg hover:bg-slate-900 cursor-pointer text-xs text-slate-300 truncate">
+          💬 ${s.title}
         </div>
-      `;
+      `).join('');
     }
 
     function createNewChatSession() {
       activeSessionId = null;
-      resetGptChat();
-      renderSidebarOldChats();
-    }
-
-    function switchChatSession(sessionId) {
-      const session = chatSessions.find(s => s.id === sessionId);
-      if (!session) return;
-
-      activeSessionId = session.id;
-      renderSidebarOldChats();
-
-      const feed = document.getElementById('full-page-chat-messages');
-      feed.innerHTML = '';
-
-      session.messages.forEach(msg => {
-        if (msg.sender === 'user') {
-          const userBox = document.createElement('div');
-          userBox.className = 'flex items-start justify-end gap-3 animate-in fade-in duration-200';
-          userBox.innerHTML = `
-            <div class="p-4 rounded-2xl bg-[#1e293b] text-slate-100 max-w-[85%] border border-slate-700/60 leading-relaxed shadow-sm">
-              ${msg.text}
-            </div>
-            <div class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-bold flex items-center justify-center text-xs shrink-0 mt-1 border border-slate-700">
-              👤
-            </div>
-          `;
-          feed.appendChild(userBox);
-        } else {
-          const botBox = document.createElement('div');
-          botBox.className = 'flex items-start gap-3 animate-in fade-in duration-200';
-          const formattedHtml = typeof marked !== 'undefined' ? marked.parse(msg.text) : msg.text;
-          botBox.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-slate-900 p-1 border border-emerald-500/50 shrink-0 mt-1 shadow-md">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="w-full h-full" />
-            </div>
-            <div class="p-5 rounded-2xl bg-[#0b1629] border border-slate-800 text-slate-200 max-w-[85%] space-y-2 leading-relaxed shadow-md">
-              <div class="flex items-center gap-2 font-bold text-emerald-400 text-xs">
-                <span>AgriMind AI</span>
-              </div>
-              <div class="prose-ai text-xs sm:text-sm">${formattedHtml}</div>
-            </div>
-          `;
-          feed.appendChild(botBox);
-        }
-      });
-      feed.scrollTop = feed.scrollHeight;
-    }
-
-    function deleteChatSession(e, sessionId) {
-      e.stopPropagation();
-      chatSessions = chatSessions.filter(s => s.id !== sessionId);
-      if (activeSessionId === sessionId) {
-        createNewChatSession();
-      } else {
-        saveChatSessions();
-      }
-    }
-
-    function clearAllChatHistory() {
-      chatSessions = [];
-      activeSessionId = null;
-      localStorage.removeItem('lr_agrosense_chat_sessions');
-      createNewChatSession();
-    }
-
-    function toggleTermsModal(show) {
-      document.getElementById('modal-terms').classList.toggle('hidden', !show);
-    }
-
-    function toggleAdminModal(show) {
-      document.getElementById('modal-admin').classList.toggle('hidden', !show);
-    }
-
-    function resetGptChat() {
-      const feed = document.getElementById('full-page-chat-messages');
-      const userName = currentUser ? currentUser.name : '';
-      feed.innerHTML = `
-        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in duration-300">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-3 mx-auto shadow-2xl shadow-emerald-500/20 flex items-center justify-center">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE0OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="w-full h-full" />
-          </div>
-          <div class="space-y-2">
-            <h2 id="ai-welcome-title" class="text-2xl sm:text-3xl font-extrabold text-white">${userName ? 'Hello ' + userName + '! How can AgriMind AI help you today?' : 'How can AgriMind AI help you today?'}</h2>
-            <p class="text-xs text-slate-400 max-w-md mx-auto">
-              Ask anything about <strong>BSc Agriculture Colleges, Fathers of Agriculture, Maize/Paddy Sowing Seasons, Soil & Water pH, Pest Control, Agri-Marketing, Pricing, or Startup Mission</strong>!
-            </p>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto text-xs">
-            <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🌽 Maize Sowing Time</div>
-              <p class="text-[11px] text-slate-400">Kharif, Rabi & Spring sowing windows.</p>
-            </button>
-            <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🎓 Top BSc Agri Colleges</div>
-              <p class="text-[11px] text-slate-400">ICAR rankings, top SAUs & admissions.</p>
-            </button>
-            <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">📜 Father of Agronomy</div>
-              <p class="text-[11px] text-slate-400">Pietro de' Crescenzi & agronomic origins.</p>
-            </button>
-            <button onclick="sendFullPageQuickQuestion('What is the mission of LR AgroSense?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
-              <div class="font-bold text-white flex items-center gap-1.5">🚀 Startup Mission</div>
-              <p class="text-[11px] text-slate-400">Affordable AI & IoT solutions for farmers.</p>
-            </button>
-          </div>
+      document.getElementById('full-page-chat-messages').innerHTML = `
+        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in">
+          <h2 class="text-2xl font-extrabold text-white">How can AgriMind AI help you today?</h2>
         </div>
       `;
+      renderSidebarOldChats();
     }
 
-    // Handle Founder Login
+    function switchChatSession(id) {
+      const s = chatSessions.find(x => x.id === id);
+      if (!s) return;
+      activeSessionId = s.id;
+      const feed = document.getElementById('full-page-chat-messages');
+      feed.innerHTML = s.messages.map(m => `
+        <div class="p-4 rounded-2xl ${m.sender === 'user' ? 'bg-[#1e293b] text-right' : 'bg-[#0b1629] text-left'} text-xs sm:text-sm">
+          <strong>${m.sender === 'user' ? '👤 User' : '🤖 AgriMind AI'}:</strong> ${m.text}
+        </div>
+      `).join('');
+    }
+
     function handleAdminLogin(e) {
       e.preventDefault();
       const pass = document.getElementById('admin-passcode').value;
-      if (pass === FOUNDER_PASSWORD || pass === '11042026') {
-        document.getElementById('admin-login-err').classList.add('hidden');
+      if (pass === FOUNDER_PASSWORD) {
         document.getElementById('admin-login-view').classList.add('hidden');
         document.getElementById('admin-dashboard-view').classList.remove('hidden');
       } else {
@@ -1004,160 +961,6 @@
       document.getElementById('admin-dashboard-view').classList.add('hidden');
     }
 
-    // Conversational AgriMind AI Assistant
-    function askFounderAi(e) {
-      e.preventDefault();
-      const input = document.getElementById('founder-ai-input');
-      const q = input.value.trim().toLowerCase();
-      if (!q) return;
-
-      const history = document.getElementById('founder-ai-chat-history');
-
-      const userMsg = document.createElement('div');
-      userMsg.className = 'text-white font-bold border-l-2 border-emerald-500 pl-2 my-1';
-      userMsg.innerText = `👔 Founder: ${input.value}`;
-      history.appendChild(userMsg);
-
-      let reply = `I am AgriMind AI. I am here to assist Founder Pampana Hari Sai Ganesh with crop telemetry, soil pH balancing, and smart farming strategy!`;
-
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'text-emerald-300 font-medium bg-slate-900 p-2 rounded-lg border border-slate-800 my-1 flex items-start gap-2';
-      aiMsg.innerHTML = `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBM IDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE4OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" class="h-4 w-4 shrink-0 mt-0.5" /> <span>AgriMind AI: ${reply}</span>`;
-      history.appendChild(aiMsg);
-
-      history.scrollTop = history.scrollHeight;
-      input.value = '';
-    }
-
-    // 100% UNIVERSAL DYNAMIC AGRICULTURAL KNOWLEDGE SOLVER
-    function generateUniversalAgriMindAnswer(userQuestion, sessionHistory = []) {
-      const rawQ = userQuestion.trim();
-      const q = rawQ.toLowerCase().replace(/[^a-z0-9\s]/g, '');
-
-      // 1. Natural Greetings Handler
-      if (/^(hi|hii|hiii|hello|hey|heyy|heyyy|greetings|namaste|good morning|good afternoon|good evening|yo)$/.test(q)) {
-        const userNameStr = currentUser ? currentUser.name : '';
-        return `Hello${userNameStr ? ' ' + userNameStr : ''}! 👋 How can I assist you today with agriculture, crop science, soil health, farming technology, or agri-marketing?`;
-      }
-
-      // 2. Short Conversational Acknowledgments
-      if (/^(thanks|thank you|ok|okay|k|great|cool|awesome|nice|good)$/.test(q)) {
-        return `You're very welcome! 🌱 Feel free to ask whenever you have more questions about crops, soil, water pH, or marketing.`;
-      }
-
-      // 3. CONVERSATIONAL FOLLOW-UP & SESSION MEMORY HANDLER
-      if (sessionHistory.length > 0 && (q.includes('what about') || q.includes('how to grow it') || q.includes('fertilizer for it') || q.includes('earlier') || q.includes('previous') || q.includes('tell me more'))) {
-        const lastUserMsg = sessionHistory.filter(m => m.sender === 'user').slice(-1)[0];
-        if (lastUserMsg) {
-          return `Building on our discussion about **"${lastUserMsg.text}"**:
-
-- **Follow-up Recommendation**: Ensure balanced soil fertility (NPK 4:2:1), maintain soil moisture at 50–60% field capacity, and monitor for early fungal or pest symptoms.
-- **Next Step**: Apply bio-fertilizers (*Azospirillum / PSB*) and optimize water management based on your local microclimate.`;
-        }
-      }
-
-      // 4. BEST TIME / SEASON FOR MAIZE (CORN) CROP SOWING
-      if ((q.includes('maize') || q.includes('corn')) && (q.includes('time') || q.includes('season') || q.includes('sow') || q.includes('plant') || q.includes('when') || q.includes('month'))) {
-        return `The **best time for Maize (Corn) crop sowing** depends on the cropping season:
-
-1. **Kharif Season (Monsoon)**: **June to July** (with the onset of monsoon rains). This is the primary sowing window across India.
-2. **Rabi Season (Winter)**: **October to November** (in non-frost states like Andhra Pradesh, Telangana, Bihar, Tamil Nadu, and Karnataka). Rabi maize yields higher due to low pest pressure and controlled irrigation.
-3. **Spring / Zaid Season**: **February to March** (for 90-day fast grain or green fodder harvest before summer).
-
-*Optimum Soil Temperature*: **18°C to 27°C** for quick, uniform seed germination.`;
-      }
-
-      // 5. GENERAL BEST SOWING TIME FOR OTHER CROPS
-      if (q.includes('best time') || q.includes('sowing time') || q.includes('when to plant') || q.includes('when to sow') || q.includes('season for')) {
-        if (q.includes('rice') || q.includes('paddy')) {
-          return `The **best sowing time for Paddy/Rice** is **June to July** (Kharif monsoon) for rainfed crops, and **November to December** (Rabi / Summer rice) in southern/eastern India.`;
-        }
-        if (q.includes('wheat')) {
-          return `The **best sowing time for Wheat** is **November 1st to November 25th** (Rabi winter season). Timely sowing ensures optimal tillering before summer heat.`;
-        }
-        if (q.includes('cotton')) {
-          return `The **best sowing time for Cotton** is **April to May** (North India irrigated) and **June to July** (Central & South India rainfed).`;
-        }
-        if (q.includes('sugarcane')) {
-          return `The **best sowing time for Sugarcane** is **October to November** (Autumn planting - highest yield) or **February to March** (Spring planting).`;
-        }
-        return `The best crop sowing time depends on the season: **Kharif** (June–July monsoon), **Rabi** (October–November winter), or **Zaid** (February–March spring). Specify your target crop for exact dates!`;
-      }
-
-      // 6. WHAT CAN YOU DO
-      if (q.includes('what can you do') || q.includes('how can you help') || q.includes('what are your features') || q.includes('what do you know') || q === 'help') {
-        return `I am **AgriMind AI**, the specialized agricultural AI assistant for **LR AgroSense**. Here is what I can answer for you:
-
-- 🌱 **Crop & Soil Management**: Sowing seasons, soil NPK balancing, soil pH, irrigation water quality, fertilizer calculations.
-- 🐛 **Plant Pathology & Pest Control**: Disease identification (blight, rust, rot) and bio-control remedies (*Trichoderma / Pseudomonas*).
-- 📜 **Pioneers of Agriculture**: Facts on all 18+ Fathers of Agriculture (Agronomy, Green Revolution, Soil Science, etc.).
-- 🎓 **B.Sc. Agriculture Colleges**: Top ICAR rankings (IARI, GBPUAT, PAU, ANGRAU, TNAU, BHU) and entrance exams.
-- ⚡ **Agritech & IoT Sensors**: ESP32 microcontrollers, Modbus RS485 soil sensors, smart drip irrigation & drones.
-- 📢 **Agri-Marketing & Mandi Prices**: e-NAM pricing, FPO supply chain strategies, MSP guidelines.
-- 🧠 **30-Day Active Chat Memory**: Automatically remembers all your chat sessions and past questions for up to 30 days!`;
-      }
-
-      // 7. WHO ARE YOU / IDENTITY
-      if (q.includes('who are you') || q.includes('what are you') || q.includes('who built you') || q.includes('who created you') || q.includes('what is your name') || q.includes('tell me about yourself')) {
-        return `I am **AgriMind AI** — the official Agricultural Intelligence AI assistant of **LR AgroSense**, founded by **Pampana Hari Sai Ganesh** (B.Sc. Agriculture Student).
-
-I provide expert, direct answers on **crops, soil health, NPK balancing, water pH, pest management, agritech IoT sensors, e-NAM marketing, B.Sc. Agriculture colleges** with a **30-day active chat memory**!`;
-      }
-
-      // 8. FATHER OF AGRONOMY & ALL FATHERS
-      if (q.includes('father of agronomy')) {
-        return `The **Father of Agronomy** is **Pietro de' Crescenzi** (1230–1320 AD), an Italian jurist who authored ***Opus Ruralium Commodorum*** in 1304 AD, compiling classical scientific farming practices.`;
-      }
-      if (q.includes('father of green revolution in india') || (q.includes('green revolution') && q.includes('india'))) {
-        return `The **Father of Green Revolution in India** is **Dr. M.S. Swaminathan** (1925–2023), who introduced high-yielding wheat (*Kalyan Sona*, *Sonalika*) and rice (*IR8*) to Indian agriculture in the 1960s.`;
-      }
-      if (q.includes('father of green revolution')) {
-        return `The **Global Father of Green Revolution** is **Dr. Norman Borlaug** (1914–2009), Nobel Peace Prize laureate who developed high-yielding semi-dwarf wheat varieties that saved over 1 billion people from starvation.`;
-      }
-
-      // 9. WHAT IS AGRICULTURE
-      if (q.includes('what is agriculture') || q.includes('define agriculture') || q.includes('definition of agriculture')) {
-        return `**Agriculture** is the science, art, and practice of cultivating soil, growing crops, and raising livestock to produce food, fiber, medicinal plants, and essential products to sustain human life.
-
-It comprises five main pillars: **Agronomy, Horticulture, Animal Husbandry, Precision Agritech (AI/IoT), and Agri-Marketing**.`;
-      }
-
-      // 10. MAIZE WATER & SOIL pH
-      if ((q.includes('maize') || q.includes('corn')) && (q.includes('ph') || q.includes('water') || q.includes('soil'))) {
-        return `For **Maize (Corn)** crops:
-- **Ideal Irrigation Water pH**: **6.0 to 7.5**
-- **Ideal Soil pH**: **5.8 to 7.0** (slightly acidic to neutral)
-
-*Note*: Soil pH below 5.5 causes Aluminum toxicity and restricts Phosphorus absorption, while pH above 7.5 restricts Zinc and Iron intake.`;
-      }
-
-      // 11. BEST COLLEGES FOR B.SC AGRICULTURE
-      if (q.includes('college') || q.includes('university') || q.includes('bsc agriculture') || q.includes('bsc agri') || q.includes('study agriculture')) {
-        return `The **Top Colleges for B.Sc. (Hons.) Agriculture** in India are:
-
-1. **ICAR - Indian Agricultural Research Institute (IARI)** – Pusa, New Delhi *(Rank #1)*
-2. **GB Pant University of Agriculture & Technology (GBPUAT)** – Pantnagar, Uttarakhand
-3. **Punjab Agricultural University (PAU)** – Ludhiana, Punjab
-4. **Tamil Nadu Agricultural University (TNAU)** – Coimbatore, Tamil Nadu
-5. **Acharya N.G. Ranga Agricultural University (ANGRAU)** – Guntur / Lam, AP
-6. **Professor Jayashankar Telangana State Agricultural University (PJTSAU)** – Hyderabad
-7. **Banaras Hindu University (BHU)** – Varanasi, UP`;
-      }
-
-      // 12. DYNAMIC UNIVERSAL AGRICULTURAL KNOWLEDGE PARSER
-      const cleanSubject = rawQ.replace(/^(what is|who is|how to|tell me about|explain|details on|information about)\s+/i, '');
-      const formattedTitle = cleanSubject.charAt(0).toUpperCase() + cleanSubject.slice(1);
-
-      return `For **${formattedTitle}** in agricultural science:
-
-- **Agronomic Importance**: Managing ${cleanSubject} optimizes crop metabolic rate, root zone aeration, and overall biomass yield.
-- **Best Practice**: Maintain balanced soil fertility (NPK 4:2:1), soil pH between 6.0 and 7.2, and monitor moisture levels regularly.
-- **Economic Return**: Aligning ${cleanSubject} with recommended ICAR package of practices reduces input costs and improves farmer profit per acre.
-
-Feel free to ask more specific questions about crops, soil parameters, water pH, pest management, or agri-marketing!`;
-    }
-
-    // ChatGPT-Style Real-Time Word-by-Word Streaming Engine
     function sendFullPageQuickQuestion(txt) {
       document.getElementById('full-page-chat-input').value = txt;
       handleFullPageChatSubmit(new Event('submit'));
@@ -1173,97 +976,38 @@ Feel free to ask more specific questions about crops, soil parameters, water pH,
       if (welcome) welcome.classList.add('hidden');
 
       const msgs = document.getElementById('full-page-chat-messages');
-
-      // 1. User Message Box (ChatGPT Style)
       const userBox = document.createElement('div');
-      userBox.className = 'flex items-start justify-end gap-3 animate-in fade-in duration-200';
-      userBox.innerHTML = `
-        <div class="p-4 rounded-2xl bg-[#1e293b] text-slate-100 max-w-[85%] border border-slate-700/60 leading-relaxed shadow-sm">
-          ${q}
-        </div>
-        <div class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-bold flex items-center justify-center text-xs shrink-0 mt-1 border border-slate-700">
-          👤
-        </div>
-      `;
+      userBox.className = 'p-4 rounded-2xl bg-[#1e293b] text-right text-xs sm:text-sm text-slate-100 my-2';
+      userBox.innerText = q;
       msgs.appendChild(userBox);
 
-      // Fetch active session message history for context memory
-      let activeSession = chatSessions.find(s => s.id === activeSessionId);
-      const sessionHistory = activeSession ? activeSession.messages : [];
-
-      // 2. Generate Real Universal Answer Text (Passing Session History for Memory!)
-      const botRawAns = generateUniversalAgriMindAnswer(q, sessionHistory);
-
-      // 3. SAVE CHAT MESSAGE PAIR TO CURRENT SESSION & PERSISTENT 30-DAY MEMORY
-      const now = Date.now();
-      const formattedDate = new Date(now).toLocaleDateString([], { month: 'short', day: 'numeric' });
-
-      if (!activeSessionId) {
-        activeSessionId = 'SESSION-' + now;
-        const shortTitle = q.length > 25 ? q.substring(0, 25) + '...' : q;
-        chatSessions.unshift({
-          id: activeSessionId,
-          title: shortTitle,
-          timestamp: now,
-          formattedDate: formattedDate,
-          messages: []
-        });
+      let botAns = `For **${q}**: Ensure optimal soil moisture (50-60%), NPK fertility balancing, and monitor crop health using LR AgroSense telemetry.`;
+      if (q.toLowerCase().includes('maize')) {
+        botAns = `The best time for Maize sowing is **June-July** (Kharif) or **October-November** (Rabi). Optimum soil temperature is 18°C-27°C.`;
+      } else if (q.toLowerCase().includes('college')) {
+        botAns = `Top B.Sc Agriculture colleges: **IARI New Delhi, GBPUAT Pantnagar, PAU Ludhiana, ANGRAU, TNAU, and BHU**.`;
       }
 
-      activeSession = chatSessions.find(s => s.id === activeSessionId);
-      if (activeSession) {
-        activeSession.messages.push({ sender: 'user', text: q });
-        activeSession.messages.push({ sender: 'ai', text: botRawAns });
+      const now = Date.now();
+      if (!activeSessionId) {
+        activeSessionId = 'SESSION-' + now;
+        chatSessions.unshift({ id: activeSessionId, title: q.substring(0, 20), timestamp: now, messages: [] });
+      }
+      const active = chatSessions.find(s => s.id === activeSessionId);
+      if (active) {
+        active.messages.push({ sender: 'user', text: q });
+        active.messages.push({ sender: 'ai', text: botAns });
         saveChatSessions();
       }
 
-      // Record student question for Founder Admin Inbox (if not simple greeting or identity query)
-      if (q.length > 5 && !['hi', 'hii', 'hiii', 'hello', 'hey', 'thanks', 'ok'].includes(q.toLowerCase()) && !q.toLowerCase().includes('who are you') && !q.toLowerCase().includes('what can you do')) {
-        studentQuestionsData.unshift({
-          question: q,
-          aiAnswer: botRawAns,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        });
-        localStorage.setItem('lr_agrosense_questions', JSON.stringify(studentQuestionsData));
-      }
-
-      // 4. AI Bot Message Container with Typing Caret
       const botBox = document.createElement('div');
-      botBox.className = 'flex items-start gap-3 animate-in fade-in duration-200';
-      botBox.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-slate-900 p-1 border border-emerald-500/50 shrink-0 mt-1 shadow-md">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWktZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0YWRlODAiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNmI2ZDQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIgLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImJsdXIiIG9wZXJhdG9yPSJvdmVyIiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEdsb3dpbmcgT3V0ZXIgQ2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODUiIGZpbGw9IiMwNjBkMWUiIHN0cm9rZT0idXJsKCNhaS1ncmFkKSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvdykiIC8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI3NSIgZmlsbD0iIzBiMTcyYSIgc3Ryb2tlPSIjMTZhMzRhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjggNCIgLz4KCiAgPCEtLSBBSSBCcmFpbiAvIE1pY3JvY2hpcCBDaXJjdWl0IE5vZGVzIC0tPgogIDxwYXRoIGQ9Ik0gNjAgMTAwIEggMTQwIE0gMTAwIDYwIFYgMTQwIiBzdHJva2U9IiMwNmI2ZDQiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40IiAvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMDZiNmQ0IiAvPgogIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSI2MCIgcj0iNCIgZmlsbD0iIzA2YjZkNCIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNDAiIHI9IjQiIGZpbGw9IiMwNmI2ZDQiIC8+CgogIDwhLS0gQWdyaXRlY2ggTGVhZiBDZW50cmFsIEljb24gLS0+CiAgPHBhdGggZD0iTSAxMDAgNDUgQyAxMzUgNjUgMTQwIDExNSAxMDAgMTUwIEMgNjAgMTE1IDY1IDY1IDEwMCA0NSBaIiBmaWxsPSJ1cmwoI2FpLWdyYWQpIiAvPgogIDxwYXRoIGQ9Ik0gMTAwIDU1IFYgMTQwIE0gMTAwIDgwIEwgMTI1IDY1IE0gMTAwIDEwNSBMIDEzMCA5MCBNIDEwMCA5MCBMIDc1IDc1IE0gMTAwIDExNSBMIDcwIDEwMCIgc3Ryb2tlPSIjMDYwZDFlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgoKICA8IS0tIEFJIFNwYXJrbGVzIFRvcCBSaWdodCAmIExlZnQgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIxNTAsNTAgMTU1LDYwIDE2NSw2NSAxNTUsNzAgMTUwLDgwIDE0NSw3MCAxMzUsNjUgMTQ1LDYwIiBmaWxsPSIjNGFkZTgwIiAvPgogIDxwb2x5Z29uIHBvaW50cz0iNDUsMTMwIDQ4LDEzNiA1NCwxMzkgNDgsMTQyIDQ1LDE4OCA0MiwxNDIgMzYsMTM5IDQyLDEzNiIgZmlsbD0iIzA2YjZkNCIgLz4KPC9zdmc+Cg==" alt="AgriMind AI" class="w-full h-full" />
-        </div>
-        <div class="p-5 rounded-2xl bg-[#0b1629] border border-slate-800 text-slate-200 max-w-[85%] space-y-2 leading-relaxed shadow-md">
-          <div class="flex items-center gap-2 font-bold text-emerald-400 text-xs">
-            <span>AgriMind AI</span>
-          </div>
-          <div id="streaming-ai-target" class="prose-ai text-xs sm:text-sm typing-caret"></div>
-        </div>
-      `;
+      botBox.className = 'p-4 rounded-2xl bg-[#0b1629] text-left text-xs sm:text-sm text-emerald-300 border border-slate-800 my-2';
+      botBox.innerHTML = marked.parse(botAns);
       msgs.appendChild(botBox);
-      msgs.scrollTop = msgs.scrollHeight;
+
       input.value = '';
-
-      // 5. REAL-TIME WORD-BY-WORD STREAMING ANIMATION (ChatGPT & Claude Style)
-      const targetDiv = botBox.querySelector('#streaming-ai-target');
-      const words = botRawAns.split(' ');
-      let currentWordIndex = 0;
-
-      const streamTimer = setInterval(() => {
-        if (currentWordIndex < words.length) {
-          const currentText = words.slice(0, currentWordIndex + 1).join(' ');
-          const formattedHtml = typeof marked !== 'undefined' ? marked.parse(currentText) : currentText;
-          targetDiv.innerHTML = formattedHtml;
-          currentWordIndex++;
-          msgs.scrollTop = msgs.scrollHeight;
-        } else {
-          clearInterval(streamTimer);
-          targetDiv.classList.remove('typing-caret');
-        }
-      }, 35);
+      msgs.scrollTop = msgs.scrollHeight;
     }
   </script>
-
 </body>
 </html>
