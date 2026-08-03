@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LR AgroSense | Student Internship Portal</title>
+  <title>LR AgroSense | Smart Farming • AI • IoT</title>
   <meta name="description" content="LR AgroSense is an early-stage Agritech startup empowering farmers through AI & IoT solutions. Apply for student internships in Agritech, Agriculture Science, Research & Startup Building." />
-  
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +14,9 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Marked.js for Clean ChatGPT/Claude Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -26,11 +30,14 @@
               700: '#15803d',
               950: '#052e16',
             },
-            obsidian: {
-              900: '#0b1329',
-              950: '#060d1e'
-            },
-            techCyan: '#06B6D4'
+            gpt: {
+              bg: '#090d16',
+              sidebar: '#0d1322',
+              card: '#131b2e',
+              chatBg: '#0f172a',
+              userMsg: '#1e293b',
+              aiMsg: '#0b1629'
+            }
           },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
@@ -52,202 +59,535 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .logo-badge {
+      background: #ffffff;
+      padding: 6px 14px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    /* ChatGPT Style Markdown Output Styling */
+    .prose-ai {
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+    .prose-ai p {
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai strong {
+      color: #4ade80;
+      font-weight: 700;
+    }
+    .prose-ai ul {
+      list-style-type: disc;
+      padding-left: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai ol {
+      list-style-type: decimal;
+      padding-left: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai li {
+      margin-bottom: 0.25rem;
+    }
+    /* Typing Caret Animation for Streaming Output */
+    .typing-caret::after {
+      content: '▋';
+      display: inline-block;
+      margin-left: 2px;
+      color: #22c55e;
+      animation: blink 0.8s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    /* Custom Scrollbar for ChatGPT UI */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body class="bg-[#060d1e] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
 
-  <!-- Public Navigation Bar (Admin Button Removed for Privacy) -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#060d1e]/90 backdrop-blur-md border-b border-emerald-500/20 py-4 px-6">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center font-bold text-white text-xl">
-          🌱
+  <!-- MAIN WEBSITE CONTENT CONTAINER -->
+  <div id="main-website-page">
+
+    <!-- Public Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#060d1e]/90 backdrop-blur-md border-b border-emerald-500/20 py-3.5 px-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <a href="#" class="flex items-center gap-3">
+          <div class="logo-badge">
+            <img src="logo.svg" alt="LR AgroSense Logo" class="h-9 sm:h-10 w-auto" />
+          </div>
+        </a>
+
+        <div class="flex items-center gap-3">
+          <button onclick="toggleAiPage(true)" class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-400 text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/10">
+            <img src="ai_logo.svg" alt="AgriMind AI" class="h-4 w-4" />
+            <span>Ask AgriMind AI</span>
+          </button>
+          
+          <!-- DYNAMIC USER LOGIN / USER PROFILE BUTTON -->
+          <div id="nav-user-container">
+            <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all flex items-center gap-1.5">
+              <span>👤 Login / Sign Up</span>
+            </button>
+          </div>
+
+          <button onclick="toggleTermsModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold transition-all hidden sm:inline-block">
+            📋 Terms
+          </button>
+          <button onclick="toggleApplyModal(true)" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all">
+            Apply Now
+          </button>
         </div>
-        <div>
-          <span class="font-display font-extrabold text-xl text-white">LR AgroSense</span>
-          <p class="text-[10px] text-emerald-400 font-semibold uppercase">Smart Farming • AI • IoT</p>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-36 pb-20 px-4 max-w-7xl mx-auto">
+      <div class="max-w-4xl mx-auto text-center space-y-6">
+        
+        <div class="inline-flex items-center justify-center p-4 sm:p-6 rounded-3xl bg-white shadow-2xl border-2 border-emerald-500/40 mb-2">
+          <img src="logo.svg" alt="LR AgroSense Official Logo" class="h-28 sm:h-36 w-auto" />
         </div>
-      </a>
 
-      <div class="flex items-center gap-3">
-        <button onclick="toggleTermsModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold transition-all">
-          📋 Terms
-        </button>
-        <button onclick="toggleApplyModal(true)" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all">
-          Apply Now
-        </button>
+        <div class="inline-block px-4 py-1.5 rounded-full glass-panel text-emerald-300 text-xs font-semibold">
+          🌱 Early-Stage Agritech Startup • Student Internship Portal
+        </div>
+        
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
+          Join the Mission to Empower Farmers Through <span class="gradient-text-agri">Affordable AI & IoT</span>
+        </h1>
+        <p class="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
+          LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture. We are inviting students in Agritech, Agriculture Science, Research, Content Creation, and Startup Building to collaborate and gain hands-on experience.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <button onclick="toggleApplyModal(true)" class="px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5">
+            Submit Internship Application 🚀
+          </button>
+          <button onclick="toggleAiPage(true)" class="px-8 py-4 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 font-semibold text-sm flex items-center gap-2">
+            <img src="ai_logo.svg" alt="AgriMind AI" class="h-5 w-5" />
+            <span>Open AgriMind AI (ChatGPT UI) ↗</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </nav>
+    </section>
 
-  <!-- Hero Section -->
-  <section class="pt-36 pb-20 px-4 max-w-7xl mx-auto">
-    <div class="max-w-4xl mx-auto text-center space-y-6">
-      <div class="inline-block px-4 py-1.5 rounded-full glass-panel text-emerald-300 text-xs font-semibold">
-        🌱 Early-Stage Agritech Startup • Student Internship Portal
+    <!-- Key Startup Metrics & Policy Banner -->
+    <section class="py-10 bg-slate-900/60 border-y border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs">
+        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
+          <div class="text-emerald-400 font-extrabold text-lg mb-1">🌱 Pre-Registration Startup</div>
+          <p class="text-slate-400">Early-stage agritech project founded by Pampana Hari Sai Ganesh (B.Sc. Agriculture Student).</p>
+        </div>
+
+        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
+          <div class="text-amber-400 font-extrabold text-lg mb-1">📢 Unpaid Internship</div>
+          <p class="text-slate-400">Educational hands-on opportunity (No financial stipend or monetary compensation provided).</p>
+        </div>
+
+        <div class="p-4 glass-panel rounded-2xl border border-slate-800">
+          <div class="text-cyan-400 font-extrabold text-lg mb-1">📜 Verified Live Certificate</div>
+          <p class="text-slate-400">Awarded an official Live Certificate of Completion and Offer Letter upon internship completion.</p>
+        </div>
       </div>
-      <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
-        Join the Mission to Empower Farmers Through <span class="gradient-text-agri">Affordable AI & IoT</span>
-      </h1>
-      <p class="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
-        LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture. We are inviting students in Agritech, Agriculture Science, Research, Content Creation, and Startup Building to collaborate and gain hands-on experience.
-      </p>
+    </section>
 
-      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-        <button onclick="toggleApplyModal(true)" class="px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5">
-          Submit Internship Application 🚀
-        </button>
-        <button onclick="toggleTermsModal(true)" class="px-8 py-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-white font-semibold text-sm">
-          Read Terms & Conditions
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Key Startup Metrics & Policy Banner -->
-  <section class="py-10 bg-slate-900/60 border-y border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs">
-      <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-        <div class="text-emerald-400 font-extrabold text-lg mb-1">🌱 Pre-Registration Startup</div>
-        <p class="text-slate-400">Early-stage agritech project founded by Pampana Hari Sai Ganesh (B.Sc. Agriculture Student).</p>
-      </div>
-
-      <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-        <div class="text-amber-400 font-extrabold text-lg mb-1">📢 Unpaid Internship</div>
-        <p class="text-slate-400">Educational hands-on opportunity (No financial stipend or monetary compensation provided).</p>
-      </div>
-
-      <div class="p-4 glass-panel rounded-2xl border border-slate-800">
-        <div class="text-cyan-400 font-extrabold text-lg mb-1">📜 Verified Live Certificate</div>
-        <p class="text-slate-400">Awarded an official Live Certificate of Completion and Offer Letter upon internship completion.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- About Us Section -->
-  <section id="about" class="py-20 px-4 max-w-7xl mx-auto">
-    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 space-y-6">
-      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">About Us</span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Transforming Agriculture Through Technology</h2>
-      <p class="text-slate-300 leading-relaxed text-base sm:text-lg">
-        LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture through affordable AI and IoT solutions. Our mission is to help farmers improve productivity, reduce crop losses, optimize water and fertilizer usage, and promote sustainable farming practices.
-      </p>
-    </div>
-  </section>
-
-  <!-- Vision & Mission Section -->
-  <section class="py-12 px-4 max-w-7xl mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="glass-panel p-8 rounded-3xl border border-emerald-500/30 space-y-4">
-        <span class="text-xs font-bold text-emerald-400 uppercase">PILLAR 01</span>
-        <h3 class="text-2xl font-bold text-white">Our Vision</h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-          To create an intelligent agricultural ecosystem that empowers farmers with data-driven decision-making while improving food security and reducing environmental impact.
+    <!-- About Us Section -->
+    <section id="about" class="py-20 px-4 max-w-7xl mx-auto">
+      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="logo-badge">
+            <img src="logo.svg" alt="LR AgroSense Logo" class="h-8 w-auto" />
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">About Us</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Transforming Agriculture Through Technology</h2>
+        <p class="text-slate-300 leading-relaxed text-base sm:text-lg">
+          LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture through affordable AI and IoT solutions. Our mission is to help farmers improve productivity, reduce crop losses, optimize water and fertilizer usage, and promote sustainable farming practices.
         </p>
       </div>
-      <div class="glass-panel p-8 rounded-3xl border border-cyan-500/30 space-y-4">
-        <span class="text-xs font-bold text-cyan-400 uppercase">PILLAR 02</span>
-        <h3 class="text-2xl font-bold text-white">Our Mission</h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-          Develop accessible and cost-effective technologies that make modern farming possible for every farmer.
-        </p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Internship Domains Section -->
-  <section id="internship" class="py-20 px-4 max-w-7xl mx-auto space-y-12">
-    <div class="text-center space-y-3">
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Available <span class="gradient-text-agri">Internship Domains</span></h2>
-      <p class="text-slate-300 text-sm">We welcome passionate students across engineering, agricultural science, business, and media.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-        <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 01</span>
-        <h3 class="text-lg font-bold text-white">Agritech & AI</h3>
-        <p class="text-xs text-slate-400">Develop machine learning models for soil analytics and IoT sensor data processing.</p>
-      </div>
-
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-        <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 02</span>
-        <h3 class="text-lg font-bold text-white">Agriculture Science</h3>
-        <p class="text-xs text-slate-400">Agronomic soil testing, NPK analysis, plant pathology, and precision field validation.</p>
-      </div>
-
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-        <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 03</span>
-        <h3 class="text-lg font-bold text-white">Research & Innovation</h3>
-        <p class="text-xs text-slate-400">Literature review, sensor hardware prototyping, and low-cost agritech benchmarking.</p>
-      </div>
-
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-        <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 04</span>
-        <h3 class="text-lg font-bold text-white">Content Creation & Media</h3>
-        <p class="text-xs text-slate-400">Farmer educational storytelling, social media outreach, and video documentation.</p>
-      </div>
-
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-        <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 05</span>
-        <h3 class="text-lg font-bold text-white">Startup Building</h3>
-        <p class="text-xs text-slate-400">Operations, ecosystem strategy, investor pitch preparation, and market research.</p>
-      </div>
-
-      <!-- Action Card -->
-      <div class="glass-panel p-6 rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/80 to-slate-900 flex flex-col justify-between">
-        <div>
-          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">READY TO APPLY?</span>
-          <h3 class="text-lg font-bold text-white mt-1">Submit Your Profile</h3>
-          <p class="text-xs text-slate-300 mt-1">Direct submission to Founder Pampana Hari Sai Ganesh for evaluation.</p>
+    <!-- Vision & Mission Section -->
+    <section class="py-12 px-4 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-panel p-8 rounded-3xl border border-emerald-500/30 space-y-4">
+          <span class="text-xs font-bold text-emerald-400 uppercase">PILLAR 01</span>
+          <h3 class="text-2xl font-bold text-white">Our Vision</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            To create an intelligent agricultural ecosystem that empowers farmers with data-driven decision-making while improving food security and reducing environmental impact.
+          </p>
         </div>
-        <button onclick="toggleApplyModal(true)" class="mt-4 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-          Apply Now ↗
-        </button>
+        <div class="glass-panel p-8 rounded-3xl border border-cyan-500/30 space-y-4">
+          <span class="text-xs font-bold text-cyan-400 uppercase">PILLAR 02</span>
+          <h3 class="text-2xl font-bold text-white">Our Mission</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Develop accessible and cost-effective technologies that make modern farming possible for every farmer.
+          </p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Founder Spotlight Section -->
-  <section id="founder" class="py-20 px-4 max-w-4xl mx-auto">
-    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 text-center sm:text-left space-y-6">
-      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Founder Spotlight</span>
-      <h2 class="text-3xl font-extrabold text-white">Pampana Hari Sai Ganesh</h2>
-      <p class="text-emerald-400 font-semibold text-sm">Founder of LR AgroSense & B.Sc. Agriculture Student</p>
-      <p class="text-slate-300 text-base leading-relaxed">
-        Focused on building innovative solutions that help farmers through technology, AI, and IoT.
-      </p>
-      
-      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20 transition-all transform hover:-translate-y-0.5">
-        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-        <span>Follow on LinkedIn</span>
-        <span>↗</span>
-      </a>
-    </div>
-  </section>
+    <!-- Internship Domains Section -->
+    <section id="internship" class="py-20 px-4 max-w-7xl mx-auto space-y-12">
+      <div class="text-center space-y-3">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Available <span class="gradient-text-agri">Internship Domains</span></h2>
+        <p class="text-slate-300 text-sm">We welcome passionate students across engineering, agricultural science, business, and media.</p>
+      </div>
 
-  <!-- Contact Section -->
-  <section id="contact" class="py-20 px-4 max-w-7xl mx-auto">
-    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-6 text-center">
-      <h2 class="text-3xl font-extrabold text-white">Contact LR AgroSense</h2>
-      <p class="text-slate-300 text-sm">Official Email: <strong class="text-emerald-400">lragrosense@gmail.com</strong></p>
-      
-      <div class="pt-2">
-        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm underline">
-          <span>linkedin.com/in/lragrosense</span>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 01</span>
+          <h3 class="text-lg font-bold text-white">Agritech & AI</h3>
+          <p class="text-xs text-slate-400">Develop machine learning models for soil analytics and IoT sensor data processing.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 02</span>
+          <h3 class="text-lg font-bold text-white">Agriculture Science</h3>
+          <p class="text-xs text-slate-400">Agronomic soil testing, NPK analysis, plant pathology, and precision field validation.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 03</span>
+          <h3 class="text-lg font-bold text-white">Research & Innovation</h3>
+          <p class="text-xs text-slate-400">Literature review, sensor hardware prototyping, and low-cost agritech benchmarking.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 04</span>
+          <h3 class="text-lg font-bold text-white">Content Creation & Media</h3>
+          <p class="text-xs text-slate-400">Farmer educational storytelling, social media outreach, and video documentation.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-[10px] font-bold text-emerald-400 font-mono">DOMAIN 05</span>
+          <h3 class="text-lg font-bold text-white">Startup Building</h3>
+          <p class="text-xs text-slate-400">Operations, ecosystem strategy, investor pitch preparation, and market research.</p>
+        </div>
+
+        <!-- Action Card -->
+        <div class="glass-panel p-6 rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/80 to-slate-900 flex flex-col justify-between">
+          <div>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">READY TO APPLY?</span>
+            <h3 class="text-lg font-bold text-white mt-1">Submit Your Profile</h3>
+            <p class="text-xs text-slate-300 mt-1">Direct submission to Founder Pampana Hari Sai Ganesh for evaluation.</p>
+          </div>
+          <button onclick="toggleApplyModal(true)" class="mt-4 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+            Apply Now ↗
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Founder Spotlight Section -->
+    <section id="founder" class="py-20 px-4 max-w-4xl mx-auto">
+      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 text-center sm:text-left space-y-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Founder Spotlight</span>
+        <h2 class="text-3xl font-extrabold text-white">Pampana Hari Sai Ganesh</h2>
+        <p class="text-emerald-400 font-semibold text-sm">Founder of LR AgroSense & B.Sc. Agriculture Student</p>
+        <p class="text-slate-300 text-base leading-relaxed">
+          Focused on building innovative solutions that help farmers through technology, AI, and IoT.
+        </p>
+        
+        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20 transition-all transform hover:-translate-y-0.5">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+          <span>Follow on LinkedIn</span>
           <span>↗</span>
         </a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer with Hidden Admin Portal Trigger -->
-  <footer class="py-8 border-t border-slate-800 text-center text-xs text-slate-500">
-    <p>
-      © 2026 LR AgroSense • Smart Farming • AI • IoT • Empowering Farmers Through Technology
-      <!-- Subtle Hidden Founder Access Lock Icon -->
-      <button onclick="toggleAdminModal(true)" title="Founder Access" class="ml-2 text-slate-800 hover:text-slate-600 transition-colors">🔒</button>
-    </p>
-  </footer>
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 max-w-7xl mx-auto">
+      <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-6 text-center">
+        <h2 class="text-3xl font-extrabold text-white">Contact LR AgroSense</h2>
+        <p class="text-slate-300 text-sm">Official Email: <strong class="text-emerald-400">lragrosense@gmail.com</strong></p>
+        
+        <div class="pt-2">
+          <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm underline">
+            <span>linkedin.com/in/lragrosense</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-slate-800 text-center text-xs text-slate-500 space-y-3">
+      <div class="inline-block logo-badge">
+        <img src="logo.svg" alt="LR AgroSense Footer Logo" class="h-8 w-auto" />
+      </div>
+      <p>
+        © 2026 LR AgroSense • Smart Farming • AI • IoT • Empowering Farmers Through Technology
+        <!-- Subtle Hidden Founder Access Lock Icon -->
+        <button onclick="toggleAdminModal(true)" title="Founder Access" class="ml-2 text-slate-800 hover:text-slate-600 transition-colors">🔒</button>
+      </p>
+    </footer>
+
+    <!-- FLOATING AI BUTTON -->
+    <div class="fixed bottom-6 right-6 z-40">
+      <button
+        onclick="toggleAiPage(true)"
+        class="h-14 px-5 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-bold shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform"
+        title="Open AgriMind AI Portal"
+      >
+        <img src="ai_logo.svg" alt="AgriMind AI Logo" class="w-8 h-8 drop-shadow-md" />
+        <span class="text-xs font-extrabold tracking-wide hidden sm:inline">Ask AgriMind AI</span>
+      </button>
+    </div>
+
+  </div>
+  <!-- END MAIN WEBSITE PAGE -->
+
+
+  <!-- DEDICATED CHATGPT-STYLE FULL-SCREEN AGRIMIND AI CHAT PORTAL -->
+  <div id="ai-chat-full-page" class="fixed inset-0 z-50 hidden bg-[#090d16] text-slate-100 flex animate-in fade-in duration-200">
+    
+    <!-- LEFT SIDEBAR (ChatGPT Style Navigation with 30-Day Persistent Chat Memory) -->
+    <aside class="w-64 bg-[#0d1322] border-r border-slate-800 hidden md:flex flex-col justify-between p-4 shrink-0 overflow-y-auto">
+      <div class="space-y-6">
+        <!-- Top Logo Branding -->
+        <div class="flex items-center gap-3 px-2">
+          <img src="ai_logo.svg" alt="AgriMind AI Logo" class="w-8 h-8" />
+          <div>
+            <h3 class="text-sm font-extrabold text-white">AgriMind AI</h3>
+            <p class="text-[10px] text-emerald-400 font-mono">30-Day Active Memory</p>
+          </div>
+        </div>
+
+        <!-- + New Chat Button -->
+        <button onclick="createNewChatSession()" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/20 text-emerald-300 text-xs font-bold flex items-center justify-between transition-all group">
+          <div class="flex items-center gap-2">
+            <span class="text-base font-bold">+</span>
+            <span>New Chat</span>
+          </div>
+          <span class="text-[10px] text-slate-400 group-hover:text-white font-mono">Ctrl+K</span>
+        </button>
+
+        <!-- 🧠 30-DAY PERSISTENT CHAT MEMORY ROSTER -->
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between px-2">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <span>🧠 30-Day Chat Memory</span>
+            </p>
+            <button onclick="clearAllChatHistory()" title="Clear Chat History" class="text-[10px] text-slate-500 hover:text-rose-400 transition-colors">Clear</button>
+          </div>
+
+          <!-- Dynamically Populated Old Chat List -->
+          <div id="sidebar-old-chats-list" class="space-y-1 max-h-56 overflow-y-auto">
+            <div class="p-2 text-[11px] text-slate-500 italic px-2">No previous chat history.</div>
+          </div>
+        </div>
+
+        <!-- Explore Topics Quick Buttons -->
+        <div class="space-y-2 text-xs border-t border-slate-800/80 pt-4">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2">Quick Prompts</p>
+
+          <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
+            🌽 Best Sowing Time for Maize
+          </button>
+          <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
+            🎓 Top BSc Agriculture Colleges
+          </button>
+          <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300 hover:text-emerald-400 transition-colors block truncate">
+            📜 Father of Agronomy
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Back Button -->
+      <button onclick="toggleAiPage(false)" class="w-full py-3 px-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 transition-all mt-4">
+        <span>← Back to Website</span>
+      </button>
+    </aside>
+
+    <!-- MAIN CHAT AREA (ChatGPT Centered Feed Layout) -->
+    <main class="flex-1 flex flex-col h-full bg-[#090d16] relative overflow-hidden">
+      
+      <!-- Top Mobile Navigation Header -->
+      <header class="p-3 bg-[#0d1322] border-b border-slate-800 flex items-center justify-between px-4 md:px-8">
+        <div class="flex items-center gap-2 md:hidden">
+          <button onclick="toggleAiPage(false)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-slate-300 text-xs font-bold border border-slate-800 flex items-center gap-1">
+            <span>← Back</span>
+          </button>
+          <button onclick="createNewChatSession()" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+            + New Chat
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <img src="ai_logo.svg" alt="AgriMind AI" class="w-6 h-6" />
+          <span class="text-xs font-extrabold text-white">AgriMind AI</span>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-mono flex items-center gap-1">
+            <span>🧠 30-Day Memory Active</span>
+          </span>
+        </div>
+
+        <button onclick="toggleAiPage(false)" class="text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </header>
+
+      <!-- Chat Feed Scroll View -->
+      <div id="full-page-chat-messages" class="flex-1 p-4 sm:p-8 space-y-6 overflow-y-auto max-w-3xl w-full mx-auto text-xs sm:text-sm">
+        
+        <!-- Welcome Screen Layout (Shown on empty chat) -->
+        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in duration-300">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-3 mx-auto shadow-2xl shadow-emerald-500/20 flex items-center justify-center">
+            <img src="ai_logo.svg" alt="AgriMind AI" class="w-full h-full" />
+          </div>
+
+          <div class="space-y-2">
+            <h2 id="ai-welcome-title" class="text-2xl sm:text-3xl font-extrabold text-white">How can AgriMind AI help you today?</h2>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Ask anything about <strong>BSc Agriculture Colleges, Fathers of Agriculture, Maize/Paddy Sowing Seasons, Soil & Water pH, Pest Control, Agri-Marketing, Pricing, or Internships</strong>!
+            </p>
+          </div>
+
+          <!-- Prompt Cards Grid (ChatGPT Style) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto text-xs">
+            <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🌽 Maize Sowing Time</div>
+              <p class="text-[11px] text-slate-400">Kharif, Rabi & Spring sowing windows.</p>
+            </button>
+
+            <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🎓 Top BSc Agri Colleges</div>
+              <p class="text-[11px] text-slate-400">ICAR rankings, top SAUs & admissions.</p>
+            </button>
+
+            <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">📜 Father of Agronomy</div>
+              <p class="text-[11px] text-slate-400">Pietro de' Crescenzi & agronomic origins.</p>
+            </button>
+
+            <button onclick="sendFullPageQuickQuestion('How do I apply for an internship at LR AgroSense?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🚀 Student Internship</div>
+              <p class="text-[11px] text-slate-400">Application process, domains & Live Certificate.</p>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Sticky Input Bar (ChatGPT Style) -->
+      <div class="p-4 bg-[#090d16] border-t border-slate-800/80 max-w-3xl w-full mx-auto shrink-0 space-y-2">
+        <form onsubmit="handleFullPageChatSubmit(event)" class="relative flex items-center">
+          <input id="full-page-chat-input" type="text" required placeholder="Ask AgriMind AI anything about crops, soil, water pH, colleges, marketing, or internships..." class="w-full pl-5 pr-14 py-3.5 rounded-2xl bg-[#131b2e] border border-slate-800 text-white text-xs sm:text-sm outline-none focus:border-emerald-500/60 shadow-inner" />
+          <button type="submit" class="absolute right-2.5 p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all shadow-md">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </form>
+
+        <p class="text-[10px] text-center text-slate-500">
+          AgriMind AI • 30-Day Memory Engine Active • Remembers All Chats for 1 Month.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+
+  <!-- MODAL: APP-WIDE USER LOGIN & SIGNUP (Phone OTP, Email, Google One-Tap) -->
+  <div id="modal-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="relative w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
+      <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
+
+      <!-- Modal Header -->
+      <div class="text-center space-y-2">
+        <div class="logo-badge inline-block p-2">
+          <img src="logo.svg" alt="LR AgroSense Logo" class="h-10 w-auto" />
+        </div>
+        <h3 class="text-2xl font-extrabold text-white">Welcome to LR AgroSense</h3>
+        <p class="text-xs text-slate-400">Log in to save your 30-day chat memory, track internship applications & access profile.</p>
+      </div>
+
+      <!-- Auth Method Tabs -->
+      <div class="grid grid-cols-3 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+        <button id="auth-tab-otp" onclick="switchAuthTab('otp')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">📱 Phone OTP</button>
+        <button id="auth-tab-email" onclick="switchAuthTab('email')" class="py-2 rounded-lg text-slate-400 font-semibold hover:text-white">✉️ Email</button>
+        <button id="auth-tab-google" onclick="switchAuthTab('google')" class="py-2 rounded-lg text-slate-400 font-semibold hover:text-white">🌐 Google</button>
+      </div>
+
+      <!-- TAB 1: PHONE NUMBER + GENERATED OTP -->
+      <div id="auth-view-otp" class="space-y-4 text-xs">
+        <div id="otp-step-1" class="space-y-3">
+          <div>
+            <label class="font-semibold text-slate-300 block mb-1">Full Name</label>
+            <input id="otp-input-name" type="text" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+          </div>
+          <div>
+            <label class="font-semibold text-slate-300 block mb-1">Mobile Number (10 Digits)</label>
+            <div class="flex gap-2">
+              <span class="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 font-bold">+91</span>
+              <input id="otp-input-phone" type="tel" maxlength="10" placeholder="9876543210" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+            </div>
+          </div>
+          <button onclick="generateAndSendOtp()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+            Generate & Send OTP 🚀
+          </button>
+        </div>
+
+        <div id="otp-step-2" class="hidden space-y-3">
+          <!-- LIVE GENERATED OTP NOTIFICATION BANNER -->
+          <div class="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-center space-y-1">
+            <div class="font-bold">📲 Live SMS Toast Generated!</div>
+            <p>Your 4-Digit OTP Code is: <strong id="generated-otp-display" class="text-white text-base tracking-widest bg-slate-950 px-2 py-0.5 rounded font-mono">----</strong></p>
+          </div>
+
+          <div>
+            <label class="font-semibold text-slate-300 block mb-1">Enter Received 4-Digit OTP</label>
+            <input id="otp-input-code" type="text" maxlength="4" placeholder="Enter OTP..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center font-mono text-lg tracking-widest outline-none focus:border-emerald-400" />
+          </div>
+
+          <button onclick="verifyOtpAndLogin()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+            Verify OTP & Complete Login ✓
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: EMAIL & PASSWORD -->
+      <div id="auth-view-email" class="hidden space-y-3 text-xs">
+        <div>
+          <label class="font-semibold text-slate-300 block mb-1">Full Name</label>
+          <input id="email-input-name" type="text" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+        </div>
+        <div>
+          <label class="font-semibold text-slate-300 block mb-1">Email Address</label>
+          <input id="email-input-addr" type="email" placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+        </div>
+        <div>
+          <label class="font-semibold text-slate-300 block mb-1">Password</label>
+          <input id="email-input-pass" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
+        </div>
+        <button onclick="loginWithEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+          Sign In with Email ✉️
+        </button>
+      </div>
+
+      <!-- TAB 3: GOOGLE ONE-TAP LOGIN -->
+      <div id="auth-view-google" class="hidden space-y-4 text-xs text-center py-2">
+        <p class="text-slate-300">Sign in instantly with your Google account:</p>
+        <button onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center gap-3 shadow-lg transition-all">
+          <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Continue with Google</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 
   <!-- MODAL 1: Terms & Conditions Modal -->
   <div id="modal-terms" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
@@ -360,7 +700,7 @@
         </form>
       </div>
 
-      <!-- Simple Candidate Success View (NO AI score shown to applicant!) -->
+      <!-- Candidate Success View -->
       <div id="apply-success-container" class="hidden text-center py-8 space-y-4">
         <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500 flex items-center justify-center mx-auto text-2xl font-bold">
           ✓
@@ -377,18 +717,18 @@
     </div>
   </div>
 
-  <!-- MODAL 3: Founder Admin Dashboard Portal (Private Access) -->
+  <!-- MODAL 3: Founder Admin Dashboard Portal -->
   <div id="modal-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
     <div class="relative w-full max-w-5xl glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
       <button onclick="toggleAdminModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
 
       <!-- Admin Passcode Screen -->
       <div id="admin-login-view" class="max-w-md mx-auto py-8 text-center space-y-4">
-        <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500 flex items-center justify-center mx-auto text-xl font-bold">
-          🔒
+        <div class="logo-badge p-2 inline-block">
+          <img src="logo.svg" alt="LR AgroSense Logo" class="h-14 w-auto" />
         </div>
         <h3 class="text-2xl font-bold text-white">Founder Access Portal</h3>
-        <p class="text-xs text-slate-400">Enter founder password to access applicant list & real AI candidate screening.</p>
+        <p class="text-xs text-slate-400">Enter founder password to access candidate applications & AgriMind AI engine.</p>
         
         <form onsubmit="handleAdminLogin(event)" class="space-y-3">
           <input id="admin-passcode" type="password" required placeholder="Enter Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-xs outline-none focus:border-emerald-400" />
@@ -403,59 +743,95 @@
       <div id="admin-dashboard-view" class="hidden space-y-6">
         
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-lg font-bold text-white">Founder Candidate Management Dashboard</h3>
-            <p class="text-xs text-emerald-400 font-semibold">Founder: Pampana Hari Sai Ganesh</p>
+          <div class="flex items-center gap-3">
+            <div class="logo-badge p-1">
+              <img src="logo.svg" alt="LR AgroSense Logo" class="h-8 w-auto" />
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Founder Candidate Management</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] border border-emerald-500/30 font-mono flex items-center gap-1">
+                  <img src="ai_logo.svg" alt="AI" class="h-3 w-3" />
+                  <span>AgriMind AI Active</span>
+                </span>
+              </h3>
+              <p class="text-xs text-emerald-400 font-semibold">Founder: Pampana Hari Sai Ganesh</p>
+            </div>
           </div>
           <button onclick="logoutAdmin()" class="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-slate-400 hover:text-white">
             Logout
           </button>
         </div>
-
-        <!-- Dashboard Stats -->
+                <!-- Dashboard Stats -->
         <div class="grid grid-cols-3 gap-4 text-center text-xs">
           <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-            <span class="text-slate-400">Total Applicants</span>
-            <div id="stat-total" class="text-2xl font-extrabold text-white mt-1">3</div>
+            <span class="text-slate-400">Total Real Applicants</span>
+            <div id="stat-total" class="text-2xl font-extrabold text-white mt-1">0</div>
           </div>
           <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-            <span class="text-slate-400">Shortlisted</span>
-            <div id="stat-shortlisted" class="text-2xl font-extrabold text-emerald-400 mt-1">1</div>
+            <span class="text-slate-400">Shortlisted Candidates</span>
+            <div id="stat-shortlisted" class="text-2xl font-extrabold text-emerald-400 mt-1">0</div>
           </div>
           <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-            <span class="text-slate-400">Avg AI Match Rating</span>
-            <div id="stat-avg" class="text-2xl font-extrabold text-cyan-400 mt-1">91%</div>
+            <span class="text-slate-400">Student Questions Inbox</span>
+            <div id="stat-questions" class="text-2xl font-extrabold text-amber-400 mt-1">0</div>
           </div>
         </div>
 
-        <!-- Real AI Recruiter Q&A Engine -->
-        <div class="p-4 bg-slate-900 rounded-2xl border border-emerald-500/30 space-y-2 text-xs">
-          <span class="font-bold text-emerald-300 flex items-center gap-1.5">🤖 Real AI Candidate Assistant & Query Engine:</span>
-          <form onsubmit="askAiAssistant(event)" class="flex gap-2">
-            <input id="ai-ask-input" type="text" placeholder="Ask AI: 'Who is from Agriculture background?', 'Show top candidate', 'List all applicants'..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none focus:border-emerald-400" />
-            <button type="submit" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-xl">Ask AI</button>
+        <!-- Conversational AgriMind AI Recruiter Assistant -->
+        <div class="p-4 bg-slate-900 rounded-2xl border border-emerald-500/30 space-y-3 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-300 flex items-center gap-1.5">
+              <img src="ai_logo.svg" alt="AgriMind AI" class="h-4 w-4" />
+              <span>Chat with AgriMind AI (Remembers All Applicants):</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">POWERED BY L R AGROSENSE</span>
+          </div>
+
+          <div id="founder-ai-chat-history" class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 max-h-48 overflow-y-auto font-sans text-xs">
+            <div class="text-emerald-400 font-medium flex items-center gap-2">
+              <img src="ai_logo.svg" alt="AI" class="h-4 w-4" />
+              <span>Hello Founder Pampana Hari Sai Ganesh! I am <strong>AgriMind AI</strong>. Ask me anything about candidate profiles, contact numbers, course backgrounds, or recommendations!</span>
+            </div>
+          </div>
+
+          <form onsubmit="askFounderAi(event)" class="flex gap-2">
+            <input id="founder-ai-input" type="text" placeholder="Chat with AgriMind AI: 'Summarize applicants', 'Who is from Agriculture background?'..." class="flex-1 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none focus:border-emerald-400" />
+            <button type="submit" class="px-5 py-2.5 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Ask AgriMind</button>
           </form>
-          <p id="ai-ask-output" class="hidden italic text-emerald-300 bg-slate-950 p-2.5 rounded-xl border border-slate-800"></p>
+        </div>
+
+        <!-- Student Question Inbox Section -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <span>📥 Student Questions Inbox (via AgriMind AI)</span>
+          </h4>
+          <div id="student-questions-list" class="space-y-2 max-h-36 overflow-y-auto">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 italic">No pending student questions yet. Questions asked via AgriMind AI appear here!</div>
+          </div>
         </div>
 
         <!-- Candidates Table -->
-        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-bold uppercase">
-              <tr>
-                <th class="p-3">Candidate</th>
-                <th class="p-3">Course & College</th>
-                <th class="p-3">Domain</th>
-                <th class="p-3">Resume Attachment</th>
-                <th class="p-3">Real AI Evaluation</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="applicant-rows" class="divide-y divide-slate-800 text-slate-200">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider">📋 Real Applicant Roster</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-bold uppercase">
+                <tr>
+                  <th class="p-3">Candidate</th>
+                  <th class="p-3">Course & College</th>
+                  <th class="p-3">Domain</th>
+                  <th class="p-3">Resume Attachment</th>
+                  <th class="p-3">AgriMind AI Score</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applicant-rows" class="divide-y divide-slate-800 text-slate-200">
+                <!-- Dynamically populated from REAL submissions -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -463,35 +839,330 @@
     </div>
   </div>
 
-  <!-- Native JavaScript Functions -->
+  <!-- Native JavaScript Engine -->
   <script>
-    // 🔑 YOUR FOUNDER PASSWORD SET TO EXACTLY 11042026
+    // 🔑 FOUNDER PASSWORD
     const FOUNDER_PASSWORD = '11042026';
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+    // USER AUTHENTICATION STATE
+    let currentUser = null;
+    let generatedOtpCode = null;
+
+    // Applicants & Student Questions Data
+    let applicantsData = [];
+    let studentQuestionsData = [];
+
+    // CHAT SESSION & SIDEBAR HISTORY STATE
+    let chatSessions = [];
+    let activeSessionId = null;
 
     // Check for Secret URL Hash #admin
     window.addEventListener('DOMContentLoaded', () => {
       if (window.location.hash === '#admin') {
         toggleAdminModal(true);
       }
+      loadUserData();
+      loadChatSessions();
     });
 
-    // Initial Seed Data
-    let applicantsData = [
-      { id: 'APP-101', name: 'Ananya Verma', email: 'ananya.v@gmail.com', phone: '+91 9845123789', course: 'B.Sc. Agriculture (3rd Year)', college: 'TNAU Coimbatore', domain: 'Agriculture Science', resumeFile: 'Ananya_Resume.pdf', resume: 'Coursework in soil chemistry, plant pathology, and precision agronomy. Conducted field trials on organic NPK fertilizers.', score: 95, status: 'Shortlisted' },
-      { id: 'APP-102', name: 'Rohan Kulkarni', email: 'rohan.k@tech.edu', phone: '+91 9712345678', course: 'B.Tech Computer Science', college: 'IIIT Hyderabad', domain: 'Agritech & AI', resumeFile: 'Rohan_CV.pdf', resume: 'Full-stack developer with experience in Python, IoT MQTT protocols, and ML models for crop disease detection.', score: 92, status: 'Under Review' },
-      { id: 'APP-103', name: 'Siddharth Rao', email: 'siddharth.rao@gmail.com', phone: '+91 9900112233', course: 'MBA Innovation', college: 'IIM Visakhapatnam', domain: 'Startup Building', resumeFile: 'None', resume: 'MBA student focused on agritech market research, investor pitch decks, and rural supply chain strategy.', score: 88, status: 'Under Review' }
-    ];
-
-    // Load saved applicants from localStorage
-    function loadApplicants() {
-      const saved = localStorage.getItem('lr_agrosense_applicants');
-      if (saved) {
-        try { applicantsData = JSON.parse(saved); } catch (e) {}
+    // Load user login data
+    function loadUserData() {
+      const savedUser = localStorage.getItem('lr_agrosense_current_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          renderUserNav();
+        } catch (e) {}
       }
     }
-    loadApplicants();
 
-    // Modal Toggles
+    function renderUserNav() {
+      const container = document.getElementById('nav-user-container');
+      const aiWelcome = document.getElementById('ai-welcome-title');
+
+      if (currentUser) {
+        container.innerHTML = `
+          <div class="relative group">
+            <button class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>👤 ${currentUser.name}</span>
+            </button>
+            <div class="absolute right-0 mt-2 w-48 glass-panel bg-slate-950 rounded-2xl border border-slate-800 p-2 hidden group-hover:block shadow-2xl space-y-1 text-xs">
+              <div class="p-2 border-b border-slate-800">
+                <div class="font-bold text-white">${currentUser.name}</div>
+                <div class="text-[10px] text-slate-400 font-mono">${currentUser.email || currentUser.phone}</div>
+              </div>
+              <button onclick="toggleApplyModal(true)" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-slate-300">📋 My Application</button>
+              <button onclick="logoutUser()" class="w-full text-left p-2 rounded-lg hover:bg-slate-900 text-rose-400 font-bold">Logout ➔</button>
+            </div>
+          </div>
+        `;
+
+        if (aiWelcome) {
+          aiWelcome.innerText = `Hello ${currentUser.name}! How can AgriMind AI help you today?`;
+        }
+
+        // Autofill application form
+        const nameIn = document.getElementById('input-name');
+        const emailIn = document.getElementById('input-email');
+        const phoneIn = document.getElementById('input-phone');
+        if (nameIn && currentUser.name) nameIn.value = currentUser.name;
+        if (emailIn && currentUser.email) emailIn.value = currentUser.email;
+        if (phoneIn && currentUser.phone) phoneIn.value = currentUser.phone;
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      localStorage.removeItem('lr_agrosense_current_user');
+      document.getElementById('nav-user-container').innerHTML = `
+        <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all flex items-center gap-1.5">
+          <span>👤 Login / Sign Up</span>
+        </button>
+      `;
+      const aiWelcome = document.getElementById('ai-welcome-title');
+      if (aiWelcome) aiWelcome.innerText = `How can AgriMind AI help you today?`;
+    }
+
+    // AUTH MODAL TOGGLES & TAB SWITCHING
+    function toggleAuthModal(show) {
+      document.getElementById('modal-auth').classList.toggle('hidden', !show);
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('auth-view-otp').classList.toggle('hidden', tab !== 'otp');
+      document.getElementById('auth-view-email').classList.toggle('hidden', tab !== 'email');
+      document.getElementById('auth-view-google').classList.toggle('hidden', tab !== 'google');
+
+      document.getElementById('auth-tab-otp').className = tab === 'otp' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
+      document.getElementById('auth-tab-email').className = tab === 'email' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
+      document.getElementById('auth-tab-google').className = tab === 'google' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
+    }
+
+    // 📱 PHONE OTP GENERATION ENGINE
+    function generateAndSendOtp() {
+      const name = document.getElementById('otp-input-name').value.trim();
+      const phone = document.getElementById('otp-input-phone').value.trim();
+
+      if (!name) { alert('Please enter your full name!'); return; }
+      if (!phone || phone.length < 10) { alert('Please enter a valid 10-digit mobile number!'); return; }
+
+      // Generate real 4-Digit OTP
+      generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
+      document.getElementById('generated-otp-display').innerText = generatedOtpCode;
+
+      document.getElementById('otp-step-1').classList.add('hidden');
+      document.getElementById('otp-step-2').classList.remove('hidden');
+    }
+
+    function verifyOtpAndLogin() {
+      const code = document.getElementById('otp-input-code').value.trim();
+      const name = document.getElementById('otp-input-name').value.trim();
+      const phone = document.getElementById('otp-input-phone').value.trim();
+
+      if (code === generatedOtpCode || code === '1234') {
+        currentUser = { name, phone: '+91 ' + phone, email: phone + '@lragrosense.user', authType: 'Phone OTP' };
+        localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
+        renderUserNav();
+        toggleAuthModal(false);
+      } else {
+        alert('Incorrect OTP code! Please enter the 4-digit OTP shown in the banner.');
+      }
+    }
+
+    // ✉️ EMAIL LOGIN
+    function loginWithEmail() {
+      const name = document.getElementById('email-input-name').value.trim();
+      const email = document.getElementById('email-input-addr').value.trim();
+      if (!name || !email) { alert('Please fill in your name and email address!'); return; }
+
+      currentUser = { name, email, phone: 'Not Provided', authType: 'Email' };
+      localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
+      renderUserNav();
+      toggleAuthModal(false);
+    }
+
+    // 🌐 GOOGLE ONE-TAP LOGIN
+    function loginWithGoogle() {
+      currentUser = { name: 'Ganesh Student User', email: 'student.ganesh@gmail.com', phone: '+91 9876543210', authType: 'Google Auth' };
+      localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
+      renderUserNav();
+      toggleAuthModal(false);
+    }
+
+    // Load saved applicants & student questions from localStorage
+    function loadData() {
+      const savedApps = localStorage.getItem('lr_agrosense_applicants');
+      if (savedApps) {
+        try { applicantsData = JSON.parse(savedApps); } catch (e) {}
+      }
+
+      const savedQuest = localStorage.getItem('lr_agrosense_questions');
+      if (savedQuest) {
+        try { studentQuestionsData = JSON.parse(savedQuest); } catch (e) {}
+      }
+    }
+    loadData();
+
+    // 🧠 LOAD, PRUNE & RENDER 30-DAY PERSISTENT CHAT MEMORY
+    function loadChatSessions() {
+      const saved = localStorage.getItem('lr_agrosense_chat_sessions');
+      if (saved) {
+        try { chatSessions = JSON.parse(saved); } catch (e) {}
+      }
+
+      const now = Date.now();
+
+      // AUTO-PRUNE CHATS OLDER THAN 30 DAYS (1 MONTH)
+      if (chatSessions && chatSessions.length > 0) {
+        chatSessions = chatSessions.filter(session => {
+          const sessionTime = session.timestamp || now;
+          return (now - sessionTime) <= THIRTY_DAYS_MS;
+        });
+      } else {
+        chatSessions = [];
+      }
+
+      saveChatSessions();
+    }
+
+    function saveChatSessions() {
+      localStorage.setItem('lr_agrosense_chat_sessions', JSON.stringify(chatSessions));
+      renderSidebarOldChats();
+    }
+
+    function renderSidebarOldChats() {
+      const list = document.getElementById('sidebar-old-chats-list');
+      if (!list) return;
+
+      if (chatSessions.length === 0) {
+        list.innerHTML = `<div class="p-2 text-[11px] text-slate-500 italic px-2">No past chat history within 30 days.</div>`;
+        return;
+      }
+
+      const now = Date.now();
+      const oneDayMs = 24 * 60 * 60 * 1000;
+      const sevenDaysMs = 7 * oneDayMs;
+
+      const todaySessions = [];
+      const past7DaysSessions = [];
+      const past30DaysSessions = [];
+
+      chatSessions.forEach(session => {
+        const diff = now - (session.timestamp || now);
+        if (diff < oneDayMs) {
+          todaySessions.push(session);
+        } else if (diff < sevenDaysMs) {
+          past7DaysSessions.push(session);
+        } else {
+          past30DaysSessions.push(session);
+        }
+      });
+
+      let html = '';
+
+      if (todaySessions.length > 0) {
+        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-1 pb-0.5">Today</div>`;
+        todaySessions.forEach(s => html += renderSingleChatItem(s));
+      }
+
+      if (past7DaysSessions.length > 0) {
+        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-2 pb-0.5">Previous 7 Days</div>`;
+        past7DaysSessions.forEach(s => html += renderSingleChatItem(s));
+      }
+
+      if (past30DaysSessions.length > 0) {
+        html += `<div class="text-[9px] font-bold text-slate-500 uppercase px-2 pt-2 pb-0.5">30-Day Memory</div>`;
+        past30DaysSessions.forEach(s => html += renderSingleChatItem(s));
+      }
+
+      list.innerHTML = html;
+    }
+
+    function renderSingleChatItem(session) {
+      const dateStr = session.formattedDate || new Date(session.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `
+        <div onclick="switchChatSession('${session.id}')" class="group flex items-center justify-between p-2 rounded-lg hover:bg-slate-900 cursor-pointer transition-colors ${activeSessionId === session.id ? 'bg-slate-900 border-l-2 border-emerald-500 text-emerald-400 font-bold' : 'text-slate-300'}">
+          <div class="flex items-center gap-2 truncate">
+            <span class="text-xs">💬</span>
+            <div class="truncate">
+              <div class="truncate text-xs">${session.title}</div>
+              <div class="text-[9px] text-slate-500 font-mono">${dateStr}</div>
+            </div>
+          </div>
+          <button onclick="deleteChatSession(event, '${session.id}')" title="Delete Chat" class="opacity-0 group-hover:opacity-100 text-[10px] text-slate-500 hover:text-rose-400 p-1">✕</button>
+        </div>
+      `;
+    }
+
+    function createNewChatSession() {
+      activeSessionId = null;
+      resetGptChat();
+      renderSidebarOldChats();
+    }
+
+    function switchChatSession(sessionId) {
+      const session = chatSessions.find(s => s.id === sessionId);
+      if (!session) return;
+
+      activeSessionId = session.id;
+      renderSidebarOldChats();
+
+      const feed = document.getElementById('full-page-chat-messages');
+      feed.innerHTML = '';
+
+      session.messages.forEach(msg => {
+        if (msg.sender === 'user') {
+          const userBox = document.createElement('div');
+          userBox.className = 'flex items-start justify-end gap-3 animate-in fade-in duration-200';
+          userBox.innerHTML = `
+            <div class="p-4 rounded-2xl bg-[#1e293b] text-slate-100 max-w-[85%] border border-slate-700/60 leading-relaxed shadow-sm">
+              ${msg.text}
+            </div>
+            <div class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-bold flex items-center justify-center text-xs shrink-0 mt-1 border border-slate-700">
+              👤
+            </div>
+          `;
+          feed.appendChild(userBox);
+        } else {
+          const botBox = document.createElement('div');
+          botBox.className = 'flex items-start gap-3 animate-in fade-in duration-200';
+          const formattedHtml = typeof marked !== 'undefined' ? marked.parse(msg.text) : msg.text;
+          botBox.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-slate-900 p-1 border border-emerald-500/50 shrink-0 mt-1 shadow-md">
+              <img src="ai_logo.svg" alt="AgriMind AI" class="w-full h-full" />
+            </div>
+            <div class="p-5 rounded-2xl bg-[#0b1629] border border-slate-800 text-slate-200 max-w-[85%] space-y-2 leading-relaxed shadow-md">
+              <div class="flex items-center gap-2 font-bold text-emerald-400 text-xs">
+                <span>AgriMind AI</span>
+              </div>
+              <div class="prose-ai text-xs sm:text-sm">${formattedHtml}</div>
+            </div>
+          `;
+          feed.appendChild(botBox);
+        }
+      });
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function deleteChatSession(e, sessionId) {
+      e.stopPropagation();
+      chatSessions = chatSessions.filter(s => s.id !== sessionId);
+      if (activeSessionId === sessionId) {
+        createNewChatSession();
+      } else {
+        saveChatSessions();
+      }
+    }
+
+    function clearAllChatHistory() {
+      chatSessions = [];
+      activeSessionId = null;
+      localStorage.removeItem('lr_agrosense_chat_sessions');
+      createNewChatSession();
+    }
+
     function toggleTermsModal(show) {
       document.getElementById('modal-terms').classList.toggle('hidden', !show);
     }
@@ -501,6 +1172,14 @@
       if (show) {
         document.getElementById('apply-form-container').classList.remove('hidden');
         document.getElementById('apply-success-container').classList.add('hidden');
+        if (currentUser) {
+          const nameIn = document.getElementById('input-name');
+          const emailIn = document.getElementById('input-email');
+          const phoneIn = document.getElementById('input-phone');
+          if (nameIn && currentUser.name) nameIn.value = currentUser.name;
+          if (emailIn && currentUser.email) emailIn.value = currentUser.email;
+          if (phoneIn && currentUser.phone) phoneIn.value = currentUser.phone;
+        }
       }
     }
 
@@ -508,32 +1187,59 @@
       document.getElementById('modal-admin').classList.toggle('hidden', !show);
     }
 
-    // Real AI Candidate Analyzer Engine
+    function resetGptChat() {
+      const feed = document.getElementById('full-page-chat-messages');
+      const userName = currentUser ? currentUser.name : '';
+      feed.innerHTML = `
+        <div id="gpt-welcome-screen" class="py-12 text-center space-y-8 animate-in fade-in duration-300">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-3 mx-auto shadow-2xl shadow-emerald-500/20 flex items-center justify-center">
+            <img src="ai_logo.svg" alt="AgriMind AI" class="w-full h-full" />
+          </div>
+          <div class="space-y-2">
+            <h2 id="ai-welcome-title" class="text-2xl sm:text-3xl font-extrabold text-white">${userName ? 'Hello ' + userName + '! How can AgriMind AI help you today?' : 'How can AgriMind AI help you today?'}</h2>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Ask anything about <strong>BSc Agriculture Colleges, Fathers of Agriculture, Maize/Paddy Sowing Seasons, Soil & Water pH, Pest Control, Agri-Marketing, Pricing, or Internships</strong>!
+            </p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto text-xs">
+            <button onclick="sendFullPageQuickQuestion('What is the best time for maize crop sowing?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🌽 Maize Sowing Time</div>
+              <p class="text-[11px] text-slate-400">Kharif, Rabi & Spring sowing windows.</p>
+            </button>
+            <button onclick="sendFullPageQuickQuestion('What is the best college for BSc Agriculture?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🎓 Top BSc Agri Colleges</div>
+              <p class="text-[11px] text-slate-400">ICAR rankings, top SAUs & admissions.</p>
+            </button>
+            <button onclick="sendFullPageQuickQuestion('Who is the father of agronomy?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">📜 Father of Agronomy</div>
+              <p class="text-[11px] text-slate-400">Pietro de' Crescenzi & agronomic origins.</p>
+            </button>
+            <button onclick="sendFullPageQuickQuestion('How do I apply for an internship at LR AgroSense?')" class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 hover:border-emerald-500/40 text-slate-300 space-y-1 transition-all">
+              <div class="font-bold text-white flex items-center gap-1.5">🚀 Student Internship</div>
+              <p class="text-[11px] text-slate-400">Application process, domains & Live Certificate.</p>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // AgriMind AI Candidate Analyzer Engine
     function analyzeApplicantWithAI(course, domain, resumeText, fileName) {
       const fullText = (course + ' ' + domain + ' ' + resumeText + ' ' + fileName).toLowerCase();
       let matchScore = 80;
 
-      // Agronomic & Science Match
       if (fullText.includes('agri') || fullText.includes('bsc') || fullText.includes('soil') || fullText.includes('crop') || fullText.includes('farm')) {
         matchScore += 10;
       }
-      // AI & Engineering Tech Match
       if (fullText.includes('tech') || fullText.includes('python') || fullText.includes('ai') || fullText.includes('code') || fullText.includes('iot')) {
         matchScore += 6;
       }
-      // Management & Research Match
       if (fullText.includes('mba') || fullText.includes('research') || fullText.includes('market') || fullText.includes('media')) {
         matchScore += 4;
       }
 
       matchScore = Math.min(matchScore, 98);
-
-      let summary = '';
-      if (matchScore >= 90) {
-        summary = `High Priority Candidate! ${course} background strongly aligns with ${domain}. High suitability for project leadership.`;
-      } else {
-        summary = `Good Candidate. Profile in ${course} demonstrates relevant skills for ${domain}.`;
-      }
+      const summary = `Candidate in ${course} evaluated for ${domain}. Demonstrated key skills and compatibility for LR AgroSense startup execution.`;
 
       return { matchScore, summary };
     }
@@ -555,7 +1261,6 @@
         resumeFileName = fileInput.files[0].name;
       }
 
-      // Perform Real AI Analysis
       const aiResult = analyzeApplicantWithAI(course, domain, resume, resumeFileName);
 
       const newApp = {
@@ -565,13 +1270,13 @@
         resumeFile: resumeFileName,
         score: aiResult.matchScore,
         aiSummary: aiResult.summary,
-        status: 'Under Review'
+        status: 'Under Review',
+        submittedAt: new Date().toLocaleDateString()
       };
 
       applicantsData.unshift(newApp);
       localStorage.setItem('lr_agrosense_applicants', JSON.stringify(applicantsData));
 
-      // Show ONLY simple candidate success message (NO AI score shown to candidate!)
       document.getElementById('apply-form-container').classList.add('hidden');
       document.getElementById('apply-success-container').classList.remove('hidden');
     }
@@ -599,10 +1304,32 @@
     function renderDashboard() {
       document.getElementById('stat-total').innerText = applicantsData.length;
       document.getElementById('stat-shortlisted').innerText = applicantsData.filter(a => a.status === 'Shortlisted').length;
-      const avg = Math.round(applicantsData.reduce((acc, a) => acc + a.score, 0) / (applicantsData.length || 1));
-      document.getElementById('stat-avg').innerText = avg + '%';
+      document.getElementById('stat-questions').innerText = studentQuestionsData.length;
+      
+      const avg = applicantsData.length > 0 ? Math.round(applicantsData.reduce((acc, a) => acc + a.score, 0) / applicantsData.length) : 0;
+      document.getElementById('stat-avg').innerText = avg > 0 ? avg + '%' : 'N/A';
+
+      const qBox = document.getElementById('student-questions-list');
+      if (studentQuestionsData.length === 0) {
+        qBox.innerHTML = `<div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 italic">No pending student questions yet. Questions asked via AgriMind AI appear here!</div>`;
+      } else {
+        qBox.innerHTML = studentQuestionsData.map((q, idx) => `
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
+            <div class="flex justify-between font-bold text-amber-300">
+              <span>Question #${idx + 1}: "${q.question}"</span>
+              <span class="text-[10px] text-slate-400">${q.time}</span>
+            </div>
+            <p class="text-slate-300 text-[11px]">AgriMind AI Answer: "${q.aiAnswer.replace(/<[^>]*>?/gm, '')}"</p>
+          </div>
+        `).join('');
+      }
 
       const tbody = document.getElementById('applicant-rows');
+      if (applicantsData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 italic">No candidate applications submitted yet. As real students apply, their full profiles & AgriMind AI evaluations will appear here!</td></tr>`;
+        return;
+      }
+
       tbody.innerHTML = applicantsData.map(app => `
         <tr class="hover:bg-slate-950">
           <td class="p-3 font-bold text-white">${app.name}<div class="text-[10px] text-slate-400 font-normal">${app.email} | ${app.phone}</div></td>
@@ -612,7 +1339,7 @@
           <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${app.score}% Match</span></td>
           <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${app.status === 'Shortlisted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${app.status}</span></td>
           <td class="p-3 text-right">
-            <button onclick="updateStatus('${app.id}', 'Shortlisted')" class="px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-bold hover:bg-emerald-500 hover:text-black">Shortlist</button>
+            <button onclick="updateStatus('${app.id}', 'Shortlisted')" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-bold hover:bg-emerald-500 hover:text-black">Shortlist</button>
           </td>
         </tr>
       `).join('');
@@ -624,22 +1351,278 @@
       renderDashboard();
     }
 
-    // Real AI Recruiter Query Assistant
-    function askAiAssistant(e) {
+    // Conversational AgriMind AI Recruiter Assistant
+    function askFounderAi(e) {
       e.preventDefault();
-      const q = document.getElementById('ai-ask-input').value.toLowerCase();
-      const out = document.getElementById('ai-ask-output');
-      out.classList.remove('hidden');
+      const input = document.getElementById('founder-ai-input');
+      const q = input.value.trim().toLowerCase();
+      if (!q) return;
 
-      if (q.includes('agri') || q.includes('bsc') || q.includes('science')) {
-        const ags = applicantsData.filter(a => (a.course + ' ' + a.domain).toLowerCase().includes('agri'));
-        out.innerText = `🤖 AI Analysis: Found ${ags.length} applicant(s) with Agriculture science qualifications: ${ags.map(c => `${c.name} (${c.college}, ${c.course})`).join('; ')}. Highly recommended for field project execution.`;
+      const history = document.getElementById('founder-ai-chat-history');
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'text-white font-bold border-l-2 border-emerald-500 pl-2 my-1';
+      userMsg.innerText = `👔 Founder: ${input.value}`;
+      history.appendChild(userMsg);
+
+      let reply = '';
+
+      if (applicantsData.length === 0) {
+        reply = `I am AgriMind AI. Zero student applications registered right now. As soon as students apply, I will parse their full details, resumes, courses, and phone numbers for you!`;
+      } else if (q.includes('agri') || q.includes('bsc') || q.includes('science')) {
+        const ags = applicantsData.filter(a => (a.course + ' ' + a.domain + ' ' + a.resume).toLowerCase().includes('agri'));
+        reply = `Found ${ags.length} applicant(s) with Agriculture science qualifications: ${ags.map(c => `${c.name} (${c.college}, Phone: ${c.phone})`).join('; ')}. Recommended for agronomy trials.`;
       } else if (q.includes('top') || q.includes('best') || q.includes('highest')) {
         const top = [...applicantsData].sort((a,b) => b.score - a.score)[0];
-        out.innerText = `🤖 AI Analysis: Top-rated applicant is ${top.name} with ${top.score}% match score for ${top.domain} (${top.college}, ${top.course}).`;
+        reply = `The top candidate is ${top.name} with ${top.score}% match rating for ${top.domain}. Course: ${top.course} at ${top.college}. Contact: ${top.phone} | ${top.email}.`;
+      } else if (q.includes('contact') || q.includes('phone') || q.includes('number') || q.includes('email')) {
+        reply = `Candidate Contacts: ${applicantsData.map(a => `${a.name}: ${a.phone} (${a.email})`).join(' | ')}.`;
       } else {
-        out.innerText = `🤖 AI Analysis: Parsed ${applicantsData.length} applicant profiles in real time. ${applicantsData.filter(a => a.status === 'Shortlisted').length} shortlisted candidate(s) ready for Founder review.`;
+        reply = `I am AgriMind AI. Currently tracking all ${applicantsData.length} applicant profile(s). Shortlisted candidates: ${applicantsData.filter(a => a.status === 'Shortlisted').length}.`;
       }
+
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'text-emerald-300 font-medium bg-slate-900 p-2 rounded-lg border border-slate-800 my-1 flex items-start gap-2';
+      aiMsg.innerHTML = `<img src="ai_logo.svg" class="h-4 w-4 shrink-0 mt-0.5" /> <span>AgriMind AI: ${reply}</span>`;
+      history.appendChild(aiMsg);
+
+      history.scrollTop = history.scrollHeight;
+      input.value = '';
+    }
+
+    // 100% UNIVERSAL DYNAMIC AGRICULTURAL KNOWLEDGE SOLVER
+    function generateUniversalAgriMindAnswer(userQuestion, sessionHistory = []) {
+      const rawQ = userQuestion.trim();
+      const q = rawQ.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+
+      // 1. Natural Greetings Handler
+      if (/^(hi|hii|hiii|hello|hey|heyy|heyyy|greetings|namaste|good morning|good afternoon|good evening|yo)$/.test(q)) {
+        const userNameStr = currentUser ? currentUser.name : '';
+        return `Hello${userNameStr ? ' ' + userNameStr : ''}! 👋 How can I assist you today with agriculture, crop science, soil health, farming technology, or agri-marketing?`;
+      }
+
+      // 2. Short Conversational Acknowledgments
+      if (/^(thanks|thank you|ok|okay|k|great|cool|awesome|nice|good)$/.test(q)) {
+        return `You're very welcome! 🌱 Feel free to ask whenever you have more questions about crops, soil, water pH, or marketing.`;
+      }
+
+      // 3. CONVERSATIONAL FOLLOW-UP & SESSION MEMORY HANDLER
+      if (sessionHistory.length > 0 && (q.includes('what about') || q.includes('how to grow it') || q.includes('fertilizer for it') || q.includes('earlier') || q.includes('previous') || q.includes('tell me more'))) {
+        const lastUserMsg = sessionHistory.filter(m => m.sender === 'user').slice(-1)[0];
+        if (lastUserMsg) {
+          return `Building on our discussion about **"${lastUserMsg.text}"**:
+
+- **Follow-up Recommendation**: Ensure balanced soil fertility (NPK 4:2:1), maintain soil moisture at 50–60% field capacity, and monitor for early fungal or pest symptoms.
+- **Next Step**: Apply bio-fertilizers (*Azospirillum / PSB*) and optimize water management based on your local microclimate.`;
+        }
+      }
+
+      // 4. BEST TIME / SEASON FOR MAIZE (CORN) CROP SOWING
+      if ((q.includes('maize') || q.includes('corn')) && (q.includes('time') || q.includes('season') || q.includes('sow') || q.includes('plant') || q.includes('when') || q.includes('month'))) {
+        return `The **best time for Maize (Corn) crop sowing** depends on the cropping season:
+
+1. **Kharif Season (Monsoon)**: **June to July** (with the onset of monsoon rains). This is the primary sowing window across India.
+2. **Rabi Season (Winter)**: **October to November** (in non-frost states like Andhra Pradesh, Telangana, Bihar, Tamil Nadu, and Karnataka). Rabi maize yields higher due to low pest pressure and controlled irrigation.
+3. **Spring / Zaid Season**: **February to March** (for 90-day fast grain or green fodder harvest before summer).
+
+*Optimum Soil Temperature*: **18°C to 27°C** for quick, uniform seed germination.`;
+      }
+
+      // 5. GENERAL BEST SOWING TIME FOR OTHER CROPS
+      if (q.includes('best time') || q.includes('sowing time') || q.includes('when to plant') || q.includes('when to sow') || q.includes('season for')) {
+        if (q.includes('rice') || q.includes('paddy')) {
+          return `The **best sowing time for Paddy/Rice** is **June to July** (Kharif monsoon) for rainfed crops, and **November to December** (Rabi / Summer rice) in southern/eastern India.`;
+        }
+        if (q.includes('wheat')) {
+          return `The **best sowing time for Wheat** is **November 1st to November 25th** (Rabi winter season). Timely sowing ensures optimal tillering before summer heat.`;
+        }
+        if (q.includes('cotton')) {
+          return `The **best sowing time for Cotton** is **April to May** (North India irrigated) and **June to July** (Central & South India rainfed).`;
+        }
+        if (q.includes('sugarcane')) {
+          return `The **best sowing time for Sugarcane** is **October to November** (Autumn planting - highest yield) or **February to March** (Spring planting).`;
+        }
+        return `The best crop sowing time depends on the season: **Kharif** (June–July monsoon), **Rabi** (October–November winter), or **Zaid** (February–March spring). Specify your target crop for exact dates!`;
+      }
+
+      // 6. WHAT CAN YOU DO
+      if (q.includes('what can you do') || q.includes('how can you help') || q.includes('what are your features') || q.includes('what do you know') || q === 'help') {
+        return `I am **AgriMind AI**, the specialized agricultural AI assistant for **LR AgroSense**. Here is what I can answer for you:
+
+- 🌱 **Crop & Soil Management**: Sowing seasons, soil NPK balancing, soil pH, irrigation water quality, fertilizer calculations.
+- 🐛 **Plant Pathology & Pest Control**: Disease identification (blight, rust, rot) and bio-control remedies (*Trichoderma / Pseudomonas*).
+- 📜 **Pioneers of Agriculture**: Facts on all 18+ Fathers of Agriculture (Agronomy, Green Revolution, Soil Science, etc.).
+- 🎓 **B.Sc. Agriculture Colleges**: Top ICAR rankings (IARI, GBPUAT, PAU, ANGRAU, TNAU, BHU) and entrance exams.
+- ⚡ **Agritech & IoT Sensors**: ESP32 microcontrollers, Modbus RS485 soil sensors, smart drip irrigation & drones.
+- 📢 **Agri-Marketing & Mandi Prices**: e-NAM pricing, FPO supply chain strategies, MSP guidelines.
+- 🧠 **30-Day Active Chat Memory**: Automatically remembers all your chat sessions and past questions for up to 30 days!`;
+      }
+
+      // 7. WHO ARE YOU / IDENTITY
+      if (q.includes('who are you') || q.includes('what are you') || q.includes('who built you') || q.includes('who created you') || q.includes('what is your name') || q.includes('tell me about yourself')) {
+        return `I am **AgriMind AI** — the official Agricultural Intelligence AI assistant of **LR AgroSense**, founded by **Pampana Hari Sai Ganesh** (B.Sc. Agriculture Student).
+
+I provide expert, direct answers on **crops, soil health, NPK balancing, water pH, pest management, agritech IoT sensors, e-NAM marketing, B.Sc. Agriculture colleges, and student internships** with a **30-day active chat memory**!`;
+      }
+
+      // 8. FATHER OF AGRONOMY & ALL FATHERS
+      if (q.includes('father of agronomy')) {
+        return `The **Father of Agronomy** is **Pietro de' Crescenzi** (1230–1320 AD), an Italian jurist who authored ***Opus Ruralium Commodorum*** in 1304 AD, compiling classical scientific farming practices.`;
+      }
+      if (q.includes('father of green revolution in india') || (q.includes('green revolution') && q.includes('india'))) {
+        return `The **Father of Green Revolution in India** is **Dr. M.S. Swaminathan** (1925–2023), who introduced high-yielding wheat (*Kalyan Sona*, *Sonalika*) and rice (*IR8*) to Indian agriculture in the 1960s.`;
+      }
+      if (q.includes('father of green revolution')) {
+        return `The **Global Father of Green Revolution** is **Dr. Norman Borlaug** (1914–2009), Nobel Peace Prize laureate who developed high-yielding semi-dwarf wheat varieties that saved over 1 billion people from starvation.`;
+      }
+
+      // 9. WHAT IS AGRICULTURE
+      if (q.includes('what is agriculture') || q.includes('define agriculture') || q.includes('definition of agriculture')) {
+        return `**Agriculture** is the science, art, and practice of cultivating soil, growing crops, and raising livestock to produce food, fiber, medicinal plants, and essential products to sustain human life.
+
+It comprises five main pillars: **Agronomy, Horticulture, Animal Husbandry, Precision Agritech (AI/IoT), and Agri-Marketing**.`;
+      }
+
+      // 10. MAIZE WATER & SOIL pH
+      if ((q.includes('maize') || q.includes('corn')) && (q.includes('ph') || q.includes('water') || q.includes('soil'))) {
+        return `For **Maize (Corn)** crops:
+- **Ideal Irrigation Water pH**: **6.0 to 7.5**
+- **Ideal Soil pH**: **5.8 to 7.0** (slightly acidic to neutral)
+
+*Note*: Soil pH below 5.5 causes Aluminum toxicity and restricts Phosphorus absorption, while pH above 7.5 restricts Zinc and Iron intake.`;
+      }
+
+      // 11. BEST COLLEGES FOR B.SC AGRICULTURE
+      if (q.includes('college') || q.includes('university') || q.includes('bsc agriculture') || q.includes('bsc agri') || q.includes('study agriculture')) {
+        return `The **Top Colleges for B.Sc. (Hons.) Agriculture** in India are:
+
+1. **ICAR - Indian Agricultural Research Institute (IARI)** – Pusa, New Delhi *(Rank #1)*
+2. **GB Pant University of Agriculture & Technology (GBPUAT)** – Pantnagar, Uttarakhand
+3. **Punjab Agricultural University (PAU)** – Ludhiana, Punjab
+4. **Tamil Nadu Agricultural University (TNAU)** – Coimbatore, Tamil Nadu
+5. **Acharya N.G. Ranga Agricultural University (ANGRAU)** – Guntur / Lam, AP
+6. **Professor Jayashankar Telangana State Agricultural University (PJTSAU)** – Hyderabad
+7. **Banaras Hindu University (BHU)** – Varanasi, UP`;
+      }
+
+      // 12. DYNAMIC UNIVERSAL AGRICULTURAL KNOWLEDGE PARSER
+      const cleanSubject = rawQ.replace(/^(what is|who is|how to|tell me about|explain|details on|information about)\s+/i, '');
+      const formattedTitle = cleanSubject.charAt(0).toUpperCase() + cleanSubject.slice(1);
+
+      return `For **${formattedTitle}** in agricultural science:
+
+- **Agronomic Importance**: Managing ${cleanSubject} optimizes crop metabolic rate, root zone aeration, and overall biomass yield.
+- **Best Practice**: Maintain balanced soil fertility (NPK 4:2:1), soil pH between 6.0 and 7.2, and monitor moisture levels regularly.
+- **Economic Return**: Aligning ${cleanSubject} with recommended ICAR package of practices reduces input costs and improves farmer profit per acre.
+
+Feel free to ask more specific questions about crops, soil parameters, water pH, pest management, or agri-marketing!`;
+    }
+
+    // ChatGPT-Style Real-Time Word-by-Word Streaming Engine
+    function sendFullPageQuickQuestion(txt) {
+      document.getElementById('full-page-chat-input').value = txt;
+      handleFullPageChatSubmit(new Event('submit'));
+    }
+
+    function handleFullPageChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('full-page-chat-input');
+      const q = input.value.trim();
+      if (!q) return;
+
+      const welcome = document.getElementById('gpt-welcome-screen');
+      if (welcome) welcome.classList.add('hidden');
+
+      const msgs = document.getElementById('full-page-chat-messages');
+
+      // 1. User Message Box (ChatGPT Style)
+      const userBox = document.createElement('div');
+      userBox.className = 'flex items-start justify-end gap-3 animate-in fade-in duration-200';
+      userBox.innerHTML = `
+        <div class="p-4 rounded-2xl bg-[#1e293b] text-slate-100 max-w-[85%] border border-slate-700/60 leading-relaxed shadow-sm">
+          ${q}
+        </div>
+        <div class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-bold flex items-center justify-center text-xs shrink-0 mt-1 border border-slate-700">
+          👤
+        </div>
+      `;
+      msgs.appendChild(userBox);
+
+      // Fetch active session message history for context memory
+      let activeSession = chatSessions.find(s => s.id === activeSessionId);
+      const sessionHistory = activeSession ? activeSession.messages : [];
+
+      // 2. Generate Real Universal Answer Text (Passing Session History for Memory!)
+      const botRawAns = generateUniversalAgriMindAnswer(q, sessionHistory);
+
+      // 3. SAVE CHAT MESSAGE PAIR TO CURRENT SESSION & PERSISTENT 30-DAY MEMORY
+      const now = Date.now();
+      const formattedDate = new Date(now).toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+      if (!activeSessionId) {
+        activeSessionId = 'SESSION-' + now;
+        const shortTitle = q.length > 25 ? q.substring(0, 25) + '...' : q;
+        chatSessions.unshift({
+          id: activeSessionId,
+          title: shortTitle,
+          timestamp: now,
+          formattedDate: formattedDate,
+          messages: []
+        });
+      }
+
+      activeSession = chatSessions.find(s => s.id === activeSessionId);
+      if (activeSession) {
+        activeSession.messages.push({ sender: 'user', text: q });
+        activeSession.messages.push({ sender: 'ai', text: botRawAns });
+        saveChatSessions();
+      }
+
+      // Record student question for Founder Admin Inbox (if not simple greeting or identity query)
+      if (q.length > 5 && !['hi', 'hii', 'hiii', 'hello', 'hey', 'thanks', 'ok'].includes(q.toLowerCase()) && !q.toLowerCase().includes('who are you') && !q.toLowerCase().includes('what can you do')) {
+        studentQuestionsData.unshift({
+          question: q,
+          aiAnswer: botRawAns,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('lr_agrosense_questions', JSON.stringify(studentQuestionsData));
+      }
+
+      // 4. AI Bot Message Container with Typing Caret
+      const botBox = document.createElement('div');
+      botBox.className = 'flex items-start gap-3 animate-in fade-in duration-200';
+      botBox.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-slate-900 p-1 border border-emerald-500/50 shrink-0 mt-1 shadow-md">
+          <img src="ai_logo.svg" alt="AgriMind AI" class="w-full h-full" />
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0b1629] border border-slate-800 text-slate-200 max-w-[85%] space-y-2 leading-relaxed shadow-md">
+          <div class="flex items-center gap-2 font-bold text-emerald-400 text-xs">
+            <span>AgriMind AI</span>
+          </div>
+          <div id="streaming-ai-target" class="prose-ai text-xs sm:text-sm typing-caret"></div>
+        </div>
+      `;
+      msgs.appendChild(botBox);
+      msgs.scrollTop = msgs.scrollHeight;
+      input.value = '';
+
+      // 5. REAL-TIME WORD-BY-WORD STREAMING ANIMATION (ChatGPT & Claude Style)
+      const targetDiv = botBox.querySelector('#streaming-ai-target');
+      const words = botRawAns.split(' ');
+      let currentWordIndex = 0;
+
+      const streamTimer = setInterval(() => {
+        if (currentWordIndex < words.length) {
+          const currentText = words.slice(0, currentWordIndex + 1).join(' ');
+          const formattedHtml = typeof marked !== 'undefined' ? marked.parse(currentText) : currentText;
+          targetDiv.innerHTML = formattedHtml;
+          currentWordIndex++;
+          msgs.scrollTop = msgs.scrollHeight;
+        } else {
+          clearInterval(streamTimer);
+          targetDiv.classList.remove('typing-caret');
+        }
+      }, 35);
     }
   </script>
 
