@@ -503,7 +503,7 @@
   </div>
 
 
-  <!-- MODAL: APP-WIDE USER LOGIN & SIGNUP (Phone OTP, Email, Google One-Tap) -->
+  <!-- MODAL: APP-WIDE USER LOGIN & SIGNUP (Email & Google One-Tap) -->
   <div id="modal-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
     <div class="relative w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
       <button onclick="toggleAuthModal(false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
@@ -517,56 +517,14 @@
         <p class="text-xs text-slate-400">Log in to save your 30-day chat memory, track internship applications & access profile.</p>
       </div>
 
-      <!-- Auth Method Tabs -->
-      <div class="grid grid-cols-3 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
-        <button id="auth-tab-otp" onclick="switchAuthTab('otp')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">📱 Phone OTP</button>
-        <button id="auth-tab-email" onclick="switchAuthTab('email')" class="py-2 rounded-lg text-slate-400 font-semibold hover:text-white">✉️ Email</button>
+      <!-- Auth Method Tabs (Email & Google) -->
+      <div class="grid grid-cols-2 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+        <button id="auth-tab-email" onclick="switchAuthTab('email')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">✉️ Email & Password</button>
         <button id="auth-tab-google" onclick="switchAuthTab('google')" class="py-2 rounded-lg text-slate-400 font-semibold hover:text-white">🌐 Google</button>
       </div>
 
-      <!-- TAB 1: PHONE NUMBER + GENERATED OTP -->
-      <div id="auth-view-otp" class="space-y-4 text-xs">
-        <div id="otp-step-1" class="space-y-3">
-          <div>
-            <label class="font-semibold text-slate-300 block mb-1">Full Name</label>
-            <input id="otp-input-name" type="text" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
-          </div>
-          <div>
-            <label class="font-semibold text-slate-300 block mb-1">Mobile Number (10 Digits)</label>
-            <div class="flex gap-2">
-              <span class="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 font-bold">+91</span>
-              <input id="otp-input-phone" type="tel" maxlength="10" placeholder="9876543210" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
-            </div>
-          </div>
-          <!-- Invisible reCAPTCHA container (required by Firebase Phone Auth) -->
-          <div id="recaptcha-container"></div>
-          <p id="otp-send-status" class="hidden text-xs text-center font-bold"></p>
-          <button id="otp-send-btn" onclick="generateAndSendOtp()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-            Send OTP via SMS 📲
-          </button>
-        </div>
-
-        <div id="otp-step-2" class="hidden space-y-3">
-          <!-- REAL SMS SENT BANNER -->
-          <div class="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-center space-y-1">
-            <div class="font-bold">📲 Real SMS Sent to Your Phone!</div>
-            <p class="text-[11px]">Check your <strong>Messages app</strong> for the 6-digit verification code from Firebase.</p>
-          </div>
-
-          <div>
-            <label class="font-semibold text-slate-300 block mb-1">Enter 6-Digit OTP from SMS</label>
-            <input id="otp-input-code" type="text" maxlength="6" placeholder="Enter 6-digit code..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center font-mono text-lg tracking-widest outline-none focus:border-emerald-400" />
-          </div>
-          <p id="otp-verify-status" class="hidden text-xs text-center font-bold"></p>
-
-          <button onclick="verifyOtpAndLogin()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-            Verify OTP & Complete Login ✓
-          </button>
-        </div>
-      </div>
-
-      <!-- TAB 2: EMAIL & PASSWORD -->
-      <div id="auth-view-email" class="hidden space-y-3 text-xs">
+      <!-- TAB 1: EMAIL & PASSWORD -->
+      <div id="auth-view-email" class="space-y-3 text-xs">
         <div>
           <label class="font-semibold text-slate-300 block mb-1">Full Name</label>
           <input id="email-input-name" type="text" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
@@ -580,11 +538,11 @@
           <input id="email-input-pass" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-400" />
         </div>
         <button onclick="loginWithEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-          Sign In with Email ✉️
+          Sign In / Create Account ✉️
         </button>
       </div>
 
-      <!-- TAB 3: GOOGLE ONE-TAP LOGIN -->
+      <!-- TAB 2: GOOGLE ONE-TAP LOGIN -->
       <div id="auth-view-google" class="hidden space-y-4 text-xs text-center py-2">
         <p class="text-slate-300">Sign in instantly with your Google account:</p>
         <button onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center gap-3 shadow-lg transition-all">
@@ -960,114 +918,11 @@
     }
 
     function switchAuthTab(tab) {
-      document.getElementById('auth-view-otp').classList.toggle('hidden', tab !== 'otp');
       document.getElementById('auth-view-email').classList.toggle('hidden', tab !== 'email');
       document.getElementById('auth-view-google').classList.toggle('hidden', tab !== 'google');
 
-      document.getElementById('auth-tab-otp').className = tab === 'otp' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
       document.getElementById('auth-tab-email').className = tab === 'email' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
       document.getElementById('auth-tab-google').className = tab === 'google' ? 'py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold' : 'py-2 rounded-lg text-slate-400 font-semibold hover:text-white';
-    }
-
-    // 📱 FIREBASE REAL SMS OTP ENGINE
-    function setupRecaptcha() {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-          size: 'invisible',
-          callback: () => { /* reCAPTCHA solved - allow OTP send */ }
-        });
-      }
-    }
-
-    function generateAndSendOtp() {
-      const name = document.getElementById('otp-input-name').value.trim();
-      const phone = document.getElementById('otp-input-phone').value.trim();
-      const statusEl = document.getElementById('otp-send-status');
-      const sendBtn = document.getElementById('otp-send-btn');
-
-      if (!name) { alert('Please enter your full name!'); return; }
-      if (!phone || phone.length < 10) { alert('Please enter a valid 10-digit mobile number!'); return; }
-
-      // Show loading state
-      sendBtn.disabled = true;
-      sendBtn.innerText = 'Sending SMS... ⏳';
-      statusEl.classList.remove('hidden');
-      statusEl.className = 'text-xs text-center font-bold text-amber-400';
-      statusEl.innerText = '⏳ Sending real SMS to +91 ' + phone + '...';
-
-      setupRecaptcha();
-      const fullPhone = '+91' + phone;
-      const appVerifier = window.recaptchaVerifier;
-
-      firebaseAuth.signInWithPhoneNumber(fullPhone, appVerifier)
-        .then(result => {
-          confirmationResult = result;
-          statusEl.className = 'text-xs text-center font-bold text-emerald-400';
-          statusEl.innerText = '✅ Real SMS sent to +91 ' + phone + '! Check your messages.';
-          document.getElementById('otp-step-1').classList.add('hidden');
-          document.getElementById('otp-step-2').classList.remove('hidden');
-        })
-        .catch(error => {
-          console.error('SMS Send Error:', error);
-          statusEl.className = 'text-xs text-center font-bold text-rose-400';
-          if (error.code === 'auth/too-many-requests') {
-            statusEl.innerText = '❌ Too many OTP requests. Please wait a few minutes and try again.';
-          } else if (error.code === 'auth/invalid-phone-number') {
-            statusEl.innerText = '❌ Invalid phone number. Please check and try again.';
-          } else {
-            statusEl.innerText = '❌ Error: ' + error.message;
-          }
-          sendBtn.disabled = false;
-          sendBtn.innerText = 'Send OTP via SMS 📲';
-          // Reset reCAPTCHA for retry
-          if (window.recaptchaVerifier) {
-            window.recaptchaVerifier.clear();
-            window.recaptchaVerifier = null;
-          }
-        });
-    }
-
-    function verifyOtpAndLogin() {
-      const code = document.getElementById('otp-input-code').value.trim();
-      const name = document.getElementById('otp-input-name').value.trim();
-      const phone = document.getElementById('otp-input-phone').value.trim();
-      const statusEl = document.getElementById('otp-verify-status');
-
-      if (!code || code.length < 6) {
-        alert('Please enter the 6-digit OTP code from your SMS!');
-        return;
-      }
-
-      statusEl.classList.remove('hidden');
-      statusEl.className = 'text-xs text-center font-bold text-amber-400';
-      statusEl.innerText = '⏳ Verifying OTP...';
-
-      confirmationResult.confirm(code)
-        .then(result => {
-          // ✅ OTP Verified! User is signed in via Firebase
-          const firebaseUser = result.user;
-          currentUser = {
-            name: name,
-            phone: '+91 ' + phone,
-            email: firebaseUser.email || phone + '@lragrosense.user',
-            authType: 'Phone OTP (Firebase)',
-            uid: firebaseUser.uid
-          };
-          localStorage.setItem('lr_agrosense_current_user', JSON.stringify(currentUser));
-          renderUserNav();
-          toggleAuthModal(false);
-
-          // Reset OTP form for next use
-          document.getElementById('otp-step-1').classList.remove('hidden');
-          document.getElementById('otp-step-2').classList.add('hidden');
-          document.getElementById('otp-send-btn').disabled = false;
-          document.getElementById('otp-send-btn').innerText = 'Send OTP via SMS 📲';
-        })
-        .catch(error => {
-          console.error('OTP Verify Error:', error);
-          statusEl.className = 'text-xs text-center font-bold text-rose-400';
-          statusEl.innerText = '❌ Incorrect OTP code. Please check your SMS and try again.';
-        });
     }
 
     // ✉️ FIREBASE EMAIL/PASSWORD LOGIN
