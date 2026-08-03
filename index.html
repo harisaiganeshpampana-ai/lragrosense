@@ -203,7 +203,7 @@
       </div>
 
       <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-sm text-emerald-300 font-medium" id="voice-text">
-        "Namaskaram! Mee polamlo nela thema 38 percent ki padipoindi. Dayachesi neeti paarudala praarambhinchandi."
+        "నమస్కారం! మీ పొలంలో నేల తేమ ముప్పై ఎనిమిది శాతం కి పడిపోయింది. దయచేసి నీటి పారుదల ప్రారంభించండి."
       </div>
 
       <button onclick="playVoiceAlert()" class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 font-bold text-white text-sm shadow-lg shadow-rose-500/20">
@@ -212,7 +212,7 @@
     </div>
   </section>
 
-  <!-- Founder Spotlight -->
+  <!-- Founder Spotlight Section with LinkedIn Link -->
   <section id="founder" class="py-20 px-4 max-w-4xl mx-auto">
     <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 text-center sm:text-left space-y-6">
       <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Founder Spotlight</span>
@@ -221,8 +221,12 @@
       <p class="text-slate-300 text-base leading-relaxed">
         Focused on building innovative solutions that help farmers through technology, AI, and IoT.
       </p>
-      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl bg-[#0A66C2] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20">
-        Connect on LinkedIn ↗
+      
+      <!-- Clean LinkedIn Follow Button -->
+      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20 transition-all transform hover:-translate-y-0.5">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+        <span>Follow on LinkedIn</span>
+        <span>↗</span>
       </a>
     </div>
   </section>
@@ -232,7 +236,13 @@
     <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-6 text-center">
       <h2 class="text-3xl font-extrabold text-white">Contact LR AgroSense</h2>
       <p class="text-slate-300 text-sm">Official Email: <strong class="text-emerald-400">lragrosense@gmail.com</strong></p>
-      <p class="text-slate-300 text-sm">LinkedIn: <strong class="text-sky-400">linkedin.com/in/lragrosense</strong></p>
+      
+      <div class="pt-2">
+        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm underline">
+          <span>linkedin.com/in/lragrosense</span>
+          <span>↗</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -249,13 +259,13 @@
       document.getElementById('val-ph').innerText = (6.7 + Math.random() * 0.3).toFixed(2);
     }, 3000);
 
-    // Voice Alerts Engine with Phonetic Native Speech
+    // Voice Alerts Text Bank
     const voiceAlerts = {
-      Telugu: 'Namaskaram! Mee polamlo nela thema 38 percent ki padipoindi. Dayachesi neeti paarudala praarambhinchandi.',
-      Hindi: 'Namaste! Aapke khet mein mitti ki nami 38 percent tak gir gayi hai. Kripaya turant sinchai shuru karein.',
+      Telugu: 'నమస్కారం! మీ పొలంలో నేల తేమ ముప్పై ఎనిమిది శాతం కి పడిపోయింది. దయచేసి నీటి పారుదల ప్రారంభించండి.',
+      Hindi: 'नमस्ते! आपके खेत में मिट्टी की नमी 38 प्रतिशत तक गिर गई है। कृपया तुरंत सिंचाई शुरू करें।',
       English: 'Alert! Soil moisture level in Field 1 has dropped to 38 percent. Irrigation recommended now.',
-      Tamil: 'Vanakkam! Ungal vayalil man eerappadham 38 percent aaga kuraindhulladhu. Paasanathai thodangavum.',
-      Kannada: 'Namaskara! Nimma jameeninali manina teevamsha 38 percent ge kusidide. Dayavittu neeravari prarambhisi.'
+      Tamil: 'வணக்கம்! உங்கள் வயலில் மண் ஈரப்பதம் 38 சதவீதம் ஆக குறைந்துள்ளது. பாசனத்தை தொடங்கவும்.',
+      Kannada: 'ನಮಸ್ಕಾರ! ನಿಮ್ಮ ಜಮೀನಿನಲ್ಲಿ ಮಣ್ಣಿನ ತೇವಾಂಶ 38 ಪ್ರತಿಶತಕ್ಕೆ ಕುಸಿದಿದೆ. ದಯವಿಟ್ಟು ನೀರಾವರಿ ಪ್ರಾರಂಭಿಸಿ.'
     };
 
     let selectedLang = 'Telugu';
@@ -277,8 +287,25 @@
     function playVoiceAlert() {
       if (!('speechSynthesis' in window)) return alert('Voice speech not supported on this device browser');
       window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(voiceAlerts[selectedLang]);
-      utt.rate = 0.9;
+
+      const voices = window.speechSynthesis.getVoices();
+      const text = voiceAlerts[selectedLang];
+      const utt = new SpeechSynthesisUtterance(text);
+
+      let targetVoice = voices.find(v => v.lang.startsWith('te') || v.name.toLowerCase().includes('telugu'));
+      if (!targetVoice) {
+        targetVoice = voices.find(v => v.lang.includes('IN') || v.name.toLowerCase().includes('india'));
+      }
+
+      if (targetVoice) {
+        utt.voice = targetVoice;
+        utt.lang = targetVoice.lang;
+      } else {
+        utt.lang = selectedLang === 'Telugu' ? 'te-IN' : 'en-IN';
+      }
+
+      utt.rate = 0.85;
+      utt.pitch = 1.0;
       window.speechSynthesis.speak(utt);
     }
   </script>
