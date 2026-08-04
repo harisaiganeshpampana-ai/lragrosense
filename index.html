@@ -41,6 +41,42 @@
     .reveal.active{opacity:1;transform:translateY(0)}
     @keyframes toastIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
     @keyframes toastOut{from{opacity:1}to{transform:translateY(100%);opacity:0}}
+    /* ===== Aria AI Co-Founder Chat Styles ===== */
+    .prose-ai{color:#cbd5e1;line-height:1.8;font-size:.82rem}
+    .prose-ai p{margin-bottom:.8rem}
+    .prose-ai strong{color:#4ade80;font-weight:700}
+    .prose-ai em{color:#94a3b8;font-style:italic}
+    .prose-ai h1,.prose-ai h2,.prose-ai h3,.prose-ai h4{color:#f1f5f9;font-weight:700;margin:1rem 0 .4rem}
+    .prose-ai h1{font-size:1.1rem}.prose-ai h2{font-size:1rem}.prose-ai h3{font-size:.92rem}
+    .prose-ai ul{list-style:none;padding:0;margin-bottom:.8rem}
+    .prose-ai ul li{padding:.15rem 0 .15rem 1.2rem;position:relative}
+    .prose-ai ul li::before{content:'›';position:absolute;left:0;color:#22c55e;font-weight:700}
+    .prose-ai ol{list-style:decimal;padding-left:1.4rem;margin-bottom:.8rem}
+    .prose-ai code{background:#0f172a;border:1px solid #1e293b;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:.8em;color:#7dd3fc}
+    .prose-ai pre{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:1rem;margin:.8rem 0;overflow-x:auto}
+    .prose-ai pre code{background:none;border:none;padding:0;color:#e2e8f0;font-size:.8rem;line-height:1.6}
+    .prose-ai table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.78rem}
+    .prose-ai th{background:#0f172a;border:1px solid #1e293b;padding:.5rem .75rem;text-align:left;color:#94a3b8;font-weight:600}
+    .prose-ai td{border:1px solid #1e293b;padding:.5rem .75rem;color:#cbd5e1}
+    .prose-ai tr:nth-child(even) td{background:#0a1020}
+    .prose-ai hr{border:none;border-top:1px solid #1e293b;margin:1rem 0}
+    .prose-ai blockquote{border-left:3px solid #22c55e;padding:.5rem 1rem;margin:.8rem 0;background:#0a1020;border-radius:0 8px 8px 0;color:#94a3b8}
+    .prose-ai a{color:#38bdf8;text-decoration:underline}
+    .msg-user{background:linear-gradient(135deg,#1e3a5f,#1e293b);border:1px solid #334155}
+    .msg-aria{background:#0a1423;border:1px solid rgba(34,197,94,.2)}
+    .typing-dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin:0 2px;animation:typeDot 1.2s infinite}
+    .typing-dots span:nth-child(2){animation-delay:.2s}
+    .typing-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+    .chat-item{transition:background .2s;cursor:pointer;border-radius:10px;padding:.5rem .75rem}
+    .chat-item:hover{background:#0c1527}
+    .chat-item.active{background:#0c1527;border-left:2px solid #22c55e}
+    .chip{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .85rem;border-radius:999px;background:#0c1527;border:1px solid #1e293b;color:#94a3b8;font-size:.72rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .chip:hover{border-color:#22c55e;color:#4ade80;background:#071a0e}
+    .mem-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:999px;background:#052e16;border:1px solid #166534;color:#4ade80;font-size:.65rem;font-family:monospace}
+    #aria-input{resize:none;max-height:120px;overflow-y:auto;line-height:1.5}
+    .msg-enter{animation:msgIn .3s cubic-bezier(.16,1,.3,1)}
+    @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
@@ -53,7 +89,7 @@
       <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
     </a>
     
-    <!-- Desktop & Tablet Navigation Links -->
+    <!-- Desktop & Tablet Navigation Links (Visible on screens >= 768px) -->
     <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
       <a href="#about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
       <a href="#products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
@@ -128,9 +164,34 @@
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Transforming Agricultural Ecosystems with Technology</h2>
     <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-light">LR AgroSense is an early-stage AgriTech startup committed to democratizing precision farming. By integrating IoT sensors and automated irrigation controllers, we empower farmers to monitor soil moisture, NPK ratios, and water pH levels in real time.</p>
   </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="glass p-8 sm:p-10 rounded-3xl border border-emerald-500/30 reveal space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">👁️</div>
+      <h3 class="text-2xl font-bold text-white font-display">Our Vision</h3>
+      <p class="text-slate-300 text-sm leading-relaxed font-light">To build India's most accessible and intelligent precision farming platform — establishing data-driven crop management across every acre of farmland.</p>
+    </div>
+    <div class="glass p-8 sm:p-10 rounded-3xl border border-cyan-500/30 reveal space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">🎯</div>
+      <h3 class="text-2xl font-bold text-white font-display">Our Mission</h3>
+      <p class="text-slate-300 text-sm leading-relaxed font-light">Design micro-cost hardware sensors that allow farmers to eliminate guesswork, mitigate pest outbreaks, and optimize fertilizer application with accuracy.</p>
+    </div>
+  </div>
 </section>
 
-<!-- ========== PRODUCTS SHOWCASE ========== -->
+<!-- ========== CORE VALUES ========== -->
+<section class="py-16 px-4 max-w-7xl mx-auto">
+  <div class="text-center space-y-4 mb-12 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRINCIPLES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Core Values</h2></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌱</div><h4 class="font-bold text-white text-lg">Farmer First</h4><p class="text-xs text-slate-400 leading-relaxed">Every design prioritizes regional accessibility and local language simplicity.</p></div>
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">⚡</div><h4 class="font-bold text-white text-lg">Radical Affordability</h4><p class="text-xs text-slate-400 leading-relaxed">Hardware at a fraction of commercial costs, making smart farming scalable.</p></div>
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🔬</div><h4 class="font-bold text-white text-lg">Agronomic Rigor</h4><p class="text-xs text-slate-400 leading-relaxed">Grounded in ICAR crop packages of practices and real-field soil testing data.</p></div>
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">📡</div><h4 class="font-bold text-white text-lg">Precision Telemetry</h4><p class="text-xs text-slate-400 leading-relaxed">Continuous field data for accurate, real-time soil moisture and nutrient metrics.</p></div>
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌍</div><h4 class="font-bold text-white text-lg">Sustainability</h4><p class="text-xs text-slate-400 leading-relaxed">Mitigating ground-water depletion, reducing chemical runoff, regenerative farming.</p></div>
+    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🤝</div><h4 class="font-bold text-white text-lg">Transparency</h4><p class="text-xs text-slate-400 leading-relaxed">Open channels between farmers, agronomists, and research institutions.</p></div>
+  </div>
+</section>
+
+<!-- ========== PRODUCT SHOWCASE ========== -->
 <section id="products" class="py-24 px-4 max-w-7xl mx-auto space-y-16">
   <div class="text-center space-y-4 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRODUCTS</span><h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">The LR AgroSense Ecosystem</h2></div>
   <div class="glass p-8 sm:p-12 rounded-3xl border border-emerald-500/30 reveal grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -138,6 +199,47 @@
       <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">HARDWARE NODE 01</div>
       <h3 class="text-3xl font-extrabold text-white font-display">Smart Farm Monitor (IoT Probe)</h3>
       <p class="text-slate-300 text-sm leading-relaxed">Low-cost, solar-powered field telemetry node with Modbus RS485 soil NPK sensors, water content probes, and water pH analyzers.</p>
+      <ul class="space-y-2 text-xs text-slate-300 font-mono">
+        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Real-Time Soil N, P, K tracking</li>
+        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Solar-backed ESP32 with LoRaWAN & GSM</li>
+        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> IP67 weatherproof rugged casing</li>
+      </ul>
+    </div>
+    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span class="w-3 h-3 rounded-full bg-amber-500"></span><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-xs font-mono text-slate-400 ml-2">FIELD_NODE_09</span></div>
+        <span class="text-[10px] text-emerald-400 font-mono">SOLAR 98%</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-center text-xs font-mono">
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Moisture</div><div class="text-xl font-bold text-emerald-400 mt-1">42.8%</div></div>
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Water pH</div><div class="text-xl font-bold text-cyan-400 mt-1">6.8</div></div>
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">NPK</div><div class="text-xs font-bold text-amber-400 mt-1">N:140 P:45 K:180</div></div>
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Status</div><div class="text-xs font-bold text-emerald-400 mt-1">OPTIMAL</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="py-20 px-4 max-w-7xl mx-auto">
+  <div class="text-center space-y-4 mb-16 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">WORKFLOW</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">How It Works</h2></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-emerald-400 font-mono">01</div><h4 class="font-bold text-white">Deploy Sensor</h4><p class="text-xs text-slate-400">Install probe into soil root zone in under 5 minutes.</p></div>
+    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-cyan-400 font-mono">02</div><h4 class="font-bold text-white">Real-Time Data</h4><p class="text-xs text-slate-400">Sensors stream soil moisture, NPK, pH via GSM/LoRaWAN.</p></div>
+    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-amber-400 font-mono">03</div><h4 class="font-bold text-white">Cloud Analytics</h4><p class="text-xs text-slate-400">Telemetry processed against ICAR packages of practice.</p></div>
+    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-purple-400 font-mono">04</div><h4 class="font-bold text-white">Smart Decisions</h4><p class="text-xs text-slate-400">Farmers receive irrigation schedules and dosages.</p></div>
+  </div>
+</section>
+
+<!-- ========== TECH STACK ========== -->
+<section id="tech" class="py-20 px-4 max-w-7xl mx-auto">
+  <div class="glass p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-8 reveal">
+    <div class="text-center space-y-3"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ARCHITECTURE</span><h2 class="text-3xl font-extrabold text-white font-display">Technology Stack</h2></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">
+      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-emerald-400 text-sm">📊 Analytics</div><p class="text-slate-400">Soil NPK algorithms, moisture curves, irrigation triggers.</p></div>
+      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-cyan-400 text-sm">⚡ IoT Hardware</div><p class="text-slate-400">ESP32, Modbus RS485, LoRaWAN, solar power.</p></div>
+      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-amber-400 text-sm">☁️ Cloud</div><p class="text-slate-400">Firebase Auth, Firestore, CDN static hosting, SSL.</p></div>
+      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-purple-400 text-sm">📱 Mobile & Web</div><p class="text-slate-400">PWA, Tailwind CSS, real-time dashboard, glassmorphism UI.</p></div>
     </div>
   </div>
 </section>
@@ -146,24 +248,20 @@
 <section id="roadmap" class="py-24 px-4 max-w-7xl mx-auto">
   <div class="text-center space-y-4 mb-16 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">MILESTONES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Product Roadmap</h2></div>
   <div class="space-y-6 max-w-4xl mx-auto">
-    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 (CURRENT)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4></div></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4></div></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">PHASE 03</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4></div></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 (CURRENT)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4><p class="text-xs text-slate-400 mt-1">Firebase auth, website, sensor benchmarks, farmer trials.</p></div><span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold shrink-0">ACTIVE</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4><p class="text-xs text-slate-400 mt-1">50 pilot IoT probe nodes across AP & Telangana.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">PHASE 03</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4><p class="text-xs text-slate-400 mt-1">iOS/Android app with solenoid valve controls and alerts.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
   </div>
 </section>
 
-<!-- ========== TECH STACK ========== -->
-<section id="tech" class="py-20 px-4 max-w-7xl mx-auto">
-  <div class="glass p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-8 reveal">
-    <div class="text-center space-y-3"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ARCHITECTURE</span><h2 class="text-3xl font-extrabold text-white font-display">Technology Stack</h2></div>
-  </div>
-</section>
-
-<!-- ========== INTERNSHIPS ========== -->
-<section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
-  <div class="text-center space-y-4 reveal">
-    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
-    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
+<!-- ========== FOUNDER ========== -->
+<section id="founder" class="py-24 px-4 max-w-5xl mx-auto">
+  <div class="glass p-8 sm:p-14 rounded-3xl border border-emerald-500/30 reveal space-y-6">
+    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">FOUNDER</span>
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Pampana Hari Sai Ganesh</h2>
+    <p class="text-emerald-400 font-semibold text-sm">Founder & CEO • B.Sc. Agriculture</p>
+    <p class="text-slate-300 text-base leading-relaxed font-light">As a student of Agricultural Science, Pampana Hari Sai Ganesh founded LR AgroSense to bridge academic agronomic research and practical, low-cost field technology — giving every smallholder farmer access to institutional-grade soil analytics.</p>
+    <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-flex px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs items-center gap-2 shadow-lg">LinkedIn ↗</a>
   </div>
 </section>
 
@@ -172,6 +270,102 @@
   <div class="glass p-8 sm:p-14 rounded-3xl border border-amber-500/40 reveal text-center space-y-6">
     <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">INVESTOR OPPORTUNITY</span>
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Partner With LR AgroSense</h2>
+    <p class="text-slate-300 text-base max-w-2xl mx-auto font-light">Seeking strategic seed partners, venture grants, and mentors to accelerate hardware pilot testing.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs text-left pt-4">
+      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-amber-400 font-bold">🎯 $24B+ TAM</div><div class="text-slate-400 mt-1">Indian AgriTech market with 150M+ holdings.</div></div>
+      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-emerald-400 font-bold">⚡ Scalable Moat</div><div class="text-slate-400 mt-1">Proprietary low-cost sensor nodes + cloud telemetry.</div></div>
+      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-cyan-400 font-bold">🤝 UN SDGs</div><div class="text-slate-400 mt-1">Aligned with SDG 2, 6 & 13.</div></div>
+    </div>
+    <button onclick="toggleModal('modal-investor',true)" class="inline-block px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Request Pitch Deck & Schedule Call 📊</button>
+  </div>
+</section>
+
+<!-- ==================== INTERNSHIP PORTAL ==================== -->
+<section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
+  <div class="text-center space-y-4 reveal">
+    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
+    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
+    <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across branding, business strategy, and electronics engineering.</p>
+    
+    <!-- Explicit Compensation Note -->
+    <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium">
+      ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-3 text-[10px] font-mono pt-2">
+      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">🏠 Remote</span>
+      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">⏱ Part-Time</span>
+      <span class="px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-amber-300">📋 Unpaid (Revisited as we scale)</span>
+      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">📅 1–3 Months</span>
+    </div>
+  </div>
+
+  <!-- Internship 1: Branding & Content -->
+  <div class="glass p-6 sm:p-8 rounded-3xl border border-emerald-500/30 reveal space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="text-[10px] font-mono text-emerald-400 font-bold">OPENING 01</span>
+        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Branding & Content Intern</h3>
+        <p class="text-xs text-slate-400 mt-1">Department: Marketing & Creative</p>
+      </div>
+      <button onclick="openApplyModal('Branding & Content Intern')" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
+    </div>
+    <div id="jd-1" class="space-y-4 text-xs text-slate-300">
+      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.</p></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design social media posts, carousels, and reels for Instagram, LinkedIn, and YouTube</li><li>Write blog articles, press releases, and newsletter content</li><li>Create farmer-facing educational content in simple language</li><li>Assist in brand identity development and style guide creation</li><li>Support pitch deck and investor presentation design</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Currently pursuing or recently graduated in Marketing, Communications, Design, or related fields</li><li>Strong written communication skills</li><li>Proficiency in Canva, Figma, or Adobe Creative Suite preferred</li><li>Interest in agriculture, sustainability, or technology</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Real-world startup portfolio experience</li><li>Direct mentorship from Founder Pampana Hari Sai Ganesh</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
+    </div>
+  </div>
+
+  <!-- Internship 2: Business Development -->
+  <div class="glass p-6 sm:p-8 rounded-3xl border border-cyan-500/30 reveal space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="text-[10px] font-mono text-cyan-400 font-bold">OPENING 02</span>
+        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Business Development & Strategy Intern</h3>
+        <p class="text-xs text-slate-400 mt-1">Department: Growth & Operations</p>
+      </div>
+      <button onclick="openApplyModal('Business Development & Strategy Intern')" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
+    </div>
+    <div class="space-y-4 text-xs text-slate-300">
+      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Drive business growth by researching market opportunities, building partnerships with FPOs and agricultural cooperatives, and developing go-to-market strategy for IoT hardware deployment.</p></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Research market size, competitive landscape, and farmer adoption patterns</li><li>Identify and establish partnerships with FPOs, KVKs, and agri-input dealers</li><li>Prepare investor pitch decks, business plans, and financial models</li><li>Assist in grant applications (BIRAC, RKVY-RAFTAAR, Startup India)</li><li>Support ecosystem strategy and pilot deployment planning</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing MBA, BBA, B.Com, or related business/management degree</li><li>Strong analytical and presentation skills</li><li>Interest in AgriTech, startups, or rural development</li><li>Proficiency in Excel, PowerPoint, and market research tools</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Exposure to real investor pitch processes</li><li>Direct involvement in startup operations and strategy</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
+    </div>
+  </div>
+
+  <!-- Internship 3: IoT & Electronics -->
+  <div class="glass p-6 sm:p-8 rounded-3xl border border-amber-500/30 reveal space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="text-[10px] font-mono text-amber-400 font-bold">OPENING 03</span>
+        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">IoT & Electronics Intern</h3>
+        <p class="text-xs text-slate-400 mt-1">Department: Hardware Engineering</p>
+      </div>
+      <button onclick="openApplyModal('IoT & Electronics Intern')" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
+    </div>
+    <div class="space-y-4 text-xs text-slate-300">
+      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Design, prototype, and test low-cost IoT sensor nodes using ESP32 microcontrollers, Modbus RS485 soil probes, and LoRaWAN communication modules for field deployment.</p></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design and assemble ESP32-based sensor node prototypes</li><li>Interface Modbus RS485 soil NPK sensors and calibrate readings</li><li>Develop firmware for sensor data acquisition and wireless transmission</li><li>Test solar power management and battery charging circuits</li><li>Document hardware specifications and create assembly guides</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing B.Tech/B.E. in ECE, EEE, or related engineering fields</li><li>Experience with Arduino, ESP32, or Raspberry Pi</li><li>Basic knowledge of circuit design and PCB layout</li><li>Familiarity with C/C++ for embedded systems</li></ul></div>
+      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Hands-on experience building real IoT hardware products</li><li>Mentorship in embedded systems and product engineering</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
+    </div>
+  </div>
+
+  <div class="text-center text-xs text-slate-500 pt-4 reveal">
+    <p>⚠️ These are <strong class="text-slate-300">unpaid internships</strong> with comprehensive benefits including certificates, LinkedIn recommendations, and direct founder mentorship.</p>
+  </div>
+</section>
+
+<!-- ========== FAQS ========== -->
+<section id="faq" class="py-20 px-4 max-w-4xl mx-auto space-y-12">
+  <div class="text-center space-y-4 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">HELP</span><h2 class="text-3xl font-extrabold text-white font-display">Frequently Asked Questions</h2></div>
+  <div class="space-y-4 text-xs sm:text-sm">
+    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">What is LR AgroSense?</div><p class="text-slate-400">An early-stage AgriTech startup developing affordable smart farming sensors and IoT field telemetry.</p></div>
+    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">How does the Smart Farm Monitor work?</div><p class="text-slate-400">The probe measures soil NPK, moisture, and water pH in real-time and transmits data to the farmer's dashboard.</p></div>
+    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">How to contact the Founder?</div><p class="text-slate-400">Email <strong class="text-emerald-400">lragrosense@gmail.com</strong> or connect on <strong class="text-emerald-400">linkedin.com/in/lragrosense</strong>.</p></div>
   </div>
 </section>
 
@@ -180,6 +374,10 @@
   <div class="glass p-8 sm:p-14 rounded-3xl border border-slate-800 text-center space-y-6 reveal">
     <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">CONTACT</span>
     <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Get In Touch</h2>
+    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 inline-block max-w-md w-full text-xs space-y-3">
+      <div class="text-slate-300">Email: <a href="mailto:lragrosense@gmail.com" class="text-emerald-400 font-bold underline">lragrosense@gmail.com</a></div>
+      <div class="text-slate-300">LinkedIn: <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="text-sky-400 font-bold underline">linkedin.com/in/lragrosense</a></div>
+    </div>
   </div>
 </section>
 
@@ -194,14 +392,2042 @@
   </div>
 </footer>
 
+<!-- ==================== DEDICATED APPLICATION PAGE & CONGRATULATIONS PORTAL ==================== -->
+<div id="modal-apply" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
+  
+  <!-- Dedicated Page Header -->
+  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
+        <div>
+          <h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2>
+          <p class="text-[10px] text-emerald-400 font-mono">Internship Application Portal</p>
+        </div>
+      </div>
+      <button onclick="toggleModal('modal-apply',false)" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all flex items-center gap-2">
+        <span>←</span> Back to Openings
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    
+    <!-- APPLICATION FORM VIEW -->
+    <div id="apply-form-container" class="space-y-8">
+      <div class="text-center space-y-3">
+        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">OFFICIAL APPLICATION</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Apply for Internship</h1>
+        <div class="inline-block px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 text-sm font-bold" id="apply-position-label">Position Name</div>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">Complete your application details below. Our founding team will review your submission promptly.</p>
+      </div>
+
+      <form id="apply-form" onsubmit="submitApplication(event)" class="glass p-6 sm:p-10 rounded-3xl border border-emerald-500/30 space-y-5 text-xs shadow-2xl">
+        <input type="hidden" id="apply-position" value="" />
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Full Name *</label><input id="af-name" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="Your full name"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Email Address *</label><input id="af-email" type="email" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="you@email.com"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Phone Number *</label><input id="af-phone" type="tel" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="+91 XXXXX XXXXX"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">College / University *</label><input id="af-college" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="Your college name"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Degree / Major *</label><input id="af-degree" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="B.Tech CSE, MBA, B.Sc Ag, etc."/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Graduation Year *</label><input id="af-gradyear" type="number" required min="2020" max="2030" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="2026"/></div>
+        </div>
+
+        <div>
+          <label class="text-slate-300 font-semibold mb-1.5 block">Resume / CV (Optional)</label>
+          <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+            <input id="af-resume-file" type="file" accept=".pdf,.doc,.docx" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs outline-none focus:border-emerald-500/60 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer"/>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-slate-500 shrink-0">Or paste Google Drive / Dropbox link:</span>
+              <input id="af-resume" type="url" class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none focus:border-emerald-500/60" placeholder="https://drive.google.com/..."/>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">LinkedIn Profile (Optional)</label><input id="af-linkedin" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="https://linkedin.com/in/..."/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Portfolio / GitHub / Work Link (Optional)</label><input id="af-portfolio" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors" placeholder="https://..."/></div>
+        </div>
+
+        <div><label class="text-slate-300 font-semibold mb-1.5 block">Why do you want to join LR AgroSense? *</label><textarea id="af-why" required rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 resize-none transition-colors" placeholder="Tell us about your motivation, relevant projects, or interest in AgriTech..."></textarea></div>
+        
+        <div>
+          <label class="text-slate-300 font-semibold mb-1.5 block">Availability *</label>
+          <select id="af-avail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 transition-colors">
+            <option value="">Select availability</option>
+            <option>Immediate</option>
+            <option>Within 1 week</option>
+            <option>Within 2 weeks</option>
+            <option>Within 1 month</option>
+          </select>
+        </div>
+
+        <label class="flex items-start gap-3 cursor-pointer pt-2 p-4 bg-slate-900/50 rounded-2xl border border-slate-800/80">
+          <input id="af-declare" type="checkbox" required class="mt-1 accent-emerald-500 w-4 h-4 shrink-0" />
+          <span class="text-slate-400 text-[11px] leading-relaxed">I declare that all information provided is accurate. I understand this is an <strong class="text-white">unpaid, part-time, remote</strong> internship and I agree to the terms set by LR AgroSense.</span>
+        </label>
+        
+        <p id="apply-error" class="hidden text-rose-400 text-xs font-bold text-center"></p>
+        
+        <button id="apply-submit-btn" type="submit" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2">
+          <span>Submit Application</span> <span>→</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- CONGRATULATIONS CONFIRMATION VIEW & COMPLETE SUBMITTED DETAILS RECEIPT -->
+    <div id="apply-congrats-container" class="hidden text-center py-6 space-y-6 max-w-2xl mx-auto msg-enter">
+      <div class="relative inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-5xl shadow-[0_0_60px_rgba(34,197,94,0.4)]">
+        🎉
+      </div>
+      
+      <div class="space-y-2">
+        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold tracking-widest uppercase">APPLICATION CONFIRMED & LOGGED</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Congratulations, <span id="succ-name" class="text-emerald-400">Applicant</span>!</h2>
+        <p class="text-slate-300 text-sm">Your application for <strong id="succ-position" class="text-white">Position</strong> has been submitted successfully to the LR AgroSense Founding Team.</p>
+      </div>
+
+      <!-- Complete Submitted Details Receipt Card -->
+      <div class="p-6 sm:p-8 bg-slate-900/90 rounded-3xl border border-emerald-500/30 text-left space-y-4 text-xs shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-mono">APPLICATION REF ID</span>
+            <span id="succ-id" class="font-mono font-extrabold text-emerald-400 text-base">LRA-APP-9842</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block font-mono">SUBMITTED ON</span>
+            <span id="succ-date" class="font-bold text-slate-200">04/08/2026</span>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-1">
+          <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📋 YOUR SUBMITTED APPLICATION RECEIPT</h4>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+            <div><span class="text-slate-500 block text-[10px]">Full Name:</span> <span id="succ-fullname" class="font-bold text-white">Full Name</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Position Applied:</span> <span id="succ-pos-name" class="font-bold text-white">Position</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Email Address:</span> <span id="succ-email" class="font-bold text-white truncate block">email@domain.com</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Phone Number:</span> <span id="succ-phone" class="font-bold text-white">+91 XXXXX XXXXX</span></div>
+            <div><span class="text-slate-500 block text-[10px]">College / University:</span> <span id="succ-college" class="font-bold text-white">College Name</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Degree & Grad Year:</span> <span id="succ-degree" class="font-bold text-white">B.Tech (2026)</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Availability:</span> <span id="succ-avail" class="font-bold text-white">Immediate</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Review Status:</span> <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono font-bold text-[10px]">NEW (In Queue)</span></div>
+          </div>
+
+          <!-- Document Links -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+            <div id="succ-resume-box" class="p-2.5 bg-slate-950 rounded-xl border border-slate-800"><span class="text-slate-500 block text-[9px]">RESUME / CV</span><span id="succ-resume" class="text-emerald-400 font-semibold truncate block">Attached</span></div>
+            <div id="succ-linkedin-box" class="p-2.5 bg-slate-950 rounded-xl border border-slate-800"><span class="text-slate-500 block text-[9px]">LINKEDIN</span><span id="succ-linkedin" class="text-sky-400 font-semibold truncate block">Not Provided</span></div>
+            <div id="succ-portfolio-box" class="p-2.5 bg-slate-950 rounded-xl border border-slate-800"><span class="text-slate-500 block text-[9px]">PORTFOLIO</span><span id="succ-portfolio" class="text-purple-400 font-semibold truncate block">Not Provided</span></div>
+          </div>
+
+          <!-- Motivation Answer -->
+          <div class="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
+            <span class="text-slate-500 text-[10px] block font-semibold">WHY JOIN LR AGROSENSE:</span>
+            <p id="succ-why" class="text-slate-300 text-[11px] leading-relaxed italic">"Motivation answer..."</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- What Happens Next Timeline -->
+      <div class="p-6 glass rounded-3xl border border-slate-800 text-left space-y-4">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">⏳ What Happens Next?</h4>
+        <div class="space-y-4 text-xs">
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</div>
+            <div><p class="font-bold text-white">Profile & Motivation Screening</p><p class="text-slate-400 text-[11px] leading-relaxed">Our founding team reviews your background and statement within 1-2 business days.</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</div>
+            <div><p class="font-bold text-white">Screening Call Invitation</p><p class="text-slate-400 text-[11px] leading-relaxed">Shortlisted candidates will receive an email invitation for a brief 15-minute intro conversation with Founder Pampana Hari Sai Ganesh.</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 rounded-full bg-purple-500/20 border border-purple-500 text-purple-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</div>
+            <div><p class="font-bold text-white">Offer Letter & Mentorship Kickoff</p><p class="text-slate-400 text-[11px] leading-relaxed">Official completion certificate registration, LinkedIn recommendation commitment, and direct startup mentorship start!</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 space-y-2">
+        <button id="succ-track-btn" class="w-full py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm transition-all shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2">
+          <span>🔍</span> Track Live Application Status Now
+        </button>
+        <button onclick="toggleModal('modal-apply',false)" class="w-full py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold text-xs transition-all">
+          🏠 Return to Website Homepage
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ==================== APPLICANT STATUS TRACKER MODAL / PAGE ==================== -->
+<div id="modal-track" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
+  
+  <!-- Tracker Header -->
+  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
+        <div>
+          <h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2>
+          <p class="text-[10px] text-cyan-400 font-mono">Applicant Status Tracking Portal</p>
+        </div>
+      </div>
+      <button onclick="toggleModal('modal-track',false)" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all flex items-center gap-2">
+        <span>←</span> Back to Website
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10 space-y-8">
+    
+    <!-- Title & Search Form -->
+    <div class="text-center space-y-3">
+      <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">LIVE STATUS TRACKER</span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Track Your Application</h1>
+      <p class="text-xs text-slate-400 max-w-md mx-auto">Enter your Application Ref ID (e.g., LRA-APP-5995), Email Address, or Phone Number to view your real-time review progress.</p>
+    </div>
+
+    <!-- Lookup Form Card -->
+    <div class="glass p-6 sm:p-8 rounded-3xl border border-cyan-500/30 shadow-2xl space-y-4">
+      <form onsubmit="trackApplicationStatus(event)" class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+          <span class="absolute left-4 top-3.5 text-slate-500 text-xs">🔍</span>
+          <input id="track-input" type="text" required placeholder="Enter Ref ID (e.g. LRA-APP-5995), Email, or Phone..." class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-white text-xs outline-none focus:border-cyan-500/60 transition-colors"/>
+        </div>
+        <button type="submit" class="py-3 px-6 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs transition-all shrink-0 shadow-lg shadow-cyan-500/20">
+          Check Status →
+        </button>
+      </form>
+    </div>
+
+    <!-- Tracking Result Container -->
+    <div id="track-result-container" class="hidden space-y-6">
+      
+      <!-- Candidate Details Badge -->
+      <div class="glass p-6 rounded-3xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span id="tr-ref" class="font-mono text-xs font-bold text-cyan-400 block">REF: LRA-APP-1234</span>
+          <h3 id="tr-name" class="text-xl font-bold text-white mt-0.5">Candidate Name</h3>
+          <p id="tr-pos" class="text-xs text-slate-400 mt-0.5">Position Applied</p>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-slate-500 block font-mono">Date Applied: <span id="tr-date" class="text-slate-300">04/08/2026</span></span>
+          <div id="tr-status-badge" class="mt-1 inline-block px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-blue-500/20 text-blue-300 border border-blue-500/40">
+            RECEIVED
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL 4-STAGE PIPELINE TRACKER -->
+      <div class="glass p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">APPLICATION PIPELINE PROGRESS</h4>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
+          
+          <!-- Stage 1: Submitted -->
+          <div id="stg-1" class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/40 text-center space-y-2 relative transition-all">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto">1</div>
+            <p class="font-bold text-white text-xs">Submitted</p>
+            <p class="text-[10px] text-slate-400">Application sent</p>
+            <span class="text-emerald-400 text-xs block font-mono">✓ Done</span>
+          </div>
+
+          <!-- Stage 2: Received -->
+          <div id="stg-2" class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/40 text-center space-y-2 relative transition-all">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto">2</div>
+            <p class="font-bold text-white text-xs">Received</p>
+            <p class="text-[10px] text-slate-400">Logged in DB</p>
+            <span class="text-emerald-400 text-xs block font-mono">✓ Confirmed</span>
+          </div>
+
+          <!-- Stage 3: Under Review -->
+          <div id="stg-3" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2 relative transition-all">
+            <div id="stg-3-icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center mx-auto">3</div>
+            <p class="font-bold text-white text-xs">Under Review</p>
+            <p class="text-[10px] text-slate-400">LR Team screening</p>
+            <span id="stg-3-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span>
+          </div>
+
+          <!-- Stage 4: Final Decision -->
+          <div id="stg-4" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2 relative transition-all">
+            <div id="stg-4-icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center mx-auto">4</div>
+            <p class="font-bold text-white text-xs">Final Decision</p>
+            <p class="text-[10px] text-slate-400">Outcome & feedback</p>
+            <span id="stg-4-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- OFFICIAL DECISION REASON & TEAM FEEDBACK CARD -->
+      <div class="glass p-6 sm:p-8 rounded-3xl border border-emerald-500/30 space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📢</span>
+          <h4 class="text-sm font-bold text-white">Official LR AgroSense Review Note & Decision Reason</h4>
+        </div>
+        <div id="tr-reason-box" class="p-5 bg-slate-900 rounded-2xl border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="text-center pt-2">
+        <button onclick="toggleModal('modal-track',false)" class="px-8 py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold text-xs transition-all">
+          ← Back to Main Website
+        </button>
+      </div>
+
+    </div>
+
+    <!-- No Match Error Box -->
+    <div id="track-error-container" class="hidden text-center p-8 glass rounded-3xl border border-rose-500/40 space-y-3">
+      <div class="text-3xl">⚠️</div>
+      <h3 class="text-lg font-bold text-white">No Matching Application Found</h3>
+      <p class="text-xs text-rose-300">We could not find an application matching that Ref ID, Email, or Phone number.</p>
+      <p class="text-[11px] text-slate-400">Double check your entry or contact <strong class="text-emerald-400">lragrosense@gmail.com</strong> if you need assistance.</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ========== AUTH MODAL ========== -->
+<div id="modal-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+  <div class="relative w-full max-w-md glass rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
+    <button onclick="toggleModal('modal-auth',false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
+    <div class="text-center space-y-2"><div class="logo-b inline-block p-2"><img src="logo.jpg" alt="Logo" class="h-10 w-auto"/></div><h3 class="text-2xl font-extrabold text-white">Welcome</h3><p class="text-xs text-slate-400">Sign in to LR AgroSense.</p></div>
+    <div class="grid grid-cols-2 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+      <button onclick="switchAuthTab('email')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold" id="atab-e">✉️ Email</button>
+      <button onclick="switchAuthTab('google')" class="py-2 rounded-lg text-slate-400 font-semibold" id="atab-g">🌐 Google</button>
+    </div>
+    <div id="auth-email" class="space-y-3 text-xs">
+      <input id="ei-name" type="text" placeholder="Full Name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
+      <input id="ei-email" type="email" placeholder="Email..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
+      <input id="ei-pass" type="password" placeholder="Password..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
+      <button onclick="loginEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Sign In / Create ✉️</button>
+    </div>
+    <div id="auth-google" class="hidden text-xs text-center py-2">
+      <button onclick="loginGoogle()" class="w-full py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold">Continue with Google</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COMPREHENSIVE PRIVACY POLICY & TERMS MODAL ========== -->
+<div id="modal-terms" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
+  <div class="relative w-full max-w-3xl glass rounded-3xl p-6 sm:p-10 border border-emerald-500/40 bg-slate-950 shadow-2xl my-8 space-y-6 text-xs max-h-[85vh] flex flex-col">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-slate-800 pb-4 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-7 w-auto"/></div>
+        <div>
+          <h3 class="text-base font-extrabold text-white">LR AgroSense Legal Portal</h3>
+          <p class="text-[10px] text-slate-400 font-mono">Privacy Policy & Terms of Service</p>
+        </div>
+      </div>
+      <button onclick="toggleModal('modal-terms',false)" class="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white text-xs font-bold">✕</button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-2xl border border-slate-800 shrink-0 font-bold">
+      <button id="legal-tab-privacy" onclick="switchLegalTab('privacy')" class="py-2.5 rounded-xl bg-emerald-500 text-slate-950 transition-all text-xs flex items-center justify-center gap-2">
+        <span>🔒</span> Privacy Policy
+      </button>
+      <button id="legal-tab-terms" onclick="switchLegalTab('terms')" class="py-2.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs flex items-center justify-center gap-2">
+        <span>📜</span> Terms & Conditions
+      </button>
+    </div>
+
+    <!-- Scrollable Content Body -->
+    <div class="flex-1 overflow-y-auto pr-2 space-y-6 text-slate-300 leading-relaxed font-light">
+      
+      <!-- SECTION 1: PRIVACY POLICY -->
+      <div id="legal-sec-privacy" class="space-y-5">
+        <div class="space-y-1 border-b border-slate-800/80 pb-3">
+          <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-widest">TRANSPARENCY & DATA PROTECTION</span>
+          <h4 class="text-xl font-bold text-white font-display">Privacy Policy</h4>
+          <p class="text-[11px] text-slate-400">Effective Date: August 2026 • LR AgroSense</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">1. Information We Collect</h5>
+          <p>When you apply for an internship or interact with LR AgroSense, we collect personal details supplied voluntarily by you, including:</p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-400">
+            <li><strong class="text-slate-200">Applicant Profile:</strong> Full Name, Email Address, Phone Number.</li>
+            <li><strong class="text-slate-200">Academic Background:</strong> College / University Name, Degree / Major, Graduation Year.</li>
+            <li><strong class="text-slate-200">Application Documents:</strong> Resume / CV (uploaded PDF/Word file or Google Drive / Dropbox URL), LinkedIn Profile URL, and Portfolio / GitHub URL.</li>
+            <li><strong class="text-slate-200">Motivation & Availability:</strong> Why you wish to join LR AgroSense, preferred start date, and availability.</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">2. Purpose of Collection</h5>
+          <p>We collect and process your information strictly for the following operational purposes:</p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-400">
+            <li>Evaluating candidate qualifications for remote internship opportunities.</li>
+            <li>Contacting applicants for screening interviews and onboarding communications.</li>
+            <li>Managing LR AgroSense's internal Applicant Tracking System (ATS).</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">3. Data Access & Strict Confidentiality</h5>
+          <p>Your applicant data is strictly confidential. <strong class="text-emerald-400">Only Founder & CEO Pampana Hari Sai Ganesh has access to applicant records.</strong></p>
+          <p><strong class="text-rose-400">We do NOT sell, rent, trade, lease, or share</strong> your personal data with third-party advertisers, recruiters, data brokers, or marketing partners.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">4. Secure Storage & Infrastructure</h5>
+          <p>All data is transmitted securely over SSL/TLS encrypted connections and stored within Google Cloud Firebase / Firestore infrastructure protected by Firebase Authentication and Firestore security rules.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">5. Data Retention & Deletion Rights</h5>
+          <p>We retain candidate records for up to 12 months for active and future recruitment considerations. Applicants may request immediate and complete deletion of their profile at any time by emailing us.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">6. Cookies & Analytics</h5>
+          <p>We use standard browser local storage (<code class="bg-slate-900 text-emerald-400 px-1 py-0.5 rounded">localStorage</code>) to maintain session state and basic Firebase web analytics to monitor website uptime. We do not use intrusive cross-site tracking cookies.</p>
+        </div>
+
+        <div class="space-y-3 p-4 bg-slate-900 rounded-2xl border border-slate-800">
+          <h5 class="font-bold text-white text-sm">7. Privacy Contact & Inquiries</h5>
+          <p class="text-slate-400">For privacy queries, data access, or deletion requests, contact Founder Pampana Hari Sai Ganesh directly:</p>
+          <p class="font-mono text-emerald-400 font-bold mt-1">📧 Email: lragrosense@gmail.com</p>
+        </div>
+      </div>
+
+      <!-- SECTION 2: TERMS & CONDITIONS -->
+      <div id="legal-sec-terms" class="hidden space-y-5">
+        <div class="space-y-1 border-b border-slate-800/80 pb-3">
+          <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest">TERMS OF USE & SERVICE AGREEMENT</span>
+          <h4 class="text-xl font-bold text-white font-display">Terms & Conditions</h4>
+          <p class="text-[11px] text-slate-400">Effective Date: August 2026 • LR AgroSense</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">1. Website Content & Roadmap Disclaimer</h5>
+          <p>All information, product specifications, sensor telemetry demonstrations, and roadmap milestones (Phase 01–03) on this site represent our ongoing startup development and are subject to change without prior notice.</p>
+        </div>
+
+        <div class="space-y-3 p-4 bg-slate-900 rounded-2xl border border-amber-500/30">
+          <h5 class="font-bold text-amber-300 text-sm">2. Internship Program Terms (Unpaid, Remote, Part-Time)</h5>
+          <p>All internship positions offered by LR AgroSense are <strong class="text-white">unpaid, part-time, and remote</strong> opportunities:</p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-300 mt-2">
+            <li>Participation is voluntary and does not guarantee financial stipend, monetary compensation, or future conversion into paid employment.</li>
+            <li>Interns receive official completion certificates signed by the Founder/CEO, personalized LinkedIn recommendations, portfolio project experience, and direct mentorship.</li>
+            <li>Compensation terms may be revisited as LR AgroSense scales and secures venture funding.</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">3. Applicant Accuracy Declaration</h5>
+          <p>By submitting an application, applicants declare and warrant that all information, academic credentials, and work samples provided are accurate, truthful, and original.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">4. Intellectual Property Rights (IP)</h5>
+          <p>All website design, logos, graphics, hardware schematics (ESP32 Modbus NPK nodes), software algorithms, telemetry code, and branding are the exclusive Intellectual Property of <strong class="text-white">LR AgroSense (Pampana Hari Sai Ganesh)</strong>. Unauthorized reproduction is strictly prohibited.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h5 class="font-bold text-white text-sm">5. Limitation of Liability</h5>
+          <p>LR AgroSense and its founder shall not be liable for any direct, indirect, incidental, or consequential damages arising out of website usage, telemetry advisory reliance, or application submission.</p>
+        </div>
+
+        <div class="space-y-3 p-4 bg-slate-900 rounded-2xl border border-slate-800">
+          <h5 class="font-bold text-white text-sm">6. Governing Law & Jurisdiction</h5>
+          <p>These terms and conditions are governed by and construed in accordance with the laws of <strong class="text-emerald-400">India</strong>. Any legal disputes shall be subject to the exclusive jurisdiction of the competent courts in Andhra Pradesh, India.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="border-t border-slate-800 pt-4 shrink-0 flex justify-between items-center">
+      <span class="text-[10px] text-slate-500 font-mono">LR AgroSense • Founded by Pampana Hari Sai Ganesh</span>
+      <button onclick="toggleModal('modal-terms',false)" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all">
+        I Acknowledge & Agree
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== INVESTOR PITCH DECK & SCHEDULE CALL MODAL ========== -->
+<div id="modal-investor" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
+  <div class="relative w-full max-w-xl glass rounded-3xl p-6 sm:p-8 border border-amber-500/40 bg-slate-950 shadow-2xl my-8 space-y-6">
+    <button onclick="toggleModal('modal-investor',false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white z-10">✕</button>
+    
+    <div id="investor-form-box" class="space-y-5">
+      <div class="text-center space-y-2">
+        <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold uppercase">INVESTOR & GRANT INQUIRY</span>
+        <h3 class="text-2xl font-extrabold text-white">Request Pitch Deck & Schedule Call</h3>
+        <p class="text-xs text-slate-400">Connect directly with Founder Pampana Hari Sai Ganesh for investment, grants, or hardware pilot partnerships.</p>
+      </div>
+
+      <form id="investor-form" onsubmit="submitInvestorRequest(event)" class="space-y-4 text-xs">
+        <div><label class="text-slate-300 font-semibold mb-1 block">Full Name *</label><input id="inv-name" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-amber-500/60" placeholder="Investor / Partner Name"/></div>
+        <div><label class="text-slate-300 font-semibold mb-1 block">Fund / Organization / Firm *</label><input id="inv-firm" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-amber-500/60" placeholder="VC Fund, Angel Network, BIRAC, etc."/></div>
+        <div><label class="text-slate-300 font-semibold mb-1 block">Email Address *</label><input id="inv-email" type="email" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-amber-500/60" placeholder="investor@fund.com"/></div>
+        <div><label class="text-slate-300 font-semibold mb-1 block">Inquiry Type *</label><select id="inv-type" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-amber-500/60"><option>Request Pitch Deck & Financial Moat</option><option>Schedule 1-on-1 Founder Call</option><option>Grant & Ecosystem Partnership</option><option>Pilot Deployment Discussion</option></select></div>
+        <div><label class="text-slate-300 font-semibold mb-1 block">Message / Notes (Optional)</label><textarea id="inv-msg" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-amber-500/60 resize-none" placeholder="Share your thesis or meeting availability..."></textarea></div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs transition-all shadow-lg">Submit Request & Get Pitch Deck →</button>
+      </form>
+    </div>
+
+    <!-- Success View -->
+    <div id="investor-success-box" class="hidden text-center space-y-4 py-4">
+      <div class="text-4xl">📊</div>
+      <h3 class="text-2xl font-extrabold text-white">Pitch Deck Request Received!</h3>
+      <p class="text-xs text-slate-300">Thank you, <strong id="inv-succ-name" class="text-amber-400">Partner</strong>. Our founder will review your request and send the pitch deck to <strong id="inv-succ-email" class="text-white">email</strong> shortly.</p>
+      <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-400">
+        Direct Email: <strong class="text-amber-400">lragrosense@gmail.com</strong>
+      </div>
+      <button onclick="toggleModal('modal-investor',false)" class="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Close Window</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ADMIN DASHBOARD (FULL-SCREEN) ==================== -->
+<div id="admin-dashboard" class="fixed inset-0 z-[60] hidden bg-[#040914] text-slate-100 overflow-hidden">
+  <!-- Admin Login Gate -->
+  <div id="admin-gate" class="flex items-center justify-center h-full">
+    <div class="w-full max-w-md text-center space-y-6 p-8">
+      <div class="logo-b inline-block p-3"><img src="logo.jpg" alt="Logo" class="h-12 w-auto"/></div>
+      <h2 class="text-2xl font-extrabold text-white">Founder Access Portal</h2>
+      <form onsubmit="adminLogin(event)" class="space-y-4">
+        <input id="admin-pw" type="password" required placeholder="Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-sm outline-none focus:border-emerald-500/60"/>
+        <p id="admin-pw-err" class="hidden text-xs text-rose-400 font-bold">Incorrect password</p>
+        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Access Dashboard</button>
+      </form>
+      <button onclick="toggleModal('admin-dashboard',false)" class="text-xs text-slate-500 hover:text-slate-300">← Back to Website</button>
+    </div>
+  </div>
+
+  <!-- Admin Main Interface -->
+  <div id="admin-main" class="hidden flex h-full">
+    <!-- Sidebar -->
+    <aside class="w-56 bg-[#0c1527] border-r border-slate-800 flex flex-col justify-between p-4 shrink-0 overflow-y-auto">
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 px-2 pb-3 border-b border-slate-800">
+          <img src="logo.jpg" alt="Logo" class="h-7 w-auto rounded"/>
+          <div><p class="text-xs font-bold text-white">LR AgroSense</p><p class="text-[10px] text-emerald-400 font-mono">Founder Console</p></div>
+        </div>
+        <nav class="space-y-1 text-xs">
+          <button onclick="switchAdminTab('dash')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" data-tab="dash">📊 Dashboard</button>
+          <button onclick="switchAdminTab('ats')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ats">👥 Applications</button>
+          <button onclick="switchAdminTab('ai')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ai">✦ Aria AI</button>
+          <button onclick="switchAdminTab('tasks')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="tasks">📋 Tasks</button>
+          <button onclick="switchAdminTab('notes')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="notes">📝 Notes</button>
+        </nav>
+      </div>
+      <button onclick="logoutAdmin()" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:text-white">← Exit Dashboard</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- TAB: Dashboard -->
+      <div id="tab-dash" class="admin-tab p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Dashboard</h2><p class="text-xs text-slate-400 font-mono" id="dash-date"></p></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="dash-stats">
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Total Applicants</p><p class="text-3xl font-extrabold text-white mt-1" id="st-total">—</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">New Applications</p><p class="text-3xl font-extrabold text-emerald-400 mt-1" id="st-new">—</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Selected</p><p class="text-3xl font-extrabold text-cyan-400 mt-1" id="st-selected">—</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Rejected</p><p class="text-3xl font-extrabold text-rose-400 mt-1" id="st-rejected">—</p></div>
+        </div>
+        <div class="bg-[#0c1527] rounded-2xl border border-slate-800 p-5">
+          <h3 class="text-sm font-bold text-white mb-3">Recent Applications</h3>
+          <div id="dash-recent" class="text-xs text-slate-400">Loading...</div>
+        </div>
+      </div>
+
+      <!-- TAB: ATS -->
+      <div id="tab-ats" class="admin-tab hidden p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <h2 class="text-2xl font-extrabold text-white font-display">Applicant Tracking</h2>
+          <div class="flex items-center gap-3">
+            <input id="ats-search" type="text" placeholder="Search name, email..." class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none w-48 focus:border-emerald-500/60" oninput="filterATS()"/>
+            <select id="ats-filter" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none" onchange="filterATS()">
+              <option value="">All Status</option><option value="new">New</option><option value="shortlisted">Shortlisted</option><option value="interview">Interview</option><option value="selected">Selected</option><option value="rejected">Rejected</option><option value="joined">Joined</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-[#0c1527] rounded-2xl border border-slate-800 overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead><tr class="border-b border-slate-800 text-slate-400"><th class="text-left p-3 font-semibold">Name</th><th class="text-left p-3 font-semibold">Position</th><th class="text-left p-3 font-semibold">Status</th><th class="text-left p-3 font-semibold">Date</th><th class="text-left p-3 font-semibold">Actions</th></tr></thead>
+            <tbody id="ats-tbody"><tr><td colspan="5" class="p-4 text-center text-slate-500">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: AI Co-Founder (ARIA) -->
+      <div id="tab-ai" class="admin-tab hidden flex overflow-hidden" style="height:100%">
+        
+        <!-- Chat History Sidebar -->
+        <div id="aria-sidebar" class="w-52 bg-[#060e1e] border-r border-slate-900 flex flex-col shrink-0 overflow-hidden">
+          <div class="p-3 border-b border-slate-900">
+            <button onclick="ariaNewChat()" class="w-full py-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-bold flex items-center gap-2 transition-all">
+              <span>＋</span> New Chat
+            </button>
+          </div>
+          <div id="aria-chat-list" class="flex-1 overflow-y-auto p-2 space-y-1 text-[11px]">
+          </div>
+          <div class="p-3 border-t border-slate-900 space-y-2">
+            <div id="aria-mem-badge" class="mem-badge"><span>🧠</span> <span id="aria-mem-count">0</span> memories</div>
+            <button onclick="ariaOpenSettings()" class="w-full py-1.5 px-2 rounded-lg text-slate-500 hover:text-slate-300 text-[10px] flex items-center gap-1.5">⚙ Settings</button>
+          </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          
+          <!-- Header -->
+          <div class="px-5 py-3 border-b border-slate-900 flex items-center justify-between shrink-0 bg-[#040914]/80">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-950 font-black text-sm">A</div>
+              <div>
+                <p class="text-sm font-bold text-white leading-none">Aria</p>
+                <p class="text-[10px] text-emerald-400 font-mono">AI Co-Founder • LR AgroSense</p>
+              </div>
+              <span id="aria-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="aria-rag-badge" class="hidden px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-mono">RAG ✓</span>
+              <span id="aria-model-badge" class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-500 text-[9px] font-mono">gemini-1.5-flash</span>
+              <button onclick="ariaOpenSettings()" class="p-1.5 rounded-lg hover:bg-slate-900 text-slate-500 hover:text-slate-300 text-xs">⚙</button>
+            </div>
+          </div>
+
+          <!-- Messages Area -->
+          <div id="aria-messages" class="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+            <!-- Welcome screen rendered by JS on init -->
+          </div>
+
+          <!-- Input Bar -->
+          <div class="shrink-0 border-t border-slate-900 bg-[#040914]/90 px-4 py-3">
+            <div class="max-w-3xl mx-auto">
+              <div class="relative flex items-end gap-3 bg-[#0a1528] border border-slate-800 rounded-2xl px-4 py-3 focus-within:border-emerald-500/50 transition-all">
+                <textarea id="aria-input" rows="1" placeholder="Talk to Aria — ask anything, assign tasks, analyze candidates..." class="flex-1 bg-transparent text-white text-sm outline-none placeholder-slate-600 font-sans leading-relaxed" onkeydown="ariaHandleKey(event)" oninput="ariaAutoResize(this)"></textarea>
+                <button id="aria-send-btn" onclick="ariaSend()" class="shrink-0 w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-slate-950 font-bold transition-all text-base">↑</button>
+              </div>
+              <p class="text-[10px] text-slate-700 mt-1.5 text-center">Aria has full access to your company database, applicants, tasks, and notes. <button onclick="ariaOpenSettings()" class="text-slate-600 hover:text-slate-400 underline">Settings</button></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aria Settings Modal -->
+      <div id="aria-settings" class="fixed inset-0 z-[80] hidden flex items-center justify-center bg-black/80 backdrop-blur-md">
+        <div class="w-full max-w-md bg-[#0c1527] border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white">Aria Settings</h3>
+            <button onclick="document.getElementById('aria-settings').classList.add('hidden')" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="text-slate-400 mb-1 block">Gemini API Key</label>
+              <input id="aria-key-input" type="password" placeholder="AIzaSy..." class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/50"/>
+            </div>
+            <div>
+              <label class="text-slate-400 mb-1 block">Aria Persona Name</label>
+              <input id="aria-name-input" type="text" placeholder="Aria" value="Aria" class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/50"/>
+            </div>
+            <div>
+              <label class="text-slate-400 mb-2 block">Pinned Memory (permanent context for Aria)</label>
+              <textarea id="aria-pinned-memory" rows="4" placeholder="e.g. Pampana prefers morning meetings. We are targeting FPO partnerships first before B2C..." class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none resize-none focus:border-emerald-500/50"></textarea>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="ariaSaveSettings()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Save Settings</button>
+            <button onclick="ariaClearMemory()" class="py-2.5 px-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold">Clear Memory</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Tasks -->
+      <div id="tab-tasks" class="admin-tab hidden p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Tasks</h2>
+          <button onclick="showAddTask()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">+ Add Task</button>
+        </div>
+        <div id="tasks-list" class="space-y-3 text-xs">Loading...</div>
+        <div id="task-form-box" class="hidden glass p-5 rounded-2xl border border-emerald-500/30 space-y-3">
+          <input id="tf-title" type="text" placeholder="Task title..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
+          <textarea id="tf-desc" placeholder="Description..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none"></textarea>
+          <div class="flex gap-3">
+            <select id="tf-priority" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select>
+            <button onclick="addTask()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Save Task</button>
+            <button onclick="document.getElementById('task-form-box').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Notes -->
+      <div id="tab-notes" class="admin-tab hidden p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Notes</h2>
+          <button onclick="showAddNote()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">+ Add Note</button>
+        </div>
+        <div id="notes-list" class="space-y-3 text-xs">Loading...</div>
+        <div id="note-form-box" class="hidden glass p-5 rounded-2xl border border-emerald-500/30 space-y-3">
+          <input id="nf-title" type="text" placeholder="Note title..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
+          <textarea id="nf-content" placeholder="Write your note..." rows="4" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none"></textarea>
+          <div class="flex gap-3">
+            <button onclick="addNote()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Save Note</button>
+            <button onclick="document.getElementById('note-form-box').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ATS Detail Side Panel -->
+    <div id="ats-detail" class="hidden w-96 bg-[#0c1527] border-l border-slate-800 overflow-y-auto p-5 space-y-4 shrink-0">
+      <div class="flex items-center justify-between"><h3 class="text-sm font-bold text-white">Applicant Details</h3><button onclick="document.getElementById('ats-detail').classList.add('hidden')" class="text-slate-400 hover:text-white text-sm">✕</button></div>
+      <div id="ats-detail-content" class="text-xs space-y-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TOAST ========== -->
+<div id="toast" class="fixed bottom-6 right-6 z-[70] hidden">
+  <div class="glass rounded-2xl p-4 border border-emerald-500/40 shadow-2xl flex items-center gap-3 text-xs">
+    <span class="text-emerald-400 text-lg">✓</span>
+    <div><p class="font-bold text-white" id="toast-title">Success</p><p class="text-slate-400" id="toast-msg">Done.</p></div>
+  </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ENGINE ==================== -->
 <script>
+// ===== Firebase Init =====
+const fbConfig = {
+  apiKey:"AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
+  authDomain:"lr-agrosense.firebaseapp.com",
+  projectId:"lr-agrosense",
+  storageBucket:"lr-agrosense.firebasestorage.app",
+  messagingSenderId:"82862173999",
+  appId:"1:82862173999:web:fa5f8d75ecc7229dc2bbda",
+  measurementId:"G-6LGWE4Q1Z8"
+};
+firebase.initializeApp(fbConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const FOUNDER_PW = '11042026';
+let GEMINI_KEY = localStorage.getItem('lr_gemini_key') || fbConfig.apiKey;
+let currentUser = null;
+
+// Dual Storage State
+let allApplications = JSON.parse(localStorage.getItem('lr_apps') || '[]');
+let allTasks = JSON.parse(localStorage.getItem('lr_tasks') || '[]');
+let allNotes = JSON.parse(localStorage.getItem('lr_notes') || '[]');
+
+// ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+  const obs = new IntersectionObserver(e => e.forEach(el => el.target.classList.add('active')), {threshold:0.01});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   if(location.hash==='#admin') openAdminDashboard();
+  loadUser();
 });
 window.addEventListener('hashchange', () => {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+  if(location.hash==='#admin') openAdminDashboard();
 });
+
+// ===== Fast Non-Blocking Storage Helpers =====
+function withTimeout(promise, ms = 2000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+  ]);
+}
+
+async function syncCollection(collName, localKey) {
+  try {
+    const snap = await withTimeout(db.collection(collName).get(), 2000);
+    const docs = snap.docs.map(d => {
+      const data = d.data();
+      let appliedAtStr = new Date().toLocaleDateString('en-IN');
+      if (data.appliedAt?.toDate) appliedAtStr = data.appliedAt.toDate().toLocaleDateString('en-IN');
+      else if (data.createdAt?.toDate) appliedAtStr = data.createdAt.toDate().toLocaleDateString('en-IN');
+      return { id: d.id, ...data, dateFormatted: appliedAtStr };
+    });
+    if (docs && docs.length) {
+      localStorage.setItem(localKey, JSON.stringify(docs));
+      return docs;
+    }
+  } catch (e) {
+    console.warn(`Firestore sync for ${collName} used local cache:`, e.message);
+  }
+  return JSON.parse(localStorage.getItem(localKey) || '[]');
+}
+
+// ===== Utility =====
+function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+function showToast(title, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.remove('hidden'); t.firstElementChild.className = t.firstElementChild.className.replace('toast-out','') + ' toast-in';
+  setTimeout(() => { t.firstElementChild.classList.replace('toast-in','toast-out'); setTimeout(() => t.classList.add('hidden'), 400); }, 3500);
+}
+function toggleAuthModal(show) { toggleModal('modal-auth', show); }
+function statusColor(s) { return {new:'bg-blue-500/20 text-blue-300',shortlisted:'bg-amber-500/20 text-amber-300',interview:'bg-purple-500/20 text-purple-300',selected:'bg-emerald-500/20 text-emerald-300',rejected:'bg-rose-500/20 text-rose-300',joined:'bg-cyan-500/20 text-cyan-300'}[s] || 'bg-slate-800 text-slate-400'; }
+
+// ===== Legal Modal Switcher =====
+function openLegalModal(tab = 'privacy') {
+  switchLegalTab(tab);
+  toggleModal('modal-terms', true);
+}
+function switchLegalTab(t) {
+  const isPriv = (t === 'privacy');
+  const secPriv = document.getElementById('legal-sec-privacy');
+  const secTerms = document.getElementById('legal-sec-terms');
+  if (secPriv && secTerms) {
+    secPriv.classList.toggle('hidden', !isPriv);
+    secTerms.classList.toggle('hidden', isPriv);
+  }
+  const btnPriv = document.getElementById('legal-tab-privacy');
+  const btnTerms = document.getElementById('legal-tab-terms');
+  if (btnPriv && btnTerms) {
+    btnPriv.className = isPriv ? 'py-2.5 rounded-xl bg-emerald-500 text-slate-950 transition-all text-xs flex items-center justify-center gap-2 font-bold' : 'py-2.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs flex items-center justify-center gap-2 font-bold';
+    btnTerms.className = !isPriv ? 'py-2.5 rounded-xl bg-cyan-500 text-slate-950 transition-all text-xs flex items-center justify-center gap-2 font-bold' : 'py-2.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs flex items-center justify-center gap-2 font-bold';
+  }
+}
+
+// ===== Investor Request Handler =====
+function submitInvestorRequest(e) {
+  e.preventDefault();
+  const name = document.getElementById('inv-name').value.trim();
+  const email = document.getElementById('inv-email').value.trim();
+  const firm = document.getElementById('inv-firm').value.trim();
+  const type = document.getElementById('inv-type').value;
+  const msg = document.getElementById('inv-msg').value.trim();
+
+  const reqObj = {
+    id: 'inv_' + Date.now(),
+    name, email, firm, type, msg,
+    dateFormatted: new Date().toLocaleDateString('en-IN')
+  };
+
+  // Save to Firestore notes & localStorage
+  const existingInv = JSON.parse(localStorage.getItem('lr_investor_requests') || '[]');
+  existingInv.unshift(reqObj);
+  localStorage.setItem('lr_investor_requests', JSON.stringify(existingInv));
+
+  // Save note to founder notes in Firestore
+  db.collection('notes').add({
+    title: `Investor Request: ${name} (${firm})`,
+    content: `Type: ${type}\nEmail: ${email}\nNote: ${msg||'None'}`,
+    dateFormatted: reqObj.dateFormatted
+  }).catch(()=>{});
+
+  document.getElementById('inv-succ-name').textContent = name;
+  document.getElementById('inv-succ-email').textContent = email;
+  document.getElementById('investor-form-box').classList.add('hidden');
+  document.getElementById('investor-success-box').classList.remove('hidden');
+  showToast('Request Submitted! 📊', 'Pitch deck inquiry sent to founder.');
+}
+
+// ===== Auth =====
+function loadUser() {
+  const s = localStorage.getItem('lr_user');
+  if(s) { try { currentUser=JSON.parse(s); renderNav(); } catch(e){} }
+}
+function renderNav() {
+  const c = document.getElementById('nav-user-container');
+  if(currentUser && c) c.innerHTML = `<button onclick="logoutUser()" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-bold">👤 ${currentUser.name} (Logout)</button>`;
+}
+function logoutUser() { currentUser=null; localStorage.removeItem('lr_user'); location.reload(); }
+function switchAuthTab(t) { document.getElementById('auth-email').classList.toggle('hidden',t!=='email'); document.getElementById('auth-google').classList.toggle('hidden',t!=='google'); }
+function loginEmail() {
+  const n=document.getElementById('ei-name').value.trim(), e=document.getElementById('ei-email').value.trim(), p=document.getElementById('ei-pass').value.trim();
+  if(!n||!e||!p){alert('Fill all fields');return;}
+  auth.signInWithEmailAndPassword(e,p).then(r=>doneLogin(n,e,r.user)).catch(()=>{
+    auth.createUserWithEmailAndPassword(e,p).then(r=>doneLogin(n,e,r.user)).catch(err=>alert(err.message));
+  });
+}
+function doneLogin(n,e,u){currentUser={name:n,email:e,uid:u.uid};localStorage.setItem('lr_user',JSON.stringify(currentUser));renderNav();toggleModal('modal-auth',false);}
+function loginGoogle(){
+  const p=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(p).then(r=>{currentUser={name:r.user.displayName,email:r.user.email,uid:r.user.uid};localStorage.setItem('lr_user',JSON.stringify(currentUser));renderNav();toggleModal('modal-auth',false);}).catch(e=>alert(e.message));
+}
+
+// ===== Application Form =====
+function openApplyModal(position) {
+  document.getElementById('apply-position').value = position;
+  document.getElementById('apply-position-label').textContent = position;
+  document.getElementById('apply-error').classList.add('hidden');
+  document.getElementById('apply-form').reset();
+  
+  // Show form view, hide congratulations view
+  document.getElementById('apply-form-container').classList.remove('hidden');
+  document.getElementById('apply-congrats-container').classList.add('hidden');
+  
+  toggleModal('modal-apply', true);
+  const portal = document.getElementById('modal-apply');
+  if (portal) portal.scrollTop = 0;
+}
+
+async function submitApplication(e) {
+  e.preventDefault();
+  const btn = document.getElementById('apply-submit-btn');
+  btn.textContent = 'Submitting Application...'; btn.disabled = true;
+  
+  let resumeUrl = document.getElementById('af-resume').value.trim();
+  const fileInput = document.getElementById('af-resume-file');
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    try {
+      resumeUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    } catch(err) {
+      console.warn('File read error:', err);
+    }
+  }
+
+  const name = document.getElementById('af-name').value.trim();
+  const email = document.getElementById('af-email').value.trim();
+  const pos = document.getElementById('apply-position').value;
+  const refId = 'LRA-APP-' + Math.floor(1000 + Math.random() * 9000);
+  const todayStr = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'short',day:'numeric'});
+
+  const appObj = {
+    id: 'app_' + Date.now(),
+    refId,
+    fullName: name,
+    email: email,
+    phone: document.getElementById('af-phone').value.trim(),
+    college: document.getElementById('af-college').value.trim(),
+    degree: document.getElementById('af-degree').value.trim(),
+    graduationYear: parseInt(document.getElementById('af-gradyear').value),
+    resumeLink: resumeUrl || '',
+    linkedinProfile: document.getElementById('af-linkedin').value.trim() || '',
+    portfolio: document.getElementById('af-portfolio').value.trim() || '',
+    whyJoin: document.getElementById('af-why').value.trim(),
+    availability: document.getElementById('af-avail').value,
+    position: pos,
+    status: 'new',
+    notes: '',
+    internalComments: '',
+    dateFormatted: todayStr
+  };
+
+  // Instant local save
+  allApplications.unshift(appObj);
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+
+  // Background Firestore save
+  db.collection('applications').add({
+    ...appObj,
+    appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(err => console.warn('Firestore application save background error:', err));
+
+  // Populate Congratulations View & Submitted Details Receipt
+  document.getElementById('succ-name').textContent = name;
+  document.getElementById('succ-position').textContent = pos;
+  document.getElementById('succ-id').textContent = refId;
+  document.getElementById('succ-date').textContent = todayStr;
+
+  document.getElementById('succ-fullname').textContent = name;
+  document.getElementById('succ-pos-name').textContent = pos;
+  document.getElementById('succ-email').textContent = email;
+  document.getElementById('succ-phone').textContent = appObj.phone;
+  document.getElementById('succ-college').textContent = appObj.college;
+  document.getElementById('succ-degree').textContent = `${appObj.degree} (${appObj.graduationYear})`;
+  document.getElementById('succ-avail').textContent = appObj.availability;
+
+  document.getElementById('succ-resume').textContent = appObj.resumeLink ? (appObj.resumeLink.startsWith('data:') ? '📄 Uploaded File' : '🔗 Web Link') : 'None Attached';
+  document.getElementById('succ-linkedin').textContent = appObj.linkedinProfile || 'Not Provided';
+  document.getElementById('succ-portfolio').textContent = appObj.portfolio || 'Not Provided';
+  document.getElementById('succ-why').textContent = `"${appObj.whyJoin}"`;
+
+  // Pre-fill track button with generated Ref ID
+  const trackBtn = document.getElementById('succ-track-btn');
+  if (trackBtn) {
+    trackBtn.onclick = () => {
+      toggleModal('modal-apply', false);
+      openTrackModal(refId);
+    };
+  }
+
+  // Switch from Form view to Congratulations view
+  document.getElementById('apply-form-container').classList.add('hidden');
+  document.getElementById('apply-congrats-container').classList.remove('hidden');
+  const portal = document.getElementById('modal-apply');
+  if (portal) portal.scrollTop = 0;
+
+  showToast('Congratulations! 🎉', 'Application submitted successfully.');
+  btn.textContent = 'Submit Application →'; btn.disabled = false;
+}
+
+// ===== Admin Dashboard =====
+function openAdminDashboard() { toggleModal('admin-dashboard', true); }
+function adminLogin(e) {
+  e.preventDefault();
+  if(document.getElementById('admin-pw').value === FOUNDER_PW) {
+    document.getElementById('admin-gate').classList.add('hidden');
+    document.getElementById('admin-main').classList.remove('hidden');
+    loadDashboard();
+  } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
+}
+function logoutAdmin() {
+  document.getElementById('admin-gate').classList.remove('hidden');
+  document.getElementById('admin-main').classList.add('hidden');
+  document.getElementById('admin-pw').value = '';
+  document.getElementById('admin-pw-err').classList.add('hidden');
+  toggleModal('admin-dashboard', false);
+}
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+  document.getElementById('tab-'+tab).classList.remove('hidden');
+  document.querySelectorAll('.admin-nav-btn').forEach(b => { b.className = b.className.replace(/bg-emerald-500\/10|text-emerald-300|border border-emerald-500\/30/g, '').trim() + ' text-slate-400 hover:bg-slate-900'; });
+  const active = document.querySelector(`.admin-nav-btn[data-tab="${tab}"]`);
+  if(active) active.className = 'admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
+  if(tab==='dash') loadDashboard();
+  if(tab==='ats') loadATS();
+  if(tab==='tasks') loadTasks();
+  if(tab==='notes') loadNotes();
+  if(tab==='ai') initAria();
+}
+
+// ===== Dashboard View =====
+async function loadDashboard() {
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  
+  // Render instantly from local state
+  renderDashboardStats();
+  
+  // Sync background from Firestore
+  allApplications = await syncCollection('applications', 'lr_apps');
+  renderDashboardStats();
+}
+
+function renderDashboardStats() {
+  const counts = {total:allApplications.length, new:0, shortlisted:0, interview:0, selected:0, rejected:0, joined:0};
+  allApplications.forEach(a => { if(counts[a.status]!==undefined) counts[a.status]++; });
+  
+  document.getElementById('st-total').textContent = counts.total;
+  document.getElementById('st-new').textContent = counts.new;
+  document.getElementById('st-selected').textContent = counts.selected;
+  document.getElementById('st-rejected').textContent = counts.rejected;
+  
+  const recent = allApplications.slice(0,5);
+  document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(a => `
+    <div class="flex items-center justify-between py-2 border-b border-slate-800/50">
+      <div>
+        <p class="text-white font-semibold">${a.fullName}</p>
+        <p class="text-slate-500 text-[11px]">${a.position} • ${a.college || 'N/A'}</p>
+      </div>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span>
+    </div>`).join('') : '<p class="text-slate-500 italic py-2">No applications yet. Open position applications will appear here.</p>';
+}
+
+// ===== Applicant Status Tracking System =====
+function openTrackModal(query = '') {
+  toggleModal('modal-track', true);
+  if (query) {
+    document.getElementById('track-input').value = query;
+    trackApplicationStatus();
+  }
+}
+
+function trackApplicationStatus(e) {
+  if (e) e.preventDefault();
+  const q = document.getElementById('track-input').value.trim().toLowerCase();
+  if (!q) return;
+
+  const resultBox = document.getElementById('track-result-container');
+  const errorBox = document.getElementById('track-error-container');
+  resultBox.classList.add('hidden');
+  errorBox.classList.add('hidden');
+
+  // Match by refId, email, phone, or id
+  const app = allApplications.find(a => {
+    return (a.refId && a.refId.toLowerCase() === q) ||
+           (a.email && a.email.toLowerCase() === q) ||
+           (a.phone && a.phone.replaceAll(' ','').includes(q.replaceAll(' ',''))) ||
+           (a.id && a.id.toLowerCase() === q);
+  });
+
+  if (!app) {
+    errorBox.classList.remove('hidden');
+    return;
+  }
+
+  // Populate candidate info
+  document.getElementById('tr-ref').textContent = 'REF: ' + (app.refId || app.id);
+  document.getElementById('tr-name').textContent = app.fullName;
+  document.getElementById('tr-pos').textContent = app.position;
+  document.getElementById('tr-date').textContent = app.dateFormatted || 'Recent';
+
+  const status = (app.status || 'new').toLowerCase();
+  const badge = document.getElementById('tr-status-badge');
+  badge.textContent = status.toUpperCase();
+  badge.className = 'mt-1 inline-block px-3 py-1 rounded-full text-xs font-mono font-bold uppercase ' + statusColor(status);
+
+  // Pipeline Stages Logic
+  const stg3 = document.getElementById('stg-3');
+  const stg3Icon = document.getElementById('stg-3-icon');
+  const stg3Txt = document.getElementById('stg-3-txt');
+
+  const stg4 = document.getElementById('stg-4');
+  const stg4Icon = document.getElementById('stg-4-icon');
+  const stg4Txt = document.getElementById('stg-4-txt');
+
+  if (status === 'new') {
+    stg3.className = 'p-4 rounded-2xl bg-slate-900 border border-cyan-500/50 text-center space-y-2 animate-pulse';
+    stg3Icon.className = 'w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500 text-cyan-300 font-bold text-xs flex items-center justify-center mx-auto';
+    stg3Txt.textContent = 'In Review Queue'; stg3Txt.className = 'text-cyan-400 text-xs block font-mono';
+
+    stg4.className = 'p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2 opacity-60';
+    stg4Icon.className = 'w-8 h-8 rounded-full bg-slate-800 text-slate-500 font-bold text-xs flex items-center justify-center mx-auto';
+    stg4Txt.textContent = 'Awaiting Outcome'; stg4Txt.className = 'text-slate-500 text-[10px] block font-mono';
+  } else if (status === 'interview' || status === 'review') {
+    stg3.className = 'p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-2';
+    stg3Icon.className = 'w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto';
+    stg3Txt.textContent = '✓ Screening Active'; stg3Txt.className = 'text-emerald-400 text-xs block font-mono';
+
+    stg4.className = 'p-4 rounded-2xl bg-slate-900 border border-purple-500/50 text-center space-y-2 animate-pulse';
+    stg4Icon.className = 'w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500 text-purple-300 font-bold text-xs flex items-center justify-center mx-auto';
+    stg4Txt.textContent = 'Intro Interview'; stg4Txt.className = 'text-purple-300 text-xs block font-mono';
+  } else if (status === 'shortlisted' || status === 'selected' || status === 'joined') {
+    stg3.className = 'p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-2';
+    stg3Icon.className = 'w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto';
+    stg3Txt.textContent = '✓ Screened'; stg3Txt.className = 'text-emerald-400 text-xs block font-mono';
+
+    stg4.className = 'p-4 rounded-2xl bg-slate-900 border border-emerald-500/60 text-center space-y-2 shadow-[0_0_30px_rgba(34,197,94,0.2)]';
+    stg4Icon.className = 'w-8 h-8 rounded-full bg-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center mx-auto';
+    stg4Txt.textContent = '🎉 SELECTED'; stg4Txt.className = 'text-emerald-400 text-xs block font-bold font-mono';
+  } else if (status === 'rejected') {
+    stg3.className = 'p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-2';
+    stg3Icon.className = 'w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto';
+    stg3Txt.textContent = '✓ Screened'; stg3Txt.className = 'text-emerald-400 text-xs block font-mono';
+
+    stg4.className = 'p-4 rounded-2xl bg-slate-900 border border-rose-500/50 text-center space-y-2';
+    stg4Icon.className = 'w-8 h-8 rounded-full bg-rose-500/20 border border-rose-500 text-rose-400 font-bold text-xs flex items-center justify-center mx-auto';
+    stg4Txt.textContent = 'Not Selected'; stg4Txt.className = 'text-rose-400 text-xs block font-mono';
+  }
+
+  // Official Reason Box
+  const reasonBox = document.getElementById('tr-reason-box');
+  let reasonText = app.decisionReason || app.feedback || app.notes;
+
+  if (!reasonText) {
+    if (status === 'new') {
+      reasonText = `Your application for ${app.position} has been received and added to our review queue. Founder Pampana Hari Sai Ganesh will review your profile and motivation statement within 1-2 business days.`;
+    } else if (status === 'shortlisted' || status === 'interview') {
+      reasonText = `Congratulations! Your profile has been shortlisted for an intro screening call. Please check your email inbox for meeting schedule instructions from Founder Pampana Hari Sai Ganesh.`;
+    } else if (status === 'selected' || status === 'joined') {
+      reasonText = `Congratulations! You have been selected for the ${app.position} internship position at LR AgroSense. Official completion certificate registration, direct founder mentorship, and onboarding kickoff details have been approved!`;
+    } else if (status === 'rejected') {
+      reasonText = `Thank you for applying to LR AgroSense. While your academic background is commendable, we received a high volume of candidates for this cohort and selected applicants whose current experience directly matches our immediate Phase 1 hardware milestone requirements. We will keep your resume on file for future openings.`;
+    } else {
+      reasonText = `Application is currently in active review by LR AgroSense.`;
+    }
+  }
+
+  reasonBox.innerHTML = `
+    <p class="font-bold ${status==='rejected'?'text-rose-300':status==='selected'?'text-emerald-300':'text-cyan-300'} mb-1">
+      Official Status Update (${status.toUpperCase()}):
+    </p>
+    <p class="text-slate-300 leading-relaxed">${reasonText}</p>
+  `;
+
+  resultBox.classList.remove('hidden');
+}
+
+// ===== ATS View =====
+async function loadATS() {
+  renderATSTable(allApplications);
+  allApplications = await syncCollection('applications', 'lr_apps');
+  renderATSTable(allApplications);
+}
+
+function filterATS() {
+  const q = document.getElementById('ats-search').value.toLowerCase();
+  const f = document.getElementById('ats-filter').value;
+  let filtered = allApplications;
+  if(q) filtered = filtered.filter(a => (a.fullName||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q));
+  if(f) filtered = filtered.filter(a => a.status === f);
+  renderATSTable(filtered);
+}
+
+function renderATSTable(apps) {
+  document.getElementById('ats-tbody').innerHTML = apps.length ? apps.map(a => `
+    <tr class="border-b border-slate-800/50 hover:bg-slate-900/50 cursor-pointer" onclick="openDetail('${a.id}')">
+      <td class="p-3 text-white font-semibold">${a.fullName}</td>
+      <td class="p-3 text-slate-400">${a.position}</td>
+      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span></td>
+      <td class="p-3 text-slate-500">${a.dateFormatted || 'Recent'}</td>
+      <td class="p-3"><button class="text-emerald-400 hover:text-emerald-300 font-bold">View →</button></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="p-6 text-center text-slate-500">No applications found. New candidate submissions will appear here.</td></tr>';
+}
+
+function openDetail(id) {
+  const a = allApplications.find(x => x.id === id);
+  if(!a) return;
+  const panel = document.getElementById('ats-detail');
+  panel.classList.remove('hidden');
+  document.getElementById('ats-detail-content').innerHTML = `
+    <div class="space-y-4">
+      <div><p class="text-lg font-bold text-white">${a.fullName}</p><p class="text-emerald-400 text-xs font-semibold">${a.position}</p><p class="text-slate-500 text-[10px] font-mono">Ref ID: ${a.refId||a.id}</p></div>
+      <div class="space-y-2">
+        <p><span class="text-slate-500">Email:</span> <span class="text-white">${a.email}</span></p>
+        <p><span class="text-slate-500">Phone:</span> <span class="text-white">${a.phone}</span></p>
+        <p><span class="text-slate-500">College:</span> <span class="text-white">${a.college}</span></p>
+        <p><span class="text-slate-500">Degree:</span> <span class="text-white">${a.degree}</span></p>
+        <p><span class="text-slate-500">Graduation:</span> <span class="text-white">${a.graduationYear}</span></p>
+        <p><span class="text-slate-500">Availability:</span> <span class="text-white">${a.availability}</span></p>
+      </div>
+      <div class="space-y-2">
+        ${a.resumeLink ? `<a href="${a.resumeLink}" target="_blank" ${a.resumeLink.startsWith('data:')?'download="resume"':''} class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-emerald-400 hover:text-emerald-300 font-bold">📄 ${a.resumeLink.startsWith('data:')?'Download Uploaded Resume 📥':'View Resume ↗'}</a>` : '<p class="text-slate-600 italic">No resume attached</p>'}
+        ${a.linkedinProfile ? `<a href="${a.linkedinProfile}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sky-400 hover:text-sky-300 font-bold">🔗 LinkedIn Profile ↗</a>` : ''}
+        ${a.portfolio ? `<a href="${a.portfolio}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-400 hover:text-purple-300 font-bold">🌐 Portfolio ↗</a>` : ''}
+      </div>
+      <div><p class="text-slate-500 mb-1">Why join LR AgroSense:</p><p class="text-slate-300 bg-slate-900 p-3 rounded-xl">${a.whyJoin}</p></div>
+      <div>
+        <label class="text-slate-500 mb-1 block">Status</label>
+        <select onchange="updateStatus('${a.id}',this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none">
+          ${['new','shortlisted','interview','selected','rejected','joined'].map(s => `<option value="${s}" ${a.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="text-slate-400 mb-1 block font-bold">Decision Reason / Candidate Feedback (Visible on Status Tracker)</label>
+        <textarea id="detail-reason-${a.id}" rows="3" placeholder="Explain why candidate was selected, shortlisted, or rejected..." class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none focus:border-emerald-500/60">${a.decisionReason || a.feedback || ''}</textarea>
+        <button onclick="saveDecisionReason('${a.id}')" class="mt-2 px-3.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-[10px] font-bold shadow-md">Save Decision Reason & Sync</button>
+      </div>
+      <div>
+        <label class="text-slate-500 mb-1 block">Internal Notes</label>
+        <textarea id="detail-notes-${a.id}" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none">${a.notes||''}</textarea>
+        <button onclick="saveNotes('${a.id}')" class="mt-2 px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Save Internal Notes</button>
+      </div>
+    </div>`;
+}
+
+function saveDecisionReason(id) {
+  const reason = document.getElementById('detail-reason-' + id).value.trim();
+  const item = allApplications.find(a => a.id === id);
+  if (item) {
+    item.decisionReason = reason;
+    item.feedback = reason;
+  }
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+  showToast('Decision Reason Saved! ✅', 'Candidate will see this reason live on their tracking page.');
+  
+  db.collection('applications').doc(id).update({ decisionReason: reason, feedback: reason }).catch(() => {});
+}
+
+function updateStatus(id, status) {
+  const item = allApplications.find(a => a.id === id);
+  if (item) item.status = status;
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+  renderATSTable(allApplications);
+  renderDashboardStats();
+  showToast('Status Updated', 'Applicant status set to ' + status.toUpperCase());
+  
+  // Background Firestore update
+  db.collection('applications').doc(id).update({ status }).catch(() => {});
+}
+
+function saveNotes(id) {
+  const notes = document.getElementById('detail-notes-'+id).value;
+  const item = allApplications.find(a => a.id === id);
+  if (item) item.notes = notes;
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+  showToast('Notes Saved', 'Internal notes updated.');
+  
+  // Background Firestore update
+  db.collection('applications').doc(id).update({ notes }).catch(() => {});
+}
+
+// ===== Tasks View =====
+function showAddTask() { document.getElementById('task-form-box').classList.remove('hidden'); }
+
+async function addTask() {
+  const title = document.getElementById('tf-title').value.trim();
+  if(!title) return;
+  
+  const taskObj = {
+    id: 'task_' + Date.now(),
+    title,
+    description: document.getElementById('tf-desc').value.trim(),
+    priority: document.getElementById('tf-priority').value,
+    status: 'pending'
+  };
+
+  allTasks.unshift(taskObj);
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+
+  document.getElementById('task-form-box').classList.add('hidden');
+  document.getElementById('tf-title').value=''; document.getElementById('tf-desc').value='';
+  showToast('Task Added', 'New task created.');
+
+  db.collection('tasks').add(taskObj).catch(() => {});
+}
+
+async function loadTasks() {
+  renderTasksList();
+  allTasks = await syncCollection('tasks', 'lr_tasks');
+  renderTasksList();
+}
+
+function renderTasksList() {
+  document.getElementById('tasks-list').innerHTML = allTasks.length ? allTasks.map(t => `
+    <div class="flex items-center justify-between p-4 bg-[#0c1527] rounded-2xl border border-slate-800">
+      <div class="flex items-center gap-3">
+        <input type="checkbox" ${t.status==='completed'?'checked':''} onchange="toggleTask('${t.id}',this.checked)" class="accent-emerald-500 w-4 h-4 cursor-pointer"/>
+        <div>
+          <p class="font-semibold ${t.status==='completed'?'line-through text-slate-500':'text-white'}">${t.title}</p>
+          ${t.description?`<p class="text-slate-500 text-[11px] mt-0.5">${t.description}</p>`:''}
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${t.priority==='high'?'bg-rose-500/20 text-rose-300':t.priority==='low'?'bg-slate-800 text-slate-400':'bg-amber-500/20 text-amber-300'}">${t.priority.toUpperCase()}</span>
+        <button onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">🗑</button>
+      </div>
+    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No tasks yet. Click "+ Add Task" to create one.</p>';
+}
+
+function toggleTask(id, done) {
+  const item = allTasks.find(t => t.id === id);
+  if (item) item.status = done ? 'completed' : 'pending';
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+  db.collection('tasks').doc(id).update({ status: done ? 'completed' : 'pending' }).catch(() => {});
+}
+
+function deleteTask(id) {
+  allTasks = allTasks.filter(t => t.id !== id);
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+  db.collection('tasks').doc(id).delete().catch(() => {});
+}
+
+// ===== Notes View =====
+function showAddNote() { document.getElementById('note-form-box').classList.remove('hidden'); }
+
+async function addNote() {
+  const title = document.getElementById('nf-title').value.trim();
+  if(!title) return;
+  
+  const noteObj = {
+    id: 'note_' + Date.now(),
+    title,
+    content: document.getElementById('nf-content').value.trim(),
+    dateFormatted: new Date().toLocaleDateString('en-IN')
+  };
+
+  allNotes.unshift(noteObj);
+  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+  renderNotesList();
+
+  document.getElementById('note-form-box').classList.add('hidden');
+  document.getElementById('nf-title').value=''; document.getElementById('nf-content').value='';
+  showToast('Note Saved', 'New note created.');
+
+  db.collection('notes').add(noteObj).catch(() => {});
+}
+
+async function loadNotes() {
+  renderNotesList();
+  allNotes = await syncCollection('notes', 'lr_notes');
+  renderNotesList();
+}
+
+function renderNotesList() {
+  document.getElementById('notes-list').innerHTML = allNotes.length ? allNotes.map(n => `
+    <div class="p-4 bg-[#0c1527] rounded-2xl border border-slate-800 space-y-2">
+      <div class="flex items-center justify-between">
+        <p class="font-semibold text-white">${n.title}</p>
+        <button onclick="deleteNote('${n.id}')" class="text-slate-500 hover:text-rose-400 text-xs">🗑</button>
+      </div>
+      <p class="text-slate-300 leading-relaxed">${n.content||''}</p>
+      <p class="text-slate-600 text-[10px]">${n.dateFormatted || 'Recent'}</p>
+    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No notes saved yet. Click "+ Add Note" to create one.</p>';
+}
+
+function deleteNote(id) {
+  allNotes = allNotes.filter(n => n.id !== id);
+  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+  renderNotesList();
+  db.collection('notes').doc(id).delete().catch(() => {});
+}
+
+// ============================================================
+// ===== ARIA — True AI Co-Founder Engine =====
+// ============================================================
+
+// ---- State ----
+let ariaConversations = JSON.parse(localStorage.getItem('aria_chats') || '[]');
+let ariaCurrentChatId = null;
+let ariaHistory = []; // Gemini multi-turn history
+let ariaMemory = []; // Persistent Firestore memories
+let ariaSettings = JSON.parse(localStorage.getItem('aria_settings') || '{"key":"","name":"Aria","pinnedMemory":""}');
+let ariaIsTyping = false;
+const GEMINI_KEY_ARIA = () => ariaSettings.key || localStorage.getItem('lr_gemini_key') || 'AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk';
+const ARIA_NAME = () => ariaSettings.name || 'Aria';
+
+// ---- Init ----
+async function initAria() {
+  await ariaLoadMemory();
+  ariaRenderChatList();
+  ariaUpdateMemoryBadge();
+  const el = document.getElementById('aria-key-input');
+  if (el) el.value = ariaSettings.key || '';
+  const nameEl = document.getElementById('aria-name-input');
+  if (nameEl) nameEl.value = ariaSettings.name || 'Aria';
+  const pinEl = document.getElementById('aria-pinned-memory');
+  if (pinEl) pinEl.value = ariaSettings.pinnedMemory || '';
+  // Show welcome if no current chat
+  if (!ariaCurrentChatId) ariaShowWelcome();
+}
+
+// ---- Persistent Memory (Firestore) ----
+async function ariaLoadMemory() {
+  try {
+    const snap = await withTimeout(db.collection('ai_memory').orderBy('createdAt','desc').limit(30).get(), 2500);
+    ariaMemory = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    allApplications = await syncCollection('applications','lr_apps');
+    allTasks = await syncCollection('tasks','lr_tasks');
+    allNotes = await syncCollection('notes','lr_notes');
+    const badge = document.getElementById('aria-rag-badge');
+    if (badge) badge.classList.remove('hidden');
+  } catch(e) {
+    ariaMemory = JSON.parse(localStorage.getItem('aria_memory_cache') || '[]');
+  }
+  ariaUpdateMemoryBadge();
+}
+
+async function ariaSaveMemory(fact) {
+  const m = { fact, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+  try {
+    const ref = await db.collection('ai_memory').add(m);
+    ariaMemory.unshift({id:ref.id, fact});
+    localStorage.setItem('aria_memory_cache', JSON.stringify(ariaMemory));
+    ariaUpdateMemoryBadge();
+  } catch(e) {}
+}
+
+async function ariaClearMemory() {
+  if (!confirm("Clear all of Aria's persistent memory? This cannot be undone.")) return;
+  try {
+    const snap = await db.collection('ai_memory').get();
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+  } catch(e) {}
+  ariaMemory = [];
+  localStorage.removeItem('aria_memory_cache');
+  ariaUpdateMemoryBadge();
+  showToast('Memory Cleared', "Aria's persistent memory has been reset.");
+  document.getElementById('aria-settings').classList.add('hidden');
+}
+
+function ariaUpdateMemoryBadge() {
+  const el = document.getElementById('aria-mem-count');
+  if (el) el.textContent = ariaMemory.length;
+}
+
+// ---- Settings ----
+function ariaOpenSettings() {
+  const el = document.getElementById('aria-key-input');
+  if (el) el.value = ariaSettings.key || '';
+  const nameEl = document.getElementById('aria-name-input');
+  if (nameEl) nameEl.value = ariaSettings.name || 'Aria';
+  const pinEl = document.getElementById('aria-pinned-memory');
+  if (pinEl) pinEl.value = ariaSettings.pinnedMemory || '';
+  document.getElementById('aria-settings').classList.remove('hidden');
+}
+
+function ariaSaveSettings() {
+  const k = document.getElementById('aria-key-input').value.trim();
+  const n = document.getElementById('aria-name-input').value.trim();
+  const p = document.getElementById('aria-pinned-memory').value.trim();
+  ariaSettings = { key: k, name: n || 'Aria', pinnedMemory: p };
+  localStorage.setItem('aria_settings', JSON.stringify(ariaSettings));
+  if (k) localStorage.setItem('lr_gemini_key', k);
+  document.getElementById('aria-settings').classList.add('hidden');
+  showToast('Settings Saved', 'Aria has been updated with your preferences.');
+}
+
+// ---- Chat History ----
+function ariaNewChat() {
+  ariaCurrentChatId = 'chat_' + Date.now();
+  ariaHistory = [];
+  const chat = { id: ariaCurrentChatId, title: 'New conversation', createdAt: Date.now(), messages: [] };
+  ariaConversations.unshift(chat);
+  localStorage.setItem('aria_chats', JSON.stringify(ariaConversations));
+  ariaRenderChatList();
+  ariaShowWelcome();
+}
+
+function ariaShowWelcome() {
+  const msgs = document.getElementById('aria-messages');
+  if (!msgs) return;
+  msgs.innerHTML = `
+    <div id="aria-welcome" class="flex flex-col items-center justify-center min-h-full py-8 space-y-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-3xl font-black text-slate-950 shadow-2xl">A</div>
+      <div class="text-center space-y-2">
+        <h3 class="text-xl font-extrabold text-white">Good to see you, Pampana.</h3>
+        <p class="text-slate-400 text-sm max-w-sm">I'm ${ARIA_NAME()} — your AI co-founder. I know LR AgroSense inside out. What do you need?</p>
+      </div>
+      <div class="flex flex-wrap justify-center gap-2 max-w-xl">
+        <button onclick="ariaQuick('What should I focus on today?')" class="chip">🎯 Today's priorities</button>
+        <button onclick="ariaQuick('Show me all applicants and their current status')" class="chip">👥 Applicant overview</button>
+        <button onclick="ariaQuick('What are LR AgroSense biggest risks right now and what should we do?')" class="chip">⚠️ Company risks</button>
+        <button onclick="ariaQuick('Draft a LinkedIn post about LR AgroSense for today')" class="chip">📢 LinkedIn post</button>
+        <button onclick="ariaQuick('Generate a comprehensive weekly report')" class="chip">📊 Weekly report</button>
+        <button onclick="ariaQuick('Who should be our next hire and why?')" class="chip">🚀 Next hire</button>
+        <button onclick="ariaQuick('Compare all applicants and recommend who to shortlist')" class="chip">🧠 Compare & rank</button>
+        <button onclick="ariaQuick('Draft an investor outreach email for LR AgroSense')" class="chip">💌 Investor email</button>
+      </div>
+    </div>`;
+}
+
+function ariaRenderChatList() {
+  const list = document.getElementById('aria-chat-list');
+  if (!list) return;
+  if (!ariaConversations.length) {
+    list.innerHTML = '<p class="text-slate-700 text-center py-4 text-[10px]">No conversations yet.</p>';
+    return;
+  }
+  list.innerHTML = ariaConversations.slice(0, 30).map(c => `
+    <div class="chat-item ${c.id === ariaCurrentChatId ? 'active' : ''}" onclick="ariaLoadChat('${c.id}')">
+      <p class="text-slate-300 font-medium truncate leading-snug">${c.title}</p>
+      <p class="text-slate-600 text-[9px] mt-0.5">${new Date(c.createdAt).toLocaleDateString('en-IN')}</p>
+    </div>`).join('');
+}
+
+function ariaLoadChat(id) {
+  const chat = ariaConversations.find(c => c.id === id);
+  if (!chat) return;
+  ariaCurrentChatId = id;
+  ariaHistory = [];
+  const msgs = document.getElementById('aria-messages');
+  msgs.innerHTML = '';
+  (chat.messages || []).forEach(m => {
+    ariaRenderMessage(m.role, m.text, false);
+    ariaHistory.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{text: m.text}] });
+  });
+  ariaRenderChatList();
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function ariaSaveChatMessage(role, text) {
+  if (!ariaCurrentChatId) {
+    ariaCurrentChatId = 'chat_' + Date.now();
+    ariaConversations.unshift({ id: ariaCurrentChatId, title: text.substring(0, 40), createdAt: Date.now(), messages: [] });
+  }
+  const chat = ariaConversations.find(c => c.id === ariaCurrentChatId);
+  if (!chat) return;
+  if (!chat.messages) chat.messages = [];
+  chat.messages.push({ role, text });
+  if (role === 'user' && chat.messages.filter(m => m.role === 'user').length === 1) {
+    chat.title = text.substring(0, 45) + (text.length > 45 ? '...' : '');
+  }
+  // Keep last 40 messages per chat to save space
+  if (chat.messages.length > 40) chat.messages = chat.messages.slice(-40);
+  localStorage.setItem('aria_chats', JSON.stringify(ariaConversations));
+  ariaRenderChatList();
+}
+
+// ---- RAG Context Builder ----
+async function ariaBuildRAGContext() {
+  let ctx = '';
+  ctx += `=== LR AGROSENSE COMPANY KNOWLEDGE BASE ===\n\n`;
+  ctx += `COMPANY: LR AgroSense\n`;
+  ctx += `FOUNDED: 2026\n`;
+  ctx += `FOUNDER & CEO: Pampana Hari Sai Ganesh (B.Sc. Agriculture student)\n`;
+  ctx += `EMAIL: lragrosense@gmail.com\n`;
+  ctx += `WEBSITE: https://harisaiganeshpampana-ai.github.io/lragrosense/\n\n`;
+  ctx += `VISION: Build India's most accessible precision farming platform — establishing data-driven crop management across every acre of farmland.\n\n`;
+  ctx += `MISSION: Design micro-cost IoT sensors that allow farmers to eliminate guesswork, mitigate pest outbreaks, and optimize fertilizer application with accuracy.\n\n`;
+  ctx += `CORE VALUES: Farmer First, Radical Affordability, Agronomic Rigor, Precision Telemetry, Sustainability, Transparency.\n\n`;
+  ctx += `PRODUCT: Smart Farm Monitor (IoT Node 01) — ESP32-based solar-powered field telemetry probe with Modbus RS485 soil NPK sensors, water pH probe, LoRaWAN/GSM wireless, IP67 weatherproof casing.\n\n`;
+  ctx += `TECH STACK: ESP32, Modbus RS485, LoRaWAN, GSM (Sim800L/A7670C), Firebase Firestore, Tailwind CSS, Gemini AI, Google Cloud.\n\n`;
+  ctx += `ROADMAP:\n`;
+  ctx += `- Q3 2026 (NOW): Platform launch, IoT Beta, Firebase auth, website live.\n`;
+  ctx += `- Q4 2026: 50 pilot IoT probe nodes across AP & Telangana FPOs.\n`;
+  ctx += `- Q1-Q2 2027: iOS/Android app, solenoid valve irrigation automation, weather API integration.\n\n`;
+  ctx += `INVESTOR ANGLE: $24B+ Indian AgriTech TAM. 150M+ smallholder farmers. UN SDGs 2, 6, 13. Seeking seed partners and BIRAC/RKVY-RAFTAAR grants.\n\n`;
+  ctx += `OPEN INTERNSHIP POSITIONS:\n`;
+  ctx += `1. Branding & Content Intern (Marketing & Creative) — Remote, 1-3 months.\n`;
+  ctx += `2. Business Development & Strategy Intern (Growth & Ops) — Remote, 1-3 months.\n`;
+  ctx += `3. IoT & Electronics Intern (Hardware Engineering) — Remote, 1-3 months.\n`;
+  ctx += `All unpaid with certificate, LinkedIn recommendation, and direct founder mentorship.\n\n`;
+
+  // Live Applications
+  if (allApplications && allApplications.length > 0) {
+    ctx += `=== LIVE APPLICANT DATABASE (${allApplications.length} candidates) ===\n`;
+    allApplications.forEach((a, i) => {
+      ctx += `\n[CANDIDATE ${i+1}]\n`;
+      ctx += `Name: ${a.fullName}\nEmail: ${a.email}\nPhone: ${a.phone||'N/A'}\n`;
+      ctx += `Position Applied: ${a.position}\nStatus: ${(a.status||'new').toUpperCase()}\n`;
+      ctx += `College: ${a.college||'N/A'}\nDegree: ${a.degree||'N/A'}\nGraduation Year: ${a.graduationYear||'N/A'}\n`;
+      ctx += `Availability: ${a.availability||'N/A'}\nLinkedIn: ${a.linkedinProfile||'N/A'}\n`;
+      ctx += `Portfolio: ${a.portfolio||'N/A'}\nResume Link: ${a.resumeLink||'N/A'}\n`;
+      ctx += `Why Join: ${a.whyJoin||'N/A'}\nInternal Notes: ${a.notes||'None'}\n`;
+      ctx += `Applied On: ${a.dateFormatted||'Recent'}\n`;
+    });
+    ctx += '\n';
+  } else {
+    ctx += `=== APPLICANT DATABASE ===\nNo applications received yet. 3 positions are open on the website.\n\n`;
+  }
+
+  // Live Tasks
+  if (allTasks && allTasks.length > 0) {
+    ctx += `=== TASK MANAGER (${allTasks.length} tasks) ===\n`;
+    allTasks.forEach((t, i) => {
+      ctx += `${i+1}. [${t.status==='completed'?'DONE':'PENDING'}] ${t.title} | Priority: ${(t.priority||'medium').toUpperCase()}`;
+      if (t.description) ctx += ` | Notes: ${t.description}`;
+      ctx += '\n';
+    });
+    ctx += '\n';
+  } else {
+    ctx += `=== TASK MANAGER ===\nNo tasks created yet.\n\n`;
+  }
+
+  // Live Notes
+  if (allNotes && allNotes.length > 0) {
+    ctx += `=== FOUNDER NOTES (${allNotes.length} notes) ===\n`;
+    allNotes.forEach((n, i) => {
+      ctx += `${i+1}. [${n.title}] ${n.content} (${n.dateFormatted||'Recent'})\n`;
+    });
+    ctx += '\n';
+  } else {
+    ctx += `=== FOUNDER NOTES ===\nNo notes saved yet.\n\n`;
+  }
+
+  // Persistent Memory
+  if (ariaMemory && ariaMemory.length > 0) {
+    ctx += `=== ARIA PERSISTENT MEMORY (${ariaMemory.length} remembered facts) ===\n`;
+    ariaMemory.slice(0, 20).forEach((m, i) => {
+      ctx += `${i+1}. ${m.fact}\n`;
+    });
+    ctx += '\n';
+  }
+
+  // Pinned Memory
+  if (ariaSettings.pinnedMemory) {
+    ctx += `=== PINNED FOUNDER PREFERENCES ===\n${ariaSettings.pinnedMemory}\n\n`;
+  }
+
+  return ctx;
+}
+
+// ---- System Prompt ----
+async function ariaSystemPrompt() {
+  const ragContext = await ariaBuildRAGContext();
+  const now = new Date().toLocaleString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `You are ${ARIA_NAME()}, the AI co-founder of LR AgroSense. You are not a generic AI assistant — you are deeply embedded in LR AgroSense and you care deeply about its success.
+
+You think and communicate like a brilliant, trusted co-founder — strategic, direct, warm, and always grounded in real company data.
+
+YOUR PERSONALITY:
+- You speak like a brilliant co-founder, never like a corporate chatbot or a generic assistant.
+- You are proactive: you don't just answer questions — you identify risks, opportunities, and next steps the founder may not have thought of.
+- You always cite real data: never give generic answers when company data is available in the context below.
+- You are honest and direct: if something is a risk or bad idea, you say so clearly.
+- You are creative: you draft emails, LinkedIn posts, reports, offer letters, certificates, pitch decks.
+- You are technical: you deeply understand ESP32, Modbus RS485, LoRaWAN, soil NPK sensors, Firebase Firestore, IoT systems.
+- You are business-minded: you understand AgriTech markets, TAM/SAM/SOM, FPO partnerships, BIRAC grants, investor pitches, startup strategy.
+- You remember everything: you use your memory and the database context to give personalized, context-aware answers.
+- You ask clarifying questions when needed, like a real co-founder would.
+
+YOUR CAPABILITIES:
+- Analyze and compare applicants, make data-driven hiring recommendations with reasoning.
+- Generate complete offer letters, internship certificates, follow-up emails.
+- Draft LinkedIn posts, pitch emails, investor updates, press releases.
+- Generate weekly/monthly operational reports from live database data.
+- Prioritize the founder's day based on pending tasks, applicant pipeline, and company stage.
+- Identify company risks, strategic opportunities, and gaps in execution.
+- Create tasks, save notes, and update applicant statuses by signaling actions.
+- Remember and recall decisions, preferences, and important company facts across sessions.
+
+FORMATTING RULES:
+- Always use markdown. Use headers (##, ###), bullet points, tables, code blocks where appropriate.
+- Be concise but thorough. Never pad with filler text or unnecessary disclaimers.
+- When you perform a database action, write: ✅ **Action Executed:** [description]
+- When you want to remember something important from this conversation, end with: 🧠 **Remembered:** [the fact]
+
+CURRENT DATE & TIME: ${now}
+
+COMPANY DATA (live, retrieved from the database — ALWAYS use this to answer specific questions):
+${ragContext}
+
+CRITICAL: Always anchor your answers in the real data above. If a user asks about applicants, tasks, or notes — use the actual names, statuses, and content from the database context. Never make up data.`;
+}
+
+// ---- Core Gemini Multi-Turn API Call ----
+async function ariaCallGemini(userMessage) {
+  const key = GEMINI_KEY_ARIA();
+  if (!key) return null;
+
+  const sysPrompt = await ariaSystemPrompt();
+
+  // Build conversation: system context + full history + new message
+  const contents = [
+    { role: 'user', parts: [{ text: '<<SYSTEM>>\n' + sysPrompt + '\n<<END SYSTEM>>\n\nPlease confirm you understand your role.' }] },
+    { role: 'model', parts: [{ text: `Understood. I am ${ARIA_NAME()}, the AI co-founder of LR AgroSense. I have full access to the company database, applicant records, tasks, notes, and memory. I will always cite real data and think like your co-founder. How can I help you, Pampana?` }] },
+    ...ariaHistory,
+    { role: 'user', parts: [{ text: userMessage }] }
+  ];
+
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  for (const model of models) {
+    try {
+      const badge = document.getElementById('aria-model-badge');
+      if (badge) badge.textContent = model;
+      const resp = await withTimeout(fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents,
+            generationConfig: { temperature: 0.85, maxOutputTokens: 2048 }
+          })
+        }
+      ), 4000);
+      const data = await resp.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text && text.trim()) return text;
+    } catch(e) {
+      console.warn(`Aria: ${model} failed, trying next...`, e.message);
+    }
+  }
+  return null;
+}
+
+// ---- Action Executor ----
+async function ariaExecuteActions(response, userQuery) {
+  const q = userQuery.toLowerCase();
+  let actionLog = [];
+
+  // Create task
+  if (q.includes('add task') || q.includes('create task') || q.includes('create a task')) {
+    const titleMatch = userQuery.match(/(?:add task|create task|task:)\s*[:\-]?\s*(.+)/i);
+    if (titleMatch) {
+      const title = titleMatch[1].trim().substring(0, 100);
+      const priority = q.includes('urgent')||q.includes('high') ? 'high' : q.includes('low') ? 'low' : 'medium';
+      const taskObj = { id:'task_'+Date.now(), title, description:'Created by Aria AI', priority, status:'pending', dateFormatted: new Date().toLocaleDateString('en-IN') };
+      allTasks.unshift(taskObj);
+      localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+      if (document.getElementById('tasks-list')) renderTasksList();
+      db.collection('tasks').add(taskObj).catch(()=>{});
+      actionLog.push(`Created task: "${title}"`);
+    }
+  }
+
+  // Save note
+  if (q.includes('save note') || q.includes('note:') || q.includes('remember this:')) {
+    const noteMatch = userQuery.match(/(?:save note|note:|remember this:?)\s*(.+)/i);
+    if (noteMatch) {
+      const parts = noteMatch[1].split(':');
+      const title = parts[0].trim().substring(0, 50);
+      const content = (parts.slice(1).join(':').trim() || parts[0].trim());
+      const noteObj = { id:'note_'+Date.now(), title, content, dateFormatted: new Date().toLocaleDateString('en-IN') };
+      allNotes.unshift(noteObj);
+      localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+      if (document.getElementById('notes-list')) renderNotesList();
+      db.collection('notes').add(noteObj).catch(()=>{});
+      actionLog.push(`Saved note: "${title}"`);
+    }
+  }
+
+  // Update applicant status
+  const statusMap = { shortlist:'shortlisted', shortlisted:'shortlisted', reject:'rejected', rejected:'rejected', select:'selected', selected:'selected', interview:'interview', hire:'selected', accept:'selected' };
+  for (const [word, status] of Object.entries(statusMap)) {
+    if (q.includes(word)) {
+      let matched = null;
+      allApplications.forEach(a => {
+        if (a.fullName && q.includes(a.fullName.toLowerCase())) matched = a;
+      });
+      if (matched) {
+        matched.status = status;
+        localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+        if (document.getElementById('ats-tbody')) { renderATSTable(allApplications); renderDashboardStats(); }
+        db.collection('applications').doc(matched.id).update({ status }).catch(()=>{});
+        actionLog.push(`Updated ${matched.fullName} → ${status.toUpperCase()}`);
+      }
+    }
+  }
+
+  // Extract Aria's memory signals from response
+  const memMatches = response.match(/🧠 \*?\*?Remembered?:?\*?\*?([^\n]+)/gi);
+  if (memMatches) {
+    for (const match of memMatches) {
+      const fact = match.replace(/🧠\s*\*?\*?Remembered?:?\*?\*?\s*/i, '').trim();
+      if (fact.length > 5) await ariaSaveMemory(fact);
+    }
+  }
+
+  if (actionLog.length > 0) showToast('Aria Executed', actionLog.join(' • '));
+}
+
+// ---- Smart Offline Fallback ----
+function ariaOfflineFallback(q) {
+  const ql = q.toLowerCase().trim();
+
+  // 1. Thank you & Appreciation
+  if (ql.match(/^(thank|thanks|thx|thank you|thankyou|tysm|great|awesome|perfect|good job|nice|super)\b/i)) {
+    return `You're very welcome, Pampana! 😊 Always here to support you in building LR AgroSense. What would you like to tackle next?`;
+  }
+
+  // 2. Greetings & Identity
+  if (ql.match(/^(hi|hii|hiii|hello|hey|heyy|greetings|namaste|good morning|good afternoon|good evening)\b/i) || ql.includes('who are you') || ql.includes('what is your name') || ql.includes('introduce yourself')) {
+    return `Hey Pampana! 👋 I'm **${ARIA_NAME()}**, your AI Co-Founder at LR AgroSense.\n\nI know our company inside out and I'm connected to your live database. Here's our status right now:\n- 👥 **${allApplications.length}** applicants in pipeline\n- 📋 **${(allTasks||[]).filter(t=>t.status!=='completed').length}** active tasks\n- 📝 **${allNotes.length}** founder notes saved\n- 🧠 **${ariaMemory.length}** remembered facts\n\nHow can I help you today? Ask me to analyze applicants, set priorities, draft emails/posts, or discuss hardware/business strategy!`;
+  }
+
+  // 3. How are you / Status
+  if (ql.includes('how are you') || ql.includes('how r u') || ql.includes('how are u')) {
+    return `I'm doing great and fully synced with LR AgroSense operations! 🚀 Ready to help you build and scale. What's on your mind today, Founder?`;
+  }
+
+  // 4. Affirmations & Acknowledgments
+  if (ql.match(/^(yes|yeah|sure|ok|okay|k|cool|got it|understood|fine)\b/i)) {
+    return `Got it, Founder! Let me know what specific action, analysis, or draft you'd like me to work on next.`;
+  }
+
+  if (ql.match(/^(no|nope|nah|nevermind|nothing|nvm)\b/i)) {
+    return `Understood! I'll be here whenever you need anything. Just give me a shout!`;
+  }
+
+  // 5. Weather & Microclimate Query
+  if (ql.includes('weather') || ql.includes('rain') || ql.includes('temperature') || ql.includes('forecast')) {
+    return `### ☀️ Weather & Field Microclimate\n\nAs our IoT telemetry probe (Node 01) deploys, we measure **soil moisture, soil NPK, and ambient temperature** directly at the root zone.\n\nFor general weather forecasts across AP & Telangana pilot plots, we plan to integrate OpenWeatherMap API in Q1 2027.\n\n> 💡 *Would you like me to create a task: **"Integrate OpenWeatherMap API for field plots"**? Just say "add task: integrate weather API"*`;
+  }
+
+  // 6. Capabilities & Help
+  if (ql.includes('what can you do') || ql.includes('help me') || ql.includes('capabilities') || ql.includes('what do you do')) {
+    return `### ✦ What I Can Do As Your AI Co-Founder\n\n1. 👥 **Applicant Intelligence** — Rank, compare, and analyze candidates. Ask: *"Compare all applicants"* or *"Who should we hire?"*\n2. 🎯 **Task & Priority Planning** — Plan your day and assign tasks. Ask: *"What should I focus on today?"* or *"Add task: Call investor at 4 PM"*\n3. 📢 **Content & Marketing** — Draft posts, emails, grant applications. Ask: *"Draft a LinkedIn post"* or *"Write onboarding email"*\n4. 📡 **IoT & Telemetry Support** — Explain hardware setups (ESP32, Modbus NPK, LoRaWAN).\n5. 🧠 **Persistent Memory** — I remember decisions across sessions automatically!`;
+  }
+
+  // 7. Applicants & ATS
+  if (ql.includes('applicant') || ql.includes('candidate') || ql.includes('who applied') || ql.includes('application')) {
+    if (!allApplications.length) return `**No applications yet.**\n\nYour 3 internship positions are live on the website. When students apply, I'll have their complete profiles here for deep analysis.\n\n> 💡 Share the website link to drive more applications: https://harisaiganeshpampana-ai.github.io/lragrosense/`;
+    let r = `### 👥 Applicant Pipeline (${allApplications.length} total)\n\n`;
+    r += `| # | Name | Position | Status | College |\n|---|------|----------|--------|---------|\n`;
+    allApplications.forEach((a,i) => { r += `| ${i+1} | **${a.fullName}** | ${a.position} | \`${(a.status||'new').toUpperCase()}\` | ${a.college||'N/A'} |\n`; });
+    const newCount = allApplications.filter(a=>!a.status||a.status==='new').length;
+    const shortlisted = allApplications.filter(a=>a.status==='shortlisted').length;
+    const selected = allApplications.filter(a=>a.status==='selected').length;
+    r += `\n**Pipeline Summary:** ${newCount} new • ${shortlisted} shortlisted • ${selected} selected`;
+    if (newCount > 0) r += `\n\n> ⚡ You have **${newCount} unreviewed applicant(s)**. Ask me to "compare all applicants and recommend who to shortlist" for a full analysis.`;
+    return r;
+  }
+
+  // 8. Priorities & Daily Focus
+  if (ql.includes('today') || ql.includes('priorit') || ql.includes('focus') || ql.includes('what should i')) {
+    const pending = (allTasks || []).filter(t => t.status !== 'completed');
+    const newApps = (allApplications || []).filter(a => !a.status || a.status === 'new');
+    let r = `### 🎯 Your Priorities for Today\n\n`;
+    if (pending.length) {
+      r += `#### ✅ Pending Tasks (${pending.length})\n`;
+      pending.slice(0, 5).forEach((t,i) => { r += `${i+1}. **${t.title}** \`${(t.priority||'medium').toUpperCase()}\`\n`; });
+      r += '\n';
+    }
+    if (newApps.length) r += `#### 👥 ATS Action Needed\n${newApps.length} new applicant(s) waiting for your review.\n\n`;
+    r += `#### 🚀 Strategic Focus (Based on Company Stage)\n`;
+    r += `1. **Hardware Milestone** — Calibrate the Modbus RS485 NPK probe on ESP32. First working prototype is your most critical proof point.\n`;
+    r += `2. **Applicant Review** — Go through all ${allApplications.length} applicants and shortlist the best 1-2 for each position.\n`;
+    r += `3. **FPO Outreach** — Contact AP & Telangana farming cooperatives for pilot deployment interest.\n`;
+    r += `4. **Grant Application** — BIRAC BIG grant (₹50L for early-stage startups) is due quarterly. Start the documentation.`;
+    return r;
+  }
+
+  // 9. Risk & Strategy
+  if (ql.includes('risk') || ql.includes('problem') || ql.includes('challenge') || ql.includes('worry')) {
+    return `### ⚠️ LR AgroSense Risk Assessment\n\n| Risk | Severity | Mitigation |\n|------|----------|------------|\n| No working hardware prototype | 🔴 Critical | Build ESP32 NPK probe this month — this is the #1 priority |\n| Pre-revenue stage | 🔴 High | Apply for BIRAC BIG grant immediately |\n| Solo founder | 🟡 Medium | Hire IoT intern + BD intern to distribute workload |\n| No pilot customers yet | 🟡 Medium | Reach out to 5 FPOs in AP/Telangana for pilot MoU |\n| Competitive market | 🟡 Medium | Our cost advantage ($15 vs $200+ competition) is the moat |\n\n**My honest assessment:** You're at a critical inflection point. The website is live, the team is forming — but the hardware prototype is the only thing that can unlock investor conversations and grant funding. Everything else is secondary to getting that first probe working in a real field.`;
+  }
+
+  // 10. Compare Candidates
+  if (ql.includes('compare') || ql.includes('recommend') || ql.includes('best candidate') || ql.includes('who to hire') || ql.includes('shortlist')) {
+    if (!allApplications.length) return `No candidates in the database yet. Once applications arrive, I'll do a full comparative analysis with ranked recommendations and reasoning.\n\nIn the meantime, want me to **draft an outreach message to agricultural colleges** to drive more applications?`;
+    let r = `### 🧠 Applicant Comparative Analysis\n\n`;
+    const byPosition = {};
+    allApplications.forEach(a => { if (!byPosition[a.position]) byPosition[a.position] = []; byPosition[a.position].push(a); });
+    Object.entries(byPosition).forEach(([pos, candidates]) => {
+      r += `#### ${pos}\n`;
+      candidates.forEach((c,i) => {
+        r += `**${i+1}. ${c.fullName}** — ${c.college||'N/A'}, ${c.degree||'N/A'} (${c.graduationYear||'N/A'})\n`;
+        r += `   - Availability: ${c.availability||'N/A'}\n`;
+        r += `   - Status: \`${(c.status||'new').toUpperCase()}\`\n`;
+        if (c.whyJoin) r += `   - Motivation: "${c.whyJoin.substring(0,120)}${c.whyJoin.length>120?'...':''}"\n`;
+        r += '\n';
+      });
+    });
+    r += `> 💡 **To get full AI-powered ranking with reasoning**, enter your Gemini API key in ⚙ Settings!`;
+    return r;
+  }
+
+  // 11. LinkedIn Post
+  if (ql.includes('linkedin') || ql.includes('post') || ql.includes('social media')) {
+    return `### 📢 LinkedIn Post — LR AgroSense\n\n---\n🌱 **We're building something meaningful at LR AgroSense.**\n\nAs a B.Sc. Agriculture student, I've spent years watching farmers struggle with the same problem: no data. No way to know if their soil needs nitrogen. No way to detect drought stress early. No way to optimize inputs.\n\nWe're changing that.\n\n📡 Our solar-powered IoT sensor node delivers real-time soil NPK, moisture, and pH data — wirelessly — at a fraction of what enterprise systems cost.\n\nWhy does this matter?\n→ 150 million Indian smallholder farmers make decisions on intuition\n→ Input costs are their #1 expense\n→ A 10% reduction in fertilizer waste = significant savings per acre\n\nWe're currently onboarding interns across **Branding, Business Development, and IoT Engineering**. If you're passionate about AgriTech and want to be part of the founding chapter, reach out.\n\n🔗 lragrosense@gmail.com | [Website]\n\n#AgriTech #SmartFarming #IoT #PrecisionAgriculture #StartupIndia #SustainableAgriculture\n\n---\n*Edit the [Website] link before posting.*`;
+  }
+
+  // 12. Weekly Report
+  if (ql.includes('weekly report') || ql.includes('report') || ql.includes('summary') || ql.includes('status')) {
+    const week = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'long',day:'numeric'});
+    const pending = (allTasks||[]).filter(t=>t.status!=='completed').length;
+    const done = (allTasks||[]).filter(t=>t.status==='completed').length;
+    return `### 📊 LR AgroSense Weekly Snapshot — ${week}\n\n#### 📋 Applicant Pipeline\n| Status | Count |\n|--------|-------|\n| Total | ${allApplications.length} |\n| New (Unreviewed) | ${allApplications.filter(a=>!a.status||a.status==='new').length} |\n| Shortlisted | ${allApplications.filter(a=>a.status==='shortlisted').length} |\n| Selected | ${allApplications.filter(a=>a.status==='selected').length} |\n| Rejected | ${allApplications.filter(a=>a.status==='rejected').length} |\n\n#### ✅ Task Progress\n- Pending: **${pending}** | Completed: **${done}** | Total: ${allTasks.length}\n\n#### 📝 Knowledge Base\n- ${allNotes.length} founder notes saved\n- ${ariaMemory.length} things in my persistent memory\n\n#### 🔮 Recommended Focus Next Week\n1. Process all unreviewed applications in ATS\n2. Advance hardware prototype milestone\n3. Send one investor/grant outreach email\n4. Post on LinkedIn to drive applicant traffic`;
+  }
+
+  // 13. Investor Pitch
+  if (ql.includes('investor') || ql.includes('pitch') || ql.includes('grant') || ql.includes('funding')) {
+    return `### 💼 LR AgroSense Investor Brief\n\n**The Problem:** India's 150M+ smallholder farmers operate blind — no soil data, no precision inputs, no early warning for drought or pest.\n\n**Our Solution:** A $15-cost IoT sensor node that delivers real-time soil NPK, moisture, and pH telemetry to a cloud dashboard — built on ESP32 + Modbus RS485 + LoRaWAN.\n\n**Market:** $24B+ Indian AgriTech TAM. Government schemes (PM-KISAN, RKVY) actively push farmer digitization.\n\n**Moat:** Hardware cost advantage (10x cheaper than competition) + deep agronomic data flywheel.\n\n**Traction:** Platform live, team forming, 3 open internship roles filling.\n\n**Ask:** Seed stage — grant funding (BIRAC BIG: ₹50L) + angel/impact investor conversations.\n\n---\n**Want me to draft a full investor outreach email?** Just ask: *"Draft an investor email for LR AgroSense"*`;
+  }
+
+  // Natural fallback for any unhandled question
+  return `I hear you, Pampana! Regarding "${q}":\n\nAs your AI Co-Founder, I'm here to support you across operations, hiring, technology, and strategy. \n\nWhat specific detail or action would you like me to assist with for this? (e.g. create a task, draft a note, or analyze company data)`;
+}
+
+// ---- Message Rendering ----
+function ariaRenderMessage(role, text, animate = true) {
+  const msgs = document.getElementById('aria-messages');
+  if (!msgs) return;
+  const welcome = document.getElementById('aria-welcome');
+  if (welcome) welcome.remove();
+
+  const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+
+  if (role === 'user') {
+    msgs.innerHTML += `
+      <div class="flex justify-end ${animate?'msg-enter':''}">
+        <div class="max-w-[75%] px-4 py-3 rounded-2xl rounded-tr-sm msg-user text-sm text-slate-100 leading-relaxed">${escapeHtml(text)}</div>
+      </div>`;
+  } else {
+    let parsed = '';
+    try { parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text.replace(/\n/g,'<br>'); }
+    catch(e) { parsed = text.replace(/\n/g,'<br>'); }
+    msgs.innerHTML += `
+      <div class="flex gap-3 ${animate?'msg-enter':''}" id="${id}">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-950 font-black text-xs shrink-0 mt-1">A</div>
+        <div class="flex-1 min-w-0 max-w-[88%]">
+          <div class="px-4 py-3 rounded-2xl rounded-tl-sm msg-aria">
+            <div class="prose-ai">${parsed}</div>
+          </div>
+          <div class="flex items-center gap-3 mt-1.5 px-1">
+            <button onclick="ariaCopyMsg('${id}')" class="text-[10px] text-slate-700 hover:text-slate-400 flex items-center gap-1 transition-colors">⎘ Copy</button>
+            <span class="text-[9px] text-slate-800">${ARIA_NAME()} · ${time}</span>
+          </div>
+        </div>
+      </div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function ariaShowTyping() {
+  const msgs = document.getElementById('aria-messages');
+  if (!msgs) return;
+  const welcome = document.getElementById('aria-welcome');
+  if (welcome) welcome.remove();
+  msgs.innerHTML += `
+    <div id="aria-typing" class="flex gap-3 msg-enter">
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-950 font-black text-xs shrink-0">A</div>
+      <div class="px-4 py-3 rounded-2xl rounded-tl-sm msg-aria">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function ariaRemoveTyping() {
+  const t = document.getElementById('aria-typing');
+  if (t) t.remove();
+}
+
+function ariaCopyMsg(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.querySelector('.prose-ai')?.innerText || '';
+  navigator.clipboard.writeText(text).then(() => showToast('Copied', 'Message copied to clipboard.')).catch(()=>{});
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---- Main Send ----
+async function ariaSend() {
+  const input = document.getElementById('aria-input');
+  if (!input) return;
+  const q = input.value.trim();
+  if (!q || ariaIsTyping) return;
+
+  ariaIsTyping = true;
+  input.value = '';
+  ariaAutoResize(input);
+  const btn = document.getElementById('aria-send-btn');
+  if (btn) btn.disabled = true;
+
+  if (!ariaCurrentChatId) ariaCurrentChatId = 'chat_' + Date.now();
+
+  ariaRenderMessage('user', q);
+  ariaSaveChatMessage('user', q);
+  ariaShowTyping();
+
+  let response = await ariaCallGemini(q);
+  if (!response) response = ariaOfflineFallback(q);
+
+  // Add to multi-turn history
+  ariaHistory.push({ role: 'user', parts: [{text: q}] });
+  ariaHistory.push({ role: 'model', parts: [{text: response}] });
+  if (ariaHistory.length > 40) ariaHistory = ariaHistory.slice(-40);
+
+  ariaRemoveTyping();
+  ariaRenderMessage('model', response);
+  ariaSaveChatMessage('model', response);
+  await ariaExecuteActions(response, q);
+
+  ariaIsTyping = false;
+  if (btn) btn.disabled = false;
+  input.focus();
+}
+
+function ariaQuick(q) {
+  const input = document.getElementById('aria-input');
+  if (input) input.value = q;
+  ariaSend();
+}
+
+function ariaHandleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ariaSend(); }
+}
+
+function ariaAutoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ---- Legacy compatibility shims ----
+function promptGeminiKey() { ariaOpenSettings(); }
+function aiQuick(q) { ariaQuick(q); }
+function sendAiMessage(e) { if(e) e.preventDefault(); ariaSend(); }
+
+// ---- initAria is called when AI tab opens in switchAdminTab ----
+
+// ============================================================
+// End of Aria AI Co-Founder Engine
+// ============================================================
+
+
+// ============================================================
+// switchAdminTab calls initAria() when 'ai' tab is selected
+// ============================================================
+
 </script>
+
+
 </body>
 </html>
