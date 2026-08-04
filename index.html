@@ -95,7 +95,7 @@
       <a href="#products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
       <a href="#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
       <a href="#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="#internships" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
+      <a href="internships.html" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
       <a href="#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
       <a href="#contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
     </div>
@@ -115,7 +115,7 @@
     <a href="#products" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
     <a href="#roadmap" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Roadmap</a>
     <a href="#tech" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Tech Stack</a>
-    <a href="#internships" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
+    <a href="internships.html" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
     <a href="#investors" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investors</a>
     <a href="#contact" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
     <button onclick="document.getElementById('mobile-menu').classList.add('hidden'); openTrackModal();" class="w-full text-left py-2 px-3 rounded-lg bg-cyan-500/10 text-cyan-300 font-bold">🔍 Track Status</button>
@@ -280,82 +280,27 @@
   </div>
 </section>
 
-<!-- ==================== INTERNSHIP PORTAL ==================== -->
+<!-- ==================== INTERNSHIP PORTAL (DYNAMIC) ==================== -->
 <section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
   <div class="text-center space-y-4 reveal">
     <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
-    <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across branding, business strategy, and electronics engineering.</p>
-    
-    <!-- Explicit Compensation Note -->
+    <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across disciplines. New positions open regularly — check back soon!</p>
     <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium">
       ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
     </div>
-
-    <div class="flex flex-wrap justify-center gap-3 text-[10px] font-mono pt-2">
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">🏠 Remote</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">⏱ Part-Time</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-amber-300">📋 Unpaid (Revisited as we scale)</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">📅 1–3 Months</span>
+    <div class="pt-2">
+      <a href="internships.html" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-xl shadow-emerald-500/20 transition-all">
+        🚀 View Full Dedicated Internships Page & Apply →
+      </a>
     </div>
   </div>
-
-  <!-- Internship 1: Branding & Content -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-emerald-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-emerald-400 font-bold">OPENING 01</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Branding & Content Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Marketing & Creative</p>
-      </div>
-      <button onclick="openApplyModal('Branding & Content Intern')" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
+  <!-- Dynamic listing container (populated by JS) -->
+  <div id="internships-public-list" class="space-y-8">
+    <div class="text-center py-16 text-slate-500 text-sm">
+      <div class="text-4xl mb-4">🌱</div>
+      <p>Loading positions...</p>
     </div>
-    <div id="jd-1" class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design social media posts, carousels, and reels for Instagram, LinkedIn, and YouTube</li><li>Write blog articles, press releases, and newsletter content</li><li>Create farmer-facing educational content in simple language</li><li>Assist in brand identity development and style guide creation</li><li>Support pitch deck and investor presentation design</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Currently pursuing or recently graduated in Marketing, Communications, Design, or related fields</li><li>Strong written communication skills</li><li>Proficiency in Canva, Figma, or Adobe Creative Suite preferred</li><li>Interest in agriculture, sustainability, or technology</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Real-world startup portfolio experience</li><li>Direct mentorship from Founder Pampana Hari Sai Ganesh</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
-    </div>
-  </div>
-
-  <!-- Internship 2: Business Development -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-cyan-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-cyan-400 font-bold">OPENING 02</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Business Development & Strategy Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Growth & Operations</p>
-      </div>
-      <button onclick="openApplyModal('Business Development & Strategy Intern')" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
-    </div>
-    <div class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Drive business growth by researching market opportunities, building partnerships with FPOs and agricultural cooperatives, and developing go-to-market strategy for IoT hardware deployment.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Research market size, competitive landscape, and farmer adoption patterns</li><li>Identify and establish partnerships with FPOs, KVKs, and agri-input dealers</li><li>Prepare investor pitch decks, business plans, and financial models</li><li>Assist in grant applications (BIRAC, RKVY-RAFTAAR, Startup India)</li><li>Support ecosystem strategy and pilot deployment planning</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing MBA, BBA, B.Com, or related business/management degree</li><li>Strong analytical and presentation skills</li><li>Interest in AgriTech, startups, or rural development</li><li>Proficiency in Excel, PowerPoint, and market research tools</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Exposure to real investor pitch processes</li><li>Direct involvement in startup operations and strategy</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
-    </div>
-  </div>
-
-  <!-- Internship 3: IoT & Electronics -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-amber-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-amber-400 font-bold">OPENING 03</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">IoT & Electronics Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Hardware Engineering</p>
-      </div>
-      <button onclick="openApplyModal('IoT & Electronics Intern')" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
-    </div>
-    <div class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Design, prototype, and test low-cost IoT sensor nodes using ESP32 microcontrollers, Modbus RS485 soil probes, and LoRaWAN communication modules for field deployment.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design and assemble ESP32-based sensor node prototypes</li><li>Interface Modbus RS485 soil NPK sensors and calibrate readings</li><li>Develop firmware for sensor data acquisition and wireless transmission</li><li>Test solar power management and battery charging circuits</li><li>Document hardware specifications and create assembly guides</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing B.Tech/B.E. in ECE, EEE, or related engineering fields</li><li>Experience with Arduino, ESP32, or Raspberry Pi</li><li>Basic knowledge of circuit design and PCB layout</li><li>Familiarity with C/C++ for embedded systems</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Hands-on experience building real IoT hardware products</li><li>Mentorship in embedded systems and product engineering</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
-    </div>
-  </div>
-
-  <div class="text-center text-xs text-slate-500 pt-4 reveal">
-    <p>⚠️ These are <strong class="text-slate-300">unpaid internships</strong> with comprehensive benefits including certificates, LinkedIn recommendations, and direct founder mentorship.</p>
   </div>
 </section>
 
@@ -920,6 +865,7 @@
         <nav class="space-y-1 text-xs">
           <button onclick="switchAdminTab('dash')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" data-tab="dash">📊 Dashboard</button>
           <button onclick="switchAdminTab('ats')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ats">👥 Applications</button>
+          <button onclick="switchAdminTab('internships')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="internships">📌 Internships</button>
           <button onclick="switchAdminTab('ai')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ai">✦ Aria AI</button>
           <button onclick="switchAdminTab('tasks')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="tasks">📋 Tasks</button>
           <button onclick="switchAdminTab('notes')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="notes">📝 Notes</button>
@@ -960,6 +906,37 @@
           <table class="w-full text-xs">
             <thead><tr class="border-b border-slate-800 text-slate-400"><th class="text-left p-3 font-semibold">Name</th><th class="text-left p-3 font-semibold">Position</th><th class="text-left p-3 font-semibold">Status</th><th class="text-left p-3 font-semibold">Date</th><th class="text-left p-3 font-semibold">Actions</th></tr></thead>
             <tbody id="ats-tbody"><tr><td colspan="5" class="p-4 text-center text-slate-500">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Internships Management -->
+      <div id="tab-internships" class="admin-tab hidden p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-extrabold text-white font-display">Internship Listings</h2>
+            <p class="text-xs text-slate-400 mt-1">Create, publish, and manage open positions. Listings auto-activate when Open Date is reached.</p>
+          </div>
+          <button onclick="openCreateInternshipModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2">＋ Create New Listing</button>
+        </div>
+        <!-- Status Legend -->
+        <div class="flex flex-wrap gap-2 text-[10px]">
+          <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 font-mono">⬛ DRAFT — hidden from website</span>
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono">🕐 PUBLISHED — visible, countdown shown</span>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">✅ LIVE — apply button enabled</span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-700 text-slate-400 font-mono">🔒 CLOSED — visible, applications closed</span>
+        </div>
+        <!-- Listings Table -->
+        <div class="bg-[#0c1527] rounded-2xl border border-slate-800 overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead><tr class="border-b border-slate-800 text-slate-400">
+              <th class="text-left p-3 font-semibold">Title</th>
+              <th class="text-left p-3 font-semibold">Department</th>
+              <th class="text-left p-3 font-semibold">Status</th>
+              <th class="text-left p-3 font-semibold">Open Date</th>
+              <th class="text-left p-3 font-semibold">Actions</th>
+            </tr></thead>
+            <tbody id="internships-admin-tbody"><tr><td colspan="5" class="p-6 text-center text-slate-500">Loading internship listings...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1090,6 +1067,86 @@
   </div>
 </div>
 
+<!-- ==================== CREATE/EDIT INTERNSHIP MODAL ==================== -->
+<div id="modal-create-internship" class="fixed inset-0 z-[75] hidden items-center justify-center bg-black/70 backdrop-blur-md p-4" style="display:none">
+  <div class="w-full max-w-2xl bg-[#0c1527] border border-slate-800 rounded-3xl shadow-2xl overflow-y-auto max-h-[92vh]">
+    <div class="sticky top-0 bg-[#0c1527] border-b border-slate-800 px-6 py-4 flex items-center justify-between z-10">
+      <div>
+        <h3 class="text-lg font-extrabold text-white font-display" id="intern-modal-title">Create Internship Listing</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Save as Draft to keep hidden, or Publish to announce publicly.</p>
+      </div>
+      <button onclick="closeCreateInternshipModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-900">✕</button>
+    </div>
+    <form id="internship-create-form" onsubmit="saveInternshipListing(event)" class="p-6 space-y-5">
+      <input type="hidden" id="intern-edit-id" value=""/>
+      <input type="hidden" id="intern-save-action" value="draft"/>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Position Title <span class="text-rose-400">*</span></label>
+          <input id="intern-title" type="text" required placeholder="e.g. Marketing & Design Intern" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Department <span class="text-rose-400">*</span></label>
+          <input id="intern-dept" type="text" required placeholder="e.g. Marketing & Creative" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Duration</label>
+          <input id="intern-duration" type="text" placeholder="e.g. 1–3 Months" value="1–3 Months" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Work Type</label>
+          <select id="intern-type" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60">
+            <option value="Remote | Part-Time | Unpaid">Remote | Part-Time | Unpaid</option>
+            <option value="Remote | Full-Time | Unpaid">Remote | Full-Time | Unpaid</option>
+            <option value="Hybrid | Part-Time | Unpaid">Hybrid | Part-Time | Unpaid</option>
+            <option value="On-site | Full-Time | Unpaid">On-site | Full-Time | Unpaid</option>
+            <option value="Remote | Part-Time | Stipend">Remote | Part-Time | Stipend</option>
+            <option value="Remote | Full-Time | Paid">Remote | Full-Time | Paid</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Accent Color</label>
+          <select id="intern-color" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60">
+            <option value="emerald">🟢 Emerald</option>
+            <option value="cyan">🔵 Cyan</option>
+            <option value="amber">🟡 Amber</option>
+            <option value="purple">🟣 Purple</option>
+            <option value="rose">🔴 Rose</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">📅 Open Date <span class="text-slate-500">(auto-activates on this date — leave empty to stay Published until you manually start)</span></label>
+          <input id="intern-opendate" type="date" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500/60"/>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Job Description <span class="text-rose-400">*</span></label>
+          <textarea id="intern-desc" required rows="3" placeholder="Short description of the internship role and goals..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none focus:border-emerald-500/60"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Responsibilities <span class="text-slate-500 font-normal">(one per line)</span></label>
+          <textarea id="intern-resp" rows="4" placeholder="Design social media content&#10;Write blog articles&#10;Assist in branding..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none font-mono focus:border-emerald-500/60"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Eligibility <span class="text-slate-500 font-normal">(one per line)</span></label>
+          <textarea id="intern-elig" rows="3" placeholder="Currently pursuing B.Sc./B.Tech...&#10;Strong communication skills..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none font-mono focus:border-emerald-500/60"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-slate-400 font-semibold mb-1 block">Benefits <span class="text-slate-500 font-normal">(one per line)</span></label>
+          <textarea id="intern-ben" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none font-mono focus:border-emerald-500/60">Internship completion certificate signed by CEO
+LinkedIn recommendation from the Founder
+Direct mentorship from Founder Pampana Hari Sai Ganesh
+Letter of Recommendation upon exceptional performance</textarea>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3 pt-2">
+        <button type="submit" onclick="document.getElementById('intern-save-action').value='draft'" class="px-5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-700 transition-all">💾 Save as Draft</button>
+        <button type="submit" onclick="document.getElementById('intern-save-action').value='published'" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all">📢 Save & Publish (with countdown)</button>
+        <button type="submit" onclick="document.getElementById('intern-save-action').value='live'" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all">🚀 Save & Go Live Now</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- ========== TOAST ========== -->
 <div id="toast" class="fixed bottom-6 right-6 z-[70] hidden">
   <div class="glass rounded-2xl p-4 border border-emerald-500/40 shadow-2xl flex items-center gap-3 text-xs">
@@ -1122,6 +1179,7 @@ let currentUser = null;
 let allApplications = JSON.parse(localStorage.getItem('lr_apps') || '[]');
 let allTasks = JSON.parse(localStorage.getItem('lr_tasks') || '[]');
 let allNotes = JSON.parse(localStorage.getItem('lr_notes') || '[]');
+let allInternships = null; // loaded lazily via getInternships()
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -1130,6 +1188,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   if(location.hash==='#admin') openAdminDashboard();
   loadUser();
+  // Init dynamic internships (runs after all JS is parsed)
+  setTimeout(() => {
+    initInternshipsPublic();
+    setInterval(checkInternshipAutoActivation, 60000); // check every 60s
+  }, 50);
 });
 window.addEventListener('hashchange', () => {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
@@ -1392,9 +1455,329 @@ function switchAdminTab(tab) {
   if(active) active.className = 'admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
   if(tab==='dash') loadDashboard();
   if(tab==='ats') loadATS();
+  if(tab==='internships') loadAdminInternships();
   if(tab==='tasks') loadTasks();
   if(tab==='notes') loadNotes();
   if(tab==='ai') initAria();
+}
+
+// ===== Internship Engine =====
+// Seed data: the 3 original hardcoded listings, imported as 'live' on first load
+const SEED_INTERNSHIPS = [
+  { id:'intern_seed_1', title:'Branding & Content Intern', department:'Marketing & Creative', description:"Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.", responsibilities:'Design social media posts, carousels, and reels for Instagram, LinkedIn, and YouTube\nWrite blog articles, press releases, and newsletter content\nCreate farmer-facing educational content in simple language\nAssist in brand identity development and style guide creation\nSupport pitch deck and investor presentation design', eligibility:'Currently pursuing or recently graduated in Marketing, Communications, Design, or related fields\nStrong written communication skills\nProficiency in Canva, Figma, or Adobe Creative Suite preferred\nInterest in agriculture, sustainability, or technology', benefits:'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nReal-world startup portfolio experience\nDirect mentorship from Founder Pampana Hari Sai Ganesh\nLetter of Recommendation upon exceptional performance', type:'Remote | Part-Time | Unpaid', duration:'1–3 Months', color:'emerald', status:'live', openDate:'', createdAt: Date.now()-3000 },
+  { id:'intern_seed_2', title:'Business Development & Strategy Intern', department:'Growth & Operations', description:'Drive business growth by researching market opportunities, building partnerships with FPOs and agricultural cooperatives, and developing go-to-market strategy for IoT hardware deployment.', responsibilities:'Research market size, competitive landscape, and farmer adoption patterns\nIdentify and establish partnerships with FPOs, KVKs, and agri-input dealers\nPrepare investor pitch decks, business plans, and financial models\nAssist in grant applications (BIRAC, RKVY-RAFTAAR, Startup India)\nSupport ecosystem strategy and pilot deployment planning', eligibility:'Pursuing MBA, BBA, B.Com, or related business/management degree\nStrong analytical and presentation skills\nInterest in AgriTech, startups, or rural development\nProficiency in Excel, PowerPoint, and market research tools', benefits:'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nExposure to real investor pitch processes\nDirect involvement in startup operations and strategy\nLetter of Recommendation upon exceptional performance', type:'Remote | Part-Time | Unpaid', duration:'1–3 Months', color:'cyan', status:'live', openDate:'', createdAt: Date.now()-2000 },
+  { id:'intern_seed_3', title:'IoT & Electronics Intern', department:'Hardware Engineering', description:'Design, prototype, and test low-cost IoT sensor nodes using ESP32 microcontrollers, Modbus RS485 soil probes, and LoRaWAN communication modules for field deployment.', responsibilities:'Design and assemble ESP32-based sensor node prototypes\nInterface Modbus RS485 soil NPK sensors and calibrate readings\nDevelop firmware for sensor data acquisition and wireless transmission\nTest solar power management and battery charging circuits\nDocument hardware specifications and create assembly guides', eligibility:'Pursuing B.Tech/B.E. in ECE, EEE, or related engineering fields\nExperience with Arduino, ESP32, or Raspberry Pi\nBasic knowledge of circuit design and PCB layout\nFamiliarity with C/C++ for embedded systems', benefits:'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nHands-on experience building real IoT hardware products\nMentorship in embedded systems and product engineering\nLetter of Recommendation upon exceptional performance', type:'Remote | Part-Time | Unpaid', duration:'1–3 Months', color:'amber', status:'live', openDate:'', createdAt: Date.now()-1000 }
+];
+
+function getInternships() {
+  if (!allInternships) {
+    // First load: import seed data
+    allInternships = JSON.parse(localStorage.getItem('lr_internships') || 'null');
+    if (!allInternships) {
+      allInternships = SEED_INTERNSHIPS;
+      saveInternships();
+    }
+  }
+  return allInternships;
+}
+
+function saveInternships() {
+  localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+  // Sync to Firestore in background
+  allInternships.forEach(i => {
+    db.collection('internships').doc(i.id).set(i).catch(() => {});
+  });
+}
+
+function checkInternshipAutoActivation() {
+  const now = Date.now();
+  let changed = false;
+  getInternships().forEach(intern => {
+    if (intern.status === 'published' && intern.openDate) {
+      const openMs = new Date(intern.openDate).getTime();
+      if (!isNaN(openMs) && now >= openMs) {
+        intern.status = 'live';
+        changed = true;
+        db.collection('internships').doc(intern.id).update({ status: 'live' }).catch(() => {});
+      }
+    }
+  });
+  if (changed) {
+    saveInternships();
+    renderPublicInternships(); // refresh public view
+  }
+}
+
+// --- Admin CRUD ---
+async function loadAdminInternships() {
+  checkInternshipAutoActivation();
+  // Try Firestore first
+  try {
+    const snap = await withTimeout(db.collection('internships').orderBy('createdAt', 'desc').get(), 2500);
+    if (snap && snap.docs && snap.docs.length) {
+      allInternships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!allInternships || allInternships.length === 0) allInternships = getInternships();
+      saveInternships();
+    } else {
+      getInternships();
+    }
+  } catch(e) {
+    getInternships();
+  }
+  renderAdminInternshipsTable();
+}
+
+function renderAdminInternshipsTable() {
+  const tbody = document.getElementById('internships-admin-tbody');
+  if (!tbody) return;
+  const list = getInternships();
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-500">No listings yet. Click ＋ Create New Listing to add one.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(i => {
+    const statusBadge = {
+      draft: 'bg-slate-800 text-slate-400',
+      published: 'bg-amber-500/20 text-amber-300',
+      live: 'bg-emerald-500/20 text-emerald-300',
+      closed: 'bg-slate-700 text-slate-400'
+    }[i.status] || 'bg-slate-800 text-slate-400';
+    const openDateStr = i.openDate ? new Date(i.openDate).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    const actionBtns = buildInternshipActionBtns(i);
+    return `<tr class="border-b border-slate-800/50 hover:bg-slate-900/30">
+      <td class="p-3 text-white font-semibold">${i.title}</td>
+      <td class="p-3 text-slate-400">${i.department}</td>
+      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${statusBadge}">${i.status.toUpperCase()}</span></td>
+      <td class="p-3 text-slate-500 text-[11px]">${openDateStr}</td>
+      <td class="p-3"><div class="flex flex-wrap gap-1.5">${actionBtns}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildInternshipActionBtns(i) {
+  const btns = [];
+  btns.push(`<button onclick="editInternshipListing('${i.id}')" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-bold hover:bg-slate-700">✏ Edit</button>`);
+  if (i.status === 'draft') {
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','published')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold hover:bg-amber-500/30">📢 Publish</button>`);
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','live')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold hover:bg-emerald-500/30">🚀 Go Live</button>`);
+  } else if (i.status === 'published') {
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','live')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold hover:bg-emerald-500/30">🚀 Open Now</button>`);
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','draft')" class="px-2.5 py-1 rounded-lg bg-slate-700 text-slate-400 text-[10px] font-bold hover:bg-slate-600">⬛ Unpublish</button>`);
+  } else if (i.status === 'live') {
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','closed')" class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 text-[10px] font-bold hover:bg-rose-500/30">🔒 Close</button>`);
+  } else if (i.status === 'closed') {
+    btns.push(`<button onclick="setInternshipStatus('${i.id}','live')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold hover:bg-emerald-500/30">♻ Reopen</button>`);
+  }
+  btns.push(`<button onclick="deleteInternshipListing('${i.id}')" class="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 text-[10px] font-bold hover:bg-rose-500/20">🗑 Delete</button>`);
+  return btns.join('');
+}
+
+function setInternshipStatus(id, status) {
+  const item = getInternships().find(i => i.id === id);
+  if (!item) return;
+  item.status = status;
+  saveInternships();
+  renderAdminInternshipsTable();
+  renderPublicInternships();
+  db.collection('internships').doc(id).update({ status }).catch(() => {});
+  showToast('Listing Updated', `"${item.title}" is now ${status.toUpperCase()}.`);
+}
+
+function deleteInternshipListing(id) {
+  if (!confirm('Delete this internship listing? This cannot be undone.')) return;
+  allInternships = allInternships.filter(i => i.id !== id);
+  saveInternships();
+  renderAdminInternshipsTable();
+  renderPublicInternships();
+  db.collection('internships').doc(id).delete().catch(() => {});
+  showToast('Listing Deleted', 'Internship removed from website.');
+}
+
+function openCreateInternshipModal() {
+  document.getElementById('intern-modal-title').textContent = 'Create Internship Listing';
+  document.getElementById('intern-edit-id').value = '';
+  document.getElementById('internship-create-form').reset();
+  document.getElementById('intern-ben').value = 'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nDirect mentorship from Founder Pampana Hari Sai Ganesh\nLetter of Recommendation upon exceptional performance';
+  document.getElementById('intern-duration').value = '1–3 Months';
+  document.getElementById('intern-save-action').value = 'draft';
+  document.getElementById('modal-create-internship').style.display = 'flex';
+}
+
+function closeCreateInternshipModal() {
+  document.getElementById('modal-create-internship').style.display = 'none';
+}
+
+function editInternshipListing(id) {
+  const i = getInternships().find(x => x.id === id);
+  if (!i) return;
+  document.getElementById('intern-modal-title').textContent = 'Edit Internship Listing';
+  document.getElementById('intern-edit-id').value = i.id;
+  document.getElementById('intern-title').value = i.title || '';
+  document.getElementById('intern-dept').value = i.department || '';
+  document.getElementById('intern-duration').value = i.duration || '1–3 Months';
+  document.getElementById('intern-type').value = i.type || 'Remote | Part-Time | Unpaid';
+  document.getElementById('intern-color').value = i.color || 'emerald';
+  document.getElementById('intern-opendate').value = i.openDate ? i.openDate.slice(0,10) : '';
+  document.getElementById('intern-desc').value = i.description || '';
+  document.getElementById('intern-resp').value = i.responsibilities || '';
+  document.getElementById('intern-elig').value = i.eligibility || '';
+  document.getElementById('intern-ben').value = i.benefits || '';
+  document.getElementById('intern-save-action').value = i.status || 'draft';
+  document.getElementById('modal-create-internship').style.display = 'flex';
+}
+
+function saveInternshipListing(e) {
+  e.preventDefault();
+  const editId = document.getElementById('intern-edit-id').value;
+  const action = document.getElementById('intern-save-action').value;
+  const openDateRaw = document.getElementById('intern-opendate').value;
+
+  const obj = {
+    id: editId || 'intern_' + Date.now(),
+    title: document.getElementById('intern-title').value.trim(),
+    department: document.getElementById('intern-dept').value.trim(),
+    description: document.getElementById('intern-desc').value.trim(),
+    responsibilities: document.getElementById('intern-resp').value.trim(),
+    eligibility: document.getElementById('intern-elig').value.trim(),
+    benefits: document.getElementById('intern-ben').value.trim(),
+    type: document.getElementById('intern-type').value,
+    duration: document.getElementById('intern-duration').value.trim(),
+    color: document.getElementById('intern-color').value,
+    openDate: openDateRaw || '',
+    status: action,
+    createdAt: editId ? (getInternships().find(i => i.id === editId)?.createdAt || Date.now()) : Date.now(),
+    updatedAt: Date.now()
+  };
+
+  if (editId) {
+    const idx = allInternships.findIndex(i => i.id === editId);
+    if (idx > -1) allInternships[idx] = obj;
+    else allInternships.unshift(obj);
+  } else {
+    allInternships.unshift(obj);
+  }
+
+  saveInternships();
+  checkInternshipAutoActivation();
+  renderAdminInternshipsTable();
+  renderPublicInternships();
+  closeCreateInternshipModal();
+  showToast('Listing Saved! 📌', `"${obj.title}" saved as ${action.toUpperCase()}.`);
+}
+
+// --- Public Site Rendering ---
+function initInternshipsPublic() {
+  getInternships();
+  checkInternshipAutoActivation();
+  // Also try to sync from Firestore
+  withTimeout(db.collection('internships').get(), 3000).then(snap => {
+    if (snap && snap.docs && snap.docs.length) {
+      allInternships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      saveInternships();
+      checkInternshipAutoActivation();
+      renderPublicInternships();
+    }
+  }).catch(() => {});
+  renderPublicInternships();
+}
+
+function renderPublicInternships() {
+  const container = document.getElementById('internships-public-list');
+  if (!container) return;
+  const visible = getInternships().filter(i => i.status !== 'draft');
+  if (!visible.length) {
+    container.innerHTML = `<div class="text-center py-20 space-y-4">
+      <div class="text-5xl">🌱</div>
+      <h3 class="text-xl font-bold text-white">No Open Positions Right Now</h3>
+      <p class="text-slate-400 text-sm max-w-md mx-auto">We're growing fast! New internship openings are coming soon. Follow us on LinkedIn for updates.</p>
+      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs">Follow on LinkedIn ↗</a>
+    </div>`;
+    return;
+  }
+
+  const colorMap = {
+    emerald: { border:'border-emerald-500/30', label:'text-emerald-400', btn:'bg-emerald-500 hover:bg-emerald-400', badge:'bg-emerald-500/20 text-emerald-300' },
+    cyan:    { border:'border-cyan-500/30',    label:'text-cyan-400',    btn:'bg-cyan-500 hover:bg-cyan-400',    badge:'bg-cyan-500/20 text-cyan-300'       },
+    amber:   { border:'border-amber-500/30',   label:'text-amber-400',   btn:'bg-amber-500 hover:bg-amber-400',   badge:'bg-amber-500/20 text-amber-300'     },
+    purple:  { border:'border-purple-500/30',  label:'text-purple-400',  btn:'bg-purple-500 hover:bg-purple-400', badge:'bg-purple-500/20 text-purple-300'   },
+    rose:    { border:'border-rose-500/30',    label:'text-rose-400',    btn:'bg-rose-500 hover:bg-rose-400',     badge:'bg-rose-500/20 text-rose-300'       }
+  };
+
+  container.innerHTML = visible.map((i, idx) => {
+    const c = colorMap[i.color] || colorMap.emerald;
+    const num = String(idx + 1).padStart(2, '0');
+    const respList = (i.responsibilities || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+    const eligList = (i.eligibility || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+    const benList  = (i.benefits || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+
+    let applyBtn = '';
+    if (i.status === 'live') {
+      applyBtn = `<button onclick="openApplyModal('${i.title.replace(/'/g,"\\\'")}')" class="px-6 py-3 rounded-xl ${c.btn} text-slate-950 font-bold text-xs shrink-0 transition-all">Apply Now →</button>`;
+    } else if (i.status === 'published') {
+      const openDateMs = i.openDate ? new Date(i.openDate).getTime() : null;
+      let countdownHtml = '';
+      if (openDateMs) {
+        const openStr = new Date(i.openDate).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+        countdownHtml = `<div id="cd-${i.id}" class="text-xs text-amber-300 font-mono mt-1">Opens ${openStr}</div>`;
+        // Start countdown timer update
+        setTimeout(() => startCountdown(i.id, openDateMs), 100);
+      }
+      applyBtn = `<div class="flex flex-col items-end gap-1 shrink-0">
+        <button disabled class="px-6 py-3 rounded-xl bg-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed opacity-70">🕐 Coming Soon</button>
+        ${countdownHtml}
+      </div>`;
+    } else if (i.status === 'closed') {
+      applyBtn = `<span class="px-4 py-2 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs">🔒 Applications Closed</span>`;
+    }
+
+    return `<div class="glass p-6 sm:p-8 rounded-3xl ${c.border} reveal active space-y-5">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-mono ${c.label} font-bold">OPENING ${num}</span>
+          <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">${i.title}</h3>
+          <p class="text-xs text-slate-400 mt-1">Department: ${i.department} • ${i.type || 'Remote | Part-Time | Unpaid'} • ${i.duration || '1–3 Months'}</p>
+        </div>
+        ${applyBtn}
+      </div>
+      <div class="space-y-4 text-xs text-slate-300">
+        <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>${i.description}</p></div>
+        ${respList ? `<div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${respList}</ul></div>` : ''}
+        ${eligList ? `<div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${eligList}</ul></div>` : ''}
+        ${benList  ? `<div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${benList}</ul></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startCountdown(internId, openDateMs) {
+  const el = document.getElementById('cd-' + internId);
+  if (!el) return;
+  function tick() {
+    const now = Date.now();
+    const diff = openDateMs - now;
+    if (diff <= 0) {
+      // Auto-activate
+      const intern = getInternships().find(i => i.id === internId);
+      if (intern && intern.status === 'published') {
+        intern.status = 'live';
+        saveInternships();
+        renderPublicInternships();
+      }
+      return;
+    }
+    const days    = Math.floor(diff / 86400000);
+    const hours   = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    const parts = [];
+    if (days > 0)    parts.push(`${days}d`);
+    if (hours > 0)   parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    el.textContent = `Opens in ${parts.join(' ')}`;
+    setTimeout(tick, 1000);
+  }
+  tick();
 }
 
 // ===== Dashboard View =====
