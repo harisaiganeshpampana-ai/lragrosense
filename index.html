@@ -3,122 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LR AgroSense | Smart Farming • IoT Field Telemetry • Founder Console</title>
-  <meta name="description" content="LR AgroSense is an AgriTech startup pioneering low-cost IoT soil NPK, moisture, and pH telemetry nodes for precision farming." />
-
-  <!-- Google Fonts: Inter & Outfit -->
+  <title>LR AgroSense | Smart Farming • IoT Telemetry Platform</title>
+  <meta name="description" content="LR AgroSense is a pioneer AgriTech platform empowering 150M+ Indian farmers through low-cost IoT sensors, automated irrigation, and precision telemetry." />
+  <link rel="icon" type="image/jpg" href="logo.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Marked JS for AI Markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-  <!-- Firebase App & Firestore -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
-          },
           colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              900: '#064e3b',
-              950: '#022c22'
-            }
-          }
+            agri: { 300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',950:'#052e16' },
+            brand: { dark:'#040914', card:'#0c1527', accent:'#38bdf8' }
+          },
+          fontFamily: { sans:['"Plus Jakarta Sans"','sans-serif'], display:['"Outfit"','sans-serif'] }
         }
       }
     }
   </script>
-
   <style>
-    .glass {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .glass-h:hover {
-      background: rgba(30, 41, 59, 0.85);
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-    .logo-b {
-      background: #ffffff;
-      padding: 6px 12px;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-    .grad-t {
-      background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .toast-in { animation: toastIn 0.3s forwards ease-out; }
-    .toast-out { animation: toastOut 0.3s forwards ease-in; }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(0.95); } }
-    .msg-enter { animation: msgIn 0.25s ease-out forwards; }
-    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .glass{background:rgba(12,21,39,.82);backdrop-filter:blur(18px);border:1px solid rgba(34,197,94,.22)}
+    .glass-h{transition:all .3s cubic-bezier(.4,0,.2,1)}
+    .glass-h:hover{border-color:rgba(74,222,128,.5);transform:translateY(-4px);box-shadow:0 20px 40px -15px rgba(34,197,94,.25)}
+    .grad-t{background:linear-gradient(135deg,#4ade80,#10b981 40%,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .logo-b{background:#fff;padding:6px 14px;border-radius:16px;box-shadow:0 10px 25px -5px rgba(34,197,94,.25);border:1px solid rgba(34,197,94,.4)}
+    .reveal{opacity:1;transform:translateY(0);transition:all .5s ease-out}
+    .reveal.active{opacity:1;transform:translateY(0)}
+    @keyframes toastIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes toastOut{from{opacity:1}to{transform:translateY(100%);opacity:0}}
   </style>
 </head>
 <body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
 
 <!-- ========== NAVBAR ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/90 backdrop-blur-xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <a href="#" class="flex items-center gap-3">
       <div class="logo-b"><img src="logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
-      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden md:inline-block">LR AGROSENSE</span>
+      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
     </a>
-    <div class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
-      <a href="#about" class="hover:text-emerald-400 transition-colors">About</a>
-      <a href="#products" class="hover:text-emerald-400 transition-colors">Products</a>
-      <a href="#roadmap" class="hover:text-emerald-400 transition-colors">Roadmap</a>
-      <a href="#tech" class="hover:text-emerald-400 transition-colors">Tech Stack</a>
-      <a href="#internships" class="hover:text-emerald-400 transition-colors">Internships</a>
-      <a href="#investors" class="hover:text-emerald-400 transition-colors text-amber-400 font-bold">Investors</a>
-      <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
+    
+    <!-- Desktop & Tablet Navigation Links -->
+    <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
+      <a href="#about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
+      <a href="#products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
+      <a href="#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
+      <a href="#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
+      <a href="#internships" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
+      <a href="#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
+      <a href="#contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
     </div>
-    <div class="flex items-center gap-3">
-      <button onclick="openTrackModal()" class="px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all">🔍 Track Status</button>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button onclick="openTrackModal()" class="px-3 py-2 sm:px-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all">🔍 Track Status</button>
       <div id="nav-user-container">
-        <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">👤 Account</button>
+        <button onclick="toggleAuthModal(true)" class="px-3 py-2 sm:px-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">👤 Account</button>
       </div>
-      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="lg:hidden p-2 rounded-xl bg-slate-900 text-slate-300 border border-slate-800">☰</button>
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 border border-slate-800">☰</button>
     </div>
   </div>
-  <div id="mobile-menu" class="hidden lg:hidden pt-4 pb-2 border-t border-slate-800 mt-3 space-y-2 text-xs font-semibold text-slate-300">
-    <a href="#about" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About</a>
-    <a href="#products" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
-    <a href="#internships" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
-    <a href="#investors" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investors</a>
-    <a href="#contact" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobile-menu" class="hidden md:hidden pt-4 pb-2 border-t border-slate-800 mt-3 space-y-2 text-xs font-bold text-slate-200">
+    <a href="#about" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About</a>
+    <a href="#products" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
+    <a href="#roadmap" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Roadmap</a>
+    <a href="#tech" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Tech Stack</a>
+    <a href="#internships" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
+    <a href="#investors" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investors</a>
+    <a href="#contact" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
+    <button onclick="document.getElementById('mobile-menu').classList.add('hidden'); openTrackModal();" class="w-full text-left py-2 px-3 rounded-lg bg-cyan-500/10 text-cyan-300 font-bold">🔍 Track Status</button>
   </div>
 </nav>
 
@@ -164,34 +128,9 @@
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Transforming Agricultural Ecosystems with Technology</h2>
     <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-light">LR AgroSense is an early-stage AgriTech startup committed to democratizing precision farming. By integrating IoT sensors and automated irrigation controllers, we empower farmers to monitor soil moisture, NPK ratios, and water pH levels in real time.</p>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <div class="glass p-8 sm:p-10 rounded-3xl border border-emerald-500/30 reveal space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">👁️</div>
-      <h3 class="text-2xl font-bold text-white font-display">Our Vision</h3>
-      <p class="text-slate-300 text-sm leading-relaxed font-light">To build India's most accessible and intelligent precision farming platform — establishing data-driven crop management across every acre of farmland.</p>
-    </div>
-    <div class="glass p-8 sm:p-10 rounded-3xl border border-cyan-500/30 reveal space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">🎯</div>
-      <h3 class="text-2xl font-bold text-white font-display">Our Mission</h3>
-      <p class="text-slate-300 text-sm leading-relaxed font-light">Design micro-cost hardware sensors that allow farmers to eliminate guesswork, mitigate pest outbreaks, and optimize fertilizer application with accuracy.</p>
-    </div>
-  </div>
 </section>
 
-<!-- ========== CORE VALUES ========== -->
-<section class="py-16 px-4 max-w-7xl mx-auto">
-  <div class="text-center space-y-4 mb-12 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRINCIPLES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Core Values</h2></div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌱</div><h4 class="font-bold text-white text-lg">Farmer First</h4><p class="text-xs text-slate-400 leading-relaxed">Every design prioritizes regional accessibility and local language simplicity.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">⚡</div><h4 class="font-bold text-white text-lg">Radical Affordability</h4><p class="text-xs text-slate-400 leading-relaxed">Hardware at a fraction of commercial costs, making smart farming scalable.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🔬</div><h4 class="font-bold text-white text-lg">Agronomic Rigor</h4><p class="text-xs text-slate-400 leading-relaxed">Grounded in ICAR crop packages of practices and real-field soil testing data.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">📡</div><h4 class="font-bold text-white text-lg">Precision Telemetry</h4><p class="text-xs text-slate-400 leading-relaxed">Continuous field data for accurate, real-time soil moisture and nutrient metrics.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌍</div><h4 class="font-bold text-white text-lg">Sustainability</h4><p class="text-xs text-slate-400 leading-relaxed">Mitigating ground-water depletion, reducing chemical runoff, regenerative farming.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🤝</div><h4 class="font-bold text-white text-lg">Transparency</h4><p class="text-xs text-slate-400 leading-relaxed">Open channels between farmers, agronomists, and research institutions.</p></div>
-  </div>
-</section>
-
-<!-- ========== PRODUCT SHOWCASE ========== -->
+<!-- ========== PRODUCTS SHOWCASE ========== -->
 <section id="products" class="py-24 px-4 max-w-7xl mx-auto space-y-16">
   <div class="text-center space-y-4 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRODUCTS</span><h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">The LR AgroSense Ecosystem</h2></div>
   <div class="glass p-8 sm:p-12 rounded-3xl border border-emerald-500/30 reveal grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -199,47 +138,6 @@
       <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">HARDWARE NODE 01</div>
       <h3 class="text-3xl font-extrabold text-white font-display">Smart Farm Monitor (IoT Probe)</h3>
       <p class="text-slate-300 text-sm leading-relaxed">Low-cost, solar-powered field telemetry node with Modbus RS485 soil NPK sensors, water content probes, and water pH analyzers.</p>
-      <ul class="space-y-2 text-xs text-slate-300 font-mono">
-        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Real-Time Soil N, P, K tracking</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Solar-backed ESP32 with LoRaWAN & GSM</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> IP67 weatherproof rugged casing</li>
-      </ul>
-    </div>
-    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span class="w-3 h-3 rounded-full bg-amber-500"></span><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-xs font-mono text-slate-400 ml-2">FIELD_NODE_09</span></div>
-        <span class="text-[10px] text-emerald-400 font-mono">SOLAR 98%</span>
-      </div>
-      <div class="grid grid-cols-2 gap-3 text-center text-xs font-mono">
-        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Moisture</div><div class="text-xl font-bold text-emerald-400 mt-1">42.8%</div></div>
-        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Water pH</div><div class="text-xl font-bold text-cyan-400 mt-1">6.8</div></div>
-        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">NPK</div><div class="text-xs font-bold text-amber-400 mt-1">N:140 P:45 K:180</div></div>
-        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800"><div class="text-slate-400">Status</div><div class="text-xs font-bold text-emerald-400 mt-1">OPTIMAL</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ========== HOW IT WORKS ========== -->
-<section class="py-20 px-4 max-w-7xl mx-auto">
-  <div class="text-center space-y-4 mb-16 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">WORKFLOW</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">How It Works</h2></div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-emerald-400 font-mono">01</div><h4 class="font-bold text-white">Deploy Sensor</h4><p class="text-xs text-slate-400">Install probe into soil root zone in under 5 minutes.</p></div>
-    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-cyan-400 font-mono">02</div><h4 class="font-bold text-white">Real-Time Data</h4><p class="text-xs text-slate-400">Sensors stream soil moisture, NPK, pH via GSM/LoRaWAN.</p></div>
-    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-amber-400 font-mono">03</div><h4 class="font-bold text-white">Cloud Analytics</h4><p class="text-xs text-slate-400">Telemetry processed against ICAR packages of practice.</p></div>
-    <div class="glass p-6 rounded-3xl reveal space-y-3"><div class="text-3xl font-bold text-purple-400 font-mono">04</div><h4 class="font-bold text-white">Smart Decisions</h4><p class="text-xs text-slate-400">Farmers receive irrigation schedules and dosages.</p></div>
-  </div>
-</section>
-
-<!-- ========== TECH STACK ========== -->
-<section id="tech" class="py-20 px-4 max-w-7xl mx-auto">
-  <div class="glass p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-8 reveal">
-    <div class="text-center space-y-3"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ARCHITECTURE</span><h2 class="text-3xl font-extrabold text-white font-display">Technology Stack</h2></div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">
-      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-emerald-400 text-sm">📊 Analytics</div><p class="text-slate-400">Soil NPK algorithms, moisture curves, irrigation triggers.</p></div>
-      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-cyan-400 text-sm">⚡ IoT Hardware</div><p class="text-slate-400">ESP32, Modbus RS485, LoRaWAN, solar power.</p></div>
-      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-amber-400 text-sm">☁️ Cloud</div><p class="text-slate-400">Firebase Auth, Firestore, CDN static hosting, SSL.</p></div>
-      <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-2"><div class="font-bold text-purple-400 text-sm">📱 Mobile & Web</div><p class="text-slate-400">PWA, Tailwind CSS, real-time dashboard, glassmorphism UI.</p></div>
     </div>
   </div>
 </section>
@@ -248,20 +146,24 @@
 <section id="roadmap" class="py-24 px-4 max-w-7xl mx-auto">
   <div class="text-center space-y-4 mb-16 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">MILESTONES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Product Roadmap</h2></div>
   <div class="space-y-6 max-w-4xl mx-auto">
-    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 (CURRENT)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4><p class="text-xs text-slate-400 mt-1">Firebase auth, website, sensor benchmarks, farmer trials.</p></div><span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold shrink-0">ACTIVE</span></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4><p class="text-xs text-slate-400 mt-1">50 pilot IoT probe nodes across AP & Telangana.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">PHASE 03</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4><p class="text-xs text-slate-400 mt-1">iOS/Android app with solenoid valve controls and alerts.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 (CURRENT)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4></div></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4></div></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">PHASE 03</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4></div></div>
   </div>
 </section>
 
-<!-- ========== FOUNDER ========== -->
-<section id="founder" class="py-24 px-4 max-w-5xl mx-auto">
-  <div class="glass p-8 sm:p-14 rounded-3xl border border-emerald-500/30 reveal space-y-6">
-    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">FOUNDER</span>
-    <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Pampana Hari Sai Ganesh</h2>
-    <p class="text-emerald-400 font-semibold text-sm">Founder & CEO • B.Sc. Agriculture</p>
-    <p class="text-slate-300 text-base leading-relaxed font-light">As a student of Agricultural Science, Pampana Hari Sai Ganesh founded LR AgroSense to bridge academic agronomic research and practical, low-cost field technology — giving every smallholder farmer access to institutional-grade soil analytics.</p>
-    <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-flex px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs items-center gap-2 shadow-lg">LinkedIn ↗</a>
+<!-- ========== TECH STACK ========== -->
+<section id="tech" class="py-20 px-4 max-w-7xl mx-auto">
+  <div class="glass p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-8 reveal">
+    <div class="text-center space-y-3"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ARCHITECTURE</span><h2 class="text-3xl font-extrabold text-white font-display">Technology Stack</h2></div>
+  </div>
+</section>
+
+<!-- ========== INTERNSHIPS ========== -->
+<section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
+  <div class="text-center space-y-4 reveal">
+    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
+    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
   </div>
 </section>
 
@@ -270,73 +172,6 @@
   <div class="glass p-8 sm:p-14 rounded-3xl border border-amber-500/40 reveal text-center space-y-6">
     <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">INVESTOR OPPORTUNITY</span>
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Partner With LR AgroSense</h2>
-    <p class="text-slate-300 text-base max-w-2xl mx-auto font-light">Seeking strategic seed partners, venture grants, and mentors to accelerate hardware pilot testing.</p>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs text-left pt-4">
-      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-amber-400 font-bold">🎯 $24B+ TAM</div><div class="text-slate-400 mt-1">Indian AgriTech market with 150M+ holdings.</div></div>
-      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-emerald-400 font-bold">⚡ Scalable Moat</div><div class="text-slate-400 mt-1">Proprietary low-cost sensor nodes + cloud telemetry.</div></div>
-      <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-cyan-400 font-bold">🤝 UN SDGs</div><div class="text-slate-400 mt-1">Aligned with SDG 2, 6 & 13.</div></div>
-    </div>
-    <button onclick="toggleModal('modal-investor',true)" class="inline-block px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Request Pitch Deck & Schedule Call 📊</button>
-  </div>
-</section>
-
-<!-- ==================== INTERNSHIP PORTAL ==================== -->
-<section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
-  <div class="text-center space-y-4 reveal">
-    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
-    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
-    <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across branding, business strategy, and electronics engineering.</p>
-    
-    <!-- Explicit Compensation Note -->
-    <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium">
-      ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
-    </div>
-
-    <div class="flex flex-wrap justify-center gap-3 text-[10px] font-mono pt-2">
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">🏠 Remote</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">⏱ Part-Time</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-amber-300">📋 Unpaid (Revisited as we scale)</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">📅 1–3 Months</span>
-    </div>
-  </div>
-
-  <!-- Internship 1: Branding & Content -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-emerald-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-emerald-400 font-bold">OPENING 01</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Branding & Content Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Marketing & Creative</p>
-      </div>
-      <button onclick="openApplyModal('Branding & Content Intern')" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
-    </div>
-    <div class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.</p></div>
-    </div>
-  </div>
-
-  <!-- Internship 2: Business Development -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-cyan-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-cyan-400 font-bold">OPENING 02</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">Business Development & Strategy Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Growth & Operations</p>
-      </div>
-      <button onclick="openApplyModal('Business Development & Strategy Intern')" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
-    </div>
-  </div>
-
-  <!-- Internship 3: IoT & Electronics -->
-  <div class="glass p-6 sm:p-8 rounded-3xl border border-amber-500/30 reveal space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <span class="text-[10px] font-mono text-amber-400 font-bold">OPENING 03</span>
-        <h3 class="text-xl sm:text-2xl font-extrabold text-white font-display mt-1">IoT & Electronics Intern</h3>
-        <p class="text-xs text-slate-400 mt-1">Department: Hardware Engineering</p>
-      </div>
-      <button onclick="openApplyModal('IoT & Electronics Intern')" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
-    </div>
   </div>
 </section>
 
@@ -345,10 +180,6 @@
   <div class="glass p-8 sm:p-14 rounded-3xl border border-slate-800 text-center space-y-6 reveal">
     <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">CONTACT</span>
     <h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Get In Touch</h2>
-    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 inline-block max-w-md w-full text-xs space-y-3">
-      <div class="text-slate-300">Email: <a href="mailto:lragrosense@gmail.com" class="text-emerald-400 font-bold underline">lragrosense@gmail.com</a></div>
-      <div class="text-slate-300">LinkedIn: <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="text-sky-400 font-bold underline">linkedin.com/in/lragrosense</a></div>
-    </div>
   </div>
 </section>
 
@@ -363,413 +194,14 @@
   </div>
 </footer>
 
-<!-- ==================== DEDICATED APPLICATION PAGE & CONGRATULATIONS PORTAL ==================== -->
-<div id="modal-apply" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
-  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
-        <div>
-          <h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2>
-          <p class="text-[10px] text-emerald-400 font-mono">Internship Application Portal</p>
-        </div>
-      </div>
-      <button onclick="toggleModal('modal-apply',false)" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all flex items-center gap-2">
-        <span>←</span> Back to Openings
-      </button>
-    </div>
-  </header>
-
-  <main class="max-w-3xl mx-auto px-4 py-10">
-    <div id="apply-form-container" class="space-y-8">
-      <div class="text-center space-y-3">
-        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">OFFICIAL APPLICATION</span>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Apply for Internship</h1>
-        <div class="inline-block px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 text-sm font-bold" id="apply-position-label">Position Name</div>
-      </div>
-
-      <form id="apply-form" onsubmit="submitApplication(event)" class="glass p-6 sm:p-10 rounded-3xl border border-emerald-500/30 space-y-5 text-xs shadow-2xl">
-        <input type="hidden" id="apply-position" value="" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Full Name *</label><input id="af-name" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your full name"/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Email Address *</label><input id="af-email" type="email" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="you@email.com"/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Phone Number *</label><input id="af-phone" type="tel" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="+91 XXXXX XXXXX"/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">College / University *</label><input id="af-college" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your college name"/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Degree / Major *</label><input id="af-degree" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="B.Tech CSE, MBA, B.Sc Ag, etc."/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Graduation Year *</label><input id="af-gradyear" type="number" required min="2020" max="2030" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="2026"/></div>
-        </div>
-
-        <div>
-          <label class="text-slate-300 font-semibold mb-1.5 block">Resume / CV (Optional)</label>
-          <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
-            <input id="af-resume-file" type="file" accept=".pdf,.doc,.docx" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs outline-none file:bg-emerald-500 file:text-slate-950 cursor-pointer"/>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] text-slate-500 shrink-0">Or paste link:</span>
-              <input id="af-resume" type="url" class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none" placeholder="https://drive.google.com/..."/>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">LinkedIn Profile (Optional)</label><input id="af-linkedin" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" placeholder="https://linkedin.com/in/..."/></div>
-          <div><label class="text-slate-300 font-semibold mb-1.5 block">Portfolio Link (Optional)</label><input id="af-portfolio" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" placeholder="https://..."/></div>
-        </div>
-
-        <div><label class="text-slate-300 font-semibold mb-1.5 block">Why do you want to join LR AgroSense? *</label><textarea id="af-why" required rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none resize-none" placeholder="Tell us about your motivation..."></textarea></div>
-        <div><label class="text-slate-300 font-semibold mb-1.5 block">Availability *</label><select id="af-avail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"><option value="">Select availability</option><option>Immediate</option><option>Within 1 week</option><option>Within 2 weeks</option><option>Within 1 month</option></select></div>
-
-        <label class="flex items-start gap-3 cursor-pointer p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-          <input id="af-declare" type="checkbox" required class="mt-1 accent-emerald-500 w-4 h-4 shrink-0" />
-          <span class="text-slate-400 text-[11px]">I declare that all information provided is accurate and understand this is an unpaid, part-time, remote internship.</span>
-        </label>
-        <button id="apply-submit-btn" type="submit" class="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-extrabold text-sm">Submit Application →</button>
-      </form>
-    </div>
-
-    <!-- CONGRATULATIONS & SUBMITTED DETAILS RECEIPT -->
-    <div id="apply-congrats-container" class="hidden text-center py-6 space-y-6 max-w-2xl mx-auto">
-      <div class="w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-5xl flex items-center justify-center mx-auto shadow-2xl">🎉</div>
-      <div class="space-y-2">
-        <h2 class="text-3xl font-extrabold text-white">Congratulations, <span id="succ-name" class="text-emerald-400">Applicant</span>!</h2>
-        <p class="text-slate-300 text-sm">Your application for <strong id="succ-position" class="text-white">Position</strong> has been logged.</p>
-      </div>
-
-      <!-- Receipt Card -->
-      <div class="p-6 bg-slate-900/90 rounded-3xl border border-emerald-500/30 text-left space-y-4 text-xs">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div><span class="text-[10px] text-slate-400 block font-mono">APPLICATION REF ID</span><span id="succ-id" class="font-mono font-extrabold text-emerald-400 text-base">LRA-APP-9842</span></div>
-          <div class="text-right"><span class="text-[10px] text-slate-400 block font-mono">SUBMITTED ON</span><span id="succ-date" class="font-bold text-slate-200">04/08/2026</span></div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-          <div><span class="text-slate-500 block text-[10px]">Full Name:</span> <span id="succ-fullname" class="font-bold text-white">Full Name</span></div>
-          <div><span class="text-slate-500 block text-[10px]">Position:</span> <span id="succ-pos-name" class="font-bold text-white">Position</span></div>
-          <div><span class="text-slate-500 block text-[10px]">Email:</span> <span id="succ-email" class="font-bold text-white truncate block">email@domain.com</span></div>
-          <div><span class="text-slate-500 block text-[10px]">Phone:</span> <span id="succ-phone" class="font-bold text-white">+91 XXXXX</span></div>
-          <div><span class="text-slate-500 block text-[10px]">College:</span> <span id="succ-college" class="font-bold text-white">College</span></div>
-          <div><span class="text-slate-500 block text-[10px]">Degree & Grad Year:</span> <span id="succ-degree" class="font-bold text-white">Degree</span></div>
-          <div><span class="text-slate-500 block text-[10px]">Availability:</span> <span id="succ-avail" class="font-bold text-white">Immediate</span></div>
-        </div>
-        <div class="p-3.5 bg-slate-950 rounded-2xl border border-slate-800">
-          <span class="text-slate-500 text-[10px] block font-semibold">WHY JOIN LR AGROSENSE:</span>
-          <p id="succ-why" class="text-slate-300 text-[11px] italic">"Motivation..."</p>
-        </div>
-      </div>
-
-      <div class="pt-2 space-y-2">
-        <button id="succ-track-btn" class="w-full py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl">🔍 Track Live Application Status Now</button>
-        <button onclick="toggleModal('modal-apply',false)" class="w-full py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold">🏠 Return to Website Homepage</button>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- ==================== APPLICANT STATUS TRACKER MODAL ==================== -->
-<div id="modal-track" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
-  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
-        <div><h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2><p class="text-[10px] text-cyan-400 font-mono">Applicant Status Tracking Portal</p></div>
-      </div>
-      <button onclick="toggleModal('modal-track',false)" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white text-xs font-bold">← Back to Website</button>
-    </div>
-  </header>
-
-  <main class="max-w-3xl mx-auto px-4 py-10 space-y-8">
-    <div class="text-center space-y-3">
-      <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase">LIVE STATUS TRACKER</span>
-      <h1 class="text-3xl font-extrabold text-white">Track Your Application</h1>
-    </div>
-
-    <div class="glass p-6 rounded-3xl border border-cyan-500/30 shadow-2xl">
-      <form onsubmit="trackApplicationStatus(event)" class="flex flex-col sm:flex-row gap-3">
-        <input id="track-input" type="text" required placeholder="Enter Ref ID (e.g. LRA-APP-5995), Email, or Phone..." class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
-        <button type="submit" class="py-3 px-6 rounded-2xl bg-cyan-500 text-slate-950 font-extrabold text-xs">Check Status →</button>
-      </form>
-    </div>
-
-    <div id="track-result-container" class="hidden space-y-6">
-      <div class="glass p-6 rounded-3xl border border-slate-800 flex justify-between items-center">
-        <div><span id="tr-ref" class="font-mono text-xs font-bold text-cyan-400 block">REF: LRA-APP-1234</span><h3 id="tr-name" class="text-xl font-bold text-white mt-0.5">Candidate Name</h3><p id="tr-pos" class="text-xs text-slate-400">Position</p></div>
-        <div id="tr-status-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-blue-500/20 text-blue-300">RECEIVED</div>
-      </div>
-
-      <!-- 4 STAGE TRACKER -->
-      <div class="glass p-6 rounded-3xl border border-slate-800 space-y-6">
-        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">PIPELINE PROGRESS</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div id="stg-1" class="p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-1"><p class="font-bold text-white text-xs">Submitted</p><span class="text-emerald-400 text-xs block font-mono">✓ Done</span></div>
-          <div id="stg-2" class="p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-1"><p class="font-bold text-white text-xs">Received</p><span class="text-emerald-400 text-xs block font-mono">✓ Confirmed</span></div>
-          <div id="stg-3" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1"><p class="font-bold text-white text-xs">Under Review</p><span id="stg-3-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span></div>
-          <div id="stg-4" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1"><p class="font-bold text-white text-xs">Final Decision</p><span id="stg-4-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span></div>
-        </div>
-      </div>
-
-      <div class="glass p-6 rounded-3xl border border-emerald-500/30 space-y-3">
-        <h4 class="text-sm font-bold text-white">Official Review Note & Decision Reason</h4>
-        <div id="tr-reason-box" class="p-4 bg-slate-900 rounded-2xl border border-slate-800 text-xs text-slate-300"></div>
-      </div>
-    </div>
-    
-    <div id="track-error-container" class="hidden text-center p-8 glass rounded-3xl border border-rose-500/40">
-      <h3 class="text-lg font-bold text-white">No Matching Application Found</h3>
-    </div>
-  </main>
-</div>
-
-<!-- ==================== ADMIN DASHBOARD (AUTH GATED VIA #ADMIN) ==================== -->
-<div id="admin-dashboard" class="fixed inset-0 z-[60] hidden bg-[#040914] text-slate-100 overflow-hidden">
-  <!-- Login Gate -->
-  <div id="admin-gate" class="h-full flex items-center justify-center p-4">
-    <div class="w-full max-w-md glass p-8 rounded-3xl border border-emerald-500/40 text-center space-y-6">
-      <div class="logo-b inline-block p-2"><img src="logo.jpg" alt="Logo" class="h-10 w-auto"/></div>
-      <h3 class="text-2xl font-extrabold text-white">Founder Console</h3>
-      <form onsubmit="adminLogin(event)" class="space-y-4">
-        <input id="admin-pw" type="password" placeholder="Passcode (11042026)..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs text-center outline-none focus:border-emerald-500"/>
-        <p id="admin-pw-err" class="hidden text-rose-400 text-xs font-bold">Incorrect Passcode</p>
-        <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Unlock Console →</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Admin Main -->
-  <div id="admin-main" class="hidden h-full flex flex-col">
-    <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="logo-b p-1.5"><img src="logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
-        <span class="text-xs font-mono font-bold text-emerald-400">FOUNDER CONSOLE</span>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="switchAdminTab('ats')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold">👥 ATS</button>
-        <button onclick="switchAdminTab('ai')" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold">✦ Aria AI</button>
-        <button onclick="location.hash=''; location.reload();" class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 text-xs font-bold">Logout</button>
-      </div>
-    </header>
-
-    <main class="flex-1 overflow-y-auto">
-      <!-- ATS Tab -->
-      <div id="tab-ats" class="admin-tab p-6 space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold text-white">Applications</h2>
-          <input id="ats-search" oninput="filterATS()" type="text" placeholder="Search applicant..." class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
-        </div>
-        <div class="glass rounded-2xl border border-slate-800 overflow-hidden text-xs">
-          <table class="w-full text-left">
-            <thead class="bg-slate-900 border-b border-slate-800 text-slate-400"><tr><th class="p-3">Name</th><th class="p-3">Position</th><th class="p-3">Status</th><th class="p-3">Date</th><th class="p-3">Action</th></tr></thead>
-            <tbody id="ats-tbody"></tbody>
-          </table>
-        </div>
-        <div id="ats-detail" class="hidden glass p-6 rounded-2xl border border-emerald-500/40 space-y-4 text-xs">
-          <div id="ats-detail-content"></div>
-        </div>
-      </div>
-
-      <!-- ARIA AI TAB -->
-      <div id="tab-ai" class="admin-tab hidden p-6 space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold text-white">✦ Aria — AI Co-Founder</h2>
-          <span id="aria-model-badge" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono">gemini-1.5-flash</span>
-        </div>
-        <div id="aria-messages" class="h-[450px] overflow-y-auto space-y-4 p-4 glass rounded-2xl border border-slate-800 text-xs">
-          <div id="aria-welcome" class="text-center py-10 space-y-3">
-            <div class="text-4xl">🤖</div>
-            <h3 class="text-lg font-bold text-white">I'm Aria — Your AI Co-Founder</h3>
-            <p class="text-slate-400 max-w-md mx-auto">Connected to live applicants, tasks, and notes database.</p>
-          </div>
-        </div>
-        <form onsubmit="ariaSendMessage(event)" class="flex gap-3">
-          <input id="aria-input" type="text" placeholder="Ask Aria anything..." class="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
-          <button type="submit" class="px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Send →</button>
-        </form>
-      </div>
-    </main>
-  </div>
-</div>
-
-<!-- ==================== SCRIPT ENGINE ==================== -->
 <script>
-  const FOUNDER_PW = "11042026";
-  let currentUser = null;
-  let allApplications = [];
-
-  // Init Firebase
-  const fbConfig = {
-    apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
-    authDomain: "lr-agrosense.firebaseapp.com",
-    projectId: "lr-agrosense",
-    storageBucket: "lr-agrosense.appspot.com",
-    messagingSenderId: "1098234876",
-    appId: "1:1098234876:web:8a9b0c"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(fbConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-
-  window.addEventListener('load', () => {
-    if (location.hash === '#admin') openAdminDashboard();
-  });
-
-  function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
-  function showToast(title, msg) {
-    alert(title + "\n" + msg);
-  }
-
-  function openApplyModal(position) {
-    document.getElementById('apply-position').value = position;
-    document.getElementById('apply-position-label').textContent = position;
-    document.getElementById('apply-form-container').classList.remove('hidden');
-    document.getElementById('apply-congrats-container').classList.add('hidden');
-    toggleModal('modal-apply', true);
-  }
-
-  async function submitApplication(e) {
-    e.preventDefault();
-    const btn = document.getElementById('apply-submit-btn');
-    btn.textContent = 'Submitting...'; btn.disabled = true;
-
-    let resumeUrl = document.getElementById('af-resume').value.trim();
-    const fileInput = document.getElementById('af-resume-file');
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-      try {
-        resumeUrl = await new Promise((res, rej) => {
-          const r = new FileReader();
-          r.onload = () => res(r.result);
-          r.onerror = rej;
-          r.readAsDataURL(fileInput.files[0]);
-        });
-      } catch(e) {}
-    }
-
-    const name = document.getElementById('af-name').value.trim();
-    const email = document.getElementById('af-email').value.trim();
-    const pos = document.getElementById('apply-position').value;
-    const refId = 'LRA-APP-' + Math.floor(1000 + Math.random() * 9000);
-    const todayStr = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'short',day:'numeric'});
-
-    const appObj = {
-      id: 'app_' + Date.now(),
-      refId,
-      fullName: name,
-      email: email,
-      phone: document.getElementById('af-phone').value.trim(),
-      college: document.getElementById('af-college').value.trim(),
-      degree: document.getElementById('af-degree').value.trim(),
-      graduationYear: parseInt(document.getElementById('af-gradyear').value),
-      resumeLink: resumeUrl || '',
-      linkedinProfile: document.getElementById('af-linkedin').value.trim() || '',
-      portfolio: document.getElementById('af-portfolio').value.trim() || '',
-      whyJoin: document.getElementById('af-why').value.trim(),
-      availability: document.getElementById('af-avail').value,
-      position: pos,
-      status: 'new',
-      dateFormatted: todayStr
-    };
-
-    allApplications.unshift(appObj);
-    localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-    db.collection('applications').add({ ...appObj, appliedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
-
-    document.getElementById('succ-name').textContent = name;
-    document.getElementById('succ-position').textContent = pos;
-    document.getElementById('succ-id').textContent = refId;
-    document.getElementById('succ-date').textContent = todayStr;
-    document.getElementById('succ-fullname').textContent = name;
-    document.getElementById('succ-pos-name').textContent = pos;
-    document.getElementById('succ-email').textContent = email;
-    document.getElementById('succ-phone').textContent = appObj.phone;
-    document.getElementById('succ-college').textContent = appObj.college;
-    document.getElementById('succ-degree').textContent = `${appObj.degree} (${appObj.graduationYear})`;
-    document.getElementById('succ-avail').textContent = appObj.availability;
-    document.getElementById('succ-why').textContent = `"${appObj.whyJoin}"`;
-
-    const trackBtn = document.getElementById('succ-track-btn');
-    if (trackBtn) trackBtn.onclick = () => { toggleModal('modal-apply', false); openTrackModal(refId); };
-
-    document.getElementById('apply-form-container').classList.add('hidden');
-    document.getElementById('apply-congrats-container').classList.remove('hidden');
-    btn.textContent = 'Submit Application →'; btn.disabled = false;
-  }
-
-  function openTrackModal(query = '') {
-    toggleModal('modal-track', true);
-    if (query) {
-      document.getElementById('track-input').value = query;
-      trackApplicationStatus();
-    }
-  }
-
-  function trackApplicationStatus(e) {
-    if (e) e.preventDefault();
-    const q = document.getElementById('track-input').value.trim().toLowerCase();
-    if (!q) return;
-
-    const resultBox = document.getElementById('track-result-container');
-    const errorBox = document.getElementById('track-error-container');
-    resultBox.classList.add('hidden'); errorBox.classList.add('hidden');
-
-    const app = allApplications.find(a => (a.refId && a.refId.toLowerCase() === q) || (a.email && a.email.toLowerCase() === q) || (a.id && a.id.toLowerCase() === q));
-    if (!app) { errorBox.classList.remove('hidden'); return; }
-
-    document.getElementById('tr-ref').textContent = 'REF: ' + (app.refId || app.id);
-    document.getElementById('tr-name').textContent = app.fullName;
-    document.getElementById('tr-pos').textContent = app.position;
-
-    const status = (app.status || 'new').toLowerCase();
-    const reasonBox = document.getElementById('tr-reason-box');
-    reasonBox.innerHTML = `<p class="font-bold text-cyan-300">Status (${status.toUpperCase()}):</p><p>${app.decisionReason || app.notes || 'Application is in review.'}</p>`;
-
-    resultBox.classList.remove('hidden');
-  }
-
-  function openAdminDashboard() { toggleModal('admin-dashboard', true); }
-  function adminLogin(e) {
-    e.preventDefault();
-    if (document.getElementById('admin-pw').value === FOUNDER_PW) {
-      document.getElementById('admin-gate').classList.add('hidden');
-      document.getElementById('admin-main').classList.remove('hidden');
-      loadATS();
-    } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
-  }
-
-  function switchAdminTab(t) {
-    document.getElementById('tab-ats').classList.toggle('hidden', t !== 'ats');
-    document.getElementById('tab-ai').classList.toggle('hidden', t !== 'ai');
-  }
-
-  function renderATSTable(apps) {
-    document.getElementById('ats-tbody').innerHTML = apps.map(a => `
-      <tr onclick="openDetail('${a.id}')" class="border-b border-slate-800 p-2 cursor-pointer">
-        <td class="p-3 text-white font-bold">${a.fullName}</td>
-        <td class="p-3 text-slate-400">${a.position}</td>
-        <td class="p-3">${a.status}</td>
-        <td class="p-3">${a.dateFormatted || 'Recent'}</td>
-        <td class="p-3 text-emerald-400">View →</td>
-      </tr>`).join('');
-  }
-
-  function openDetail(id) {
-    const a = allApplications.find(x => x.id === id);
-    if (!a) return;
-    const panel = document.getElementById('ats-detail');
-    panel.classList.remove('hidden');
-    document.getElementById('ats-detail-content').innerHTML = `
-      <h3 class="text-lg font-bold text-white">${a.fullName} (${a.position})</h3>
-      <p class="text-slate-400">Email: ${a.email} | Phone: ${a.phone}</p>
-      <p class="text-slate-300 bg-slate-900 p-3 rounded-xl mt-2">${a.whyJoin}</p>
-      <textarea id="detail-reason-${a.id}" class="w-full bg-slate-900 border border-slate-800 text-white p-2 rounded-xl mt-2">${a.decisionReason || ''}</textarea>
-      <button onclick="saveDecisionReason('${a.id}')" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-xl mt-2">Save Decision Reason</button>`;
-  }
-
-  function saveDecisionReason(id) {
-    const r = document.getElementById('detail-reason-' + id).value;
-    const item = allApplications.find(a => a.id === id);
-    if (item) item.decisionReason = r;
-    localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-    db.collection('applications').doc(id).update({ decisionReason: r }).catch(()=>{});
-  }
-
-  function openLegalModal(t) { toggleModal('modal-terms', true); }
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+  if(location.hash==='#admin') openAdminDashboard();
+});
+window.addEventListener('hashchange', () => {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+});
 </script>
-
 </body>
 </html>
