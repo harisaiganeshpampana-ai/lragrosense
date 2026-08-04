@@ -458,10 +458,10 @@
       <div id="tab-dash" class="admin-tab p-6 sm:p-8 space-y-6">
         <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Dashboard</h2><p class="text-xs text-slate-400 font-mono" id="dash-date"></p></div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="dash-stats">
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Total Applicants</p><p class="text-3xl font-extrabold text-white mt-1" id="st-total">—</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">New Applications</p><p class="text-3xl font-extrabold text-emerald-400 mt-1" id="st-new">—</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Selected</p><p class="text-3xl font-extrabold text-cyan-400 mt-1" id="st-selected">—</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Rejected</p><p class="text-3xl font-extrabold text-rose-400 mt-1" id="st-rejected">—</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Total Applicants</p><p class="text-3xl font-extrabold text-white mt-1" id="st-total">0</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">New Applications</p><p class="text-3xl font-extrabold text-emerald-400 mt-1" id="st-new">0</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Selected</p><p class="text-3xl font-extrabold text-cyan-400 mt-1" id="st-selected">0</p></div>
+          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Rejected</p><p class="text-3xl font-extrabold text-rose-400 mt-1" id="st-rejected">0</p></div>
         </div>
         <div class="bg-[#0c1527] rounded-2xl border border-slate-800 p-5">
           <h3 class="text-sm font-bold text-white mb-3">Recent Applications</h3>
@@ -585,7 +585,11 @@ const db = firebase.firestore();
 const FOUNDER_PW = '11042026';
 let GEMINI_KEY = localStorage.getItem('lr_gemini_key') || fbConfig.apiKey;
 let currentUser = null;
-let allApplications = [];
+
+// Dual Storage State
+let allApplications = JSON.parse(localStorage.getItem('lr_apps') || '[]');
+let allTasks = JSON.parse(localStorage.getItem('lr_tasks') || '[]');
+let allNotes = JSON.parse(localStorage.getItem('lr_notes') || '[]');
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -594,6 +598,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if(location.hash==='#admin') openAdminDashboard();
   loadUser();
 });
+
+// ===== Fast Non-Blocking Storage Helpers =====
+function withTimeout(promise, ms = 2000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+  ]);
+}
+
+async function syncCollection(collName, localKey) {
+  try {
+    const snap = await withTimeout(db.collection(collName).get(), 2000);
+    const docs = snap.docs.map(d => {
+      const data = d.data();
+      let appliedAtStr = new Date().toLocaleDateString('en-IN');
+      if (data.appliedAt?.toDate) appliedAtStr = data.appliedAt.toDate().toLocaleDateString('en-IN');
+      else if (data.createdAt?.toDate) appliedAtStr = data.createdAt.toDate().toLocaleDateString('en-IN');
+      return { id: d.id, ...data, dateFormatted: appliedAtStr };
+    });
+    if (docs && docs.length) {
+      localStorage.setItem(localKey, JSON.stringify(docs));
+      return docs;
+    }
+  } catch (e) {
+    console.warn(`Firestore sync for ${collName} used local cache:`, e.message);
+  }
+  return JSON.parse(localStorage.getItem(localKey) || '[]');
+}
 
 // ===== Utility =====
 function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
@@ -643,35 +675,39 @@ async function submitApplication(e) {
   e.preventDefault();
   const btn = document.getElementById('apply-submit-btn');
   btn.textContent = 'Submitting...'; btn.disabled = true;
-  try {
-    await db.collection('applications').add({
-      fullName: document.getElementById('af-name').value.trim(),
-      email: document.getElementById('af-email').value.trim(),
-      phone: document.getElementById('af-phone').value.trim(),
-      college: document.getElementById('af-college').value.trim(),
-      degree: document.getElementById('af-degree').value.trim(),
-      graduationYear: parseInt(document.getElementById('af-gradyear').value),
-      resumeLink: document.getElementById('af-resume').value.trim(),
-      linkedinProfile: document.getElementById('af-linkedin').value.trim(),
-      portfolio: document.getElementById('af-portfolio').value.trim() || '',
-      whyJoin: document.getElementById('af-why').value.trim(),
-      availability: document.getElementById('af-avail').value,
-      position: document.getElementById('apply-position').value,
-      status: 'new',
-      notes: '',
-      internalComments: '',
-      offerLetterSent: false,
-      offerAccepted: false,
-      joiningDate: null,
-      appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toggleModal('modal-apply', false);
-    showToast('Application Submitted! ✅', 'Thank you for applying to LR AgroSense. We will review your profile shortly.');
-  } catch(err) {
-    document.getElementById('apply-error').textContent = 'Error: ' + err.message;
-    document.getElementById('apply-error').classList.remove('hidden');
-  }
+  
+  const appObj = {
+    id: 'app_' + Date.now(),
+    fullName: document.getElementById('af-name').value.trim(),
+    email: document.getElementById('af-email').value.trim(),
+    phone: document.getElementById('af-phone').value.trim(),
+    college: document.getElementById('af-college').value.trim(),
+    degree: document.getElementById('af-degree').value.trim(),
+    graduationYear: parseInt(document.getElementById('af-gradyear').value),
+    resumeLink: document.getElementById('af-resume').value.trim(),
+    linkedinProfile: document.getElementById('af-linkedin').value.trim(),
+    portfolio: document.getElementById('af-portfolio').value.trim() || '',
+    whyJoin: document.getElementById('af-why').value.trim(),
+    availability: document.getElementById('af-avail').value,
+    position: document.getElementById('apply-position').value,
+    status: 'new',
+    notes: '',
+    internalComments: '',
+    dateFormatted: new Date().toLocaleDateString('en-IN')
+  };
+
+  // Instant local save
+  allApplications.unshift(appObj);
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+
+  // Background Firestore save
+  db.collection('applications').add({
+    ...appObj,
+    appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(err => console.warn('Firestore application save background error:', err));
+
+  toggleModal('modal-apply', false);
+  showToast('Application Submitted! ✅', 'Thank you for applying to LR AgroSense. We will review your profile shortly.');
   btn.textContent = 'Submit Application →'; btn.disabled = false;
 }
 
@@ -704,42 +740,65 @@ function switchAdminTab(tab) {
   if(tab==='notes') loadNotes();
 }
 
-// ===== Dashboard =====
+// ===== Dashboard View =====
 async function loadDashboard() {
   document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  try {
-    const snap = await db.collection('applications').orderBy('appliedAt','desc').get();
-    allApplications = snap.docs.map(d => ({id:d.id,...d.data()}));
-    const counts = {total:allApplications.length, new:0, shortlisted:0, interview:0, selected:0, rejected:0, joined:0};
-    allApplications.forEach(a => { if(counts[a.status]!==undefined) counts[a.status]++; });
-    document.getElementById('st-total').textContent = counts.total;
-    document.getElementById('st-new').textContent = counts.new;
-    document.getElementById('st-selected').textContent = counts.selected;
-    document.getElementById('st-rejected').textContent = counts.rejected;
-    const recent = allApplications.slice(0,5);
-    document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(a => `<div class="flex items-center justify-between py-2 border-b border-slate-800/50"><div><p class="text-white font-semibold">${a.fullName}</p><p class="text-slate-500">${a.position}</p></div><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span></div>`).join('') : '<p class="text-slate-500 italic">No applications yet.</p>';
-  } catch(err) { document.getElementById('dash-recent').innerHTML = `<p class="text-rose-400">Error loading: ${err.message}</p>`; }
+  
+  // Render instantly from local state
+  renderDashboardStats();
+  
+  // Sync background from Firestore
+  allApplications = await syncCollection('applications', 'lr_apps');
+  renderDashboardStats();
 }
 
-// ===== ATS =====
-async function loadATS() {
-  try {
-    const snap = await db.collection('applications').orderBy('appliedAt','desc').get();
-    allApplications = snap.docs.map(d => ({id:d.id,...d.data()}));
-    renderATSTable(allApplications);
-  } catch(err) { document.getElementById('ats-tbody').innerHTML = `<tr><td colspan="5" class="p-4 text-rose-400">${err.message}</td></tr>`; }
+function renderDashboardStats() {
+  const counts = {total:allApplications.length, new:0, shortlisted:0, interview:0, selected:0, rejected:0, joined:0};
+  allApplications.forEach(a => { if(counts[a.status]!==undefined) counts[a.status]++; });
+  
+  document.getElementById('st-total').textContent = counts.total;
+  document.getElementById('st-new').textContent = counts.new;
+  document.getElementById('st-selected').textContent = counts.selected;
+  document.getElementById('st-rejected').textContent = counts.rejected;
+  
+  const recent = allApplications.slice(0,5);
+  document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(a => `
+    <div class="flex items-center justify-between py-2 border-b border-slate-800/50">
+      <div>
+        <p class="text-white font-semibold">${a.fullName}</p>
+        <p class="text-slate-500 text-[11px]">${a.position} • ${a.college || 'N/A'}</p>
+      </div>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span>
+    </div>`).join('') : '<p class="text-slate-500 italic py-2">No applications yet. Open position applications will appear here.</p>';
 }
+
+// ===== ATS View =====
+async function loadATS() {
+  renderATSTable(allApplications);
+  allApplications = await syncCollection('applications', 'lr_apps');
+  renderATSTable(allApplications);
+}
+
 function filterATS() {
   const q = document.getElementById('ats-search').value.toLowerCase();
   const f = document.getElementById('ats-filter').value;
   let filtered = allApplications;
-  if(q) filtered = filtered.filter(a => a.fullName.toLowerCase().includes(q) || a.email.toLowerCase().includes(q));
+  if(q) filtered = filtered.filter(a => (a.fullName||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q));
   if(f) filtered = filtered.filter(a => a.status === f);
   renderATSTable(filtered);
 }
+
 function renderATSTable(apps) {
-  document.getElementById('ats-tbody').innerHTML = apps.length ? apps.map(a => `<tr class="border-b border-slate-800/50 hover:bg-slate-900/50 cursor-pointer" onclick="openDetail('${a.id}')"><td class="p-3 text-white font-semibold">${a.fullName}</td><td class="p-3 text-slate-400">${a.position}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span></td><td class="p-3 text-slate-500">${a.appliedAt?.toDate?.()?.toLocaleDateString('en-IN') || '—'}</td><td class="p-3"><button class="text-emerald-400 hover:text-emerald-300">View →</button></td></tr>`).join('') : '<tr><td colspan="5" class="p-4 text-center text-slate-500">No applications found.</td></tr>';
+  document.getElementById('ats-tbody').innerHTML = apps.length ? apps.map(a => `
+    <tr class="border-b border-slate-800/50 hover:bg-slate-900/50 cursor-pointer" onclick="openDetail('${a.id}')">
+      <td class="p-3 text-white font-semibold">${a.fullName}</td>
+      <td class="p-3 text-slate-400">${a.position}</td>
+      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span></td>
+      <td class="p-3 text-slate-500">${a.dateFormatted || 'Recent'}</td>
+      <td class="p-3"><button class="text-emerald-400 hover:text-emerald-300 font-bold">View →</button></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="p-6 text-center text-slate-500">No applications found. New candidate submissions will appear here.</td></tr>';
 }
+
 function openDetail(id) {
   const a = allApplications.find(x => x.id === id);
   if(!a) return;
@@ -757,9 +816,9 @@ function openDetail(id) {
         <p><span class="text-slate-500">Availability:</span> <span class="text-white">${a.availability}</span></p>
       </div>
       <div class="space-y-2">
-        <a href="${a.resumeLink}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-emerald-400 hover:text-emerald-300">📄 View Resume ↗</a>
-        <a href="${a.linkedinProfile}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sky-400 hover:text-sky-300">🔗 LinkedIn ↗</a>
-        ${a.portfolio ? `<a href="${a.portfolio}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-400 hover:text-purple-300">🌐 Portfolio ↗</a>` : ''}
+        <a href="${a.resumeLink}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-emerald-400 hover:text-emerald-300 font-bold">📄 View Resume ↗</a>
+        <a href="${a.linkedinProfile}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sky-400 hover:text-sky-300 font-bold">🔗 LinkedIn Profile ↗</a>
+        ${a.portfolio ? `<a href="${a.portfolio}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-400 hover:text-purple-300 font-bold">🌐 Portfolio ↗</a>` : ''}
       </div>
       <div><p class="text-slate-500 mb-1">Why join LR AgroSense:</p><p class="text-slate-300 bg-slate-900 p-3 rounded-xl">${a.whyJoin}</p></div>
       <div>
@@ -775,59 +834,147 @@ function openDetail(id) {
       </div>
     </div>`;
 }
-async function updateStatus(id, status) {
-  try { await db.collection('applications').doc(id).update({status, updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast('Updated','Status changed to '+status); loadATS(); loadDashboard(); } catch(e) { alert(e.message); }
-}
-async function saveNotes(id) {
-  const notes = document.getElementById('detail-notes-'+id).value;
-  try { await db.collection('applications').doc(id).update({notes}); showToast('Saved','Notes updated.'); } catch(e) { alert(e.message); }
+
+function updateStatus(id, status) {
+  const item = allApplications.find(a => a.id === id);
+  if (item) item.status = status;
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+  renderATSTable(allApplications);
+  renderDashboardStats();
+  showToast('Status Updated', 'Applicant status set to ' + status.toUpperCase());
+  
+  // Background Firestore update
+  db.collection('applications').doc(id).update({ status }).catch(() => {});
 }
 
-// ===== Tasks =====
+function saveNotes(id) {
+  const notes = document.getElementById('detail-notes-'+id).value;
+  const item = allApplications.find(a => a.id === id);
+  if (item) item.notes = notes;
+  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+  showToast('Notes Saved', 'Internal notes updated.');
+  
+  // Background Firestore update
+  db.collection('applications').doc(id).update({ notes }).catch(() => {});
+}
+
+// ===== Tasks View =====
 function showAddTask() { document.getElementById('task-form-box').classList.remove('hidden'); }
+
 async function addTask() {
   const title = document.getElementById('tf-title').value.trim();
   if(!title) return;
-  try {
-    await db.collection('tasks').add({ title, description:document.getElementById('tf-desc').value.trim(), priority:document.getElementById('tf-priority').value, status:'pending', createdAt:firebase.firestore.FieldValue.serverTimestamp() });
-    document.getElementById('task-form-box').classList.add('hidden');
-    document.getElementById('tf-title').value=''; document.getElementById('tf-desc').value='';
-    loadTasks(); showToast('Task Added','New task created.');
-  } catch(e) { alert(e.message); }
-}
-async function loadTasks() {
-  try {
-    const snap = await db.collection('tasks').orderBy('createdAt','desc').get();
-    const tasks = snap.docs.map(d=>({id:d.id,...d.data()}));
-    document.getElementById('tasks-list').innerHTML = tasks.length ? tasks.map(t => `<div class="flex items-center justify-between p-4 bg-[#0c1527] rounded-2xl border border-slate-800"><div class="flex items-center gap-3"><input type="checkbox" ${t.status==='completed'?'checked':''} onchange="toggleTask('${t.id}',this.checked)" class="accent-emerald-500"/><div><p class="font-semibold ${t.status==='completed'?'line-through text-slate-500':'text-white'}">${t.title}</p>${t.description?`<p class="text-slate-500 mt-0.5">${t.description}</p>`:''}</div></div><div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${t.priority==='high'?'bg-rose-500/20 text-rose-300':t.priority==='low'?'bg-slate-800 text-slate-400':'bg-amber-500/20 text-amber-300'}">${t.priority}</span><button onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400">🗑</button></div></div>`).join('') : '<p class="text-slate-500 italic p-4">No tasks yet. Add one above.</p>';
-  } catch(e) { document.getElementById('tasks-list').innerHTML = `<p class="text-rose-400">${e.message}</p>`; }
-}
-async function toggleTask(id, done) { try { await db.collection('tasks').doc(id).update({status:done?'completed':'pending'}); loadTasks(); } catch(e){alert(e.message);} }
-async function deleteTask(id) { if(!confirm('Delete task?')) return; try { await db.collection('tasks').doc(id).delete(); loadTasks(); } catch(e){alert(e.message);} }
+  
+  const taskObj = {
+    id: 'task_' + Date.now(),
+    title,
+    description: document.getElementById('tf-desc').value.trim(),
+    priority: document.getElementById('tf-priority').value,
+    status: 'pending'
+  };
 
-// ===== Notes =====
+  allTasks.unshift(taskObj);
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+
+  document.getElementById('task-form-box').classList.add('hidden');
+  document.getElementById('tf-title').value=''; document.getElementById('tf-desc').value='';
+  showToast('Task Added', 'New task created.');
+
+  db.collection('tasks').add(taskObj).catch(() => {});
+}
+
+async function loadTasks() {
+  renderTasksList();
+  allTasks = await syncCollection('tasks', 'lr_tasks');
+  renderTasksList();
+}
+
+function renderTasksList() {
+  document.getElementById('tasks-list').innerHTML = allTasks.length ? allTasks.map(t => `
+    <div class="flex items-center justify-between p-4 bg-[#0c1527] rounded-2xl border border-slate-800">
+      <div class="flex items-center gap-3">
+        <input type="checkbox" ${t.status==='completed'?'checked':''} onchange="toggleTask('${t.id}',this.checked)" class="accent-emerald-500 w-4 h-4 cursor-pointer"/>
+        <div>
+          <p class="font-semibold ${t.status==='completed'?'line-through text-slate-500':'text-white'}">${t.title}</p>
+          ${t.description?`<p class="text-slate-500 text-[11px] mt-0.5">${t.description}</p>`:''}
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${t.priority==='high'?'bg-rose-500/20 text-rose-300':t.priority==='low'?'bg-slate-800 text-slate-400':'bg-amber-500/20 text-amber-300'}">${t.priority.toUpperCase()}</span>
+        <button onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">🗑</button>
+      </div>
+    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No tasks yet. Click "+ Add Task" to create one.</p>';
+}
+
+function toggleTask(id, done) {
+  const item = allTasks.find(t => t.id === id);
+  if (item) item.status = done ? 'completed' : 'pending';
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+  db.collection('tasks').doc(id).update({ status: done ? 'completed' : 'pending' }).catch(() => {});
+}
+
+function deleteTask(id) {
+  allTasks = allTasks.filter(t => t.id !== id);
+  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+  renderTasksList();
+  db.collection('tasks').doc(id).delete().catch(() => {});
+}
+
+// ===== Notes View =====
 function showAddNote() { document.getElementById('note-form-box').classList.remove('hidden'); }
+
 async function addNote() {
   const title = document.getElementById('nf-title').value.trim();
   if(!title) return;
-  try {
-    await db.collection('notes').add({ title, content:document.getElementById('nf-content').value.trim(), createdAt:firebase.firestore.FieldValue.serverTimestamp() });
-    document.getElementById('note-form-box').classList.add('hidden');
-    document.getElementById('nf-title').value=''; document.getElementById('nf-content').value='';
-    loadNotes(); showToast('Note Saved','New note created.');
-  } catch(e) { alert(e.message); }
-}
-async function loadNotes() {
-  try {
-    const snap = await db.collection('notes').orderBy('createdAt','desc').get();
-    const notes = snap.docs.map(d=>({id:d.id,...d.data()}));
-    document.getElementById('notes-list').innerHTML = notes.length ? notes.map(n => `<div class="p-4 bg-[#0c1527] rounded-2xl border border-slate-800"><div class="flex items-center justify-between mb-2"><p class="font-semibold text-white">${n.title}</p><button onclick="deleteNote('${n.id}')" class="text-slate-500 hover:text-rose-400 text-[10px]">🗑</button></div><p class="text-slate-400">${n.content||''}</p><p class="text-slate-600 mt-2 text-[10px]">${n.createdAt?.toDate?.()?.toLocaleDateString('en-IN') || ''}</p></div>`).join('') : '<p class="text-slate-500 italic p-4">No notes yet.</p>';
-  } catch(e) { document.getElementById('notes-list').innerHTML = `<p class="text-rose-400">${e.message}</p>`; }
-}
-async function deleteNote(id) { if(!confirm('Delete note?')) return; try { await db.collection('notes').doc(id).delete(); loadNotes(); } catch(e){alert(e.message);} }
+  
+  const noteObj = {
+    id: 'note_' + Date.now(),
+    title,
+    content: document.getElementById('nf-content').value.trim(),
+    dateFormatted: new Date().toLocaleDateString('en-IN')
+  };
 
-// ===== Gemini AI Assistant =====
+  allNotes.unshift(noteObj);
+  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+  renderNotesList();
+
+  document.getElementById('note-form-box').classList.add('hidden');
+  document.getElementById('nf-title').value=''; document.getElementById('nf-content').value='';
+  showToast('Note Saved', 'New note created.');
+
+  db.collection('notes').add(noteObj).catch(() => {});
+}
+
+async function loadNotes() {
+  renderNotesList();
+  allNotes = await syncCollection('notes', 'lr_notes');
+  renderNotesList();
+}
+
+function renderNotesList() {
+  document.getElementById('notes-list').innerHTML = allNotes.length ? allNotes.map(n => `
+    <div class="p-4 bg-[#0c1527] rounded-2xl border border-slate-800 space-y-2">
+      <div class="flex items-center justify-between">
+        <p class="font-semibold text-white">${n.title}</p>
+        <button onclick="deleteNote('${n.id}')" class="text-slate-500 hover:text-rose-400 text-xs">🗑</button>
+      </div>
+      <p class="text-slate-300 leading-relaxed">${n.content||''}</p>
+      <p class="text-slate-600 text-[10px]">${n.dateFormatted || 'Recent'}</p>
+    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No notes saved yet. Click "+ Add Note" to create one.</p>';
+}
+
+function deleteNote(id) {
+  allNotes = allNotes.filter(n => n.id !== id);
+  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+  renderNotesList();
+  db.collection('notes').doc(id).delete().catch(() => {});
+}
+
+// ===== AI Founder Assistant Engine =====
 let aiHistory = [];
+
 function promptGeminiKey() {
   const k = prompt('Enter your Gemini API Key:', GEMINI_KEY);
   if (k) { GEMINI_KEY = k.trim(); localStorage.setItem('lr_gemini_key', GEMINI_KEY); showToast('API Key Saved', 'Gemini API Key configured.'); }
@@ -846,141 +993,137 @@ async function sendAiMessage(e) {
   input.value = '';
   const msgs = document.getElementById('ai-messages');
   
-  // Clear welcome if first msg
   if(aiHistory.length === 0) msgs.innerHTML = '';
 
-  // User bubble
+  // Render User Message Bubble
   msgs.innerHTML += `<div class="flex justify-end"><div class="max-w-[80%] p-4 rounded-2xl bg-[#1e293b] text-white text-xs sm:text-sm">${q}</div></div>`;
   
-  // Loading bubble
+  // Render Thinking Indicator
   const loadId = 'ai-load-' + Date.now();
   msgs.innerHTML += `<div id="${loadId}" class="flex justify-start"><div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-emerald-300 text-xs sm:text-sm typing-caret">Thinking...</div></div>`;
   msgs.scrollTop = msgs.scrollHeight;
   document.getElementById('ai-send-btn').disabled = true;
 
-  try {
-    // 1. Build live context from Firestore data
-    let contextData = 'LR AGROSENSE FOUNDER DATABASE:\n\n';
-    
-    if(allApplications && allApplications.length) {
-      contextData += 'APPLICANTS (' + allApplications.length + ' total):\n';
-      allApplications.forEach((a, i) => {
-        contextData += `${i+1}. Name: ${a.fullName} | Position: ${a.position} | Status: ${a.status} | Email: ${a.email} | College: ${a.college} | Degree: ${a.degree} | Grad: ${a.graduationYear} | Availability: ${a.availability} | Why: ${a.whyJoin || 'N/A'}\n`;
-      });
-      contextData += '\n';
-    } else {
-      contextData += 'APPLICANTS: No applications submitted yet.\n\n';
-    }
+  // Build Context Instantly from Local State
+  let contextData = 'LR AGROSENSE FOUNDER DATABASE:\n\n';
+  if(allApplications && allApplications.length) {
+    contextData += 'APPLICANTS (' + allApplications.length + ' total):\n';
+    allApplications.forEach((a, i) => {
+      contextData += `${i+1}. Name: ${a.fullName} | Position: ${a.position} | Status: ${a.status} | Email: ${a.email} | College: ${a.college || 'N/A'} | Availability: ${a.availability} | Why: ${a.whyJoin || 'N/A'}\n`;
+    });
+    contextData += '\n';
+  } else {
+    contextData += 'APPLICANTS: 0 candidates registered.\n\n';
+  }
 
-    try {
-      const tSnap = await db.collection('tasks').get();
-      const tasks = tSnap.docs.map(d=>d.data());
-      if(tasks.length) { 
-        contextData += 'TASKS (' + tasks.length + ' total):\n'; 
-        tasks.forEach((t, i) => { contextData += `${i+1}. [${t.status.toUpperCase()}] ${t.title} (Priority: ${t.priority}) ${t.description?'- '+t.description:''}\n`; }); 
-        contextData += '\n'; 
-      }
-    } catch(e){}
+  if(allTasks && allTasks.length) {
+    contextData += 'TASKS (' + allTasks.length + ' total):\n';
+    allTasks.forEach((t, i) => { contextData += `${i+1}. [${t.status.toUpperCase()}] ${t.title} (Priority: ${t.priority})\n`; });
+    contextData += '\n';
+  }
 
-    try {
-      const nSnap = await db.collection('notes').get();
-      const notes = nSnap.docs.map(d=>d.data());
-      if(notes.length) { 
-        contextData += 'COMPANY NOTES (' + notes.length + ' total):\n'; 
-        notes.forEach((n, i) => { contextData += `${i+1}. ${n.title}: ${n.content}\n`; }); 
-        contextData += '\n'; 
-      }
-    } catch(e){}
+  if(allNotes && allNotes.length) {
+    contextData += 'NOTES (' + allNotes.length + ' total):\n';
+    allNotes.forEach((n, i) => { contextData += `${i+1}. ${n.title}: ${n.content}\n`; });
+    contextData += '\n';
+  }
 
-    // 2. Query Gemini API with fallback
-    let answer = await queryGeminiModels(q, contextData);
+  // Fast API Query with Fallback
+  let answer = await queryGeminiModels(q, contextData);
 
-    // 3. Fallback to Smart Local Data Engine if API fails or returns error
-    if (!answer || answer.includes('API_KEY_INVALID') || answer.includes('Forbidden') || answer.includes('error')) {
-      answer = generateSmartLocalAnswer(q, allApplications);
-    } else {
-      // Save valid turn to history
-      aiHistory.push({role:'user', parts:[{text:q}]});
-      aiHistory.push({role:'model', parts:[{text:answer}]});
-    }
+  if (!answer || answer.includes('API_KEY_INVALID') || answer.includes('Forbidden')) {
+    answer = generateSmartLocalAnswer(q, allApplications, allTasks, allNotes);
+  } else {
+    aiHistory.push({role:'user', parts:[{text:q}]});
+    aiHistory.push({role:'model', parts:[{text:answer}]});
+  }
 
-    document.getElementById(loadId).innerHTML = `<div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-xs sm:text-sm prose-ai">${marked.parse(answer)}</div>`;
-  } catch(err) {
-    const localAns = generateSmartLocalAnswer(q, allApplications);
-    document.getElementById(loadId).innerHTML = `<div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-xs sm:text-sm prose-ai">${marked.parse(localAns)}</div>`;
+  const loadElem = document.getElementById(loadId);
+  if (loadElem) {
+    loadElem.innerHTML = `<div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-xs sm:text-sm prose-ai">${marked.parse(answer)}</div>`;
   }
 
   document.getElementById('ai-send-btn').disabled = false;
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-// Model Caller with Multi-Endpoint Fallbacks
+// Multi-Model Query Helper with 3s Timeout
 async function queryGeminiModels(userQuery, contextData) {
+  if (!GEMINI_KEY) return null;
+
   const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-  const systemPrompt = `You are the AI Founder Assistant for LR AgroSense, an AgriTech startup founded by Pampana Hari Sai Ganesh.
-Use the live company database provided below to answer questions accurately.
+  const systemPrompt = `You are the AI Founder Assistant for LR AgroSense (Founded by Pampana Hari Sai Ganesh).
+Answer questions based on the live database below:
 
 ${contextData}
 
 INSTRUCTIONS:
-- Answer clearly, concisely, and professionally in markdown format.
-- If asked about applicants, status, tasks, or priorities, cite exact names and data from above.
-- If asked to generate offer letters or emails, write complete professional templates.`;
+- Be concise, accurate, and format with markdown.
+- Cite candidate names, positions, or tasks whenever relevant.`;
 
-  // Format request payload
-  const contentsPayload = [
-    { role: 'user', parts: [{ text: systemPrompt + '\n\nUSER QUESTION: ' + userQuery }] }
-  ];
+  const body = JSON.stringify({
+    contents: [{ role: 'user', parts: [{ text: systemPrompt + '\n\nUSER QUESTION: ' + userQuery }] }]
+  });
 
   for (const model of models) {
-    if (!GEMINI_KEY) break;
     try {
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`, {
+      const resp = await withTimeout(fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: contentsPayload })
-      });
+        body
+      }), 3000);
+      
       const data = await resp.json();
       const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (txt && txt.trim()) return txt;
     } catch (e) {
-      console.warn(`Model ${model} failed, trying next...`, e);
+      console.warn(`Model ${model} call failed/timed out:`, e.message);
     }
   }
   return null;
 }
 
-// Smart Local Data Engine (Guarantees instant answers even if API key is unconfigured)
-function generateSmartLocalAnswer(query, apps) {
+// Instant Smart Local Engine
+function generateSmartLocalAnswer(query, apps, tasks, notes) {
   const q = query.toLowerCase();
   
-  if (q.includes('new') || q.includes('application') || q.includes('applicant')) {
+  if (q.includes('new') || q.includes('application') || q.includes('applicant') || q.includes('candidate')) {
     if (!apps || !apps.length) {
-      return "### 📋 Applications Summary\nCurrently there are **0 submitted applications** in the database. New candidate submissions will automatically appear here in real-time.";
+      return "### 📋 Applications Summary\nCurrently there are **0 candidate applications** submitted. As candidates apply on your site, they will appear here in real time!";
     }
     const newApps = apps.filter(a => a.status === 'new');
-    let res = `### 📋 Applicant Summary (${apps.length} Total)\n\n`;
-    res += `* **New Applications:** ${newApps.length}\n`;
-    res += `* **Shortlisted:** ${apps.filter(a=>a.status==='shortlisted').length}\n`;
-    res += `* **Selected:** ${apps.filter(a=>a.status==='selected').length}\n`;
-    res += `* **Rejected:** ${apps.filter(a=>a.status==='rejected').length}\n\n`;
-    res += `#### Recent Candidates:\n`;
+    let res = `### 📋 Applicant Summary (${apps.length} Total Candidates)\n\n`;
+    res += `* 🆕 **New Applications:** ${newApps.length}\n`;
+    res += `* ⭐ **Shortlisted:** ${apps.filter(a=>a.status==='shortlisted').length}\n`;
+    res += `* ✅ **Selected:** ${apps.filter(a=>a.status==='selected').length}\n`;
+    res += `* ❌ **Rejected:** ${apps.filter(a=>a.status==='rejected').length}\n\n`;
+    res += `#### Recent Submissions:\n`;
     apps.slice(0, 5).forEach(a => {
-      res += `* **${a.fullName}** — ${a.position} (\`${a.status.toUpperCase()}\`) | ${a.college || 'N/A'}\n`;
+      res += `* **${a.fullName}** — ${a.position} (\`${(a.status||'NEW').toUpperCase()}\`) | ${a.college || 'N/A'}\n`;
     });
     return res;
   }
 
   if (q.includes('priority') || q.includes('priorities') || q.includes('task') || q.includes('today')) {
-    return `### ⚡ Today's Founder Priorities for LR AgroSense\n\n1. **Review Pending Internship Applications**: Check the ATS tab for any unreviewed candidates.\n2. **Hardware Prototyping**: Test ESP32 Modbus RS485 soil probe telemetry calibration.\n3. **FPO Partner Outreach**: Follow up on agricultural cooperative trial deployments.\n4. **Grant Documentation**: Prepare BIRAC & RKVY-RAFTAAR proposal briefs.`;
+    let res = `### ⚡ Today's Priorities & Task Overview\n\n`;
+    if (tasks && tasks.length) {
+      res += `**Active Tasks (${tasks.length}):**\n`;
+      tasks.forEach(t => {
+        res += `* [${t.status === 'completed' ? 'x' : ' '}] **${t.title}** (${t.priority.toUpperCase()})\n`;
+      });
+    } else {
+      res += `1. **Review Applications**: Check ATS tab for candidate submissions.\n`;
+      res += `2. **IoT Field Calibration**: Test ESP32 Modbus soil NPK sensor telemetry.\n`;
+      res += `3. **Partner Outreach**: Engage agricultural cooperatives & FPOs.\n`;
+    }
+    return res;
   }
 
   if (q.includes('email') || q.includes('onboarding') || q.includes('offer')) {
-    return `### ✉️ Candidate Offer / Onboarding Email Template\n\n**Subject:** Offer of Internship – LR AgroSense\n\nDear [Candidate Name],\n\nWe are pleased to offer you the position of **[Position Name]** at **LR AgroSense**.\n\n* **Role:** Remote, Part-Time\n* **Duration:** 1 to 3 Months\n* **Direct Supervisor:** Pampana Hari Sai Ganesh (Founder & CEO)\n\nPlease confirm your acceptance by replying to this email.\n\nBest regards,\n**Pampana Hari Sai Ganesh**  \nFounder & CEO, LR AgroSense  \n*lragrosense@gmail.com*`;
+    return `### ✉️ Candidate Onboarding / Offer Letter Template\n\n**Subject:** Offer of Internship – LR AgroSense\n\nDear Candidate,\n\nWe are pleased to offer you the position at **LR AgroSense**.\n\n* **Role:** Remote, Part-Time\n* **Duration:** 1 to 3 Months\n* **Supervisor:** Pampana Hari Sai Ganesh (Founder & CEO)\n\nPlease confirm your acceptance by replying to this message.\n\nWarm regards,\n**Pampana Hari Sai Ganesh**  \nFounder & CEO, LR AgroSense  \n*lragrosense@gmail.com*`;
   }
 
-  // General Founder Summary
-  return `### 🤖 LR AgroSense Founder Assistant\n\nI am connected to your live database:\n* **Total Applicants:** ${apps ? apps.length : 0}\n* **Active System Modules:** ATS, Task Manager, Notes, Firestore Cloud DB.\n\nAsk me specific questions like:\n* *"Show all new applications"* \n* *"Suggest today's priorities"* \n* *"Draft an onboarding email template"*`;
+  return `### 🤖 LR AgroSense Founder Console\n\nConnected modules:\n* **Applicants Database:** ${apps ? apps.length : 0} Candidates\n* **Tasks System:** ${tasks ? tasks.length : 0} Active Tasks\n* **Notes System:** ${notes ? notes.length : 0} Saved Notes\n\nYou can ask:\n* *"Show all new applications"* \n* *"Suggest today's priorities"* \n* *"Draft an onboarding email template"*`;
 }
 </script>
 </body>
