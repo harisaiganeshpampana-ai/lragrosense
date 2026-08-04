@@ -3,50 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LR AgroSense | Smart Farming • IoT Telemetry Platform</title>
-  <meta name="description" content="LR AgroSense is a pioneer AgriTech platform empowering 150M+ Indian farmers through low-cost IoT sensors, automated irrigation, and precision telemetry." />
-  <link rel="icon" type="image/jpg" href="logo.jpg" />
+  <title>LR AgroSense | Smart Farming • IoT Field Telemetry • Founder Console</title>
+  <meta name="description" content="LR AgroSense is an AgriTech startup pioneering low-cost IoT soil NPK, moisture, and pH telemetry nodes for precision farming." />
+
+  <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Marked JS for AI Markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Firebase App & Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            agri: { 300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',950:'#052e16' },
-            brand: { dark:'#040914', card:'#0c1527', accent:'#38bdf8' }
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
           },
-          fontFamily: { sans:['"Plus Jakarta Sans"','sans-serif'], display:['"Outfit"','sans-serif'] }
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b',
+              950: '#022c22'
+            }
+          }
         }
       }
     }
   </script>
+
   <style>
-    .glass{background:rgba(12,21,39,.82);backdrop-filter:blur(18px);border:1px solid rgba(34,197,94,.22)}
-    .glass-h{transition:all .3s cubic-bezier(.4,0,.2,1)}
-    .glass-h:hover{border-color:rgba(74,222,128,.5);transform:translateY(-4px);box-shadow:0 20px 40px -15px rgba(34,197,94,.25)}
-    .grad-t{background:linear-gradient(135deg,#4ade80,#10b981 40%,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .logo-b{background:#fff;padding:6px 14px;border-radius:16px;box-shadow:0 10px 25px -5px rgba(34,197,94,.25);border:1px solid rgba(34,197,94,.4)}
-    ::-webkit-scrollbar{width:7px}::-webkit-scrollbar-track{background:#040914}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:10px}
-    .reveal{opacity:0;transform:translateY(28px);transition:all .7s cubic-bezier(.16,1,.3,1)}.reveal.active{opacity:1;transform:translateY(0)}
-    .toast-in{animation:toastIn .4s ease}.toast-out{animation:toastOut .4s ease forwards}
-    @keyframes toastIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-    @keyframes toastOut{from{opacity:1}to{transform:translateY(100%);opacity:0}}
-    .prose-ai{color:#cbd5e1;line-height:1.7}.prose-ai p{margin-bottom:.75rem}.prose-ai strong{color:#4ade80;font-weight:700}
-    .prose-ai ul{list-style:disc;padding-left:1.25rem;margin-bottom:.75rem}.prose-ai ol{list-style:decimal;padding-left:1.25rem;margin-bottom:.75rem}
-    .prose-ai code{background:#1e293b;padding:2px 6px;border-radius:4px;font-size:.85em}
-    .typing-caret::after{content:'▋';display:inline-block;margin-left:2px;color:#22c55e;animation:blink .8s infinite}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-h:hover {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .logo-b {
+      background: #ffffff;
+      padding: 6px 12px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    .grad-t {
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast-in { animation: toastIn 0.3s forwards ease-out; }
+    .toast-out { animation: toastOut 0.3s forwards ease-in; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(0.95); } }
+    .msg-enter { animation: msgIn 0.25s ease-out forwards; }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
@@ -68,6 +106,7 @@
       <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
     </div>
     <div class="flex items-center gap-3">
+      <button onclick="openTrackModal()" class="px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all">🔍 Track Status</button>
       <div id="nav-user-container">
         <button onclick="toggleAuthModal(true)" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">👤 Account</button>
       </div>
@@ -112,9 +151,9 @@
 <section class="py-12 bg-slate-950/80 border-y border-slate-800">
   <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
     <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-display">150M+</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Target Farmers</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-display">40%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Input Savings</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-display">99.1%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Probe Accuracy</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-display">2026</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Founded</div></div>
+    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-display">40%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Target Input Savings</div></div>
+    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-display">99.1%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Lab-Tested Accuracy</div></div>
+    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-display">2026</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Founding Year</div></div>
   </div>
 </section>
 
@@ -209,9 +248,9 @@
 <section id="roadmap" class="py-24 px-4 max-w-7xl mx-auto">
   <div class="text-center space-y-4 mb-16 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">MILESTONES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Product Roadmap</h2></div>
   <div class="space-y-6 max-w-4xl mx-auto">
-    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">Q3 2026 (NOW)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4><p class="text-xs text-slate-400 mt-1">Firebase auth, website, sensor benchmarks, farmer trials.</p></div><span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold shrink-0">ACTIVE</span></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">Q4 2026</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4><p class="text-xs text-slate-400 mt-1">50 pilot IoT probe nodes across AP & Telangana.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
-    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">Q1-Q2 2027</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4><p class="text-xs text-slate-400 mt-1">iOS/Android app with solenoid valve controls and alerts.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-emerald-400 font-bold">PHASE 01 (CURRENT)</span><h4 class="text-lg font-bold text-white mt-1">Platform Launch & IoT Beta</h4><p class="text-xs text-slate-400 mt-1">Firebase auth, website, sensor benchmarks, farmer trials.</p></div><span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold shrink-0">ACTIVE</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-cyan-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-cyan-400 font-bold">PHASE 02</span><h4 class="text-lg font-bold text-white mt-1">Hardware Field Trial</h4><p class="text-xs text-slate-400 mt-1">50 pilot IoT probe nodes across AP & Telangana.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
+    <div class="glass p-6 rounded-2xl border-l-4 border-amber-500 reveal flex items-start justify-between"><div><span class="text-xs font-mono text-amber-400 font-bold">PHASE 03</span><h4 class="text-lg font-bold text-white mt-1">Mobile App & Automated Irrigation</h4><p class="text-xs text-slate-400 mt-1">iOS/Android app with solenoid valve controls and alerts.</p></div><span class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono font-bold shrink-0">PLANNED</span></div>
   </div>
 </section>
 
@@ -237,7 +276,7 @@
       <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-emerald-400 font-bold">⚡ Scalable Moat</div><div class="text-slate-400 mt-1">Proprietary low-cost sensor nodes + cloud telemetry.</div></div>
       <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800"><div class="text-cyan-400 font-bold">🤝 UN SDGs</div><div class="text-slate-400 mt-1">Aligned with SDG 2, 6 & 13.</div></div>
     </div>
-    <a href="mailto:lragrosense@gmail.com?subject=Investor%20Inquiry" class="inline-block px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Request Pitch Deck 📩</a>
+    <button onclick="toggleModal('modal-investor',true)" class="inline-block px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Request Pitch Deck & Schedule Call 📊</button>
   </div>
 </section>
 
@@ -247,10 +286,16 @@
     <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
     <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
     <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across branding, business strategy, and electronics engineering.</p>
+    
+    <!-- Explicit Compensation Note -->
+    <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium">
+      ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
+    </div>
+
     <div class="flex flex-wrap justify-center gap-3 text-[10px] font-mono pt-2">
       <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">🏠 Remote</span>
       <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">⏱ Part-Time</span>
-      <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">📋 Unpaid (With Benefits)</span>
+      <span class="px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-amber-300">📋 Unpaid (Revisited as we scale)</span>
       <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">📅 1–3 Months</span>
     </div>
   </div>
@@ -265,11 +310,8 @@
       </div>
       <button onclick="openApplyModal('Branding & Content Intern')" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
     </div>
-    <div id="jd-1" class="space-y-4 text-xs text-slate-300">
+    <div class="space-y-4 text-xs text-slate-300">
       <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design social media posts, carousels, and reels for Instagram, LinkedIn, and YouTube</li><li>Write blog articles, press releases, and newsletter content</li><li>Create farmer-facing educational content in simple language</li><li>Assist in brand identity development and style guide creation</li><li>Support pitch deck and investor presentation design</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Currently pursuing or recently graduated in Marketing, Communications, Design, or related fields</li><li>Strong written communication skills</li><li>Proficiency in Canva, Figma, or Adobe Creative Suite preferred</li><li>Interest in agriculture, sustainability, or technology</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Real-world startup portfolio experience</li><li>Direct mentorship from Founder Pampana Hari Sai Ganesh</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
     </div>
   </div>
 
@@ -283,12 +325,6 @@
       </div>
       <button onclick="openApplyModal('Business Development & Strategy Intern')" class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
     </div>
-    <div class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Drive business growth by researching market opportunities, building partnerships with FPOs and agricultural cooperatives, and developing go-to-market strategy for IoT hardware deployment.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Research market size, competitive landscape, and farmer adoption patterns</li><li>Identify and establish partnerships with FPOs, KVKs, and agri-input dealers</li><li>Prepare investor pitch decks, business plans, and financial models</li><li>Assist in grant applications (BIRAC, RKVY-RAFTAAR, Startup India)</li><li>Support ecosystem strategy and pilot deployment planning</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing MBA, BBA, B.Com, or related business/management degree</li><li>Strong analytical and presentation skills</li><li>Interest in AgriTech, startups, or rural development</li><li>Proficiency in Excel, PowerPoint, and market research tools</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Exposure to real investor pitch processes</li><li>Direct involvement in startup operations and strategy</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
-    </div>
   </div>
 
   <!-- Internship 3: IoT & Electronics -->
@@ -301,26 +337,6 @@
       </div>
       <button onclick="openApplyModal('IoT & Electronics Intern')" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0">Apply Now →</button>
     </div>
-    <div class="space-y-4 text-xs text-slate-300">
-      <div><h4 class="font-bold text-white text-sm mb-2">Job Description</h4><p>Design, prototype, and test low-cost IoT sensor nodes using ESP32 microcontrollers, Modbus RS485 soil probes, and LoRaWAN communication modules for field deployment.</p></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Design and assemble ESP32-based sensor node prototypes</li><li>Interface Modbus RS485 soil NPK sensors and calibrate readings</li><li>Develop firmware for sensor data acquisition and wireless transmission</li><li>Test solar power management and battery charging circuits</li><li>Document hardware specifications and create assembly guides</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Pursuing B.Tech/B.E. in ECE, EEE, or related engineering fields</li><li>Experience with Arduino, ESP32, or Raspberry Pi</li><li>Basic knowledge of circuit design and PCB layout</li><li>Familiarity with C/C++ for embedded systems</li></ul></div>
-      <div><h4 class="font-bold text-white text-sm mb-2">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400"><li>Internship completion certificate signed by CEO</li><li>LinkedIn recommendation from the Founder</li><li>Hands-on experience building real IoT hardware products</li><li>Mentorship in embedded systems and product engineering</li><li>Letter of Recommendation upon exceptional performance</li></ul></div>
-    </div>
-  </div>
-
-  <div class="text-center text-xs text-slate-500 pt-4 reveal">
-    <p>⚠️ These are <strong class="text-slate-300">unpaid internships</strong> with comprehensive benefits including certificates, LinkedIn recommendations, and direct founder mentorship.</p>
-  </div>
-</section>
-
-<!-- ========== FAQS ========== -->
-<section id="faq" class="py-20 px-4 max-w-4xl mx-auto space-y-12">
-  <div class="text-center space-y-4 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">HELP</span><h2 class="text-3xl font-extrabold text-white font-display">Frequently Asked Questions</h2></div>
-  <div class="space-y-4 text-xs sm:text-sm">
-    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">What is LR AgroSense?</div><p class="text-slate-400">An early-stage AgriTech startup developing affordable smart farming sensors and IoT field telemetry.</p></div>
-    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">How does the Smart Farm Monitor work?</div><p class="text-slate-400">The probe measures soil NPK, moisture, and water pH in real-time and transmits data to the farmer's dashboard.</p></div>
-    <div class="glass p-5 rounded-2xl reveal space-y-2"><div class="font-bold text-white text-base">How to contact the Founder?</div><p class="text-slate-400">Email <strong class="text-emerald-400">lragrosense@gmail.com</strong> or connect on <strong class="text-emerald-400">linkedin.com/in/lragrosense</strong>.</p></div>
   </div>
 </section>
 
@@ -341,897 +357,418 @@
   <div class="inline-block logo-b"><img src="logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
   <p>© 2026 LR AgroSense • Smart Farming • IoT • All Rights Reserved.</p>
   <div class="flex justify-center gap-4 text-[11px] text-slate-400">
-    <button onclick="toggleModal('modal-terms',true)" class="hover:text-emerald-400">Terms</button><span>•</span>
-    <button onclick="toggleModal('modal-terms',true)" class="hover:text-emerald-400">Privacy</button><span>•</span>
-    <button onclick="openAdminDashboard()" title="Founder Access" class="hover:text-slate-300">🔒 Founder Portal</button>
+    <button onclick="openTrackModal()" class="hover:text-cyan-400 font-semibold">🔍 Track Application Status</button><span>•</span>
+    <button onclick="openLegalModal('privacy')" class="hover:text-emerald-400 font-semibold">🔒 Privacy Policy</button><span>•</span>
+    <button onclick="openLegalModal('terms')" class="hover:text-emerald-400 font-semibold">📜 Terms & Conditions</button>
   </div>
 </footer>
 
-<!-- ==================== APPLICATION FORM MODAL ==================== -->
-<div id="modal-apply" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
-  <div class="relative w-full max-w-2xl glass rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl my-8">
-    <button onclick="toggleModal('modal-apply',false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white z-10">✕</button>
-    <div class="space-y-6">
-      <div class="text-center space-y-2">
-        <h3 class="text-2xl font-extrabold text-white">Apply for Internship</h3>
-        <p id="apply-position-label" class="text-emerald-400 text-sm font-bold"></p>
-        <p class="text-xs text-slate-400">All fields marked * are required.</p>
+<!-- ==================== DEDICATED APPLICATION PAGE & CONGRATULATIONS PORTAL ==================== -->
+<div id="modal-apply" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
+  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
+        <div>
+          <h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2>
+          <p class="text-[10px] text-emerald-400 font-mono">Internship Application Portal</p>
+        </div>
       </div>
-      <form id="apply-form" onsubmit="submitApplication(event)" class="space-y-4 text-xs">
+      <button onclick="toggleModal('modal-apply',false)" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all flex items-center gap-2">
+        <span>←</span> Back to Openings
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    <div id="apply-form-container" class="space-y-8">
+      <div class="text-center space-y-3">
+        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">OFFICIAL APPLICATION</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Apply for Internship</h1>
+        <div class="inline-block px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 text-sm font-bold" id="apply-position-label">Position Name</div>
+      </div>
+
+      <form id="apply-form" onsubmit="submitApplication(event)" class="glass p-6 sm:p-10 rounded-3xl border border-emerald-500/30 space-y-5 text-xs shadow-2xl">
         <input type="hidden" id="apply-position" value="" />
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="text-slate-400 mb-1 block">Full Name *</label><input id="af-name" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your full name"/></div>
-          <div><label class="text-slate-400 mb-1 block">Email *</label><input id="af-email" type="email" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="you@email.com"/></div>
-          <div><label class="text-slate-400 mb-1 block">Phone Number *</label><input id="af-phone" type="tel" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="+91 XXXXX XXXXX"/></div>
-          <div><label class="text-slate-400 mb-1 block">College / University *</label><input id="af-college" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your college name"/></div>
-          <div><label class="text-slate-400 mb-1 block">Degree *</label><input id="af-degree" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="B.Tech CSE, MBA, etc."/></div>
-          <div><label class="text-slate-400 mb-1 block">Graduation Year *</label><input id="af-gradyear" type="number" required min="2020" max="2030" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="2026"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Full Name *</label><input id="af-name" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your full name"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Email Address *</label><input id="af-email" type="email" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="you@email.com"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Phone Number *</label><input id="af-phone" type="tel" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="+91 XXXXX XXXXX"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">College / University *</label><input id="af-college" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="Your college name"/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Degree / Major *</label><input id="af-degree" type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="B.Tech CSE, MBA, B.Sc Ag, etc."/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Graduation Year *</label><input id="af-gradyear" type="number" required min="2020" max="2030" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="2026"/></div>
         </div>
-        <div><label class="text-slate-400 mb-1 block">Resume Link (Google Drive / Dropbox) *</label><input id="af-resume" type="url" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="https://drive.google.com/..."/></div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="text-slate-400 mb-1 block">LinkedIn Profile *</label><input id="af-linkedin" type="url" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="https://linkedin.com/in/..."/></div>
-          <div><label class="text-slate-400 mb-1 block">Portfolio (Optional)</label><input id="af-portfolio" type="url" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60" placeholder="https://..."/></div>
-        </div>
-        <div><label class="text-slate-400 mb-1 block">Why do you want to join LR AgroSense? *</label><textarea id="af-why" required rows="3" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60 resize-none" placeholder="Tell us about your motivation..."></textarea></div>
-        <div><label class="text-slate-400 mb-1 block">Availability *</label><select id="af-avail" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"><option value="">Select availability</option><option>Immediate</option><option>Within 1 week</option><option>Within 2 weeks</option><option>Within 1 month</option></select></div>
-        <label class="flex items-start gap-3 cursor-pointer pt-2">
-          <input id="af-declare" type="checkbox" required class="mt-1 accent-emerald-500" />
-          <span class="text-slate-400 text-[11px] leading-relaxed">I declare that all information provided is accurate. I understand this is an <strong class="text-white">unpaid, part-time, remote</strong> internship and I agree to the terms set by LR AgroSense.</span>
-        </label>
-        <p id="apply-error" class="hidden text-rose-400 text-xs font-bold"></p>
-        <button id="apply-submit-btn" type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition-all">Submit Application →</button>
-      </form>
-    </div>
-  </div>
-</div>
 
-<!-- ========== AUTH MODAL ========== -->
-<div id="modal-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-  <div class="relative w-full max-w-md glass rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6">
-    <button onclick="toggleModal('modal-auth',false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
-    <div class="text-center space-y-2"><div class="logo-b inline-block p-2"><img src="logo.jpg" alt="Logo" class="h-10 w-auto"/></div><h3 class="text-2xl font-extrabold text-white">Welcome</h3><p class="text-xs text-slate-400">Sign in to LR AgroSense.</p></div>
-    <div class="grid grid-cols-2 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
-      <button onclick="switchAuthTab('email')" class="py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold" id="atab-e">✉️ Email</button>
-      <button onclick="switchAuthTab('google')" class="py-2 rounded-lg text-slate-400 font-semibold" id="atab-g">🌐 Google</button>
-    </div>
-    <div id="auth-email" class="space-y-3 text-xs">
-      <input id="ei-name" type="text" placeholder="Full Name..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
-      <input id="ei-email" type="email" placeholder="Email..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
-      <input id="ei-pass" type="password" placeholder="Password..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"/>
-      <button onclick="loginEmail()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Sign In / Create ✉️</button>
-    </div>
-    <div id="auth-google" class="hidden text-xs text-center py-2">
-      <button onclick="loginGoogle()" class="w-full py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold">Continue with Google</button>
-    </div>
-  </div>
-</div>
-
-<!-- ========== TERMS MODAL ========== -->
-<div id="modal-terms" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-  <div class="relative w-full max-w-2xl glass rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-6 text-xs">
-    <button onclick="toggleModal('modal-terms',false)" class="absolute top-5 right-5 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">✕</button>
-    <h3 class="text-2xl font-extrabold text-white">Terms & Privacy Policy</h3>
-    <p class="text-slate-300">LR AgroSense provides smart farming data. All recommendations are advisory.</p>
-    <button onclick="toggleModal('modal-terms',false)" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold">I Agree</button>
-  </div>
-</div>
-
-<!-- ==================== ADMIN DASHBOARD (FULL-SCREEN) ==================== -->
-<div id="admin-dashboard" class="fixed inset-0 z-[60] hidden bg-[#040914] text-slate-100 overflow-hidden">
-  <!-- Admin Login Gate -->
-  <div id="admin-gate" class="flex items-center justify-center h-full">
-    <div class="w-full max-w-md text-center space-y-6 p-8">
-      <div class="logo-b inline-block p-3"><img src="logo.jpg" alt="Logo" class="h-12 w-auto"/></div>
-      <h2 class="text-2xl font-extrabold text-white">Founder Access Portal</h2>
-      <form onsubmit="adminLogin(event)" class="space-y-4">
-        <input id="admin-pw" type="password" required placeholder="Founder Password..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-center text-sm outline-none focus:border-emerald-500/60"/>
-        <p id="admin-pw-err" class="hidden text-xs text-rose-400 font-bold">Incorrect password</p>
-        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Access Dashboard</button>
-      </form>
-      <button onclick="toggleModal('admin-dashboard',false)" class="text-xs text-slate-500 hover:text-slate-300">← Back to Website</button>
-    </div>
-  </div>
-
-  <!-- Admin Main Interface -->
-  <div id="admin-main" class="hidden flex h-full">
-    <!-- Sidebar -->
-    <aside class="w-56 bg-[#0c1527] border-r border-slate-800 flex flex-col justify-between p-4 shrink-0 overflow-y-auto">
-      <div class="space-y-4">
-        <div class="flex items-center gap-2 px-2 pb-3 border-b border-slate-800">
-          <img src="logo.jpg" alt="Logo" class="h-7 w-auto rounded"/>
-          <div><p class="text-xs font-bold text-white">LR AgroSense</p><p class="text-[10px] text-emerald-400 font-mono">Founder Console</p></div>
-        </div>
-        <nav class="space-y-1 text-xs">
-          <button onclick="switchAdminTab('dash')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" data-tab="dash">📊 Dashboard</button>
-          <button onclick="switchAdminTab('ats')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ats">👥 Applications</button>
-          <button onclick="switchAdminTab('ai')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="ai">🤖 AI Assistant</button>
-          <button onclick="switchAdminTab('tasks')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="tasks">📋 Tasks</button>
-          <button onclick="switchAdminTab('notes')" class="admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-900" data-tab="notes">📝 Notes</button>
-        </nav>
-      </div>
-      <button onclick="logoutAdmin()" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:text-white">← Exit Dashboard</button>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
-      <!-- TAB: Dashboard -->
-      <div id="tab-dash" class="admin-tab p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Dashboard</h2><p class="text-xs text-slate-400 font-mono" id="dash-date"></p></div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="dash-stats">
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Total Applicants</p><p class="text-3xl font-extrabold text-white mt-1" id="st-total">0</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">New Applications</p><p class="text-3xl font-extrabold text-emerald-400 mt-1" id="st-new">0</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Selected</p><p class="text-3xl font-extrabold text-cyan-400 mt-1" id="st-selected">0</p></div>
-          <div class="p-5 bg-[#0c1527] rounded-2xl border border-slate-800"><p class="text-xs text-slate-400">Rejected</p><p class="text-3xl font-extrabold text-rose-400 mt-1" id="st-rejected">0</p></div>
-        </div>
-        <div class="bg-[#0c1527] rounded-2xl border border-slate-800 p-5">
-          <h3 class="text-sm font-bold text-white mb-3">Recent Applications</h3>
-          <div id="dash-recent" class="text-xs text-slate-400">Loading...</div>
-        </div>
-      </div>
-
-      <!-- TAB: ATS -->
-      <div id="tab-ats" class="admin-tab hidden p-6 sm:p-8 space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <h2 class="text-2xl font-extrabold text-white font-display">Applicant Tracking</h2>
-          <div class="flex items-center gap-3">
-            <input id="ats-search" type="text" placeholder="Search name, email..." class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none w-48 focus:border-emerald-500/60" oninput="filterATS()"/>
-            <select id="ats-filter" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none" onchange="filterATS()">
-              <option value="">All Status</option><option value="new">New</option><option value="shortlisted">Shortlisted</option><option value="interview">Interview</option><option value="selected">Selected</option><option value="rejected">Rejected</option><option value="joined">Joined</option>
-            </select>
-          </div>
-        </div>
-        <div class="bg-[#0c1527] rounded-2xl border border-slate-800 overflow-x-auto">
-          <table class="w-full text-xs">
-            <thead><tr class="border-b border-slate-800 text-slate-400"><th class="text-left p-3 font-semibold">Name</th><th class="text-left p-3 font-semibold">Position</th><th class="text-left p-3 font-semibold">Status</th><th class="text-left p-3 font-semibold">Date</th><th class="text-left p-3 font-semibold">Actions</th></tr></thead>
-            <tbody id="ats-tbody"><tr><td colspan="5" class="p-4 text-center text-slate-500">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TAB: AI Assistant -->
-      <div id="tab-ai" class="admin-tab hidden flex flex-col h-full">
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between shrink-0">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-extrabold text-white">🤖 AI Founder Assistant</span>
-            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">Gemini Powered</span>
-          </div>
-          <button onclick="promptGeminiKey()" class="text-xs text-slate-400 hover:text-emerald-400 underline">⚙️ Set Gemini API Key</button>
-        </div>
-        <div id="ai-messages" class="flex-1 p-6 space-y-4 overflow-y-auto max-w-3xl w-full mx-auto">
-          <div class="text-center py-12 space-y-4">
-            <h3 class="text-xl font-extrabold text-white">How can I help you, Founder?</h3>
-            <p class="text-xs text-slate-400">I have access to all applicant data, tasks, and company information.</p>
-            <div class="flex flex-wrap justify-center gap-2 text-xs">
-              <button onclick="aiQuick('Show all new applications')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-emerald-500/40">Show new applications</button>
-              <button onclick="aiQuick('Suggest today\\'s priorities')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-emerald-500/40">Today's priorities</button>
-              <button onclick="aiQuick('Draft an onboarding email template')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-emerald-500/40">Draft onboarding email</button>
+        <div>
+          <label class="text-slate-300 font-semibold mb-1.5 block">Resume / CV (Optional)</label>
+          <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+            <input id="af-resume-file" type="file" accept=".pdf,.doc,.docx" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs outline-none file:bg-emerald-500 file:text-slate-950 cursor-pointer"/>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-slate-500 shrink-0">Or paste link:</span>
+              <input id="af-resume" type="url" class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs outline-none" placeholder="https://drive.google.com/..."/>
             </div>
           </div>
         </div>
-        <div class="p-4 border-t border-slate-800 max-w-3xl w-full mx-auto shrink-0">
-          <form onsubmit="sendAiMessage(event)" class="relative flex items-center">
-            <input id="ai-input" type="text" required placeholder="Ask anything about applicants, tasks, company..." class="w-full pl-5 pr-14 py-3.5 rounded-2xl bg-[#0c1527] border border-slate-800 text-white text-xs sm:text-sm outline-none focus:border-emerald-500/60"/>
-            <button type="submit" id="ai-send-btn" class="absolute right-2.5 p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold">➔</button>
-          </form>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">LinkedIn Profile (Optional)</label><input id="af-linkedin" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" placeholder="https://linkedin.com/in/..."/></div>
+          <div><label class="text-slate-300 font-semibold mb-1.5 block">Portfolio Link (Optional)</label><input id="af-portfolio" type="url" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none" placeholder="https://..."/></div>
+        </div>
+
+        <div><label class="text-slate-300 font-semibold mb-1.5 block">Why do you want to join LR AgroSense? *</label><textarea id="af-why" required rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none resize-none" placeholder="Tell us about your motivation..."></textarea></div>
+        <div><label class="text-slate-300 font-semibold mb-1.5 block">Availability *</label><select id="af-avail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none"><option value="">Select availability</option><option>Immediate</option><option>Within 1 week</option><option>Within 2 weeks</option><option>Within 1 month</option></select></div>
+
+        <label class="flex items-start gap-3 cursor-pointer p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+          <input id="af-declare" type="checkbox" required class="mt-1 accent-emerald-500 w-4 h-4 shrink-0" />
+          <span class="text-slate-400 text-[11px]">I declare that all information provided is accurate and understand this is an unpaid, part-time, remote internship.</span>
+        </label>
+        <button id="apply-submit-btn" type="submit" class="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-extrabold text-sm">Submit Application →</button>
+      </form>
+    </div>
+
+    <!-- CONGRATULATIONS & SUBMITTED DETAILS RECEIPT -->
+    <div id="apply-congrats-container" class="hidden text-center py-6 space-y-6 max-w-2xl mx-auto">
+      <div class="w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-5xl flex items-center justify-center mx-auto shadow-2xl">🎉</div>
+      <div class="space-y-2">
+        <h2 class="text-3xl font-extrabold text-white">Congratulations, <span id="succ-name" class="text-emerald-400">Applicant</span>!</h2>
+        <p class="text-slate-300 text-sm">Your application for <strong id="succ-position" class="text-white">Position</strong> has been logged.</p>
+      </div>
+
+      <!-- Receipt Card -->
+      <div class="p-6 bg-slate-900/90 rounded-3xl border border-emerald-500/30 text-left space-y-4 text-xs">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div><span class="text-[10px] text-slate-400 block font-mono">APPLICATION REF ID</span><span id="succ-id" class="font-mono font-extrabold text-emerald-400 text-base">LRA-APP-9842</span></div>
+          <div class="text-right"><span class="text-[10px] text-slate-400 block font-mono">SUBMITTED ON</span><span id="succ-date" class="font-bold text-slate-200">04/08/2026</span></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+          <div><span class="text-slate-500 block text-[10px]">Full Name:</span> <span id="succ-fullname" class="font-bold text-white">Full Name</span></div>
+          <div><span class="text-slate-500 block text-[10px]">Position:</span> <span id="succ-pos-name" class="font-bold text-white">Position</span></div>
+          <div><span class="text-slate-500 block text-[10px]">Email:</span> <span id="succ-email" class="font-bold text-white truncate block">email@domain.com</span></div>
+          <div><span class="text-slate-500 block text-[10px]">Phone:</span> <span id="succ-phone" class="font-bold text-white">+91 XXXXX</span></div>
+          <div><span class="text-slate-500 block text-[10px]">College:</span> <span id="succ-college" class="font-bold text-white">College</span></div>
+          <div><span class="text-slate-500 block text-[10px]">Degree & Grad Year:</span> <span id="succ-degree" class="font-bold text-white">Degree</span></div>
+          <div><span class="text-slate-500 block text-[10px]">Availability:</span> <span id="succ-avail" class="font-bold text-white">Immediate</span></div>
+        </div>
+        <div class="p-3.5 bg-slate-950 rounded-2xl border border-slate-800">
+          <span class="text-slate-500 text-[10px] block font-semibold">WHY JOIN LR AGROSENSE:</span>
+          <p id="succ-why" class="text-slate-300 text-[11px] italic">"Motivation..."</p>
         </div>
       </div>
 
-      <!-- TAB: Tasks -->
-      <div id="tab-tasks" class="admin-tab hidden p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Tasks</h2>
-          <button onclick="showAddTask()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">+ Add Task</button>
-        </div>
-        <div id="tasks-list" class="space-y-3 text-xs">Loading...</div>
-        <div id="task-form-box" class="hidden glass p-5 rounded-2xl border border-emerald-500/30 space-y-3">
-          <input id="tf-title" type="text" placeholder="Task title..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
-          <textarea id="tf-desc" placeholder="Description..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none"></textarea>
-          <div class="flex gap-3">
-            <select id="tf-priority" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select>
-            <button onclick="addTask()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Save Task</button>
-            <button onclick="document.getElementById('task-form-box').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs">Cancel</button>
-          </div>
+      <div class="pt-2 space-y-2">
+        <button id="succ-track-btn" class="w-full py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl">🔍 Track Live Application Status Now</button>
+        <button onclick="toggleModal('modal-apply',false)" class="w-full py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold">🏠 Return to Website Homepage</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ==================== APPLICANT STATUS TRACKER MODAL ==================== -->
+<div id="modal-track" class="fixed inset-0 z-50 hidden bg-[#040914] overflow-y-auto">
+  <header class="sticky top-0 z-20 bg-[#040914]/90 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="LR AgroSense" class="h-8 w-auto"/></div>
+        <div><h2 class="text-sm font-bold text-white leading-none">LR AgroSense</h2><p class="text-[10px] text-cyan-400 font-mono">Applicant Status Tracking Portal</p></div>
+      </div>
+      <button onclick="toggleModal('modal-track',false)" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white text-xs font-bold">← Back to Website</button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10 space-y-8">
+    <div class="text-center space-y-3">
+      <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase">LIVE STATUS TRACKER</span>
+      <h1 class="text-3xl font-extrabold text-white">Track Your Application</h1>
+    </div>
+
+    <div class="glass p-6 rounded-3xl border border-cyan-500/30 shadow-2xl">
+      <form onsubmit="trackApplicationStatus(event)" class="flex flex-col sm:flex-row gap-3">
+        <input id="track-input" type="text" required placeholder="Enter Ref ID (e.g. LRA-APP-5995), Email, or Phone..." class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
+        <button type="submit" class="py-3 px-6 rounded-2xl bg-cyan-500 text-slate-950 font-extrabold text-xs">Check Status →</button>
+      </form>
+    </div>
+
+    <div id="track-result-container" class="hidden space-y-6">
+      <div class="glass p-6 rounded-3xl border border-slate-800 flex justify-between items-center">
+        <div><span id="tr-ref" class="font-mono text-xs font-bold text-cyan-400 block">REF: LRA-APP-1234</span><h3 id="tr-name" class="text-xl font-bold text-white mt-0.5">Candidate Name</h3><p id="tr-pos" class="text-xs text-slate-400">Position</p></div>
+        <div id="tr-status-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-blue-500/20 text-blue-300">RECEIVED</div>
+      </div>
+
+      <!-- 4 STAGE TRACKER -->
+      <div class="glass p-6 rounded-3xl border border-slate-800 space-y-6">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">PIPELINE PROGRESS</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div id="stg-1" class="p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-1"><p class="font-bold text-white text-xs">Submitted</p><span class="text-emerald-400 text-xs block font-mono">✓ Done</span></div>
+          <div id="stg-2" class="p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-1"><p class="font-bold text-white text-xs">Received</p><span class="text-emerald-400 text-xs block font-mono">✓ Confirmed</span></div>
+          <div id="stg-3" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1"><p class="font-bold text-white text-xs">Under Review</p><span id="stg-3-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span></div>
+          <div id="stg-4" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1"><p class="font-bold text-white text-xs">Final Decision</p><span id="stg-4-txt" class="text-slate-500 text-[10px] block font-mono">Pending</span></div>
         </div>
       </div>
 
-      <!-- TAB: Notes -->
-      <div id="tab-notes" class="admin-tab hidden p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between"><h2 class="text-2xl font-extrabold text-white font-display">Notes</h2>
-          <button onclick="showAddNote()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">+ Add Note</button>
-        </div>
-        <div id="notes-list" class="space-y-3 text-xs">Loading...</div>
-        <div id="note-form-box" class="hidden glass p-5 rounded-2xl border border-emerald-500/30 space-y-3">
-          <input id="nf-title" type="text" placeholder="Note title..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
-          <textarea id="nf-content" placeholder="Write your note..." rows="4" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none"></textarea>
-          <div class="flex gap-3">
-            <button onclick="addNote()" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Save Note</button>
-            <button onclick="document.getElementById('note-form-box').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs">Cancel</button>
-          </div>
-        </div>
+      <div class="glass p-6 rounded-3xl border border-emerald-500/30 space-y-3">
+        <h4 class="text-sm font-bold text-white">Official Review Note & Decision Reason</h4>
+        <div id="tr-reason-box" class="p-4 bg-slate-900 rounded-2xl border border-slate-800 text-xs text-slate-300"></div>
       </div>
-    </main>
+    </div>
+    
+    <div id="track-error-container" class="hidden text-center p-8 glass rounded-3xl border border-rose-500/40">
+      <h3 class="text-lg font-bold text-white">No Matching Application Found</h3>
+    </div>
+  </main>
+</div>
 
-    <!-- ATS Detail Side Panel -->
-    <div id="ats-detail" class="hidden w-96 bg-[#0c1527] border-l border-slate-800 overflow-y-auto p-5 space-y-4 shrink-0">
-      <div class="flex items-center justify-between"><h3 class="text-sm font-bold text-white">Applicant Details</h3><button onclick="document.getElementById('ats-detail').classList.add('hidden')" class="text-slate-400 hover:text-white text-sm">✕</button></div>
-      <div id="ats-detail-content" class="text-xs space-y-3"></div>
+<!-- ==================== ADMIN DASHBOARD (AUTH GATED VIA #ADMIN) ==================== -->
+<div id="admin-dashboard" class="fixed inset-0 z-[60] hidden bg-[#040914] text-slate-100 overflow-hidden">
+  <!-- Login Gate -->
+  <div id="admin-gate" class="h-full flex items-center justify-center p-4">
+    <div class="w-full max-w-md glass p-8 rounded-3xl border border-emerald-500/40 text-center space-y-6">
+      <div class="logo-b inline-block p-2"><img src="logo.jpg" alt="Logo" class="h-10 w-auto"/></div>
+      <h3 class="text-2xl font-extrabold text-white">Founder Console</h3>
+      <form onsubmit="adminLogin(event)" class="space-y-4">
+        <input id="admin-pw" type="password" placeholder="Passcode (11042026)..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs text-center outline-none focus:border-emerald-500"/>
+        <p id="admin-pw-err" class="hidden text-rose-400 text-xs font-bold">Incorrect Passcode</p>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Unlock Console →</button>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- ========== TOAST ========== -->
-<div id="toast" class="fixed bottom-6 right-6 z-[70] hidden">
-  <div class="glass rounded-2xl p-4 border border-emerald-500/40 shadow-2xl flex items-center gap-3 text-xs">
-    <span class="text-emerald-400 text-lg">✓</span>
-    <div><p class="font-bold text-white" id="toast-title">Success</p><p class="text-slate-400" id="toast-msg">Done.</p></div>
+  <!-- Admin Main -->
+  <div id="admin-main" class="hidden h-full flex flex-col">
+    <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="logo-b p-1.5"><img src="logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
+        <span class="text-xs font-mono font-bold text-emerald-400">FOUNDER CONSOLE</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="switchAdminTab('ats')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold">👥 ATS</button>
+        <button onclick="switchAdminTab('ai')" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold">✦ Aria AI</button>
+        <button onclick="location.hash=''; location.reload();" class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 text-xs font-bold">Logout</button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto">
+      <!-- ATS Tab -->
+      <div id="tab-ats" class="admin-tab p-6 space-y-6">
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-bold text-white">Applications</h2>
+          <input id="ats-search" oninput="filterATS()" type="text" placeholder="Search applicant..." class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
+        </div>
+        <div class="glass rounded-2xl border border-slate-800 overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-slate-900 border-b border-slate-800 text-slate-400"><tr><th class="p-3">Name</th><th class="p-3">Position</th><th class="p-3">Status</th><th class="p-3">Date</th><th class="p-3">Action</th></tr></thead>
+            <tbody id="ats-tbody"></tbody>
+          </table>
+        </div>
+        <div id="ats-detail" class="hidden glass p-6 rounded-2xl border border-emerald-500/40 space-y-4 text-xs">
+          <div id="ats-detail-content"></div>
+        </div>
+      </div>
+
+      <!-- ARIA AI TAB -->
+      <div id="tab-ai" class="admin-tab hidden p-6 space-y-6">
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-bold text-white">✦ Aria — AI Co-Founder</h2>
+          <span id="aria-model-badge" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono">gemini-1.5-flash</span>
+        </div>
+        <div id="aria-messages" class="h-[450px] overflow-y-auto space-y-4 p-4 glass rounded-2xl border border-slate-800 text-xs">
+          <div id="aria-welcome" class="text-center py-10 space-y-3">
+            <div class="text-4xl">🤖</div>
+            <h3 class="text-lg font-bold text-white">I'm Aria — Your AI Co-Founder</h3>
+            <p class="text-slate-400 max-w-md mx-auto">Connected to live applicants, tasks, and notes database.</p>
+          </div>
+        </div>
+        <form onsubmit="ariaSendMessage(event)" class="flex gap-3">
+          <input id="aria-input" type="text" placeholder="Ask Aria anything..." class="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none"/>
+          <button type="submit" class="px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Send →</button>
+        </form>
+      </div>
+    </main>
   </div>
 </div>
 
-<!-- ==================== JAVASCRIPT ENGINE ==================== -->
+<!-- ==================== SCRIPT ENGINE ==================== -->
 <script>
-// ===== Firebase Init =====
-const fbConfig = {
-  apiKey:"AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
-  authDomain:"lr-agrosense.firebaseapp.com",
-  projectId:"lr-agrosense",
-  storageBucket:"lr-agrosense.firebasestorage.app",
-  messagingSenderId:"82862173999",
-  appId:"1:82862173999:web:fa5f8d75ecc7229dc2bbda",
-  measurementId:"G-6LGWE4Q1Z8"
-};
-firebase.initializeApp(fbConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+  const FOUNDER_PW = "11042026";
+  let currentUser = null;
+  let allApplications = [];
 
-const FOUNDER_PW = '11042026';
-let GEMINI_KEY = localStorage.getItem('lr_gemini_key') || fbConfig.apiKey;
-let currentUser = null;
-
-// Dual Storage State
-let allApplications = JSON.parse(localStorage.getItem('lr_apps') || '[]');
-let allTasks = JSON.parse(localStorage.getItem('lr_tasks') || '[]');
-let allNotes = JSON.parse(localStorage.getItem('lr_notes') || '[]');
-
-// ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-  const obs = new IntersectionObserver(e => e.forEach(el => { if(el.isIntersecting) el.target.classList.add('active'); }), {threshold:0.1});
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-  if(location.hash==='#admin') openAdminDashboard();
-  loadUser();
-});
-
-// ===== Fast Non-Blocking Storage Helpers =====
-function withTimeout(promise, ms = 2000) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
-  ]);
-}
-
-async function syncCollection(collName, localKey) {
-  try {
-    const snap = await withTimeout(db.collection(collName).get(), 2000);
-    const docs = snap.docs.map(d => {
-      const data = d.data();
-      let appliedAtStr = new Date().toLocaleDateString('en-IN');
-      if (data.appliedAt?.toDate) appliedAtStr = data.appliedAt.toDate().toLocaleDateString('en-IN');
-      else if (data.createdAt?.toDate) appliedAtStr = data.createdAt.toDate().toLocaleDateString('en-IN');
-      return { id: d.id, ...data, dateFormatted: appliedAtStr };
-    });
-    if (docs && docs.length) {
-      localStorage.setItem(localKey, JSON.stringify(docs));
-      return docs;
-    }
-  } catch (e) {
-    console.warn(`Firestore sync for ${collName} used local cache:`, e.message);
-  }
-  return JSON.parse(localStorage.getItem(localKey) || '[]');
-}
-
-// ===== Utility =====
-function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
-function showToast(title, msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-title').textContent = title;
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.remove('hidden'); t.firstElementChild.className = t.firstElementChild.className.replace('toast-out','') + ' toast-in';
-  setTimeout(() => { t.firstElementChild.classList.replace('toast-in','toast-out'); setTimeout(() => t.classList.add('hidden'), 400); }, 3500);
-}
-function toggleAuthModal(show) { toggleModal('modal-auth', show); }
-function statusColor(s) { return {new:'bg-blue-500/20 text-blue-300',shortlisted:'bg-amber-500/20 text-amber-300',interview:'bg-purple-500/20 text-purple-300',selected:'bg-emerald-500/20 text-emerald-300',rejected:'bg-rose-500/20 text-rose-300',joined:'bg-cyan-500/20 text-cyan-300'}[s] || 'bg-slate-800 text-slate-400'; }
-
-// ===== Auth =====
-function loadUser() {
-  const s = localStorage.getItem('lr_user');
-  if(s) { try { currentUser=JSON.parse(s); renderNav(); } catch(e){} }
-}
-function renderNav() {
-  const c = document.getElementById('nav-user-container');
-  if(currentUser && c) c.innerHTML = `<button onclick="logoutUser()" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-bold">👤 ${currentUser.name} (Logout)</button>`;
-}
-function logoutUser() { currentUser=null; localStorage.removeItem('lr_user'); location.reload(); }
-function switchAuthTab(t) { document.getElementById('auth-email').classList.toggle('hidden',t!=='email'); document.getElementById('auth-google').classList.toggle('hidden',t!=='google'); }
-function loginEmail() {
-  const n=document.getElementById('ei-name').value.trim(), e=document.getElementById('ei-email').value.trim(), p=document.getElementById('ei-pass').value.trim();
-  if(!n||!e||!p){alert('Fill all fields');return;}
-  auth.signInWithEmailAndPassword(e,p).then(r=>doneLogin(n,e,r.user)).catch(()=>{
-    auth.createUserWithEmailAndPassword(e,p).then(r=>doneLogin(n,e,r.user)).catch(err=>alert(err.message));
-  });
-}
-function doneLogin(n,e,u){currentUser={name:n,email:e,uid:u.uid};localStorage.setItem('lr_user',JSON.stringify(currentUser));renderNav();toggleModal('modal-auth',false);}
-function loginGoogle(){
-  const p=new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(p).then(r=>{currentUser={name:r.user.displayName,email:r.user.email,uid:r.user.uid};localStorage.setItem('lr_user',JSON.stringify(currentUser));renderNav();toggleModal('modal-auth',false);}).catch(e=>alert(e.message));
-}
-
-// ===== Application Form =====
-function openApplyModal(position) {
-  document.getElementById('apply-position').value = position;
-  document.getElementById('apply-position-label').textContent = position;
-  document.getElementById('apply-error').classList.add('hidden');
-  document.getElementById('apply-form').reset();
-  toggleModal('modal-apply', true);
-}
-async function submitApplication(e) {
-  e.preventDefault();
-  const btn = document.getElementById('apply-submit-btn');
-  btn.textContent = 'Submitting...'; btn.disabled = true;
-  
-  const appObj = {
-    id: 'app_' + Date.now(),
-    fullName: document.getElementById('af-name').value.trim(),
-    email: document.getElementById('af-email').value.trim(),
-    phone: document.getElementById('af-phone').value.trim(),
-    college: document.getElementById('af-college').value.trim(),
-    degree: document.getElementById('af-degree').value.trim(),
-    graduationYear: parseInt(document.getElementById('af-gradyear').value),
-    resumeLink: document.getElementById('af-resume').value.trim(),
-    linkedinProfile: document.getElementById('af-linkedin').value.trim(),
-    portfolio: document.getElementById('af-portfolio').value.trim() || '',
-    whyJoin: document.getElementById('af-why').value.trim(),
-    availability: document.getElementById('af-avail').value,
-    position: document.getElementById('apply-position').value,
-    status: 'new',
-    notes: '',
-    internalComments: '',
-    dateFormatted: new Date().toLocaleDateString('en-IN')
+  // Init Firebase
+  const fbConfig = {
+    apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
+    authDomain: "lr-agrosense.firebaseapp.com",
+    projectId: "lr-agrosense",
+    storageBucket: "lr-agrosense.appspot.com",
+    messagingSenderId: "1098234876",
+    appId: "1:1098234876:web:8a9b0c"
   };
+  if (!firebase.apps.length) firebase.initializeApp(fbConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
 
-  // Instant local save
-  allApplications.unshift(appObj);
-  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-
-  // Background Firestore save
-  db.collection('applications').add({
-    ...appObj,
-    appliedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(err => console.warn('Firestore application save background error:', err));
-
-  toggleModal('modal-apply', false);
-  showToast('Application Submitted! ✅', 'Thank you for applying to LR AgroSense. We will review your profile shortly.');
-  btn.textContent = 'Submit Application →'; btn.disabled = false;
-}
-
-// ===== Admin Dashboard =====
-function openAdminDashboard() { toggleModal('admin-dashboard', true); }
-function adminLogin(e) {
-  e.preventDefault();
-  if(document.getElementById('admin-pw').value === FOUNDER_PW) {
-    document.getElementById('admin-gate').classList.add('hidden');
-    document.getElementById('admin-main').classList.remove('hidden');
-    loadDashboard();
-  } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
-}
-function logoutAdmin() {
-  document.getElementById('admin-gate').classList.remove('hidden');
-  document.getElementById('admin-main').classList.add('hidden');
-  document.getElementById('admin-pw').value = '';
-  document.getElementById('admin-pw-err').classList.add('hidden');
-  toggleModal('admin-dashboard', false);
-}
-function switchAdminTab(tab) {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-  document.getElementById('tab-'+tab).classList.remove('hidden');
-  document.querySelectorAll('.admin-nav-btn').forEach(b => { b.className = b.className.replace(/bg-emerald-500\/10|text-emerald-300|border border-emerald-500\/30/g, '').trim() + ' text-slate-400 hover:bg-slate-900'; });
-  const active = document.querySelector(`.admin-nav-btn[data-tab="${tab}"]`);
-  if(active) active.className = 'admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
-  if(tab==='dash') loadDashboard();
-  if(tab==='ats') loadATS();
-  if(tab==='tasks') loadTasks();
-  if(tab==='notes') loadNotes();
-}
-
-// ===== Dashboard View =====
-async function loadDashboard() {
-  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  
-  // Render instantly from local state
-  renderDashboardStats();
-  
-  // Sync background from Firestore
-  allApplications = await syncCollection('applications', 'lr_apps');
-  renderDashboardStats();
-}
-
-function renderDashboardStats() {
-  const counts = {total:allApplications.length, new:0, shortlisted:0, interview:0, selected:0, rejected:0, joined:0};
-  allApplications.forEach(a => { if(counts[a.status]!==undefined) counts[a.status]++; });
-  
-  document.getElementById('st-total').textContent = counts.total;
-  document.getElementById('st-new').textContent = counts.new;
-  document.getElementById('st-selected').textContent = counts.selected;
-  document.getElementById('st-rejected').textContent = counts.rejected;
-  
-  const recent = allApplications.slice(0,5);
-  document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(a => `
-    <div class="flex items-center justify-between py-2 border-b border-slate-800/50">
-      <div>
-        <p class="text-white font-semibold">${a.fullName}</p>
-        <p class="text-slate-500 text-[11px]">${a.position} • ${a.college || 'N/A'}</p>
-      </div>
-      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span>
-    </div>`).join('') : '<p class="text-slate-500 italic py-2">No applications yet. Open position applications will appear here.</p>';
-}
-
-// ===== ATS View =====
-async function loadATS() {
-  renderATSTable(allApplications);
-  allApplications = await syncCollection('applications', 'lr_apps');
-  renderATSTable(allApplications);
-}
-
-function filterATS() {
-  const q = document.getElementById('ats-search').value.toLowerCase();
-  const f = document.getElementById('ats-filter').value;
-  let filtered = allApplications;
-  if(q) filtered = filtered.filter(a => (a.fullName||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q));
-  if(f) filtered = filtered.filter(a => a.status === f);
-  renderATSTable(filtered);
-}
-
-function renderATSTable(apps) {
-  document.getElementById('ats-tbody').innerHTML = apps.length ? apps.map(a => `
-    <tr class="border-b border-slate-800/50 hover:bg-slate-900/50 cursor-pointer" onclick="openDetail('${a.id}')">
-      <td class="p-3 text-white font-semibold">${a.fullName}</td>
-      <td class="p-3 text-slate-400">${a.position}</td>
-      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${statusColor(a.status)}">${a.status.toUpperCase()}</span></td>
-      <td class="p-3 text-slate-500">${a.dateFormatted || 'Recent'}</td>
-      <td class="p-3"><button class="text-emerald-400 hover:text-emerald-300 font-bold">View →</button></td>
-    </tr>`).join('') : '<tr><td colspan="5" class="p-6 text-center text-slate-500">No applications found. New candidate submissions will appear here.</td></tr>';
-}
-
-function openDetail(id) {
-  const a = allApplications.find(x => x.id === id);
-  if(!a) return;
-  const panel = document.getElementById('ats-detail');
-  panel.classList.remove('hidden');
-  document.getElementById('ats-detail-content').innerHTML = `
-    <div class="space-y-4">
-      <div><p class="text-lg font-bold text-white">${a.fullName}</p><p class="text-emerald-400 text-xs font-semibold">${a.position}</p></div>
-      <div class="space-y-2">
-        <p><span class="text-slate-500">Email:</span> <span class="text-white">${a.email}</span></p>
-        <p><span class="text-slate-500">Phone:</span> <span class="text-white">${a.phone}</span></p>
-        <p><span class="text-slate-500">College:</span> <span class="text-white">${a.college}</span></p>
-        <p><span class="text-slate-500">Degree:</span> <span class="text-white">${a.degree}</span></p>
-        <p><span class="text-slate-500">Graduation:</span> <span class="text-white">${a.graduationYear}</span></p>
-        <p><span class="text-slate-500">Availability:</span> <span class="text-white">${a.availability}</span></p>
-      </div>
-      <div class="space-y-2">
-        <a href="${a.resumeLink}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-emerald-400 hover:text-emerald-300 font-bold">📄 View Resume ↗</a>
-        <a href="${a.linkedinProfile}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sky-400 hover:text-sky-300 font-bold">🔗 LinkedIn Profile ↗</a>
-        ${a.portfolio ? `<a href="${a.portfolio}" target="_blank" class="block px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-400 hover:text-purple-300 font-bold">🌐 Portfolio ↗</a>` : ''}
-      </div>
-      <div><p class="text-slate-500 mb-1">Why join LR AgroSense:</p><p class="text-slate-300 bg-slate-900 p-3 rounded-xl">${a.whyJoin}</p></div>
-      <div>
-        <label class="text-slate-500 mb-1 block">Status</label>
-        <select onchange="updateStatus('${a.id}',this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none">
-          ${['new','shortlisted','interview','selected','rejected','joined'].map(s => `<option value="${s}" ${a.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <label class="text-slate-500 mb-1 block">Internal Notes</label>
-        <textarea id="detail-notes-${a.id}" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs outline-none resize-none">${a.notes||''}</textarea>
-        <button onclick="saveNotes('${a.id}')" class="mt-2 px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Save Notes</button>
-      </div>
-    </div>`;
-}
-
-function updateStatus(id, status) {
-  const item = allApplications.find(a => a.id === id);
-  if (item) item.status = status;
-  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-  renderATSTable(allApplications);
-  renderDashboardStats();
-  showToast('Status Updated', 'Applicant status set to ' + status.toUpperCase());
-  
-  // Background Firestore update
-  db.collection('applications').doc(id).update({ status }).catch(() => {});
-}
-
-function saveNotes(id) {
-  const notes = document.getElementById('detail-notes-'+id).value;
-  const item = allApplications.find(a => a.id === id);
-  if (item) item.notes = notes;
-  localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-  showToast('Notes Saved', 'Internal notes updated.');
-  
-  // Background Firestore update
-  db.collection('applications').doc(id).update({ notes }).catch(() => {});
-}
-
-// ===== Tasks View =====
-function showAddTask() { document.getElementById('task-form-box').classList.remove('hidden'); }
-
-async function addTask() {
-  const title = document.getElementById('tf-title').value.trim();
-  if(!title) return;
-  
-  const taskObj = {
-    id: 'task_' + Date.now(),
-    title,
-    description: document.getElementById('tf-desc').value.trim(),
-    priority: document.getElementById('tf-priority').value,
-    status: 'pending'
-  };
-
-  allTasks.unshift(taskObj);
-  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
-  renderTasksList();
-
-  document.getElementById('task-form-box').classList.add('hidden');
-  document.getElementById('tf-title').value=''; document.getElementById('tf-desc').value='';
-  showToast('Task Added', 'New task created.');
-
-  db.collection('tasks').add(taskObj).catch(() => {});
-}
-
-async function loadTasks() {
-  renderTasksList();
-  allTasks = await syncCollection('tasks', 'lr_tasks');
-  renderTasksList();
-}
-
-function renderTasksList() {
-  document.getElementById('tasks-list').innerHTML = allTasks.length ? allTasks.map(t => `
-    <div class="flex items-center justify-between p-4 bg-[#0c1527] rounded-2xl border border-slate-800">
-      <div class="flex items-center gap-3">
-        <input type="checkbox" ${t.status==='completed'?'checked':''} onchange="toggleTask('${t.id}',this.checked)" class="accent-emerald-500 w-4 h-4 cursor-pointer"/>
-        <div>
-          <p class="font-semibold ${t.status==='completed'?'line-through text-slate-500':'text-white'}">${t.title}</p>
-          ${t.description?`<p class="text-slate-500 text-[11px] mt-0.5">${t.description}</p>`:''}
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${t.priority==='high'?'bg-rose-500/20 text-rose-300':t.priority==='low'?'bg-slate-800 text-slate-400':'bg-amber-500/20 text-amber-300'}">${t.priority.toUpperCase()}</span>
-        <button onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">🗑</button>
-      </div>
-    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No tasks yet. Click "+ Add Task" to create one.</p>';
-}
-
-function toggleTask(id, done) {
-  const item = allTasks.find(t => t.id === id);
-  if (item) item.status = done ? 'completed' : 'pending';
-  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
-  renderTasksList();
-  db.collection('tasks').doc(id).update({ status: done ? 'completed' : 'pending' }).catch(() => {});
-}
-
-function deleteTask(id) {
-  allTasks = allTasks.filter(t => t.id !== id);
-  localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
-  renderTasksList();
-  db.collection('tasks').doc(id).delete().catch(() => {});
-}
-
-// ===== Notes View =====
-function showAddNote() { document.getElementById('note-form-box').classList.remove('hidden'); }
-
-async function addNote() {
-  const title = document.getElementById('nf-title').value.trim();
-  if(!title) return;
-  
-  const noteObj = {
-    id: 'note_' + Date.now(),
-    title,
-    content: document.getElementById('nf-content').value.trim(),
-    dateFormatted: new Date().toLocaleDateString('en-IN')
-  };
-
-  allNotes.unshift(noteObj);
-  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
-  renderNotesList();
-
-  document.getElementById('note-form-box').classList.add('hidden');
-  document.getElementById('nf-title').value=''; document.getElementById('nf-content').value='';
-  showToast('Note Saved', 'New note created.');
-
-  db.collection('notes').add(noteObj).catch(() => {});
-}
-
-async function loadNotes() {
-  renderNotesList();
-  allNotes = await syncCollection('notes', 'lr_notes');
-  renderNotesList();
-}
-
-function renderNotesList() {
-  document.getElementById('notes-list').innerHTML = allNotes.length ? allNotes.map(n => `
-    <div class="p-4 bg-[#0c1527] rounded-2xl border border-slate-800 space-y-2">
-      <div class="flex items-center justify-between">
-        <p class="font-semibold text-white">${n.title}</p>
-        <button onclick="deleteNote('${n.id}')" class="text-slate-500 hover:text-rose-400 text-xs">🗑</button>
-      </div>
-      <p class="text-slate-300 leading-relaxed">${n.content||''}</p>
-      <p class="text-slate-600 text-[10px]">${n.dateFormatted || 'Recent'}</p>
-    </div>`).join('') : '<p class="text-slate-500 italic p-4 text-center">No notes saved yet. Click "+ Add Note" to create one.</p>';
-}
-
-function deleteNote(id) {
-  allNotes = allNotes.filter(n => n.id !== id);
-  localStorage.setItem('lr_notes', JSON.stringify(allNotes));
-  renderNotesList();
-  db.collection('notes').doc(id).delete().catch(() => {});
-}
-
-// ===== Autonomous AI Agent Engine =====
-let aiHistory = [];
-
-function promptGeminiKey() {
-  const k = prompt('Enter your Gemini API Key:', GEMINI_KEY);
-  if (k) { GEMINI_KEY = k.trim(); localStorage.setItem('lr_gemini_key', GEMINI_KEY); showToast('API Key Saved', 'Gemini API Key configured.'); }
-}
-
-function aiQuick(q) { 
-  document.getElementById('ai-input').value = q; 
-  sendAiMessage(new Event('submit')); 
-}
-
-async function sendAiMessage(e) {
-  e.preventDefault();
-  const input = document.getElementById('ai-input');
-  const q = input.value.trim();
-  if(!q) return;
-  input.value = '';
-  const msgs = document.getElementById('ai-messages');
-  
-  if(aiHistory.length === 0) msgs.innerHTML = '';
-
-  // Render User Message Bubble
-  msgs.innerHTML += `<div class="flex justify-end"><div class="max-w-[80%] p-4 rounded-2xl bg-[#1e293b] text-white text-xs sm:text-sm">${q}</div></div>`;
-  
-  // Render Agent Thinking Indicator
-  const loadId = 'ai-load-' + Date.now();
-  msgs.innerHTML += `<div id="${loadId}" class="flex justify-start"><div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm typing-caret">🤖 Agent Analyzing Request & Executing Tools...</div></div>`;
-  msgs.scrollTop = msgs.scrollHeight;
-  document.getElementById('ai-send-btn').disabled = true;
-
-  // Execute Agent Logic
-  const agentResponse = await executeAutonomousAgent(q);
-
-  const loadElem = document.getElementById(loadId);
-  if (loadElem) {
-    loadElem.innerHTML = `<div class="max-w-[85%] p-5 rounded-2xl bg-[#0b1629] border border-emerald-500/30 text-xs sm:text-sm prose-ai">${marked.parse(agentResponse)}</div>`;
-  }
-
-  document.getElementById('ai-send-btn').disabled = false;
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-// ===== Autonomous Agent Tool Execution Loop =====
-async function executeAutonomousAgent(userQuery) {
-  const q = userQuery.trim();
-  const lowerQ = q.toLowerCase();
-
-  // TOOL 1: Create Task Action
-  if (lowerQ.startsWith('add task') || lowerQ.startsWith('create task') || lowerQ.includes('new task')) {
-    let taskText = q.replace(/^(add task|create task|new task):?/i, '').trim();
-    if (!taskText) taskText = "Follow up on recent items";
-    let priority = 'medium';
-    if (lowerQ.includes('urgent') || lowerQ.includes('high priority')) priority = 'high';
-    if (lowerQ.includes('low priority')) priority = 'low';
-
-    const taskObj = {
-      id: 'task_' + Date.now(),
-      title: taskText,
-      description: 'Created via Autonomous AI Agent',
-      priority,
-      status: 'pending'
-    };
-
-    allTasks.unshift(taskObj);
-    localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
-    if (document.getElementById('tasks-list')) renderTasksList();
-    db.collection('tasks').add(taskObj).catch(() => {});
-
-    showToast('Agent Executed Action', `Created task: "${taskText}"`);
-    return `⚡ **[Agent Executed Tool: CreateTask]**\n\nSuccessfully created and saved task to your database:\n* **Task:** "${taskText}"\n* **Priority:** \`${priority.toUpperCase()}\`\n* **Status:** \`PENDING\`\n\nYou can view and manage this task anytime in your **Tasks Tab**.`;
-  }
-
-  // TOOL 2: Create Note Action
-  if (lowerQ.startsWith('add note') || lowerQ.startsWith('create note') || lowerQ.startsWith('save note')) {
-    let noteText = q.replace(/^(add note|create note|save note):?/i, '').trim();
-    if (!noteText) noteText = "General Founder Note";
-    const parts = noteText.split(':');
-    const title = parts[0].trim();
-    const content = parts.slice(1).join(':').trim() || title;
-
-    const noteObj = {
-      id: 'note_' + Date.now(),
-      title: title.substring(0, 50),
-      content,
-      dateFormatted: new Date().toLocaleDateString('en-IN')
-    };
-
-    allNotes.unshift(noteObj);
-    localStorage.setItem('lr_notes', JSON.stringify(allNotes));
-    if (document.getElementById('notes-list')) renderNotesList();
-    db.collection('notes').add(noteObj).catch(() => {});
-
-    showToast('Agent Executed Action', `Saved note: "${title}"`);
-    return `⚡ **[Agent Executed Tool: SaveNote]**\n\nSuccessfully saved note to your database:\n* **Title:** "${title}"\n* **Content:** ${content}\n\nView it under your **Notes Tab**.`;
-  }
-
-  // TOOL 3: Update Candidate Status Action (e.g. "Shortlist candidate John" or "Select Pampana")
-  if (lowerQ.includes('shortlist') || lowerQ.includes('reject') || lowerQ.includes('select') || lowerQ.includes('interview')) {
-    let targetStatus = 'shortlisted';
-    if (lowerQ.includes('reject')) targetStatus = 'rejected';
-    if (lowerQ.includes('select')) targetStatus = 'selected';
-    if (lowerQ.includes('interview')) targetStatus = 'interview';
-
-    // Find candidate by name
-    let matchedCandidate = null;
-    allApplications.forEach(a => {
-      if (lowerQ.includes(a.fullName.toLowerCase())) matchedCandidate = a;
-    });
-
-    if (matchedCandidate) {
-      matchedCandidate.status = targetStatus;
-      localStorage.setItem('lr_apps', JSON.stringify(allApplications));
-      renderATSTable(allApplications);
-      renderDashboardStats();
-      db.collection('applications').doc(matchedCandidate.id).update({ status: targetStatus }).catch(() => {});
-
-      showToast('Agent Executed Action', `Updated ${matchedCandidate.fullName} to ${targetStatus}`);
-      return `⚡ **[Agent Executed Tool: UpdateApplicantStatus]**\n\nUpdated candidate record in ATS:\n* **Candidate:** ${matchedCandidate.fullName}\n* **Position:** ${matchedCandidate.position}\n* **New Status:** \`${targetStatus.toUpperCase()}\`\n\nCheck the **Applications (ATS)** tab to view updated details.`;
-    }
-  }
-
-  // TOOL 4: Generate Personalized Offer Letter
-  if (lowerQ.includes('offer letter') || lowerQ.includes('generate offer')) {
-    let matchedCandidate = allApplications[0];
-    allApplications.forEach(a => {
-      if (lowerQ.includes(a.fullName.toLowerCase())) matchedCandidate = a;
-    });
-
-    const cName = matchedCandidate ? matchedCandidate.fullName : "[Candidate Name]";
-    const cPos = matchedCandidate ? matchedCandidate.position : "Internship Role";
-    const cCollege = matchedCandidate ? matchedCandidate.college : "University";
-
-    return `⚡ **[Agent Executed Tool: GenerateOfferLetter]**\n\nHere is your official personalized offer letter for **${cName}**:\n\n---\n\n**LR AGROSENSE OFFICIAL OFFER OF INTERNSHIP**\n\n**Date:** ${new Date().toLocaleDateString('en-IN')}\n**To:** ${cName} (${cCollege})\n**Position:** ${cPos}\n\nDear ${cName},\n\nOn behalf of **LR AgroSense**, I am delighted to offer you the position of **${cPos}**.\n\n* **Mode:** Remote & Part-Time\n* **Duration:** 1 to 3 Months\n* **Direct Supervisor:** Pampana Hari Sai Ganesh (Founder & CEO)\n* **Benefits:** Certificate of Completion signed by CEO, LinkedIn recommendation, direct founder mentorship, and hands-on AgriTech startup experience.\n\nPlease sign and return your acceptance confirmation by replying to *lragrosense@gmail.com*.\n\nWarm regards,\n\n**Pampana Hari Sai Ganesh**  \nFounder & CEO, LR AgroSense  \n*lragrosense@gmail.com* | *https://lragrosense.in*`;
-  }
-
-  // TOOL 5: Try Gemini LLM Reasoning Engine first
-  let contextData = 'LR AGROSENSE FOUNDER DATABASE:\n\n';
-  if(allApplications && allApplications.length) {
-    contextData += 'APPLICANTS (' + allApplications.length + ' total):\n';
-    allApplications.forEach((a, i) => {
-      contextData += `${i+1}. Name: ${a.fullName} | Position: ${a.position} | Status: ${a.status} | Email: ${a.email} | College: ${a.college || 'N/A'} | Grad: ${a.graduationYear} | Availability: ${a.availability} | Why: ${a.whyJoin || 'N/A'}\n`;
-    });
-    contextData += '\n';
-  } else {
-    contextData += 'APPLICANTS: 0 candidates registered yet.\n\n';
-  }
-
-  if(allTasks && allTasks.length) {
-    contextData += 'TASKS (' + allTasks.length + ' total):\n';
-    allTasks.forEach((t, i) => { contextData += `${i+1}. [${t.status.toUpperCase()}] ${t.title} (Priority: ${t.priority})\n`; });
-    contextData += '\n';
-  }
-
-  if(allNotes && allNotes.length) {
-    contextData += 'NOTES (' + allNotes.length + ' total):\n';
-    allNotes.forEach((n, i) => { contextData += `${i+1}. ${n.title}: ${n.content}\n`; });
-    contextData += '\n';
-  }
-
-  const llmAnswer = await queryGeminiModels(q, contextData);
-  if (llmAnswer && !llmAnswer.includes('API_KEY_INVALID') && !llmAnswer.includes('Forbidden')) {
-    return `🤖 **[Agent Reasoning Engine]**\n\n${llmAnswer}`;
-  }
-
-  // TOOL 6: Autonomous Local Reasoning Knowledge Engine (Gives deep intelligent answers)
-  return generateAgentAutonomousReasoning(q, allApplications, allTasks, allNotes);
-}
-
-// Multi-Model Query Helper
-async function queryGeminiModels(userQuery, contextData) {
-  if (!GEMINI_KEY) return null;
-
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-  const systemPrompt = `You are the Autonomous AI Agent for LR AgroSense (Founded by Pampana Hari Sai Ganesh).
-You help manage applicants, tasks, agronomic IoT sensor engineering, startup investor strategy, and operations.
-
-${contextData}
-
-INSTRUCTIONS:
-- Answer with deep technical, strategic, or agronomic accuracy.
-- Use clean Markdown format.
-- If asked about applicants, status, tasks, cite exact data from above.`;
-    const body = JSON.stringify({
-    contents: [{ role: 'user', parts: [{ text: systemPrompt + '\n\nUSER QUESTION: ' + userQuery }] }]
+  window.addEventListener('load', () => {
+    if (location.hash === '#admin') openAdminDashboard();
   });
 
-  for (const model of models) {
-    try {
-      const resp = await withTimeout(fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body
-      }), 3500);
-      
-      const data = await resp.json();
-      const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (txt && txt.trim()) return txt;
-    } catch (e) {
-      console.warn(`Agent model ${model} call failed:`, e.message);
+  function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+  function showToast(title, msg) {
+    alert(title + "\n" + msg);
+  }
+
+  function openApplyModal(position) {
+    document.getElementById('apply-position').value = position;
+    document.getElementById('apply-position-label').textContent = position;
+    document.getElementById('apply-form-container').classList.remove('hidden');
+    document.getElementById('apply-congrats-container').classList.add('hidden');
+    toggleModal('modal-apply', true);
+  }
+
+  async function submitApplication(e) {
+    e.preventDefault();
+    const btn = document.getElementById('apply-submit-btn');
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+
+    let resumeUrl = document.getElementById('af-resume').value.trim();
+    const fileInput = document.getElementById('af-resume-file');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      try {
+        resumeUrl = await new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.onerror = rej;
+          r.readAsDataURL(fileInput.files[0]);
+        });
+      } catch(e) {}
+    }
+
+    const name = document.getElementById('af-name').value.trim();
+    const email = document.getElementById('af-email').value.trim();
+    const pos = document.getElementById('apply-position').value;
+    const refId = 'LRA-APP-' + Math.floor(1000 + Math.random() * 9000);
+    const todayStr = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'short',day:'numeric'});
+
+    const appObj = {
+      id: 'app_' + Date.now(),
+      refId,
+      fullName: name,
+      email: email,
+      phone: document.getElementById('af-phone').value.trim(),
+      college: document.getElementById('af-college').value.trim(),
+      degree: document.getElementById('af-degree').value.trim(),
+      graduationYear: parseInt(document.getElementById('af-gradyear').value),
+      resumeLink: resumeUrl || '',
+      linkedinProfile: document.getElementById('af-linkedin').value.trim() || '',
+      portfolio: document.getElementById('af-portfolio').value.trim() || '',
+      whyJoin: document.getElementById('af-why').value.trim(),
+      availability: document.getElementById('af-avail').value,
+      position: pos,
+      status: 'new',
+      dateFormatted: todayStr
+    };
+
+    allApplications.unshift(appObj);
+    localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+    db.collection('applications').add({ ...appObj, appliedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+
+    document.getElementById('succ-name').textContent = name;
+    document.getElementById('succ-position').textContent = pos;
+    document.getElementById('succ-id').textContent = refId;
+    document.getElementById('succ-date').textContent = todayStr;
+    document.getElementById('succ-fullname').textContent = name;
+    document.getElementById('succ-pos-name').textContent = pos;
+    document.getElementById('succ-email').textContent = email;
+    document.getElementById('succ-phone').textContent = appObj.phone;
+    document.getElementById('succ-college').textContent = appObj.college;
+    document.getElementById('succ-degree').textContent = `${appObj.degree} (${appObj.graduationYear})`;
+    document.getElementById('succ-avail').textContent = appObj.availability;
+    document.getElementById('succ-why').textContent = `"${appObj.whyJoin}"`;
+
+    const trackBtn = document.getElementById('succ-track-btn');
+    if (trackBtn) trackBtn.onclick = () => { toggleModal('modal-apply', false); openTrackModal(refId); };
+
+    document.getElementById('apply-form-container').classList.add('hidden');
+    document.getElementById('apply-congrats-container').classList.remove('hidden');
+    btn.textContent = 'Submit Application →'; btn.disabled = false;
+  }
+
+  function openTrackModal(query = '') {
+    toggleModal('modal-track', true);
+    if (query) {
+      document.getElementById('track-input').value = query;
+      trackApplicationStatus();
     }
   }
-  return null;
-}
 
-// Autonomous Agent Knowledge & Action Reasoning Engine
-function generateAgentAutonomousReasoning(query, apps, tasks, notes) {
-  const q = query.toLowerCase();
+  function trackApplicationStatus(e) {
+    if (e) e.preventDefault();
+    const q = document.getElementById('track-input').value.trim().toLowerCase();
+    if (!q) return;
 
-  // Query: Applicant / Candidate Query
-  if (q.includes('application') || q.includes('applicant') || q.includes('candidate') || q.includes('who applied')) {
-    if (!apps || !apps.length) {
-      return `🤖 **[Agent ATS Analytics]**\n\nCurrently, there are **0 candidate applications** in your system database.\n\n* **Open Positions Active:** Branding & Content, Business Development & Strategy, IoT & Electronics.\n* **Agent Action:** When students submit their profiles on your landing page, I will automatically index their resumes, college, degree, and motivation text in real time!`;
-    }
-    const newApps = apps.filter(a => a.status === 'new');
-    let res = `🤖 **[Agent ATS Intelligence]**\n\nI indexed **${apps.length} candidate applications** from your database:\n\n`;
-    res += `* 🆕 **New Submissions:** ${newApps.length}\n`;
-    res += `* ⭐ **Shortlisted:** ${apps.filter(a=>a.status==='shortlisted').length}\n`;
-    res += `* ✅ **Selected:** ${apps.filter(a=>a.status==='selected').length}\n`;
-    res += `* ❌ **Rejected:** ${apps.filter(a=>a.status==='rejected').length}\n\n`;
-    res += `#### Registered Candidates:\n`;
-    apps.forEach((a, i) => {
-      res += `${i+1}. **${a.fullName}** — *${a.position}* | College: **${a.college||'N/A'}** (\`${(a.status||'NEW').toUpperCase()}\`)\n   *Email:* \`${a.email}\` | *Availability:* ${a.availability || 'Immediate'}\n`;
-    });
-    res += `\n*💡 Tip:* You can ask me to **"Shortlist ${apps[0].fullName}"** or **"Generate offer letter for ${apps[0].fullName}"** and I will execute it automatically!`;
-    return res;
+    const resultBox = document.getElementById('track-result-container');
+    const errorBox = document.getElementById('track-error-container');
+    resultBox.classList.add('hidden'); errorBox.classList.add('hidden');
+
+    const app = allApplications.find(a => (a.refId && a.refId.toLowerCase() === q) || (a.email && a.email.toLowerCase() === q) || (a.id && a.id.toLowerCase() === q));
+    if (!app) { errorBox.classList.remove('hidden'); return; }
+
+    document.getElementById('tr-ref').textContent = 'REF: ' + (app.refId || app.id);
+    document.getElementById('tr-name').textContent = app.fullName;
+    document.getElementById('tr-pos').textContent = app.position;
+
+    const status = (app.status || 'new').toLowerCase();
+    const reasonBox = document.getElementById('tr-reason-box');
+    reasonBox.innerHTML = `<p class="font-bold text-cyan-300">Status (${status.toUpperCase()}):</p><p>${app.decisionReason || app.notes || 'Application is in review.'}</p>`;
+
+    resultBox.classList.remove('hidden');
   }
 
-  // Query: Priority / Task Query
-  if (q.includes('priority') || q.includes('priorities') || q.includes('task') || q.includes('today') || q.includes('what should i do')) {
-    let res = `🤖 **[Agent Founder Task & Priority Audit]**\n\nHere is your operational roadmap for today:\n\n`;
-    if (tasks && tasks.length) {
-      res += `#### Active Tasks In System (${tasks.length}):\n`;
-      tasks.forEach((t, i) => {
-        res += `${i+1}. [${t.status === 'completed' ? 'x' : ' '}] **${t.title}** (\`${t.priority.toUpperCase()}\`)\n`;
-      });
-    } else {
-      res += `1. 📦 **IoT Probe Telemetry Testing**: Calibrate Modbus RS485 soil NPK & pH sensors on ESP32.\n`;
-      res += `2. 👥 **Candidate ATS Review**: Screen incoming student profiles for Branding, Business Dev, and IoT roles.\n`;
-      res += `3. 🤝 **FPO Pilot Deployment**: Connect with Andhra Pradesh & Telangana farming cooperatives.\n`;
-      res += `4. 📄 **Grant Proposals**: Prepare BIRAC & RKVY-RAFTAAR AgriTech pitch documentation.\n`;
-    }
-    res += `\n*💡 Tip:* Tell me **"Add task: Call FPO manager at 4 PM"** and I will create it in your system database automatically!`;
-    return res;
+  function openAdminDashboard() { toggleModal('admin-dashboard', true); }
+  function adminLogin(e) {
+    e.preventDefault();
+    if (document.getElementById('admin-pw').value === FOUNDER_PW) {
+      document.getElementById('admin-gate').classList.add('hidden');
+      document.getElementById('admin-main').classList.remove('hidden');
+      loadATS();
+    } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
   }
 
-  // Query: IoT / Hardware / Telemetry Technical Questions
-  if (q.includes('iot') || q.includes('sensor') || q.includes('npk') || q.includes('esp32') || q.includes('hardware') || q.includes('soil')) {
-    return `🤖 **[Agent Hardware & Telemetry Intelligence]**\n\n### LR AgroSense IoT Node Architecture\n\n* **Microcontroller:** ESP32 (Dual Core 240MHz, low-power deep sleep mode).\n* **Soil Probe Interface:** RS485 Modbus Protocol over UART (transceiving NPK, Soil Moisture, EC & Water pH).\n* **Telemetry Wireless:** LoRaWAN / GSM (Sim800L / A7670C) streaming real-time metrics to Cloud Firestore.\n* **Power System:** Solar panel (5V/3W) + 18650 Li-ion battery with TP4056 BMS.\n\n*Need sensor calibration code or Modbus register mappings? Ask me anytime!*`;
+  function switchAdminTab(t) {
+    document.getElementById('tab-ats').classList.toggle('hidden', t !== 'ats');
+    document.getElementById('tab-ai').classList.toggle('hidden', t !== 'ai');
   }
 
-  // Query: Investor / Pitch / Growth Strategy Questions
-  if (q.includes('investor') || q.includes('pitch') || q.includes('grant') || q.includes('funding') || q.includes('market')) {
-    return `🤖 **[Agent Investor & Growth Strategy Engine]**\n\n### LR AgroSense Pitch Moat\n\n1. **TAM (Total Addressable Market):** $24B+ Indian AgriTech sector with 150 Million+ smallholder farmers.\n2. **Proprietary Hardware Moat:** Ultra-low-cost Modbus NPK sensors designed specifically for Indian soil profiles.\n3. **Monetization Model:** Hardware node sale + SaaS cloud agronomic advisory subscription.\n4. **Alignment:** UN Sustainable Development Goals (SDG 2: Zero Hunger, SDG 6: Clean Water).\n\n*Ask me to "Draft investor pitch email" or "Add note: Pitch deck feedback"!*`;
+  function renderATSTable(apps) {
+    document.getElementById('ats-tbody').innerHTML = apps.map(a => `
+      <tr onclick="openDetail('${a.id}')" class="border-b border-slate-800 p-2 cursor-pointer">
+        <td class="p-3 text-white font-bold">${a.fullName}</td>
+        <td class="p-3 text-slate-400">${a.position}</td>
+        <td class="p-3">${a.status}</td>
+        <td class="p-3">${a.dateFormatted || 'Recent'}</td>
+        <td class="p-3 text-emerald-400">View →</td>
+      </tr>`).join('');
   }
 
-  // Default Agent Intelligence Response
-  return `🤖 **[Autonomous AI Agent Active]**\n\nI am your interactive AI Agent connected directly to your system database.\n\n### ⚡ Actions I Can Execute For You:\n* 📝 **"Add task: Call investor tomorrow"** *(Creates and saves a task to DB)*\n* 📌 **"Add note: Agronomy research findings"** *(Saves note to DB)*\n* ⭐ **"Shortlist candidate [Name]"** *(Updates candidate status in ATS)*\n* ✉️ **"Generate offer letter for [Name]"** *(Produces official personalized offer letter)*\n* 🔬 **"Explain ESP32 Modbus NPK sensor code"** *(Generates technical hardware documentation)*\n\nHow would you like me to assist your operations now, Founder?`;
-}
+  function openDetail(id) {
+    const a = allApplications.find(x => x.id === id);
+    if (!a) return;
+    const panel = document.getElementById('ats-detail');
+    panel.classList.remove('hidden');
+    document.getElementById('ats-detail-content').innerHTML = `
+      <h3 class="text-lg font-bold text-white">${a.fullName} (${a.position})</h3>
+      <p class="text-slate-400">Email: ${a.email} | Phone: ${a.phone}</p>
+      <p class="text-slate-300 bg-slate-900 p-3 rounded-xl mt-2">${a.whyJoin}</p>
+      <textarea id="detail-reason-${a.id}" class="w-full bg-slate-900 border border-slate-800 text-white p-2 rounded-xl mt-2">${a.decisionReason || ''}</textarea>
+      <button onclick="saveDecisionReason('${a.id}')" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-xl mt-2">Save Decision Reason</button>`;
+  }
+
+  function saveDecisionReason(id) {
+    const r = document.getElementById('detail-reason-' + id).value;
+    const item = allApplications.find(a => a.id === id);
+    if (item) item.decisionReason = r;
+    localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+    db.collection('applications').doc(id).update({ decisionReason: r }).catch(()=>{});
+  }
+
+  function openLegalModal(t) { toggleModal('modal-terms', true); }
 </script>
 
 </body>
