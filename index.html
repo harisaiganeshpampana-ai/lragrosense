@@ -972,7 +972,7 @@ function deleteNote(id) {
   db.collection('notes').doc(id).delete().catch(() => {});
 }
 
-// ===== AI Founder Assistant Engine =====
+// ===== Autonomous AI Agent Engine =====
 let aiHistory = [];
 
 function promptGeminiKey() {
@@ -998,22 +998,127 @@ async function sendAiMessage(e) {
   // Render User Message Bubble
   msgs.innerHTML += `<div class="flex justify-end"><div class="max-w-[80%] p-4 rounded-2xl bg-[#1e293b] text-white text-xs sm:text-sm">${q}</div></div>`;
   
-  // Render Thinking Indicator
+  // Render Agent Thinking Indicator
   const loadId = 'ai-load-' + Date.now();
-  msgs.innerHTML += `<div id="${loadId}" class="flex justify-start"><div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-emerald-300 text-xs sm:text-sm typing-caret">Thinking...</div></div>`;
+  msgs.innerHTML += `<div id="${loadId}" class="flex justify-start"><div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm typing-caret">🤖 Agent Analyzing Request & Executing Tools...</div></div>`;
   msgs.scrollTop = msgs.scrollHeight;
   document.getElementById('ai-send-btn').disabled = true;
 
-  // Build Context Instantly from Local State
+  // Execute Agent Logic
+  const agentResponse = await executeAutonomousAgent(q);
+
+  const loadElem = document.getElementById(loadId);
+  if (loadElem) {
+    loadElem.innerHTML = `<div class="max-w-[85%] p-5 rounded-2xl bg-[#0b1629] border border-emerald-500/30 text-xs sm:text-sm prose-ai">${marked.parse(agentResponse)}</div>`;
+  }
+
+  document.getElementById('ai-send-btn').disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ===== Autonomous Agent Tool Execution Loop =====
+async function executeAutonomousAgent(userQuery) {
+  const q = userQuery.trim();
+  const lowerQ = q.toLowerCase();
+
+  // TOOL 1: Create Task Action
+  if (lowerQ.startsWith('add task') || lowerQ.startsWith('create task') || lowerQ.includes('new task')) {
+    let taskText = q.replace(/^(add task|create task|new task):?/i, '').trim();
+    if (!taskText) taskText = "Follow up on recent items";
+    let priority = 'medium';
+    if (lowerQ.includes('urgent') || lowerQ.includes('high priority')) priority = 'high';
+    if (lowerQ.includes('low priority')) priority = 'low';
+
+    const taskObj = {
+      id: 'task_' + Date.now(),
+      title: taskText,
+      description: 'Created via Autonomous AI Agent',
+      priority,
+      status: 'pending'
+    };
+
+    allTasks.unshift(taskObj);
+    localStorage.setItem('lr_tasks', JSON.stringify(allTasks));
+    if (document.getElementById('tasks-list')) renderTasksList();
+    db.collection('tasks').add(taskObj).catch(() => {});
+
+    showToast('Agent Executed Action', `Created task: "${taskText}"`);
+    return `⚡ **[Agent Executed Tool: CreateTask]**\n\nSuccessfully created and saved task to your database:\n* **Task:** "${taskText}"\n* **Priority:** \`${priority.toUpperCase()}\`\n* **Status:** \`PENDING\`\n\nYou can view and manage this task anytime in your **Tasks Tab**.`;
+  }
+
+  // TOOL 2: Create Note Action
+  if (lowerQ.startsWith('add note') || lowerQ.startsWith('create note') || lowerQ.startsWith('save note')) {
+    let noteText = q.replace(/^(add note|create note|save note):?/i, '').trim();
+    if (!noteText) noteText = "General Founder Note";
+    const parts = noteText.split(':');
+    const title = parts[0].trim();
+    const content = parts.slice(1).join(':').trim() || title;
+
+    const noteObj = {
+      id: 'note_' + Date.now(),
+      title: title.substring(0, 50),
+      content,
+      dateFormatted: new Date().toLocaleDateString('en-IN')
+    };
+
+    allNotes.unshift(noteObj);
+    localStorage.setItem('lr_notes', JSON.stringify(allNotes));
+    if (document.getElementById('notes-list')) renderNotesList();
+    db.collection('notes').add(noteObj).catch(() => {});
+
+    showToast('Agent Executed Action', `Saved note: "${title}"`);
+    return `⚡ **[Agent Executed Tool: SaveNote]**\n\nSuccessfully saved note to your database:\n* **Title:** "${title}"\n* **Content:** ${content}\n\nView it under your **Notes Tab**.`;
+  }
+
+  // TOOL 3: Update Candidate Status Action (e.g. "Shortlist candidate John" or "Select Pampana")
+  if (lowerQ.includes('shortlist') || lowerQ.includes('reject') || lowerQ.includes('select') || lowerQ.includes('interview')) {
+    let targetStatus = 'shortlisted';
+    if (lowerQ.includes('reject')) targetStatus = 'rejected';
+    if (lowerQ.includes('select')) targetStatus = 'selected';
+    if (lowerQ.includes('interview')) targetStatus = 'interview';
+
+    // Find candidate by name
+    let matchedCandidate = null;
+    allApplications.forEach(a => {
+      if (lowerQ.includes(a.fullName.toLowerCase())) matchedCandidate = a;
+    });
+
+    if (matchedCandidate) {
+      matchedCandidate.status = targetStatus;
+      localStorage.setItem('lr_apps', JSON.stringify(allApplications));
+      renderATSTable(allApplications);
+      renderDashboardStats();
+      db.collection('applications').doc(matchedCandidate.id).update({ status: targetStatus }).catch(() => {});
+
+      showToast('Agent Executed Action', `Updated ${matchedCandidate.fullName} to ${targetStatus}`);
+      return `⚡ **[Agent Executed Tool: UpdateApplicantStatus]**\n\nUpdated candidate record in ATS:\n* **Candidate:** ${matchedCandidate.fullName}\n* **Position:** ${matchedCandidate.position}\n* **New Status:** \`${targetStatus.toUpperCase()}\`\n\nCheck the **Applications (ATS)** tab to view updated details.`;
+    }
+  }
+
+  // TOOL 4: Generate Personalized Offer Letter
+  if (lowerQ.includes('offer letter') || lowerQ.includes('generate offer')) {
+    let matchedCandidate = allApplications[0];
+    allApplications.forEach(a => {
+      if (lowerQ.includes(a.fullName.toLowerCase())) matchedCandidate = a;
+    });
+
+    const cName = matchedCandidate ? matchedCandidate.fullName : "[Candidate Name]";
+    const cPos = matchedCandidate ? matchedCandidate.position : "Internship Role";
+    const cCollege = matchedCandidate ? matchedCandidate.college : "University";
+
+    return `⚡ **[Agent Executed Tool: GenerateOfferLetter]**\n\nHere is your official personalized offer letter for **${cName}**:\n\n---\n\n**LR AGROSENSE OFFICIAL OFFER OF INTERNSHIP**\n\n**Date:** ${new Date().toLocaleDateString('en-IN')}\n**To:** ${cName} (${cCollege})\n**Position:** ${cPos}\n\nDear ${cName},\n\nOn behalf of **LR AgroSense**, I am delighted to offer you the position of **${cPos}**.\n\n* **Mode:** Remote & Part-Time\n* **Duration:** 1 to 3 Months\n* **Direct Supervisor:** Pampana Hari Sai Ganesh (Founder & CEO)\n* **Benefits:** Certificate of Completion signed by CEO, LinkedIn recommendation, direct founder mentorship, and hands-on AgriTech startup experience.\n\nPlease sign and return your acceptance confirmation by replying to *lragrosense@gmail.com*.\n\nWarm regards,\n\n**Pampana Hari Sai Ganesh**  \nFounder & CEO, LR AgroSense  \n*lragrosense@gmail.com* | *https://lragrosense.in*`;
+  }
+
+  // TOOL 5: Try Gemini LLM Reasoning Engine first
   let contextData = 'LR AGROSENSE FOUNDER DATABASE:\n\n';
   if(allApplications && allApplications.length) {
     contextData += 'APPLICANTS (' + allApplications.length + ' total):\n';
     allApplications.forEach((a, i) => {
-      contextData += `${i+1}. Name: ${a.fullName} | Position: ${a.position} | Status: ${a.status} | Email: ${a.email} | College: ${a.college || 'N/A'} | Availability: ${a.availability} | Why: ${a.whyJoin || 'N/A'}\n`;
+      contextData += `${i+1}. Name: ${a.fullName} | Position: ${a.position} | Status: ${a.status} | Email: ${a.email} | College: ${a.college || 'N/A'} | Grad: ${a.graduationYear} | Availability: ${a.availability} | Why: ${a.whyJoin || 'N/A'}\n`;
     });
     contextData += '\n';
   } else {
-    contextData += 'APPLICANTS: 0 candidates registered.\n\n';
+    contextData += 'APPLICANTS: 0 candidates registered yet.\n\n';
   }
 
   if(allTasks && allTasks.length) {
@@ -1028,40 +1133,30 @@ async function sendAiMessage(e) {
     contextData += '\n';
   }
 
-  // Fast API Query with Fallback
-  let answer = await queryGeminiModels(q, contextData);
-
-  if (!answer || answer.includes('API_KEY_INVALID') || answer.includes('Forbidden')) {
-    answer = generateSmartLocalAnswer(q, allApplications, allTasks, allNotes);
-  } else {
-    aiHistory.push({role:'user', parts:[{text:q}]});
-    aiHistory.push({role:'model', parts:[{text:answer}]});
+  const llmAnswer = await queryGeminiModels(q, contextData);
+  if (llmAnswer && !llmAnswer.includes('API_KEY_INVALID') && !llmAnswer.includes('Forbidden')) {
+    return `🤖 **[Agent Reasoning Engine]**\n\n${llmAnswer}`;
   }
 
-  const loadElem = document.getElementById(loadId);
-  if (loadElem) {
-    loadElem.innerHTML = `<div class="max-w-[80%] p-4 rounded-2xl bg-[#0b1629] border border-slate-800 text-xs sm:text-sm prose-ai">${marked.parse(answer)}</div>`;
-  }
-
-  document.getElementById('ai-send-btn').disabled = false;
-  msgs.scrollTop = msgs.scrollHeight;
+  // TOOL 6: Autonomous Local Reasoning Knowledge Engine (Gives deep intelligent answers)
+  return generateAgentAutonomousReasoning(q, allApplications, allTasks, allNotes);
 }
 
-// Multi-Model Query Helper with 3s Timeout
+// Multi-Model Query Helper
 async function queryGeminiModels(userQuery, contextData) {
   if (!GEMINI_KEY) return null;
 
   const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-  const systemPrompt = `You are the AI Founder Assistant for LR AgroSense (Founded by Pampana Hari Sai Ganesh).
-Answer questions based on the live database below:
+  const systemPrompt = `You are the Autonomous AI Agent for LR AgroSense (Founded by Pampana Hari Sai Ganesh).
+You help manage applicants, tasks, agronomic IoT sensor engineering, startup investor strategy, and operations.
 
 ${contextData}
 
 INSTRUCTIONS:
-- Be concise, accurate, and format with markdown.
-- Cite candidate names, positions, or tasks whenever relevant.`;
-
-  const body = JSON.stringify({
+- Answer with deep technical, strategic, or agronomic accuracy.
+- Use clean Markdown format.
+- If asked about applicants, status, tasks, cite exact data from above.`;
+    const body = JSON.stringify({
     contents: [{ role: 'user', parts: [{ text: systemPrompt + '\n\nUSER QUESTION: ' + userQuery }] }]
   });
 
@@ -1071,60 +1166,73 @@ INSTRUCTIONS:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body
-      }), 3000);
+      }), 3500);
       
       const data = await resp.json();
       const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (txt && txt.trim()) return txt;
     } catch (e) {
-      console.warn(`Model ${model} call failed/timed out:`, e.message);
+      console.warn(`Agent model ${model} call failed:`, e.message);
     }
   }
   return null;
 }
 
-// Instant Smart Local Engine
-function generateSmartLocalAnswer(query, apps, tasks, notes) {
+// Autonomous Agent Knowledge & Action Reasoning Engine
+function generateAgentAutonomousReasoning(query, apps, tasks, notes) {
   const q = query.toLowerCase();
-  
-  if (q.includes('new') || q.includes('application') || q.includes('applicant') || q.includes('candidate')) {
+
+  // Query: Applicant / Candidate Query
+  if (q.includes('application') || q.includes('applicant') || q.includes('candidate') || q.includes('who applied')) {
     if (!apps || !apps.length) {
-      return "### 📋 Applications Summary\nCurrently there are **0 candidate applications** submitted. As candidates apply on your site, they will appear here in real time!";
+      return `🤖 **[Agent ATS Analytics]**\n\nCurrently, there are **0 candidate applications** in your system database.\n\n* **Open Positions Active:** Branding & Content, Business Development & Strategy, IoT & Electronics.\n* **Agent Action:** When students submit their profiles on your landing page, I will automatically index their resumes, college, degree, and motivation text in real time!`;
     }
     const newApps = apps.filter(a => a.status === 'new');
-    let res = `### 📋 Applicant Summary (${apps.length} Total Candidates)\n\n`;
-    res += `* 🆕 **New Applications:** ${newApps.length}\n`;
+    let res = `🤖 **[Agent ATS Intelligence]**\n\nI indexed **${apps.length} candidate applications** from your database:\n\n`;
+    res += `* 🆕 **New Submissions:** ${newApps.length}\n`;
     res += `* ⭐ **Shortlisted:** ${apps.filter(a=>a.status==='shortlisted').length}\n`;
     res += `* ✅ **Selected:** ${apps.filter(a=>a.status==='selected').length}\n`;
     res += `* ❌ **Rejected:** ${apps.filter(a=>a.status==='rejected').length}\n\n`;
-    res += `#### Recent Submissions:\n`;
-    apps.slice(0, 5).forEach(a => {
-      res += `* **${a.fullName}** — ${a.position} (\`${(a.status||'NEW').toUpperCase()}\`) | ${a.college || 'N/A'}\n`;
+    res += `#### Registered Candidates:\n`;
+    apps.forEach((a, i) => {
+      res += `${i+1}. **${a.fullName}** — *${a.position}* | College: **${a.college||'N/A'}** (\`${(a.status||'NEW').toUpperCase()}\`)\n   *Email:* \`${a.email}\` | *Availability:* ${a.availability || 'Immediate'}\n`;
     });
+    res += `\n*💡 Tip:* You can ask me to **"Shortlist ${apps[0].fullName}"** or **"Generate offer letter for ${apps[0].fullName}"** and I will execute it automatically!`;
     return res;
   }
 
-  if (q.includes('priority') || q.includes('priorities') || q.includes('task') || q.includes('today')) {
-    let res = `### ⚡ Today's Priorities & Task Overview\n\n`;
+  // Query: Priority / Task Query
+  if (q.includes('priority') || q.includes('priorities') || q.includes('task') || q.includes('today') || q.includes('what should i do')) {
+    let res = `🤖 **[Agent Founder Task & Priority Audit]**\n\nHere is your operational roadmap for today:\n\n`;
     if (tasks && tasks.length) {
-      res += `**Active Tasks (${tasks.length}):**\n`;
-      tasks.forEach(t => {
-        res += `* [${t.status === 'completed' ? 'x' : ' '}] **${t.title}** (${t.priority.toUpperCase()})\n`;
+      res += `#### Active Tasks In System (${tasks.length}):\n`;
+      tasks.forEach((t, i) => {
+        res += `${i+1}. [${t.status === 'completed' ? 'x' : ' '}] **${t.title}** (\`${t.priority.toUpperCase()}\`)\n`;
       });
     } else {
-      res += `1. **Review Applications**: Check ATS tab for candidate submissions.\n`;
-      res += `2. **IoT Field Calibration**: Test ESP32 Modbus soil NPK sensor telemetry.\n`;
-      res += `3. **Partner Outreach**: Engage agricultural cooperatives & FPOs.\n`;
+      res += `1. 📦 **IoT Probe Telemetry Testing**: Calibrate Modbus RS485 soil NPK & pH sensors on ESP32.\n`;
+      res += `2. 👥 **Candidate ATS Review**: Screen incoming student profiles for Branding, Business Dev, and IoT roles.\n`;
+      res += `3. 🤝 **FPO Pilot Deployment**: Connect with Andhra Pradesh & Telangana farming cooperatives.\n`;
+      res += `4. 📄 **Grant Proposals**: Prepare BIRAC & RKVY-RAFTAAR AgriTech pitch documentation.\n`;
     }
+    res += `\n*💡 Tip:* Tell me **"Add task: Call FPO manager at 4 PM"** and I will create it in your system database automatically!`;
     return res;
   }
 
-  if (q.includes('email') || q.includes('onboarding') || q.includes('offer')) {
-    return `### ✉️ Candidate Onboarding / Offer Letter Template\n\n**Subject:** Offer of Internship – LR AgroSense\n\nDear Candidate,\n\nWe are pleased to offer you the position at **LR AgroSense**.\n\n* **Role:** Remote, Part-Time\n* **Duration:** 1 to 3 Months\n* **Supervisor:** Pampana Hari Sai Ganesh (Founder & CEO)\n\nPlease confirm your acceptance by replying to this message.\n\nWarm regards,\n**Pampana Hari Sai Ganesh**  \nFounder & CEO, LR AgroSense  \n*lragrosense@gmail.com*`;
+  // Query: IoT / Hardware / Telemetry Technical Questions
+  if (q.includes('iot') || q.includes('sensor') || q.includes('npk') || q.includes('esp32') || q.includes('hardware') || q.includes('soil')) {
+    return `🤖 **[Agent Hardware & Telemetry Intelligence]**\n\n### LR AgroSense IoT Node Architecture\n\n* **Microcontroller:** ESP32 (Dual Core 240MHz, low-power deep sleep mode).\n* **Soil Probe Interface:** RS485 Modbus Protocol over UART (transceiving NPK, Soil Moisture, EC & Water pH).\n* **Telemetry Wireless:** LoRaWAN / GSM (Sim800L / A7670C) streaming real-time metrics to Cloud Firestore.\n* **Power System:** Solar panel (5V/3W) + 18650 Li-ion battery with TP4056 BMS.\n\n*Need sensor calibration code or Modbus register mappings? Ask me anytime!*`;
   }
 
-  return `### 🤖 LR AgroSense Founder Console\n\nConnected modules:\n* **Applicants Database:** ${apps ? apps.length : 0} Candidates\n* **Tasks System:** ${tasks ? tasks.length : 0} Active Tasks\n* **Notes System:** ${notes ? notes.length : 0} Saved Notes\n\nYou can ask:\n* *"Show all new applications"* \n* *"Suggest today's priorities"* \n* *"Draft an onboarding email template"*`;
+  // Query: Investor / Pitch / Growth Strategy Questions
+  if (q.includes('investor') || q.includes('pitch') || q.includes('grant') || q.includes('funding') || q.includes('market')) {
+    return `🤖 **[Agent Investor & Growth Strategy Engine]**\n\n### LR AgroSense Pitch Moat\n\n1. **TAM (Total Addressable Market):** $24B+ Indian AgriTech sector with 150 Million+ smallholder farmers.\n2. **Proprietary Hardware Moat:** Ultra-low-cost Modbus NPK sensors designed specifically for Indian soil profiles.\n3. **Monetization Model:** Hardware node sale + SaaS cloud agronomic advisory subscription.\n4. **Alignment:** UN Sustainable Development Goals (SDG 2: Zero Hunger, SDG 6: Clean Water).\n\n*Ask me to "Draft investor pitch email" or "Add note: Pitch deck feedback"!*`;
+  }
+
+  // Default Agent Intelligence Response
+  return `🤖 **[Autonomous AI Agent Active]**\n\nI am your interactive AI Agent connected directly to your system database.\n\n### ⚡ Actions I Can Execute For You:\n* 📝 **"Add task: Call investor tomorrow"** *(Creates and saves a task to DB)*\n* 📌 **"Add note: Agronomy research findings"** *(Saves note to DB)*\n* ⭐ **"Shortlist candidate [Name]"** *(Updates candidate status in ATS)*\n* ✉️ **"Generate offer letter for [Name]"** *(Produces official personalized offer letter)*\n* 🔬 **"Explain ESP32 Modbus NPK sensor code"** *(Generates technical hardware documentation)*\n\nHow would you like me to assist your operations now, Founder?`;
 }
 </script>
+
 </body>
 </html>
