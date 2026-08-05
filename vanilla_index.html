@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LR AgroSense | Smart Farming • AI • IoT</title>
+  <meta name="description" content="LR AgroSense is an early-stage Agritech startup building smart farming technologies to empower farmers, reduce crop losses, and optimize resources with affordable AI & IoT solutions." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            agri: {
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              950: '#052e16',
+            },
+            obsidian: {
+              900: '#0b1329',
+              950: '#060d1e'
+            },
+            techCyan: '#06B6D4'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .gradient-text-agri {
+      background: linear-gradient(135deg, #4ade80 0%, #10b981 50%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-[#060d1e] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
+
+  <!-- Navigation Bar -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#060d1e]/90 backdrop-blur-md border-b border-emerald-500/20 py-4 px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center font-bold text-white text-xl">
+          🌱
+        </div>
+        <div>
+          <span class="font-display font-extrabold text-xl text-white">LR AgroSense</span>
+          <p class="text-[10px] text-emerald-400 font-semibold uppercase">Smart Farming • AI • IoT</p>
+        </div>
+      </a>
+      <a href="#contact" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all">
+        Get in Touch
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="pt-36 pb-20 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+        <div class="inline-block px-4 py-1.5 rounded-full glass-panel text-emerald-300 text-xs font-semibold">
+          🌱 Early-Stage Agritech Startup • Smart Farming • AI • IoT
+        </div>
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
+          Empowering Farmers Through <span class="gradient-text-agri">Affordable AI & IoT</span> Solutions
+        </h1>
+        <p class="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0">
+          LR AgroSense is building smart farming technologies that help farmers reduce crop losses, optimize resources, and make data-driven decisions.
+        </p>
+        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+          <a href="#about" class="px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20">
+            Learn More
+          </a>
+          <a href="#contact" class="px-8 py-3.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-500/40 text-white font-semibold text-sm">
+            Contact Us
+          </a>
+        </div>
+      </div>
+
+      <!-- Live IoT Telemetry Card -->
+      <div class="lg:col-span-5">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-emerald-500/30 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <span class="font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Live Telemetry Node #AG-04
+            </span>
+            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">ONLINE</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-slate-900/80 rounded-2xl border border-slate-800">
+              <div class="text-xs text-slate-400">Soil Moisture</div>
+              <div class="text-3xl font-extrabold text-white mt-1" id="val-moisture">48.2%</div>
+            </div>
+            <div class="p-4 bg-slate-900/80 rounded-2xl border border-slate-800">
+              <div class="text-xs text-slate-400">Soil pH</div>
+              <div class="text-3xl font-extrabold text-white mt-1" id="val-ph">6.8</div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-xs text-emerald-300">
+            ✨ <strong>LR AI Advisory:</strong> Soil conditions optimal for active crop cycle.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Impact Metrics -->
+  <section class="py-12 bg-slate-900/60 border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div class="p-4">
+        <div class="text-3xl sm:text-4xl font-extrabold text-cyan-400">40%+</div>
+        <div class="text-xs text-slate-300 font-bold mt-1">Water Saved</div>
+      </div>
+      <div class="p-4">
+        <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400">25%+</div>
+        <div class="text-xs text-slate-300 font-bold mt-1">Crop Losses Prevented</div>
+      </div>
+      <div class="p-4">
+        <div class="text-3xl sm:text-4xl font-extrabold text-amber-400">30%+</div>
+        <div class="text-xs text-slate-300 font-bold mt-1">Yield Improvement</div>
+      </div>
+      <div class="p-4">
+        <div class="text-3xl sm:text-4xl font-extrabold text-purple-400">&lt; 1s</div>
+        <div class="text-xs text-slate-300 font-bold mt-1">Real-Time Mobile Alerts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 space-y-6">
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">About Us</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Transforming Agriculture Through Affordable Technology</h2>
+      <p class="text-slate-300 leading-relaxed text-base sm:text-lg">
+        LR AgroSense is an early-stage Agritech startup dedicated to transforming agriculture through affordable AI and IoT solutions. Our mission is to help farmers improve productivity, reduce crop losses, optimize water and fertilizer usage, and promote sustainable farming practices.
+      </p>
+    </div>
+  </section>
+
+  <!-- Vision & Mission Section -->
+  <section class="py-16 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="glass-panel p-8 rounded-3xl border border-emerald-500/30 space-y-4">
+        <span class="text-xs font-bold text-emerald-400 uppercase">PILLAR 01</span>
+        <h3 class="text-2xl font-bold text-white">Our Vision</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          To create an intelligent agricultural ecosystem that empowers farmers with data-driven decision-making while improving food security and reducing environmental impact.
+        </p>
+      </div>
+      <div class="glass-panel p-8 rounded-3xl border border-cyan-500/30 space-y-4">
+        <span class="text-xs font-bold text-cyan-400 uppercase">PILLAR 02</span>
+        <h3 class="text-2xl font-bold text-white">Our Mission</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Develop accessible and cost-effective technologies that make modern farming possible for every farmer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Smart Farm Monitor & Voice Alert Demo -->
+  <section id="smart-monitor" class="py-20 px-4 max-w-7xl mx-auto space-y-8">
+    <div class="text-center space-y-3">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Smart Farm <span class="gradient-text-agri">Monitor & Voice Alerts</span></h2>
+      <p class="text-slate-300 text-sm">Features: Soil Moisture • Soil pH • NPK • Temperature • Humidity • Mobile Alerts • Local Voice Notifications • AI Insights</p>
+    </div>
+
+    <!-- Voice Synth Demo Box -->
+    <div class="glass-panel p-8 rounded-3xl border border-emerald-500/40 space-y-6">
+      <h3 class="text-xl font-bold text-white">📢 Test Regional Language Voice Notifications</h3>
+      <p class="text-xs text-slate-300">Select a language to broadcast simulated farmer soil moisture alerts:</p>
+      
+      <div class="flex flex-wrap gap-2" id="lang-buttons">
+        <button onclick="setLanguage('Telugu')" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 text-white">Telugu</button>
+        <button onclick="setLanguage('Hindi')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">Hindi</button>
+        <button onclick="setLanguage('English')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">English</button>
+        <button onclick="setLanguage('Tamil')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">Tamil</button>
+        <button onclick="setLanguage('Kannada')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">Kannada</button>
+      </div>
+
+      <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-sm text-emerald-300 italic" id="voice-text">
+        "నమస్కారం! మీ పొలంలో నేల తేమ 38% కి పడిపోయింది. దయచేసి నీటి పారుదల ప్రారంభించండి."
+      </div>
+
+      <button onclick="playVoiceAlert()" class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 font-bold text-white text-sm shadow-lg shadow-rose-500/20">
+        ▶️ Broadcast Local Voice Alert
+      </button>
+    </div>
+  </section>
+
+  <!-- Founder Spotlight -->
+  <section id="founder" class="py-20 px-4 max-w-4xl mx-auto">
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-500/30 text-center sm:text-left space-y-6">
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Founder Spotlight</span>
+      <h2 class="text-3xl font-extrabold text-white">Pampana Hari Sai Ganesh</h2>
+      <p class="text-emerald-400 font-semibold text-sm">Founder of LR AgroSense & B.Sc. Agriculture Student</p>
+      <p class="text-slate-300 text-base leading-relaxed">
+        Focused on building innovative solutions that help farmers through technology, AI, and IoT.
+      </p>
+      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl bg-[#0A66C2] text-white font-bold text-sm shadow-lg shadow-[#0A66C2]/20">
+        Connect on LinkedIn ↗
+      </a>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" className="py-20 px-4 max-w-7xl mx-auto">
+    <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 space-y-6 text-center">
+      <h2 class="text-3xl font-extrabold text-white">Contact LR AgroSense</h2>
+      <p class="text-slate-300 text-sm">Official Email: <strong class="text-emerald-400">lragrosense@gmail.com</strong></p>
+      <p class="text-slate-300 text-sm">LinkedIn: <strong class="text-sky-400">linkedin.com/in/lragrosense</strong></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 border-t border-slate-800 text-center text-xs text-slate-500">
+    <p>© 2026 LR AgroSense • Smart Farming • AI • IoT • Empowering Farmers Through Technology</p>
+  </footer>
+
+  <!-- Native JavaScript -->
+  <script>
+    // Live Telemetry Simulator
+    setInterval(() => {
+      document.getElementById('val-moisture').innerText = (45 + Math.random() * 6).toFixed(1) + '%';
+      document.getElementById('val-ph').innerText = (6.7 + Math.random() * 0.3).toFixed(2);
+    }, 3000);
+
+    // Voice Alerts Engine
+    const voiceAlerts = {
+      Telugu: 'నమస్కారం! మీ పొలంలో నేల తేమ 38% కి పడిపోయింది. దయచేసి నీటి పారుదల ప్రారంభించండి.',
+      Hindi: 'नमस्ते! आपके खेत में मिट्टी की नमी 38% तक गिर गई है। कृपया तुरंत सिंचाई शुरू करें।',
+      English: 'Alert! Soil moisture level in Field #1 has dropped to 38%. Irrigation recommended now.',
+      Tamil: 'வணக்கம்! உங்கள் வயலில் மண் ஈரப்பதம் 38% ஆக குறைந்துள்ளது. பாசனத்தை தொடங்கவும்.',
+      Kannada: '<ctrl42>ಮಸ್ಕಾರ! ನಿಮ್ಮ ಜಮೀನಿನಲ್ಲಿ ಮಣ್ಣಿನ ತೇವಾಂಶ 38% ಕ್ಕೆ ಕುಸಿದಿದೆ. ದಯವಿಟ್ಟು ನೀರಾವರಿ ಪ್ರಾರಂಭಿಸಿ.'
+    };
+
+    let selectedLang = 'Telugu';
+
+    function setLanguage(lang) {
+      selectedLang = lang;
+      document.getElementById('voice-text').innerText = `"${voiceAlerts[lang]}"`;
+      
+      const btns = document.querySelectorAll('#lang-buttons button');
+      btns.forEach(btn => {
+        if (btn.innerText === lang) {
+          btn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 text-white';
+        } else {
+          btn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300';
+        }
+      });
+    }
+
+    function playVoiceAlert() {
+      if (!('speechSynthesis' in window)) return alert('Voice speech not supported on this device browser');
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(voiceAlerts[selectedLang]);
+      if (selectedLang === 'Telugu') utt.lang = 'te-IN';
+      else if (selectedLang === 'Hindi') utt.lang = 'hi-IN';
+      else if (selectedLang === 'Tamil') utt.lang = 'ta-IN';
+      else if (selectedLang === 'Kannada') utt.lang = 'kn-IN';
+      else utt.lang = 'en-US';
+      window.speechSynthesis.speak(utt);
+    }
+  </script>
+
+</body>
+</html>

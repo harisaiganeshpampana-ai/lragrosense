@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+  <defs>
+    <style>
+      .dark-green { fill: #0b2e17; }
+      .vibrant-green { fill: #22c55e; }
+      .light-green { fill: #4ade80; }
+      .logo-text-dark { fill: #0b2e17; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+      .logo-text-green { fill: #22c55e; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; }
+      .tagline-text { fill: #0b2e17; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 5px; }
+    </style>
+  </defs>
+
+  <!-- LOGO ICON GRAPHIC -->
+  <g transform="translate(160, 20)">
+    
+    <!-- Bold 'L' Monogram -->
+    <path class="dark-green" d="M10 10 H60 V155 H150 V190 H10 Z" />
+
+    <!-- Vibrant 'R' Monogram -->
+    <path class="vibrant-green" d="M72 10 H155 C190 10 205 32 205 65 C205 95 185 115 155 120 L205 190 H155 L115 125 H115 V190 H72 Z M115 45 V90 H150 C162 90 167 78 167 67 C167 56 162 45 150 45 Z" />
+
+    <!-- Two Sprouting Green Leaves -->
+    <path class="light-green" d="M92 108 C78 82 112 72 112 72 C112 72 120 98 92 108 Z" />
+    <path class="vibrant-green" d="M120 112 C132 86 98 76 98 76 C98 76 90 102 120 112 Z" />
+
+    <!-- Soil Furrow Curved Lines at Base -->
+    <path class="dark-green" d="M10 190 Q 130 170 250 190 L 250 200 Q 130 180 10 200 Z" />
+    <path class="vibrant-green" d="M35 177 Q 140 160 235 177 L 235 184 Q 140 167 35 184 Z" />
+    <path class="light-green" d="M60 165 Q 145 150 218 165 L 218 170 Q 145 155 60 170 Z" />
+
+    <!-- IoT Sensor Box & Stem -->
+    <rect class="dark-green" x="220" y="55" width="24" height="28" rx="5" />
+    <line x1="232" y1="83" x2="232" y2="175" stroke="#0b2e17" stroke-width="5" stroke-linecap="round" />
+
+    <!-- 3 Radiating Wi-Fi Wireless Arcs -->
+    <path d="M 218 42 A 18 18 0 0 1 246 42" fill="none" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 211 32 A 26 26 0 0 1 253 32" fill="none" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 204 22 A 34 34 0 0 1 260 22" fill="none" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" />
+
+    <!-- Small Plant Sprout next to Sensor -->
+    <path class="vibrant-green" d="M248 160 C240 142 260 135 260 135 C260 135 264 152 248 160 Z" />
+    <path class="light-green" d="M260 164 C268 146 248 139 248 139 C248 139 244 156 260 164 Z" />
+    <line x1="254" y1="150" x2="254" y2="175" stroke="#0b2e17" stroke-width="2.5" />
+  </g>
+
+  <!-- TYPOGRAPHY BELOW LOGO -->
+  <!-- "LR AgroSense" -->
+  <g transform="translate(300, 260)">
+    <text text-anchor="middle" font-size="50">
+      <tspan class="logo-text-dark">LR </tspan>
+      <tspan class="logo-text-green">AgroSense</tspan>
+    </text>
+
+    <!-- Subtitle: SMART FARMING • IOT -->
+    <line x1="-210" y1="25" x2="-110" y2="25" stroke="#0b2e17" stroke-width="1.5" opacity="0.4" />
+    <text class="tagline-text" y="30" text-anchor="middle" font-size="14">
+      SMART FARMING • IOT
+    </text>
+    <line x1="110" y1="25" x2="210" y2="25" stroke="#0b2e17" stroke-width="1.5" opacity="0.4" />
+  </g>
+</svg>
