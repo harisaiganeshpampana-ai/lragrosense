@@ -102,6 +102,7 @@
 
     <div class="flex items-center gap-2 sm:gap-3">
       <button onclick="openTrackModal()" class="px-3 py-2 sm:px-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all">🔍 Track Status</button>
+      <button onclick="openAdminDashboard()" class="px-3 py-2 sm:px-3.5 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-400 text-purple-300 text-xs font-bold transition-all">🔑 Admin Portal</button>
       <div id="nav-user-container">
         <button onclick="toggleAuthModal(true)" class="px-3 py-2 sm:px-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">👤 Account</button>
       </div>
@@ -1447,21 +1448,35 @@ async function submitApplication(e) {
 }
 
 // ===== Admin Dashboard =====
-function openAdminDashboard() { toggleModal('admin-dashboard', true); }
+function openAdminDashboard() { 
+  const el = document.getElementById('admin-dashboard');
+  if (el) {
+    el.classList.remove('hidden');
+    el.style.display = 'block';
+  }
+}
 function adminLogin(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   if(document.getElementById('admin-pw').value === FOUNDER_PW) {
     document.getElementById('admin-gate').classList.add('hidden');
+    document.getElementById('admin-gate').style.display = 'none';
     document.getElementById('admin-main').classList.remove('hidden');
+    document.getElementById('admin-main').style.display = 'flex';
     loadDashboard();
   } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
 }
 function logoutAdmin() {
   document.getElementById('admin-gate').classList.remove('hidden');
+  document.getElementById('admin-gate').style.display = 'flex';
   document.getElementById('admin-main').classList.add('hidden');
+  document.getElementById('admin-main').style.display = 'none';
   document.getElementById('admin-pw').value = '';
   document.getElementById('admin-pw-err').classList.add('hidden');
-  toggleModal('admin-dashboard', false);
+  const el = document.getElementById('admin-dashboard');
+  if (el) {
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  }
 }
 function switchAdminTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
