@@ -336,7 +336,8 @@ function renderPageInternships() {
   const statusEl  = document.getElementById('listings-status');
   if (!container) return;
 
-  const list = (pageInternships !== null) ? pageInternships : SEED_INTERNSHIPS;
+  const rawList = (pageInternships !== null) ? pageInternships : SEED_INTERNSHIPS;
+  const list = rawList.filter(i => !i.id || !i.id.startsWith('intern_seed_'));
   const visible = list.filter(i => i.status !== 'draft');
   const liveCount = visible.filter(i => i.status === 'live').length;
   
@@ -350,7 +351,7 @@ function renderPageInternships() {
       <div class="text-center py-24 space-y-5">
         <div class="text-6xl">🌱</div>
         <h3 class="text-2xl font-bold text-white font-display">No Open Positions Right Now</h3>
-        <p class="text-slate-400 text-sm max-w-md mx-auto">We're growing fast! New internship openings are announced regularly. Follow us on LinkedIn to never miss an opening.</p>
+        <p class="text-slate-400 text-sm max-w-md mx-auto">We're growing fast! New internship openings are announced regularly by Founder Pampana Hari Sai Ganesh. Follow us on LinkedIn to never miss an opening.</p>
         <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-8 py-4 rounded-2xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-extrabold text-sm shadow-xl transition-all">Follow LR AgroSense on LinkedIn ↗</a>
       </div>`;
     return;
@@ -433,43 +434,38 @@ function renderPageInternships() {
 }
 
 function loadPageInternships() {
+  // Auto-delete seed documents from Firestore cloud database if they exist
+  ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
+    if (db && db.collection) db.collection('internships').doc(id).delete().catch(() => {});
+  });
+
   const local = localStorage.getItem('lr_internships');
   if (local !== null) {
     try { 
-      pageInternships = JSON.parse(local); 
-      if (!Array.isArray(pageInternships)) {
-        pageInternships = SEED_INTERNSHIPS;
-      }
+      pageInternships = JSON.parse(local).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
     } catch(e) { 
-      pageInternships = SEED_INTERNSHIPS; 
+      pageInternships = []; 
     }
   } else {
-    pageInternships = SEED_INTERNSHIPS;
+    pageInternships = [];
   }
+  localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
   renderPageInternships();
 
-  // Firestore sync with fallback safety
+  // Firestore sync with filter for seed IDs
   if (db && db.collection) {
     db.collection('internships').get().then(snap => {
       if (snap && snap.docs) {
-        const fsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        const now = Date.now();
-        let changed = false;
-        fsData.forEach(i => {
-          if (i.status === 'published' && i.openDate) {
-            const ms = new Date(i.openDate).getTime();
-            if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
-          }
-        });
-        if (changed) {
-          fsData.forEach(i => db.collection('internships').doc(i.id).update({ status: i.status }).catch(() => {}));
-        }
+        const fsData = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+        
         pageInternships = fsData;
         localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
         renderPageInternships();
       }
     }).catch(err => {
-      console.warn('Firestore sync fallback to seed:', err);
+      console.warn('Firestore sync fallback:', err);
       renderPageInternships();
     });
   }
