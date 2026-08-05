@@ -450,7 +450,6 @@ function renderPageInternships() {
 }
 
 function loadPageInternships() {
-  // Auto-delete seed documents from Firestore cloud database if they exist
   ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
     if (db && db.collection) db.collection('internships').doc(id).delete().catch(() => {});
   });
@@ -458,30 +457,29 @@ function loadPageInternships() {
   const local = localStorage.getItem('lr_internships');
   if (local !== null) {
     try { 
-      pageInternships = JSON.parse(local).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+      pageInternships = JSON.parse(local).filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
     } catch(e) { 
       pageInternships = []; 
     }
   } else {
     pageInternships = [];
   }
-  localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
   renderPageInternships();
 
-  // Firestore sync with filter for seed IDs
   if (db && db.collection) {
     db.collection('internships').get().then(snap => {
-      if (snap && snap.docs) {
+      if (snap && snap.docs && snap.docs.length > 0) {
         const fsData = snap.docs
           .map(d => ({ id: d.id, ...d.data() }))
-          .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+          .filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
         
-        pageInternships = fsData;
-        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-        renderPageInternships();
+        if (fsData.length > 0) {
+          pageInternships = fsData;
+          localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
+          renderPageInternships();
+        }
       }
     }).catch(err => {
-      console.warn('Firestore sync fallback:', err);
       renderPageInternships();
     });
   }

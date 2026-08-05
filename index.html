@@ -1704,12 +1704,7 @@ function saveInternshipListing(e) {
 
 // --- Public Site Rendering ---
 function initInternshipsPublic() {
-  if (localStorage.getItem('lr_seed_v2_purged') !== 'true') {
-    localStorage.removeItem('lr_internships');
-    localStorage.setItem('lr_seed_v2_purged', 'true');
-  }
-
-  allInternships = (allInternships || []).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+  allInternships = getInternships();
   renderPublicInternships();
 
   if (typeof db !== 'undefined' && db && db.collection) {
@@ -1717,14 +1712,17 @@ function initInternshipsPublic() {
       db.collection('internships').doc(id).delete().catch(() => {});
     });
 
-    withTimeout(db.collection('internships').get(), 3000).then(snap => {
-      if (snap && snap.docs) {
-        allInternships = snap.docs
+    withTimeout(db.collection('internships').get(), 3500).then(snap => {
+      if (snap && snap.docs && snap.docs.length > 0) {
+        const fsData = snap.docs
           .map(d => ({ id: d.id, ...d.data() }))
-          .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
-        saveInternships();
-        checkInternshipAutoActivation();
-        renderPublicInternships();
+          .filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
+        if (fsData.length > 0) {
+          allInternships = fsData;
+          saveInternships();
+          checkInternshipAutoActivation();
+          renderPublicInternships();
+        }
       }
     }).catch(() => {});
   }
