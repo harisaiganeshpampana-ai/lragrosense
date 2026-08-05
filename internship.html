@@ -43,12 +43,10 @@
     .pulse-ring { animation: pulseRing 2s cubic-bezier(.455,.03,.515,.955) infinite; }
     @keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); } 70% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } }
     .countdown-badge { background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(245,158,11,.05)); border: 1px solid rgba(245,158,11,.3); }
-    /* Modal scroll */
     #modal-apply { scrollbar-width: thin; scrollbar-color: #22c55e #0c1527; }
     #modal-apply::-webkit-scrollbar { width: 5px; }
     #modal-apply::-webkit-scrollbar-track { background: #0c1527; }
     #modal-apply::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 99px; }
-    /* Floating particles */
     .particle { position: absolute; border-radius: 50%; animation: float linear infinite; opacity: .15; }
     @keyframes float { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: .2; } 90% { opacity: .15; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
   </style>
@@ -68,7 +66,7 @@
       <a href="index.html#products"  class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
       <a href="index.html#roadmap"   class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
       <a href="index.html#tech"      class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="internships.html"     class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold transition-all">Internships</a>
+      <a href="internship.html"      class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold transition-all">Internships</a>
       <a href="index.html#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
       <a href="index.html#contact"   class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
     </div>
@@ -92,9 +90,7 @@
 
 <!-- ========== HERO ========== -->
 <section class="relative pt-36 pb-20 px-4 overflow-hidden">
-  <!-- Animated background particles -->
   <div id="particles" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
-  <!-- Glow blobs -->
   <div class="absolute top-24 left-1/4 w-80 h-80 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
   <div class="absolute top-32 right-1/4 w-64 h-64 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -110,7 +106,6 @@
       Join Founder Pampana Hari Sai Ganesh and be part of India's next great AgriTech startup.
       Gain real-world experience, get direct mentorship, and earn a certificate signed by the CEO.
     </p>
-    <!-- Benefits row -->
     <div class="flex flex-wrap justify-center gap-3 pt-2 text-xs font-semibold">
       <span class="px-4 py-2 rounded-full glass text-emerald-300">🏠 100% Remote</span>
       <span class="px-4 py-2 rounded-full glass text-cyan-300">📜 CEO-Signed Certificate</span>
@@ -124,7 +119,7 @@
 <!-- ========== STATS BAR ========== -->
 <section class="py-8 bg-slate-950/60 border-y border-slate-800/60">
   <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-    <div class="p-4"><div class="text-2xl font-extrabold text-emerald-400 font-display" id="stat-open">—</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Open Positions</div></div>
+    <div class="p-4"><div class="text-2xl font-extrabold text-emerald-400 font-display" id="stat-open">3</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Open Positions</div></div>
     <div class="p-4"><div class="text-2xl font-extrabold text-cyan-400 font-display">1–3</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Month Duration</div></div>
     <div class="p-4"><div class="text-2xl font-extrabold text-amber-400 font-display">100%</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Remote Work</div></div>
     <div class="p-4"><div class="text-2xl font-extrabold text-purple-400 font-display">∞</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Growth Potential</div></div>
@@ -151,26 +146,12 @@
     </div>
     <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span id="listings-status">Loading...</span>
+      <span id="listings-status">3 listings found</span>
     </div>
   </div>
 
   <!-- Listings container -->
-  <div id="internships-page-list" class="space-y-8">
-    <!-- Loading skeleton -->
-    <div class="glass rounded-3xl p-8 animate-pulse space-y-4">
-      <div class="h-4 bg-slate-800 rounded-full w-24"></div>
-      <div class="h-7 bg-slate-800 rounded-full w-64"></div>
-      <div class="h-3 bg-slate-800 rounded-full w-full"></div>
-      <div class="h-3 bg-slate-800 rounded-full w-5/6"></div>
-    </div>
-    <div class="glass rounded-3xl p-8 animate-pulse space-y-4">
-      <div class="h-4 bg-slate-800 rounded-full w-20"></div>
-      <div class="h-7 bg-slate-800 rounded-full w-56"></div>
-      <div class="h-3 bg-slate-800 rounded-full w-full"></div>
-      <div class="h-3 bg-slate-800 rounded-full w-4/6"></div>
-    </div>
-  </div>
+  <div id="internships-page-list" class="space-y-8"></div>
 </section>
 
 <!-- ========== WHY JOIN SECTION ========== -->
@@ -230,7 +211,6 @@
 <div id="modal-apply" class="fixed inset-0 z-[60] hidden overflow-y-auto bg-black/70 backdrop-blur-md">
   <div class="min-h-screen flex items-start justify-center p-4 pt-12">
     <div class="w-full max-w-2xl bg-[#0c1527] border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
-      <!-- Form Container -->
       <div id="apply-form-container">
         <div class="sticky top-0 bg-[#0c1527] border-b border-slate-800 px-6 py-4 flex items-center justify-between z-10">
           <div>
@@ -317,18 +297,6 @@
 
 <!-- ==================== SCRIPTS ==================== -->
 <script>
-// Firebase init (same config as main site)
-const fbConfig = {
-  apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
-  authDomain: "lr-agrosense.firebaseapp.com",
-  projectId: "lr-agrosense",
-  storageBucket: "lr-agrosense.firebasestorage.app",
-  messagingSenderId: "82862173999",
-  appId: "1:82862173999:web:fa5f8d75ecc7229dc2bbda"
-};
-firebase.initializeApp(fbConfig);
-const db = firebase.firestore();
-
 // ========== Seed Data (same as admin) ==========
 const SEED_INTERNSHIPS = [
   { id:'intern_seed_1', title:'Branding & Content Intern', department:'Marketing & Creative', description:"Create compelling brand content, social media campaigns, and farmer educational material that communicates LR AgroSense's mission to diverse audiences.", responsibilities:'Design social media posts, carousels, and reels for Instagram, LinkedIn, and YouTube\nWrite blog articles, press releases, and newsletter content\nCreate farmer-facing educational content in simple language\nAssist in brand identity development and style guide creation\nSupport pitch deck and investor presentation design', eligibility:'Currently pursuing or recently graduated in Marketing, Communications, Design, or related fields\nStrong written communication skills\nProficiency in Canva, Figma, or Adobe Creative Suite preferred\nInterest in agriculture, sustainability, or technology', benefits:'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nReal-world startup portfolio experience\nDirect mentorship from Founder Pampana Hari Sai Ganesh\nLetter of Recommendation upon exceptional performance', type:'Remote | Part-Time | Unpaid', duration:'1–3 Months', color:'emerald', status:'live', openDate:'', createdAt: 1 },
@@ -337,38 +305,25 @@ const SEED_INTERNSHIPS = [
 ];
 
 let pageInternships = null;
+let db = null;
 
-function loadPageInternships() {
-  // Try localStorage first (shared with admin dashboard)
-  const local = localStorage.getItem('lr_internships');
-  if (local) {
-    try { pageInternships = JSON.parse(local); } catch(e) { pageInternships = SEED_INTERNSHIPS; }
-  } else {
-    pageInternships = SEED_INTERNSHIPS;
+// Safe Firebase init
+try {
+  const fbConfig = {
+    apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
+    authDomain: "lr-agrosense.firebaseapp.com",
+    projectId: "lr-agrosense",
+    storageBucket: "lr-agrosense.firebasestorage.app",
+    messagingSenderId: "82862173999",
+    appId: "1:82862173999:web:fa5f8d75ecc7229dc2bbda"
+  };
+  if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+    if (!firebase.apps.length) firebase.initializeApp(fbConfig);
+    db = firebase.firestore();
+    window.db = db;
   }
-  renderPageInternships();
-
-  // Sync from Firestore
-  db.collection('internships').get().then(snap => {
-    if (snap && snap.docs && snap.docs.length) {
-      const fsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // Auto-activate any that passed their open date
-      const now = Date.now();
-      let changed = false;
-      fsData.forEach(i => {
-        if (i.status === 'published' && i.openDate) {
-          const ms = new Date(i.openDate).getTime();
-          if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
-        }
-      });
-      if (changed) {
-        fsData.forEach(i => db.collection('internships').doc(i.id).update({ status: i.status }).catch(() => {}));
-      }
-      pageInternships = fsData;
-      localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-      renderPageInternships();
-    }
-  }).catch(() => {});
+} catch(e) {
+  console.warn('Firebase init safe catch:', e);
 }
 
 const colorMap = {
@@ -384,9 +339,12 @@ function renderPageInternships() {
   const statusEl  = document.getElementById('listings-status');
   if (!container) return;
 
-  const visible = (pageInternships || []).filter(i => i.status !== 'draft');
+  const list = (pageInternships && pageInternships.length > 0) ? pageInternships : SEED_INTERNSHIPS;
+  const visible = list.filter(i => i.status !== 'draft');
   const liveCount = visible.filter(i => i.status === 'live').length;
-  document.getElementById('stat-open').textContent = liveCount;
+  
+  const statOpenEl = document.getElementById('stat-open');
+  if (statOpenEl) statOpenEl.textContent = liveCount;
 
   if (statusEl) statusEl.textContent = `${visible.length} listing${visible.length !== 1 ? 's' : ''} found`;
 
@@ -477,6 +435,49 @@ function renderPageInternships() {
   }).join('');
 }
 
+function loadPageInternships() {
+  const local = localStorage.getItem('lr_internships');
+  if (local) {
+    try { 
+      pageInternships = JSON.parse(local); 
+      if (!Array.isArray(pageInternships) || pageInternships.length === 0) {
+        pageInternships = SEED_INTERNSHIPS;
+      }
+    } catch(e) { 
+      pageInternships = SEED_INTERNSHIPS; 
+    }
+  } else {
+    pageInternships = SEED_INTERNSHIPS;
+  }
+  renderPageInternships();
+
+  // Firestore sync with fallback safety
+  if (db && db.collection) {
+    db.collection('internships').get().then(snap => {
+      if (snap && snap.docs && snap.docs.length) {
+        const fsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const now = Date.now();
+        let changed = false;
+        fsData.forEach(i => {
+          if (i.status === 'published' && i.openDate) {
+            const ms = new Date(i.openDate).getTime();
+            if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
+          }
+        });
+        if (changed) {
+          fsData.forEach(i => db.collection('internships').doc(i.id).update({ status: i.status }).catch(() => {}));
+        }
+        pageInternships = fsData;
+        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
+        renderPageInternships();
+      }
+    }).catch(err => {
+      console.warn('Firestore sync fallback to seed:', err);
+      renderPageInternships();
+    });
+  }
+}
+
 function startPageCountdown(internId, openDateMs) {
   const el = document.getElementById('page-cd-' + internId);
   if (!el) return;
@@ -487,7 +488,7 @@ function startPageCountdown(internId, openDateMs) {
       if (intern && intern.status === 'published') {
         intern.status = 'live';
         localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-        db.collection('internships').doc(internId).update({ status: 'live' }).catch(() => {});
+        if (db && db.collection) db.collection('internships').doc(internId).update({ status: 'live' }).catch(() => {});
         renderPageInternships();
       }
       return;
@@ -566,7 +567,9 @@ async function submitApplicationPage(e) {
   existing.unshift(appObj);
   localStorage.setItem('lr_apps', JSON.stringify(existing));
 
-  db.collection('applications').add({ ...appObj, appliedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
+  if (db && db.collection) {
+    db.collection('applications').add({ ...appObj, appliedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
+  }
 
   document.getElementById('page-succ-name').textContent     = name;
   document.getElementById('page-succ-email').textContent    = email;
@@ -612,26 +615,36 @@ function spawnParticles() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Immediate execution so cards display instantly on page load
+loadPageInternships();
+
+function initInternshipsApp() {
   spawnParticles();
   loadPageInternships();
-  setInterval(() => {
-    if (pageInternships) {
-      const now = Date.now();
-      let changed = false;
-      pageInternships.forEach(i => {
-        if (i.status === 'published' && i.openDate) {
-          const ms = new Date(i.openDate).getTime();
-          if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
-        }
-      });
-      if (changed) {
-        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-        renderPageInternships();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initInternshipsApp);
+} else {
+  initInternshipsApp();
+}
+
+setInterval(() => {
+  if (pageInternships) {
+    const now = Date.now();
+    let changed = false;
+    pageInternships.forEach(i => {
+      if (i.status === 'published' && i.openDate) {
+        const ms = new Date(i.openDate).getTime();
+        if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
       }
+    });
+    if (changed) {
+      localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
+      renderPageInternships();
     }
-  }, 30000);
-});
+  }
+}, 30000);
 
 document.getElementById('modal-apply').addEventListener('click', function(e) {
   if (e.target === this) closeApplyModalPage();
