@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>LR AgroSense — AgriTech Insights &amp; Updates</title>
+  <link>https://lragrosense.in/</link>
+  <description>Latest insights on micro-cost soil telemetry, IoT sensor probes, automated irrigation, and precision farming in India.</description>
+  <language>en-in</language>
+  <copyright>Copyright 2026 LR AgroSense</copyright>
+  <lastBuildDate>Thu, 06 Aug 2026 00:00:00 +0530</lastBuildDate>
+  <atom:link href="https://lragrosense.in/rss.xml" rel="self" type="application/rss+xml" />
+
+  <item>
+    <title>Democratizing Precision Farming: Low-Cost Soil NPK Sensors for Indian Agriculture</title>
+    <link>https://lragrosense.in/blog.html#post-1</link>
+    <description>Discover how LR AgroSense builds affordable Modbus RS485 soil telemetry probes to help farmers eliminate fertilizer waste and boost crop yield.</description>
+    <pubDate>Thu, 06 Aug 2026 00:00:00 +0530</pubDate>
+    <guid>https://lragrosense.in/blog.html#post-1</guid>
+  </item>
+
+  <item>
+    <title>Automated Solar-Powered Irrigation Controllers: Reducing Water Waste by 40%</title>
+    <link>https://lragrosense.in/blog.html#post-2</link>
+    <description>An overview of automated solenoid valve regulation powered by field sensor nodes and cloud telemetry analytics.</description>
+    <pubDate>Wed, 05 Aug 2026 00:00:00 +0530</pubDate>
+    <guid>https://lragrosense.in/blog.html#post-2</guid>
+  </item>
+</channel>
+</rss>

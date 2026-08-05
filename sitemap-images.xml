@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://lragrosense.in/</loc>
+    <image:image>
+      <image:loc>https://lragrosense.in/logo.jpg</image:loc>
+      <image:title>LR AgroSense Official Brand Logo</image:title>
+      <image:caption>LR AgroSense Pioneer AgriTech Smart Farming Telemetry Logo</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://lragrosense.in/products.html</loc>
+    <image:image>
+      <image:loc>https://lragrosense.in/logo.jpg</image:loc>
+      <image:title>Smart Farm Monitor IoT Sensor Probe</image:title>
+      <image:caption>Solar-Powered Micro-Cost Soil Telemetry Sensor Node</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://lragrosense.in/about.html</loc>
+    <image:image>
+      <image:loc>https://lragrosense.in/logo.jpg</image:loc>
+      <image:title>Founder Pampana Hari Sai Ganesh</image:title>
+      <image:caption>Pampana Hari Sai Ganesh, Founder &amp; CEO of LR AgroSense</image:caption>
+    </image:image>
+  </url>
+</urlset>
