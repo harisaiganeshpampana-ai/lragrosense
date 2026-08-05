@@ -1672,24 +1672,30 @@ function saveInternshipListing(e) {
 
 // --- Public Site Rendering ---
 function initInternshipsPublic() {
-  ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
-    db.collection('internships').doc(id).delete().catch(() => {});
-  });
+  if (localStorage.getItem('lr_seed_v2_purged') !== 'true') {
+    localStorage.removeItem('lr_internships');
+    localStorage.setItem('lr_seed_v2_purged', 'true');
+  }
 
-  getInternships();
-  checkInternshipAutoActivation();
-  
-  withTimeout(db.collection('internships').get(), 3000).then(snap => {
-    if (snap && snap.docs) {
-      allInternships = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
-      saveInternships();
-      checkInternshipAutoActivation();
-      renderPublicInternships();
-    }
-  }).catch(() => {});
+  allInternships = (allInternships || []).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
   renderPublicInternships();
+
+  if (typeof db !== 'undefined' && db && db.collection) {
+    ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
+      db.collection('internships').doc(id).delete().catch(() => {});
+    });
+
+    withTimeout(db.collection('internships').get(), 3000).then(snap => {
+      if (snap && snap.docs) {
+        allInternships = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+        saveInternships();
+        checkInternshipAutoActivation();
+        renderPublicInternships();
+      }
+    }).catch(() => {});
+  }
 }
 
 function renderPublicInternships() {
@@ -2816,9 +2822,14 @@ function sendAiMessage(e) { if(e) e.preventDefault(); ariaSend(); }
 // ============================================================
 
 
-// ============================================================
-// switchAdminTab calls initAria() when 'ai' tab is selected
-// ============================================================
+// Automatically execute public site rendering on script boot & DOM ready
+initInternshipsPublic();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initInternshipsPublic);
+} else {
+  initInternshipsPublic();
+}
 
 </script>
 
