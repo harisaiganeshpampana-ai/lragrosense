@@ -1209,6 +1209,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
   const obs = new IntersectionObserver(e => e.forEach(el => el.target.classList.add('active')), {threshold:0.01});
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  if (!location.hash) window.scrollTo(0, 0);
   checkAdminHash();
   loadUser();
   setTimeout(() => {
