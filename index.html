@@ -1468,24 +1468,28 @@ function switchAdminTab(tab) {
 }
 
 // ===== Internship Engine =====
-const SEED_INTERNSHIPS = [];
-
 function getInternships() {
   if (!allInternships) {
-    // First load: import seed data
-    allInternships = JSON.parse(localStorage.getItem('lr_internships') || 'null');
-    if (!allInternships) {
-      allInternships = SEED_INTERNSHIPS;
-      saveInternships();
+    const local = localStorage.getItem('lr_internships');
+    if (local !== null) {
+      try {
+        allInternships = JSON.parse(local).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+      } catch(e) {
+        allInternships = [];
+      }
+    } else {
+      allInternships = [];
     }
+  } else {
+    allInternships = allInternships.filter(i => !i.id || !i.id.startsWith('intern_seed_'));
   }
   return allInternships;
 }
 
 function saveInternships() {
-  localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-  // Sync to Firestore in background
-  allInternships.forEach(i => {
+  const cleanList = (allInternships || []).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+  localStorage.setItem('lr_internships', JSON.stringify(cleanList));
+  cleanList.forEach(i => {
     db.collection('internships').doc(i.id).set(i).catch(() => {});
   });
 }
@@ -1505,18 +1509,19 @@ function checkInternshipAutoActivation() {
   });
   if (changed) {
     saveInternships();
-    renderPublicInternships(); // refresh public view
+    renderPublicInternships();
   }
 }
 
 // --- Admin CRUD ---
 async function loadAdminInternships() {
   checkInternshipAutoActivation();
-  // Try Firestore first
   try {
     const snap = await withTimeout(db.collection('internships').orderBy('createdAt', 'desc').get(), 2500);
     if (snap && snap.docs) {
-      allInternships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      allInternships = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
       saveInternships();
     } else {
       getInternships();
@@ -1530,22 +1535,21 @@ async function loadAdminInternships() {
 function renderAdminInternshipsTable() {
   const tbody = document.getElementById('internships-admin-tbody');
   if (!tbody) return;
-  const list = getInternships();
+  const list = getInternships().filter(i => !i.id || !i.id.startsWith('intern_seed_'));
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-500">No listings yet. Click ＋ Create New Listing to add one.</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 text-xs font-mono">No listings yet. Click + Create New Listing to add one.</td></tr>`;
     return;
   }
+
   tbody.innerHTML = list.map(i => {
-    const statusBadge = {
-      draft: 'bg-slate-800 text-slate-400',
-      published: 'bg-amber-500/20 text-amber-300',
-      live: 'bg-emerald-500/20 text-emerald-300',
-      closed: 'bg-slate-700 text-slate-400'
-    }[i.status] || 'bg-slate-800 text-slate-400';
-    const openDateStr = i.openDate ? new Date(i.openDate).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    const statusBadge = i.status === 'live' ? 'bg-emerald-500/20 text-emerald-300' :
+                        i.status === 'published' ? 'bg-amber-500/20 text-amber-300' :
+                        i.status === 'closed' ? 'bg-rose-500/20 text-rose-300' : 'bg-slate-800 text-slate-400';
+    const openDateStr = i.openDate ? new Date(i.openDate).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) : 'Manual';
     const actionBtns = buildInternshipActionBtns(i);
-    return `<tr class="border-b border-slate-800/50 hover:bg-slate-900/30">
-      <td class="p-3 text-white font-semibold">${i.title}</td>
+
+    return `<tr class="border-b border-slate-800/50 hover:bg-slate-900/50 text-xs">
+      <td class="p-3 font-bold text-white">${i.title}<div class="text-[10px] text-slate-500 font-normal font-mono">${i.id}</div></td>
       <td class="p-3 text-slate-400">${i.department}</td>
       <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${statusBadge}">${i.status.toUpperCase()}</span></td>
       <td class="p-3 text-slate-500 text-[11px]">${openDateStr}</td>
@@ -1585,7 +1589,7 @@ function setInternshipStatus(id, status) {
 
 function deleteInternshipListing(id) {
   if (!confirm('Delete this internship listing? This cannot be undone.')) return;
-  allInternships = allInternships.filter(i => i.id !== id);
+  allInternships = (allInternships || []).filter(i => i.id !== id);
   saveInternships();
   renderAdminInternshipsTable();
   renderPublicInternships();
@@ -1649,6 +1653,7 @@ function saveInternshipListing(e) {
     updatedAt: Date.now()
   };
 
+  if (!allInternships) allInternships = [];
   if (editId) {
     const idx = allInternships.findIndex(i => i.id === editId);
     if (idx > -1) allInternships[idx] = obj;
@@ -1667,12 +1672,18 @@ function saveInternshipListing(e) {
 
 // --- Public Site Rendering ---
 function initInternshipsPublic() {
+  ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
+    db.collection('internships').doc(id).delete().catch(() => {});
+  });
+
   getInternships();
   checkInternshipAutoActivation();
-  // Also try to sync from Firestore
+  
   withTimeout(db.collection('internships').get(), 3000).then(snap => {
-    if (snap && snap.docs && snap.docs.length) {
-      allInternships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (snap && snap.docs) {
+      allInternships = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
       saveInternships();
       checkInternshipAutoActivation();
       renderPublicInternships();
@@ -1684,7 +1695,7 @@ function initInternshipsPublic() {
 function renderPublicInternships() {
   const container = document.getElementById('internships-public-list');
   if (!container) return;
-  const visible = getInternships().filter(i => i.status !== 'draft');
+  const visible = getInternships().filter(i => (!i.id || !i.id.startsWith('intern_seed_')) && i.status !== 'draft');
   if (!visible.length) {
     container.innerHTML = `<div class="text-center py-20 space-y-4">
       <div class="text-5xl">🌱</div>
