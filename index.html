@@ -1198,22 +1198,27 @@ let allTasks = JSON.parse(localStorage.getItem('lr_tasks') || '[]');
 let allNotes = JSON.parse(localStorage.getItem('lr_notes') || '[]');
 let allInternships = null; // loaded lazily via getInternships()
 
-// ===== Init =====
+// ===== Init & Hash Routing =====
+function checkHashAdminRoute() {
+  if (location.hash === '#admin' || location.hash.includes('admin')) {
+    openAdminDashboard();
+  }
+}
+
+// Immediate hash route check on script parse
+checkHashAdminRoute();
+window.addEventListener('hashchange', checkHashAdminRoute);
+
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
   const obs = new IntersectionObserver(e => e.forEach(el => el.target.classList.add('active')), {threshold:0.01});
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-  if(location.hash==='#admin') openAdminDashboard();
+  checkHashAdminRoute();
   loadUser();
-  // Init dynamic internships (runs after all JS is parsed)
   setTimeout(() => {
     initInternshipsPublic();
-    setInterval(checkInternshipAutoActivation, 60000); // check every 60s
+    setInterval(checkInternshipAutoActivation, 60000);
   }, 50);
-});
-window.addEventListener('hashchange', () => {
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
-  if(location.hash==='#admin') openAdminDashboard();
 });
 
 // ===== Fast Non-Blocking Storage Helpers =====
