@@ -298,6 +298,12 @@
 
 <!-- ==================== SCRIPTS ==================== -->
 <script>
+// Cache Buster: Automatically purge old seed cache in Chrome, Edge, and all browsers
+if (localStorage.getItem('lr_seed_v2_purged') !== 'true') {
+  localStorage.removeItem('lr_internships');
+  localStorage.setItem('lr_seed_v2_purged', 'true');
+}
+
 // ========== Seed Data (empty by default) ==========
 const SEED_INTERNSHIPS = [];
 

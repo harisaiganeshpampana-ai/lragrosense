@@ -1157,6 +1157,12 @@ Letter of Recommendation upon exceptional performance</textarea>
 
 <!-- ==================== JAVASCRIPT ENGINE ==================== -->
 <script>
+// Cache Buster: Automatically purge old seed cache in Chrome, Edge, and all browsers
+if (localStorage.getItem('lr_seed_v2_purged') !== 'true') {
+  localStorage.removeItem('lr_internships');
+  localStorage.setItem('lr_seed_v2_purged', 'true');
+}
+
 // ===== Firebase Init =====
 const fbConfig = {
   apiKey:"AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
