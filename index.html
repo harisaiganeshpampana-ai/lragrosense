@@ -1514,9 +1514,8 @@ async function loadAdminInternships() {
   // Try Firestore first
   try {
     const snap = await withTimeout(db.collection('internships').orderBy('createdAt', 'desc').get(), 2500);
-    if (snap && snap.docs && snap.docs.length) {
+    if (snap && snap.docs) {
       allInternships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (!allInternships || allInternships.length === 0) allInternships = getInternships();
       saveInternships();
     } else {
       getInternships();

@@ -340,7 +340,7 @@ function renderPageInternships() {
   const statusEl  = document.getElementById('listings-status');
   if (!container) return;
 
-  const list = (pageInternships && pageInternships.length > 0) ? pageInternships : SEED_INTERNSHIPS;
+  const list = (pageInternships !== null) ? pageInternships : SEED_INTERNSHIPS;
   const visible = list.filter(i => i.status !== 'draft');
   const liveCount = visible.filter(i => i.status === 'live').length;
   
@@ -438,10 +438,10 @@ function renderPageInternships() {
 
 function loadPageInternships() {
   const local = localStorage.getItem('lr_internships');
-  if (local) {
+  if (local !== null) {
     try { 
       pageInternships = JSON.parse(local); 
-      if (!Array.isArray(pageInternships) || pageInternships.length === 0) {
+      if (!Array.isArray(pageInternships)) {
         pageInternships = SEED_INTERNSHIPS;
       }
     } catch(e) { 
@@ -455,7 +455,7 @@ function loadPageInternships() {
   // Firestore sync with fallback safety
   if (db && db.collection) {
     db.collection('internships').get().then(snap => {
-      if (snap && snap.docs && snap.docs.length) {
+      if (snap && snap.docs) {
         const fsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         const now = Date.now();
         let changed = false;
