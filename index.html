@@ -1157,11 +1157,21 @@ Letter of Recommendation upon exceptional performance</textarea>
 
 <!-- ==================== JAVASCRIPT ENGINE ==================== -->
 <script>
-// Cache Buster: Automatically purge old seed cache in Chrome, Edge, and all browsers
-if (localStorage.getItem('lr_seed_v2_purged') !== 'true') {
-  localStorage.removeItem('lr_internships');
-  localStorage.setItem('lr_seed_v2_purged', 'true');
-}
+// Force Purge: Always remove any legacy seed roles from localStorage on every load
+(function purgeLegacySeedCache() {
+  try {
+    const raw = localStorage.getItem('lr_internships');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const cleaned = parsed.filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
+        localStorage.setItem('lr_internships', JSON.stringify(cleaned));
+      }
+    }
+  } catch(e) {
+    localStorage.removeItem('lr_internships');
+  }
+})();
 
 // ===== Firebase Init =====
 const fbConfig = {
