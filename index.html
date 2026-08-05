@@ -238,13 +238,14 @@
     
     <!-- Desktop & Tablet Navigation Links (Visible on screens >= 768px) -->
     <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
-      <a href="#about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
-      <a href="#products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
+      <a href="about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
+      <a href="products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
       <a href="#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
       <a href="#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="internships.html" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
+      <a href="internships" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
+      <a href="blog" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Blog</a>
       <a href="#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
-      <a href="#contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
+      <a href="contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
@@ -259,13 +260,14 @@
 
   <!-- Mobile Dropdown Menu -->
   <div id="mobile-menu" class="hidden md:hidden pt-4 pb-2 border-t border-slate-800 mt-3 space-y-2 text-xs font-bold text-slate-200">
-    <a href="#about" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About</a>
-    <a href="#products" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
+    <a href="about" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About</a>
+    <a href="products" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
     <a href="#roadmap" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Roadmap</a>
     <a href="#tech" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Tech Stack</a>
-    <a href="internships.html" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
+    <a href="internships" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Internships</a>
+    <a href="blog" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Blog</a>
     <a href="#investors" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investors</a>
-    <a href="#contact" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
+    <a href="contact" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
     <button onclick="document.getElementById('mobile-menu').classList.add('hidden'); openTrackModal();" class="w-full text-left py-2 px-3 rounded-lg bg-cyan-500/10 text-cyan-300 font-bold">🔍 Track Status</button>
   </div>
 </nav>
@@ -1672,17 +1674,42 @@ function logoutAdmin() {
   }
 }
 function switchAdminTab(tab) {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
-  document.getElementById('tab-'+tab).classList.remove('hidden');
-  document.querySelectorAll('.admin-nav-btn').forEach(b => { b.className = b.className.replace(/bg-emerald-500\/10|text-emerald-300|border border-emerald-500\/30/g, '').trim() + ' text-slate-400 hover:bg-slate-900'; });
+  document.querySelectorAll('.admin-tab').forEach(t => {
+    t.classList.add('hidden');
+    t.style.display = 'none';
+  });
+  
+  const target = document.getElementById('tab-' + tab);
+  if (target) {
+    target.classList.remove('hidden');
+    if (tab === 'ai') {
+      target.style.display = 'flex';
+    } else {
+      target.style.display = 'block';
+    }
+  }
+
+  document.querySelectorAll('.admin-nav-btn').forEach(b => { 
+    b.className = b.className.replace(/bg-emerald-500\/10|text-emerald-300|border border-emerald-500\/30/g, '').trim() + ' text-slate-400 hover:bg-slate-900'; 
+  });
   const active = document.querySelector(`.admin-nav-btn[data-tab="${tab}"]`);
-  if(active) active.className = 'admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
-  if(tab==='dash') loadDashboard();
-  if(tab==='ats') loadATS();
-  if(tab==='internships') loadAdminInternships();
-  if(tab==='tasks') loadTasks();
-  if(tab==='notes') loadNotes();
-  if(tab==='ai') initAria();
+  if (active) active.className = 'admin-nav-btn w-full text-left py-2.5 px-3 rounded-xl font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
+
+  if (tab === 'dash') loadDashboard();
+  if (tab === 'ats') loadATS();
+  if (tab === 'internships') loadAdminInternships();
+  if (tab === 'tasks') loadTasks();
+  if (tab === 'notes') loadNotes();
+  if (tab === 'ai') initAria();
+  if (tab === 'seo') loadSEODashboard();
+}
+
+function loadSEODashboard() {
+  const el = document.getElementById('tab-seo');
+  if (el) {
+    el.classList.remove('hidden');
+    el.style.display = 'block';
+  }
 }
 
 // ===== Internship Engine =====
