@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 Page Not Found | LR AgroSense</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/jpg" href="logo.jpg" />
+  <meta name="theme-color" content="#040914" />
   <script>
-    // GitHub Pages 404 redirect handler for custom domain SPA routing
     var path = window.location.pathname;
     if (path.indexOf('internship') !== -1) {
-      window.location.replace('/#internships');
+      window.location.replace('/internships.html');
     } else {
       window.location.replace('/');
     }
   </script>
 </head>
-<body style="background:#040914;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
-  <p>Redirecting to LR AgroSense...</p>
+<body style="background:#040914;color:#f1f5f9;font-family:'Plus Jakarta Sans',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:1rem;">
+  <div style="background:rgba(12,21,39,0.85);padding:2.5rem;border-radius:1.5rem;border:1px solid rgba(34,197,94,0.3);max-width:400px;box-shadow:0 20px 40px -15px rgba(34,197,94,0.2);">
+    <div style="font-size:3rem;margin-bottom:1rem;">🌱</div>
+    <h1 style="font-size:1.5rem;font-weight:800;color:#fff;margin:0 0 0.5rem 0;">404 — Page Not Found</h1>
+    <p style="font-size:0.85rem;color:#94a3b8;margin:0 0 1.5rem 0;">Redirecting you back to LR AgroSense...</p>
+    <a href="/" style="display:inline-block;padding:0.75rem 1.5rem;background:#22c55e;color:#040914;font-weight:800;font-size:0.8rem;border-radius:0.75rem;text-decoration:none;">Return to Homepage →</a>
+  </div>
 </body>
 </html>

@@ -1,0 +1,34 @@
+# Robots.txt for LR AgroSense (lragrosense.in)
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /internship.html
+Allow: /internships.html
+Allow: /logo.jpg
+Allow: /assets/
+
+# Disallow non-public system fragments
+Disallow: /*#admin
+Disallow: /*#/admin
+
+# Major Search Engine & AI Crawlers Allowed
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Sitemap Location
+Sitemap: https://lragrosense.in/sitemap.xml
