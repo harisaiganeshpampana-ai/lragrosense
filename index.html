@@ -320,37 +320,39 @@
 </nav>
 
 <!-- ========== HERO ========== -->
-<section class="relative pt-36 pb-24 px-4 max-w-7xl mx-auto overflow-hidden">
-  <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10 reveal active">
-    <div class="inline-flex items-center justify-center p-4 sm:p-6 rounded-3xl bg-white shadow-2xl border-2 border-emerald-500/40 mb-2">
-      <img src="logo.jpg" alt="LR AgroSense" class="h-28 sm:h-36 w-auto"/>
-    </div>
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-emerald-300 text-xs font-semibold">
+<section class="relative pt-36 pb-20 px-4 max-w-7xl mx-auto overflow-hidden">
+  <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="max-w-5xl mx-auto text-center space-y-6 relative z-10 reveal active">
+    
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono mb-2">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span>NEXT-GEN AGRITECH PLATFORM • IOT FIELD TELEMETRY</span>
+      <span>TELEMETRY ENGINE V2.4 IS LIVE</span>
+      <span class="text-slate-600">•</span>
+      <a href="products" class="text-emerald-400 font-bold hover:underline">EXPLORE PRODUCTS →</a>
     </div>
-    <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white leading-tight font-display tracking-tight">
-      Pioneering Smart Agriculture For <span class="grad-t">150 Million+ Farmers</span>
-    </h1>
-    <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-light">
-      LR AgroSense bridges cutting-edge micro-IoT hardware and cloud analytics to optimize soil NPK, regulate water usage, and maximize crop yields for sustainable farming.
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-      <a href="#products" class="px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Explore Products 🌿</a>
-      <a href="#internships" class="px-8 py-4 rounded-2xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 font-bold text-sm transition-all">Join Our Team 🚀</a>
-      <a href="#investors" class="px-8 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-300 font-bold text-sm transition-all">Investor Deck 📊</a>
-    </div>
-  </div>
-</section>
 
-<!-- ========== STATS ========== -->
-<section class="py-12 bg-slate-950/80 border-y border-slate-800">
-  <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-display">150M+</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Target Farmers</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-display">40%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Target Input Savings</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-display">99.1%</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Lab-Tested Accuracy</div></div>
-    <div class="p-6 glass rounded-3xl reveal"><div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-display">2026</div><div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Founding Year</div></div>
+    <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[1.06] font-display tracking-tight max-w-5xl mx-auto">
+      Precision Soil Telemetry <span class="grad-t">Engineered for India</span>
+    </h1>
+
+    <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-normal pt-2">
+      Democratizing micro-cost IoT field sensors, RS485 soil NPK monitoring, and automated solar-powered irrigation controllers for 150 Million+ smallholder farmers.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-3.5 pt-4">
+      <a href="products" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(34,197,94,0.35)] transition-all">Explore Smart Farm Monitor →</a>
+      <button onclick="openInvestorModal()" class="px-8 py-4 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-slate-500 text-slate-200 font-bold text-sm backdrop-blur-md transition-all">Investor Pitch Deck 📊</button>
+      <a href="internships" class="px-8 py-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 font-bold text-sm transition-all">Open Internships 🚀</a>
+    </div>
+
+    <!-- Live Stat Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto pt-10 text-center">
+      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-emerald-400 font-display">150M+</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Farmers Targeted</p></div>
+      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-cyan-400 font-display">&lt; ₹2,999</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Sensor Probe Cost</p></div>
+      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-amber-400 font-display">99.4%</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Irrigation Precision</p></div>
+      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-purple-400 font-display">&lt; 1.2s</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Telemetry Latency</p></div>
+    </div>
+
   </div>
 </section>
 
