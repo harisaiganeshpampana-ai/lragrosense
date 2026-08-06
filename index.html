@@ -14,6 +14,16 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://lragrosense.in/" />
 
+  <!-- Manifest & Service Worker for Google Play Store PWA / TWA -->
+  <link rel="manifest" href="manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
+      });
+    }
+  </script>
+
   <!-- Favicon & Apple Touch Icons -->
   <link rel="icon" type="image/jpg" href="logo.jpg" />
   <link rel="apple-touch-icon" href="logo.jpg" />
