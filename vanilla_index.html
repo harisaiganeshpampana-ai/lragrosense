@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LR AgroSense | Smart Farming • IoT Telemetry Platform</title>
+
+  <!-- Official PWA Manifest & Service Worker -->
+  <link rel="manifest" href="https://lragrosense.in/manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(){});
+      });
+    }
+  </script>
+
   <meta name="description" content="LR AgroSense is a pioneer AgriTech platform empowering 150M+ Indian farmers through low-cost IoT sensors, automated irrigation, and precision telemetry." />
   <meta name="keywords" content="LR AgroSense, AgriTech India, Smart Farming, Soil NPK Telemetry, IoT Field Sensors, Automated Irrigation, Precision Agriculture, Pampana Hari Sai Ganesh" />
   <meta name="author" content="Pampana Hari Sai Ganesh" />
@@ -14,20 +25,9 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://lragrosense.in/" />
 
-  <!-- Manifest & Service Worker for Google Play Store PWA / TWA -->
-  <link rel="manifest" href="manifest.json" />
-  <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkxSIEFncm9TZW5zZSDigJQgU21hcnQgRmFybWluZyBQbGF0Zm9ybSIsCiAgInNob3J0X25hbWUiOiAiTFIgQWdyb1NlbnNlIiwKICAiZGVzY3JpcHRpb24iOiAiTFIgQWdyb1NlbnNlIGlzIGEgcGlvbmVlciBBZ3JpVGVjaCBwbGF0Zm9ybSBlbXBvd2VyaW5nIDE1ME0rIEluZGlhbiBmYXJtZXJzIHRocm91Z2ggbG93LWNvc3QgSW9UIHNlbnNvcnMsIGF1dG9tYXRlZCBpcnJpZ2F0aW9uLCBhbmQgcHJlY2lzaW9uIHRlbGVtZXRyeS4iLAogICJzdGFydF91cmwiOiAiLyIsCiAgInNjb3BlIjogIi8iLAogICJpZCI6ICJpbi5scmFncm9zZW5zZS50d2EiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzA0MDkxNCIsCiAgInRoZW1lX2NvbG9yIjogIiMwNDA5MTQiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2xyYWdyb3NlbnNlLmluL2ljb24tNTEyLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2xyYWdyb3NlbnNlLmluL2ljb24tMTkyLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2xyYWdyb3NlbnNlLmluL2xvZ28ucG5nIiwKICAgICAgInNpemVzIjogIjEwMjR4MTAyNCIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0K" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
-      });
-    }
-  </script>
-
   <!-- Favicon & Apple Touch Icons -->
-  <link rel="icon" type="image/jpg" href="logo.jpg" />
-  <link rel="apple-touch-icon" href="logo.jpg" />
+  <link rel="icon" type="image/png" href="https://lragrosense.in/icon-512.png" />
+  <link rel="apple-touch-icon" href="https://lragrosense.in/icon-512.png" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
