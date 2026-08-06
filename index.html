@@ -2097,16 +2097,14 @@ function initInternshipsPublic() {
     });
 
     withTimeout(db.collection('internships').get(), 3500).then(snap => {
-      if (snap && snap.docs && snap.docs.length > 0) {
+      if (snap && snap.docs) {
         const fsData = snap.docs
           .map(d => ({ id: d.id, ...d.data() }))
           .filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
-        if (fsData.length > 0) {
-          allInternships = fsData;
-          saveInternships();
-          checkInternshipAutoActivation();
-          renderPublicInternships();
-        }
+        allInternships = fsData;
+        saveInternships();
+        checkInternshipAutoActivation();
+        renderPublicInternships();
       }
     }).catch(() => {});
   }
