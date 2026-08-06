@@ -179,54 +179,102 @@
     }
   </script>
   <style>
-    .glass{background:rgba(12,21,39,.82);backdrop-filter:blur(18px);border:1px solid rgba(34,197,94,.22)}
-    .glass-h{transition:all .3s cubic-bezier(.4,0,.2,1)}
-    .glass-h:hover{border-color:rgba(74,222,128,.5);transform:translateY(-4px);box-shadow:0 20px 40px -15px rgba(34,197,94,.25)}
-    .grad-t{background:linear-gradient(135deg,#4ade80,#10b981 40%,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .logo-b{background:#fff;padding:6px 14px;border-radius:16px;box-shadow:0 10px 25px -5px rgba(34,197,94,.25);border:1px solid rgba(34,197,94,.4)}
-    .reveal{opacity:1;transform:translateY(0);transition:all .5s ease-out}
-    .reveal.active{opacity:1;transform:translateY(0)}
-    @keyframes toastIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-    @keyframes toastOut{from{opacity:1}to{transform:translateY(100%);opacity:0}}
+    /* Handcrafted Senior Developer Canvas & Mesh Background */
+    body {
+      background-color: #070b14;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 15% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+    .grid-mesh {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+    
+    /* Vercel / Linear Style Tactile Glass Cards */
+    .glass {
+      background: rgba(13, 20, 36, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+    .glass-h {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-h:hover {
+      border-color: rgba(34, 197, 94, 0.4);
+      transform: translateY(-3px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 25px 50px -12px rgba(34, 197, 94, 0.15);
+    }
+    
+    /* Refined Typography Gradients */
+    .grad-t {
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 40%, #4ade80 80%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .grad-sub {
+      background: linear-gradient(135deg, #4ade80 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-b {
+      background: #ffffff;
+      padding: 6px 14px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .reveal { opacity: 1; transform: translateY(0); transition: all .5s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    @keyframes toastIn { from { transform: translateY(100%); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+    @keyframes toastOut { from { opacity: 1 } to { transform: translateY(100%); opacity: 0 } }
+
     /* ===== Aria AI Co-Founder Chat Styles ===== */
-    .prose-ai{color:#cbd5e1;line-height:1.8;font-size:.82rem}
-    .prose-ai p{margin-bottom:.8rem}
-    .prose-ai strong{color:#4ade80;font-weight:700}
-    .prose-ai em{color:#94a3b8;font-style:italic}
-    .prose-ai h1,.prose-ai h2,.prose-ai h3,.prose-ai h4{color:#f1f5f9;font-weight:700;margin:1rem 0 .4rem}
-    .prose-ai h1{font-size:1.1rem}.prose-ai h2{font-size:1rem}.prose-ai h3{font-size:.92rem}
-    .prose-ai ul{list-style:none;padding:0;margin-bottom:.8rem}
-    .prose-ai ul li{padding:.15rem 0 .15rem 1.2rem;position:relative}
-    .prose-ai ul li::before{content:'›';position:absolute;left:0;color:#22c55e;font-weight:700}
-    .prose-ai ol{list-style:decimal;padding-left:1.4rem;margin-bottom:.8rem}
-    .prose-ai code{background:#0f172a;border:1px solid #1e293b;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:.8em;color:#7dd3fc}
-    .prose-ai pre{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:1rem;margin:.8rem 0;overflow-x:auto}
-    .prose-ai pre code{background:none;border:none;padding:0;color:#e2e8f0;font-size:.8rem;line-height:1.6}
-    .prose-ai table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.78rem}
-    .prose-ai th{background:#0f172a;border:1px solid #1e293b;padding:.5rem .75rem;text-align:left;color:#94a3b8;font-weight:600}
-    .prose-ai td{border:1px solid #1e293b;padding:.5rem .75rem;color:#cbd5e1}
-    .prose-ai tr:nth-child(even) td{background:#0a1020}
-    .prose-ai hr{border:none;border-top:1px solid #1e293b;margin:1rem 0}
-    .prose-ai blockquote{border-left:3px solid #22c55e;padding:.5rem 1rem;margin:.8rem 0;background:#0a1020;border-radius:0 8px 8px 0;color:#94a3b8}
-    .prose-ai a{color:#38bdf8;text-decoration:underline}
-    .msg-user{background:linear-gradient(135deg,#1e3a5f,#1e293b);border:1px solid #334155}
-    .msg-aria{background:#0a1423;border:1px solid rgba(34,197,94,.2)}
-    .typing-dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin:0 2px;animation:typeDot 1.2s infinite}
-    .typing-dots span:nth-child(2){animation-delay:.2s}
-    .typing-dots span:nth-child(3){animation-delay:.4s}
-    @keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
-    .chat-item{transition:background .2s;cursor:pointer;border-radius:10px;padding:.5rem .75rem}
-    .chat-item:hover{background:#0c1527}
-    .chat-item.active{background:#0c1527;border-left:2px solid #22c55e}
-    .chip{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .85rem;border-radius:999px;background:#0c1527;border:1px solid #1e293b;color:#94a3b8;font-size:.72rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-    .chip:hover{border-color:#22c55e;color:#4ade80;background:#071a0e}
-    .mem-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:999px;background:#052e16;border:1px solid #166534;color:#4ade80;font-size:.65rem;font-family:monospace}
-    #aria-input{resize:none;max-height:120px;overflow-y:auto;line-height:1.5}
-    .msg-enter{animation:msgIn .3s cubic-bezier(.16,1,.3,1)}
-    @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .prose-ai { color: #cbd5e1; line-height: 1.8; font-size: .82rem }
+    .prose-ai p { margin-bottom: .8rem }
+    .prose-ai strong { color: #4ade80; font-weight: 700 }
+    .prose-ai em { color: #94a3b8; font-style: italic }
+    .prose-ai h1,.prose-ai h2,.prose-ai h3,.prose-ai h4 { color: #f1f5f9; font-weight: 700; margin: 1rem 0 .4rem }
+    .prose-ai h1 { font-size: 1.1rem }.prose-ai h2 { font-size: 1rem }.prose-ai h3 { font-size: .92rem }
+    .prose-ai ul { list-style: none; padding: 0; margin-bottom: .8rem }
+    .prose-ai ul li { padding: .15rem 0 .15rem 1.2rem; position: relative }
+    .prose-ai ul li::before { content: '›'; position: absolute; left: 0; color: #22c55e; font-weight: 700 }
+    .prose-ai ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: .8rem }
+    .prose-ai code { background: #0f172a; border: 1px solid #1e293b; padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: .8em; color: #7dd3fc }
+    .prose-ai pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; margin: .8rem 0; overflow-x: auto }
+    .prose-ai pre code { background: none; border: none; padding: 0; color: #e2e8f0; font-size: .8rem; line-height: 1.6 }
+    .prose-ai table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .78rem }
+    .prose-ai th { background: #0f172a; border: 1px solid #1e293b; padding: .5rem .75rem; text-align: left; color: #94a3b8; font-weight: 600 }
+    .prose-ai td { border: 1px solid #1e293b; padding: .5rem .75rem; color: #cbd5e1 }
+    .prose-ai tr:nth-child(even) td { background: #0a1020 }
+    .prose-ai hr { border: none; border-top: 1px solid #1e293b; margin: 1rem 0 }
+    .prose-ai blockquote { border-left: 3px solid #22c55e; padding: .5rem 1rem; margin: .8rem 0; background: #0a1020; border-radius: 0 8px 8px 0; color: #94a3b8 }
+    .prose-ai a { color: #38bdf8; text-decoration: underline }
+    .msg-user { background: linear-gradient(135deg,#1e3a5f,#1e293b); border: 1px solid #334155 }
+    .msg-aria { background: #0a1423; border: 1px solid rgba(34,197,94,.2) }
+    .typing-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin: 0 2px; animation: typeDot 1.2s infinite }
+    .typing-dots span:nth-child(2) { animation-delay: .2s }
+    .typing-dots span:nth-child(3) { animation-delay: .4s }
+    @keyframes typeDot { 0%,80%,100% { transform: scale(0); opacity: .4 } 40% { transform: scale(1); opacity: 1 } }
+    .chat-item { transition: background .2s; cursor: pointer; border-radius: 10px; padding: .5rem .75rem }
+    .chat-item:hover { background: #0c1527 }
+    .chat-item.active { background: #0c1527; border-left: 2px solid #22c55e }
+    .chip { display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .85rem; border-radius: 999px; background: #0c1527; border: 1px solid #1e293b; color: #94a3b8; font-size: .72rem; cursor: pointer; transition: all .2s; white-space: nowrap }
+    .chip:hover { border-color: #22c55e; color: #4ade80; background: #071a0e }
+    .mem-badge { display: inline-flex; align-items: center; gap: .25rem; padding: .2rem .6rem; border-radius: 999px; background: #052e16; border: 1px solid #166534; color: #4ade80; font-size: .65rem; font-family: monospace }
+    #aria-input { resize: none; max-height: 120px; overflow-y: auto; line-height: 1.5 }
+    .msg-enter { animation: msgIn .3s cubic-bezier(.16,1,.3,1) }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
   </style>
 </head>
-<body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black">
+<body class="bg-[#070b14] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black grid-mesh">
 
 <!-- ========== NAVBAR ========== -->
 <nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
