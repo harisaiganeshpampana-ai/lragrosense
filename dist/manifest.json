@@ -1,0 +1,27 @@
+{
+  "name": "LR AgroSense — Smart Farming & Telemetry Platform",
+  "short_name": "LR AgroSense",
+  "description": "Empowering 150M+ Indian farmers through low-cost IoT soil probes, automated irrigation controllers, and precision nutrient telemetry.",
+  "start_url": "https://lragrosense.in/",
+  "scope": "https://lragrosense.in/",
+  "id": "in.lragrosense.twa",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "utilities", "productivity"]
+}
