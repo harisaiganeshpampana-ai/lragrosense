@@ -1662,6 +1662,7 @@ function openAdminDashboard() {
 function adminLogin(e) {
   if (e) e.preventDefault();
   if(document.getElementById('admin-pw').value === FOUNDER_PW) {
+    localStorage.setItem('lr_admin_logged_in', 'true');
     document.getElementById('admin-gate').classList.add('hidden');
     document.getElementById('admin-gate').style.display = 'none';
     document.getElementById('admin-main').classList.remove('hidden');
@@ -1670,6 +1671,7 @@ function adminLogin(e) {
   } else { document.getElementById('admin-pw-err').classList.remove('hidden'); }
 }
 function logoutAdmin() {
+  localStorage.removeItem('lr_admin_logged_in');
   document.getElementById('admin-gate').classList.remove('hidden');
   document.getElementById('admin-gate').style.display = 'flex';
   document.getElementById('admin-main').classList.add('hidden');
@@ -1682,6 +1684,26 @@ function logoutAdmin() {
     el.style.display = 'none';
   }
 }
+
+function checkAdminAuthOnLoad() {
+  if (localStorage.getItem('lr_admin_logged_in') === 'true') {
+    const gate = document.getElementById('admin-gate');
+    const main = document.getElementById('admin-main');
+    if (gate && main) {
+      gate.classList.add('hidden');
+      gate.style.display = 'none';
+      main.classList.remove('hidden');
+      main.style.display = 'flex';
+    }
+  }
+}
+document.addEventListener('DOMContentLoaded', checkAdminAuthOnLoad);
+window.addEventListener('hashchange', () => {
+  if (window.location.hash === '#admin') {
+    openAdminDashboard();
+    checkAdminAuthOnLoad();
+  }
+});
 function switchAdminTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(t => {
     t.classList.add('hidden');

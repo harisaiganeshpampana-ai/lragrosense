@@ -250,6 +250,22 @@
         <button type="submit" class="btn-primary">Submit Application</button>
       </div>
     </form>
+
+    <!-- Confirmation Screen -->
+    <div id="apply-success-box" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:3rem;margin-bottom:0.5rem;">🎉</div>
+      <h3 style="font-family:var(--font-display);font-size:1.25rem;color:var(--text);font-weight:600;">Application Received!</h3>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;">Your application has been logged in our system.</p>
+      
+      <div style="margin:1.25rem 0;padding:0.75rem;border-radius:0.5rem;background:rgba(90,154,110,0.12);border:1px solid rgba(90,154,110,0.25);">
+        <span style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;display:block;">Application Reference ID</span>
+        <span id="apply-ref-id" style="font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--green-bright);">LR-894120</span>
+      </div>
+
+      <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.5;">Founder Pampana Hari Sai Ganesh will review your submission within 1–2 business days.</p>
+
+      <button onclick="closeApplyModal()" class="btn-primary" style="width:100%;margin-top:1.25rem;">Done</button>
+    </div>
   </div>
 </div>
 
@@ -404,6 +420,8 @@
   function openApplyModal(role) {
     applyForRole = role;
     document.getElementById('apply-modal-title').textContent = 'Apply — ' + role;
+    document.getElementById('apply-form').style.display = 'block';
+    document.getElementById('apply-success-box').style.display = 'none';
     document.getElementById('apply-modal').classList.add('open');
     document.getElementById('apply-form').reset();
   }
@@ -418,27 +436,44 @@
 
   function submitApplication(e) {
     e.preventDefault();
+    const refNum = Math.floor(100000 + Math.random() * 900000);
+    const refId = 'LR-' + refNum;
+    const nameVal = document.getElementById('app-name').value.trim();
+    const emailVal = document.getElementById('app-email').value.trim();
+    const phoneVal = document.getElementById('app-phone').value.trim();
+    const collegeVal = document.getElementById('app-college').value.trim();
+    const yearVal = document.getElementById('app-year').value;
+    const msgVal = document.getElementById('app-msg').value.trim();
+    const posVal = applyForRole || 'Agronomy & Micronutrient Research Intern';
+
     const data = {
       id: 'app_' + Date.now(),
-      role: applyForRole || 'Agronomy & Micronutrient Research Intern',
-      name: document.getElementById('app-name').value.trim(),
-      email: document.getElementById('app-email').value.trim(),
-      phone: document.getElementById('app-phone').value.trim(),
-      college: document.getElementById('app-college').value.trim(),
-      year: document.getElementById('app-year').value,
-      message: document.getElementById('app-msg').value.trim(),
+      refId: refId,
+      fullName: nameVal,
+      name: nameVal,
+      email: emailVal,
+      phone: phoneVal,
+      college: collegeVal,
+      year: yearVal,
+      position: posVal,
+      role: posVal,
+      message: msgVal,
+      status: 'new',
+      dateFormatted: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
       submittedAt: Date.now()
     };
 
-    // 1. Immediately close modal & reset form
-    closeApplyModal();
-    showToast("✅ Application submitted successfully! We will contact you soon.");
+    // 1. Show confirmation box to applicant
+    document.getElementById('apply-form').style.display = 'none';
+    document.getElementById('apply-ref-id').textContent = refId;
+    document.getElementById('apply-success-box').style.display = 'block';
 
-    // 2. Store in localStorage so applications are never lost
+    // 2. Save in localStorage for ATS Admin sync
     try {
-      const existing = JSON.parse(localStorage.getItem('lr_applications') || '[]');
-      existing.unshift(data);
-      localStorage.setItem('lr_applications', JSON.stringify(existing));
+      const apps = JSON.parse(localStorage.getItem('lr_apps') || '[]');
+      apps.unshift(data);
+      localStorage.setItem('lr_apps', JSON.stringify(apps));
+      localStorage.setItem('lr_applications', JSON.stringify(apps));
     } catch(err) {}
 
     // 3. Save to Firestore in background
