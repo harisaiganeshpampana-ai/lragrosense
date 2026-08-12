@@ -282,51 +282,7 @@
   let currentFilter = 'all';
   let applyForRole = '';
 
-  // ===== Default Fallback Openings =====
-  const DEFAULT_INTERNSHIPS = [
-    {
-      id: 'role_iot_1',
-      title: 'IoT Hardware & Telemetry Intern',
-      department: 'Engineering',
-      type: 'Remote / Hybrid',
-      duration: '1–3 Months',
-      color: 'emerald',
-      status: 'live',
-      description: 'Work directly on low-cost RS485 soil NPK sensors, ESP32 microcontrollers, and solar field telemetry nodes.',
-      responsibilities: 'Sensor calibration & RS485 communication testing\nESP32 firmware optimization\nSolar power budgeting & battery management',
-      eligibility: 'ECE / EEE / Embedded Systems background\nFamiliarity with Arduino IDE, C/C++, and Modbus RS485\nPassionate about AgriTech Hardware',
-      benefits: 'Direct CEO mentorship\nCertificate of Completion\nLetter of Recommendation for exceptional performance',
-      createdAt: Date.now()
-    },
-    {
-      id: 'role_dev_2',
-      title: 'Full Stack Web & Mobile Developer',
-      department: 'Engineering',
-      type: 'Remote',
-      duration: '2–3 Months',
-      color: 'cyan',
-      status: 'live',
-      description: 'Build user-friendly dashboards and mobile web apps for farmers and agricultural telemetry analytics.',
-      responsibilities: 'Develop high-performance PWA interfaces\nIntegrate real-time Firestore telemetry streaming\nOptimize mobile responsiveness for low-bandwidth networks',
-      eligibility: 'Proficiency in HTML5, CSS3, JavaScript (ES6+)\nExperience with Web APIs & Firebase/Cloud Firestore\nStrong eye for UI design',
-      benefits: 'Hands-on production app experience\nCertificate & CEO Recommendation\nFlexible work hours',
-      createdAt: Date.now() - 86400000
-    },
-    {
-      id: 'role_agri_3',
-      title: 'AgriTech Field Research & Operations',
-      department: 'Research',
-      type: 'Hybrid / On-Field',
-      duration: '1–2 Months',
-      color: 'amber',
-      status: 'live',
-      description: 'Conduct field studies with smallholder farmers, gathering feedback on soil probe usability and crop analytics.',
-      responsibilities: 'Interview farmers & log soil telemetry feedback\nDocument soil NPK parameter variations\nHelp refine hardware installation guides',
-      eligibility: 'Agriculture / Agronomy / Environmental Science background\nGood communication skills in Telugu / Hindi / English\nEnthusiasm for field work',
-      benefits: 'Real-world agricultural impact\nIndustry certificate signed by CEO\nReference letter',
-      createdAt: Date.now() - 172800000
-    }
-  ];
+
 
   function isValid(i) { return i && i.id; }
 
@@ -495,9 +451,14 @@
 
   // ===== Show empty state helper =====
   function showEmpty() {
-    if (allInternships.length) return; // data already loaded
-    allInternships = DEFAULT_INTERNSHIPS;
-    renderListings();
+    if (allInternships.length) return;
+    document.getElementById('listings-container').innerHTML = `
+      <div class="empty-state">
+        <div style="font-size:3rem;margin-bottom:0.75rem;">🌾</div>
+        <h3>No open positions right now</h3>
+        <p>New internship openings are announced here as soon as they are published. Follow us on LinkedIn to get notified first.</p>
+        <a href="https://www.linkedin.com/company/lragrosense" target="_blank" rel="noopener" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
+      </div>`;
   }
 
   // ===== Fetch via Firestore REST (no auth needed if rules allow public) =====
