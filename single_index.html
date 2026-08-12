@@ -1047,7 +1047,10 @@
             <h2 class="text-2xl font-extrabold text-white font-display">Internship Listings</h2>
             <p class="text-xs text-slate-400 mt-1">Create, publish, and manage open positions. Listings auto-activate when Open Date is reached.</p>
           </div>
-          <button onclick="openCreateInternshipModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2">＋ Create New Listing</button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="publishAllDraftInternships()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2">🚀 Publish ALL Drafts to Live</button>
+            <button onclick="openCreateInternshipModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2">＋ Create New Listing</button>
+          </div>
         </div>
         <!-- Status Legend -->
         <div class="flex flex-wrap gap-2 text-[10px]">
@@ -1950,8 +1953,32 @@ function openCreateInternshipModal() {
   document.getElementById('internship-create-form').reset();
   document.getElementById('intern-ben').value = 'Internship completion certificate signed by CEO\nLinkedIn recommendation from the Founder\nDirect mentorship from Founder Pampana Hari Sai Ganesh\nLetter of Recommendation upon exceptional performance';
   document.getElementById('intern-duration').value = '1–3 Months';
-  document.getElementById('intern-save-action').value = 'draft';
+  document.getElementById('intern-save-action').value = 'live'; // Default: Go Live immediately
   document.getElementById('modal-create-internship').style.display = 'flex';
+}
+
+function publishAllDraftInternships() {
+  const list = getInternships();
+  let count = 0;
+  list.forEach(i => {
+    if (i.status === 'draft') {
+      i.status = 'live';
+      i.updatedAt = Date.now();
+      count++;
+      if (db && db.collection) {
+        db.collection('internships').doc(i.id).update({ status: 'live', updatedAt: i.updatedAt }).catch(() => {});
+      }
+    }
+  });
+  if (count > 0) {
+    allInternships = list;
+    localStorage.setItem('lr_internships', JSON.stringify(list));
+    renderAdminInternshipsTable();
+    renderPublicInternships();
+    showToast('All Published! 🚀', count + ' draft internship(s) are now LIVE on the website.');
+  } else {
+    showToast('No Drafts Found', 'All listings are already published or live.');
+  }
 }
 
 function closeCreateInternshipModal() {
