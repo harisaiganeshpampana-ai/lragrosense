@@ -3,32 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Internships | LR AgroSense — Join Our Team</title>
-  <meta name="description" content="Join the LR AgroSense team as an intern. Open positions in Branding, Business Development, IoT Engineering and more. Apply now for remote unpaid internships with mentorship and certificates." />
+  <title>Open Internship Positions | LR AgroSense — Join Our Team</title>
+  <meta name="description" content="Join the LR AgroSense team as an intern. Open positions in Branding, Business Development, IoT Engineering and more. Apply now for remote internships with mentorship and certificates." />
   <meta name="keywords" content="LR AgroSense Internships, AgriTech Internships, Remote Internships India, Pampana Hari Sai Ganesh, IoT Engineering Internship, Marketing Internship" />
   <meta name="author" content="Pampana Hari Sai Ganesh" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#040914" />
   
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://lragrosense.in/internships.html" />
+  <link rel="canonical" href="https://lragrosense.in/internships" />
+
+  <!-- Manifest & Service Worker -->
+  <link rel="manifest" href="https://lragrosense.in/manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(){});
+      });
+    }
+  </script>
 
   <!-- Favicon & Apple Touch Icons -->
-  <link rel="icon" type="image/jpg" href="logo.jpg" />
-  <link rel="apple-touch-icon" href="logo.jpg" />
+  <link rel="icon" type="image/png" href="https://lragrosense.in/icon-512.png" />
+  <link rel="apple-touch-icon" href="https://lragrosense.in/icon-512.png" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://lragrosense.in/internships.html" />
-  <meta property="og:title" content="Internships | LR AgroSense — Join Our Team" />
+  <meta property="og:url" content="https://lragrosense.in/internships" />
+  <meta property="og:title" content="Open Internship Positions | LR AgroSense — Join Our Team" />
   <meta property="og:description" content="Build the future of Indian AgriTech. Apply now for remote internships with direct mentorship from Founder Pampana Hari Sai Ganesh." />
   <meta property="og:image" content="https://lragrosense.in/logo.jpg" />
   <meta property="og:site_name" content="LR AgroSense" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://lragrosense.in/internships.html" />
-  <meta name="twitter:title" content="Internships | LR AgroSense — Join Our Team" />
+  <meta name="twitter:url" content="https://lragrosense.in/internships" />
+  <meta name="twitter:title" content="Open Internship Positions | LR AgroSense — Join Our Team" />
   <meta name="twitter:description" content="Build the future of Indian AgriTech. Apply now for remote internships with direct mentorship from Founder Pampana Hari Sai Ganesh." />
   <meta name="twitter:image" content="https://lragrosense.in/logo.jpg" />
 
@@ -40,41 +50,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Google Analytics 4 (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX', { send_page_view: true });
-  </script>
-
-  <!-- Structured Data / Schema.org JSON-LD -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "@id": "https://lragrosense.in/internships.html#webpage",
-      "url": "https://lragrosense.in/internships.html",
-      "name": "Internships | LR AgroSense",
-      "description": "Join the LR AgroSense team as a remote intern.",
-      "isPartOf": { "@id": "https://lragrosense.in/#website" }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://lragrosense.in/" },
-        { "@type": "ListItem", "position": 2, "name": "Internships", "item": "https://lragrosense.in/internships.html" }
-      ]
-    }
-  ]
-  </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="../css/site.css" />
+  <!-- Fonts & Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -86,273 +63,201 @@
       theme: {
         extend: {
           colors: {
-            agri: { 400:'#4ade80', 500:'#22c55e' },
-            brand: { dark:'#040914', card:'#0c1527' }
+            agri: { 300:'#86efac', 400:'#4ade80', 500:'#22c55e', 600:'#16a34a', 700:'#15803d', 950:'#052e16' },
+            brand: { dark:'#040914', card:'#0c1527', accent:'#38bdf8' }
           },
           fontFamily: { sans:['"Plus Jakarta Sans"','sans-serif'], display:['"Outfit"','sans-serif'] }
         }
       }
     }
   </script>
+
   <style>
-    .countdown-badge { background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.25); }
-    #modal-apply { scrollbar-width: thin; scrollbar-color: #5a9a6e #1c211d; }
+    .glass { background: rgba(12, 21, 39, 0.85); backdrop-filter: blur(18px); border: 1px solid rgba(34, 197, 94, 0.22); }
+    .glass-h { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .glass-h:hover { border-color: rgba(74, 222, 128, 0.5); transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(34, 197, 94, 0.25); }
+    .grad-t { background: linear-gradient(135deg, #4ade80, #10b981 40%, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-b { background: #fff; padding: 6px 14px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25); border: 1px solid rgba(34, 197, 94, 0.4); }
+    .pulse-ring { animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 14px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
   </style>
 </head>
-<body class="antialiased selection:bg-[#5a9a6e] selection:text-white min-h-screen">
+<body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black min-h-screen">
 
 <!-- ========== NAVBAR ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#0f1210]/95 backdrop-blur-md border-b border-white/[0.08] py-3 px-4 sm:px-8">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="../index.html" class="flex items-center gap-3">
+    <a href="../" class="flex items-center gap-3">
       <div class="logo-b"><img src="../logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
-      <span class="text-sm font-display font-semibold text-[#e8ebe6] hidden xl:inline-block">LR AgroSense</span>
+      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
     </a>
-    <div class="hidden md:flex items-center gap-1">
-      <a href="../index.html#about" class="nav-link">About</a>
-      <a href="../products" class="nav-link">Products</a>
-      <a href="../index.html#roadmap" class="nav-link">Roadmap</a>
-      <a href="../index.html#tech" class="nav-link">Technology</a>
-      <a href="../internships" class="nav-link nav-link-active">Internships</a>
-      <a href="../index.html#contact" class="nav-link">Contact</a>
+    
+    <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
+      <a href="../about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
+      <a href="../products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
+      <a href="../#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
+      <a href="../#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
+      <a href="../internships" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">Internships</a>
+      <a href="../blog" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Blog</a>
+      <a href="../contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
     </div>
-    <div class="flex items-center gap-2">
-      <a href="../index.html" class="btn-secondary px-3 py-2 text-xs">Home</a>
-      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg border border-white/10 text-[#9aa396]">Menu</button>
-    </div>
-  </div>
 
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden md:hidden pt-4 pb-2 border-t border-slate-800 mt-3 space-y-2 text-xs font-bold text-slate-200">
-    <a href="index.html#about"     onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">About</a>
-    <a href="index.html#products"  onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Products</a>
-    <a href="index.html#roadmap"   onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Roadmap</a>
-    <a href="index.html#tech"      onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Tech Stack</a>
-    <a href="index.html#investors" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900 text-amber-400">Investors</a>
-    <a href="index.html#contact"   onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="block py-2 px-3 rounded-lg hover:bg-slate-900">Contact</a>
+    <div class="flex items-center gap-2">
+      <a href="../" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold shadow-lg transition-all">← Back to Home</a>
+    </div>
   </div>
 </nav>
 
-<!-- ========== HERO ========== -->
-<section class="relative pt-32 pb-16 px-4">
-  <div class="max-w-3xl mx-auto space-y-5">
-    <p class="section-label">Careers</p>
-    <h1 class="text-4xl sm:text-5xl font-display font-semibold text-[#e8ebe6] leading-tight">
-      Intern with LR AgroSense
-    </h1>
-    <p class="text-base sm:text-lg text-[#9aa396] leading-relaxed">
-      Work on real AgriTech products with direct mentorship from Founder Pampana Hari Sai Ganesh. Remote, part-time roles for students across engineering, agriculture, and business.
-    </p>
-    <div class="flex flex-wrap gap-2 pt-1 text-xs font-medium text-[#9aa396]">
-      <span class="px-3 py-1.5 rounded-md border border-white/10">Remote</span>
-      <span class="px-3 py-1.5 rounded-md border border-white/10">Certificate on completion</span>
-      <span class="px-3 py-1.5 rounded-md border border-white/10">Founder mentorship</span>
+<!-- ========== HERO HEADER ========== -->
+<section class="relative pt-36 pb-12 px-4 max-w-7xl mx-auto text-center space-y-6">
+  <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
+    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <span>LR AGROSENSE CAREERS &amp; INTERNSHIP PORTAL</span>
+  </div>
+
+  <h1 class="text-4xl sm:text-6xl font-black text-white font-display tracking-tight max-w-4xl mx-auto">
+    Build the Future of <span class="grad-t">Precision Agriculture</span>
+  </h1>
+
+  <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+    Join Founder &amp; CEO <strong class="text-emerald-400 font-semibold">Pampana Hari Sai Ganesh</strong> to democratize micro-cost soil telemetry across 150M+ smallholder farms in India.
+  </p>
+
+  <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium leading-relaxed">
+    ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates signed by the CEO, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
+  </div>
+</section>
+
+<!-- ========== INTERNSHIPS LISTING CONTAINER ========== -->
+<section class="py-10 px-4 max-w-5xl mx-auto space-y-8">
+  <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <h2 class="text-xl font-bold text-white font-display flex items-center gap-2">
+      <span>🚀 Open Positions</span>
+      <span id="listings-count-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">Loading...</span>
+    </h2>
+    <span class="text-xs text-slate-400 font-mono">Updated Real-Time</span>
+  </div>
+
+  <div id="internships-page-list" class="space-y-8">
+    <div class="text-center py-20 text-slate-500 text-sm">
+      <div class="text-4xl mb-3 animate-spin">🌱</div>
+      <p>Fetching open positions...</p>
     </div>
   </div>
 </section>
 
-<!-- ========== STATS BAR ========== -->
-<section class="py-8 bg-slate-950/60 border-y border-slate-800/60">
-  <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-    <div class="p-4"><div class="text-2xl font-extrabold text-emerald-400 font-display" id="stat-open">3</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Open Positions</div></div>
-    <div class="p-4"><div class="text-2xl font-extrabold text-cyan-400 font-display">1–3</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Month Duration</div></div>
-    <div class="p-4"><div class="text-2xl font-extrabold text-amber-400 font-display">100%</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Remote Work</div></div>
-    <div class="p-4"><div class="text-2xl font-extrabold text-purple-400 font-display">∞</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Growth Potential</div></div>
-  </div>
-</section>
+<!-- ========== APPLICATION MODAL ========== -->
+<div id="modal-apply" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4" style="display:none">
+  <div class="w-full max-w-2xl bg-[#0c1527] border border-slate-800 rounded-3xl shadow-2xl overflow-y-auto max-h-[92vh]">
+    <div class="sticky top-0 bg-[#0c1527] border-b border-slate-800 px-6 py-4 flex items-center justify-between z-10">
+      <div>
+        <span class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">OFFICIAL APPLICATION</span>
+        <h3 class="text-xl font-extrabold text-white font-display" id="apply-position-label-page">Apply for Position</h3>
+      </div>
+      <button onclick="closeApplyModalPage()" class="text-slate-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-900">✕</button>
+    </div>
 
-<!-- ========== COMPENSATION NOTICE ========== -->
-<div class="max-w-4xl mx-auto px-4 py-8">
-  <div class="p-5 glass rounded-2xl border border-amber-500/30 text-sm text-amber-200 flex items-start gap-3">
-    <span class="text-xl mt-0.5 shrink-0">ℹ️</span>
-    <div>
-      <strong class="text-amber-300 font-bold">Compensation Notice:</strong>
-      These are currently unpaid internships — revisited as LR AgroSense scales. Every intern receives an <strong>official completion certificate signed by CEO</strong>, a <strong>LinkedIn recommendation from the Founder</strong>, real startup portfolio experience, and a Letter of Recommendation upon exceptional performance.
+    <!-- Application Form View -->
+    <div id="apply-form-container" class="p-6">
+      <form id="apply-form-page" onsubmit="submitApplicationPage(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="apply-position-page" value=""/>
+        
+        <div>
+          <label class="text-slate-400 font-semibold mb-1 block">Full Name <span class="text-rose-400">*</span></label>
+          <input id="paf-name" type="text" required placeholder="e.g. Rahul Sharma" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">Email Address <span class="text-rose-400">*</span></label>
+            <input id="paf-email" type="email" required placeholder="rahul@gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">WhatsApp / Phone <span class="text-rose-400">*</span></label>
+            <input id="paf-phone" type="tel" required placeholder="+91 9876543210" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">College / University <span class="text-rose-400">*</span></label>
+            <input id="paf-college" type="text" required placeholder="e.g. ANGRAU / IIT / NIT" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">Degree / Major <span class="text-rose-400">*</span></label>
+            <input id="paf-degree" type="text" required placeholder="e.g. B.Sc. Agriculture" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">Graduation Year <span class="text-rose-400">*</span></label>
+            <input id="paf-gradyear" type="number" required min="2020" max="2030" value="2026" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-slate-400 font-semibold mb-1 block">Resume URL / Google Drive Link <span class="text-rose-400">*</span></label>
+          <input id="paf-resume" type="url" placeholder="https://drive.google.com/file/d/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          <p class="text-[10px] text-slate-500 mt-1">Or upload PDF file directly below:</p>
+          <input id="paf-resume-file" type="file" accept=".pdf,.doc,.docx" class="mt-1 block w-full text-slate-400 text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-500/20 file:text-emerald-300 hover:file:bg-emerald-500/30"/>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">LinkedIn Profile</label>
+            <input id="paf-linkedin" type="url" placeholder="https://linkedin.com/in/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold mb-1 block">Portfolio / GitHub / Website</label>
+            <input id="paf-portfolio" type="url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-slate-400 font-semibold mb-1 block">Availability &amp; Hours <span class="text-rose-400">*</span></label>
+          <select id="paf-avail" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500">
+            <option value="10-15 hrs/week (Part-Time)">10-15 hrs/week (Part-Time)</option>
+            <option value="15-25 hrs/week (Part-Time)">15-25 hrs/week (Part-Time)</option>
+            <option value="30+ hrs/week (Full-Time)">30+ hrs/week (Full-Time)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-slate-400 font-semibold mb-1 block">Why do you want to join LR AgroSense? <span class="text-rose-400">*</span></label>
+          <textarea id="paf-why" required rows="3" placeholder="Tell us about your passion for agriculture, technology, or startup growth..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none focus:border-emerald-500"></textarea>
+        </div>
+
+        <button type="submit" id="page-apply-submit-btn" class="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/20 transition-all mt-4">
+          Submit Application →
+        </button>
+      </form>
+    </div>
+
+    <!-- Success View -->
+    <div id="apply-congrats-page" class="hidden p-8 text-center space-y-6">
+      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">✓</div>
+      <div>
+        <h3 class="text-2xl font-bold text-white font-display">Application Received!</h3>
+        <p class="text-slate-400 text-xs mt-1">Thank you <span id="page-succ-name" class="text-white font-bold"></span>! Your application for <span id="page-succ-position" class="text-emerald-400 font-bold"></span> has been recorded.</p>
+      </div>
+      <div class="glass p-4 rounded-2xl border border-slate-800 text-left text-xs space-y-2">
+        <div class="flex justify-between"><span class="text-slate-400">Application Reference ID:</span><span id="page-succ-id" class="font-mono text-emerald-400 font-bold"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Applicant Email:</span><span id="page-succ-email" class="text-slate-200"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Date Submitted:</span><span id="page-succ-date" class="text-slate-200"></span></div>
+      </div>
+      <div class="pt-2">
+        <button onclick="closeApplyModalPage()" class="px-8 py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-extrabold text-xs shadow-lg">Done</button>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- ========== DYNAMIC LISTINGS ========== -->
-<section class="py-8 px-4 max-w-5xl mx-auto pb-24">
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-display">Open Positions</h2>
-      <p class="text-slate-400 text-xs mt-1">All listings are updated live by the LR AgroSense team.</p>
-    </div>
-    <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span id="listings-status">3 listings found</span>
-    </div>
-  </div>
-
-  <!-- Listings container (pre-populated with seed data so it NEVER shows empty) -->
-  <div id="internships-page-list" class="space-y-8"></div>
-</section>
-
-<!-- ========== WHY JOIN SECTION ========== -->
-<section class="py-20 px-4 bg-slate-950/60 border-t border-slate-800/60">
-  <div class="max-w-5xl mx-auto">
-    <div class="text-center mb-12">
-      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PERKS</span>
-      <h2 class="text-3xl font-extrabold text-white font-display mt-2">Why Intern With LR AgroSense?</h2>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl">📜</div>
-        <h4 class="font-bold text-white text-lg">Official Certificate</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Receive a completion certificate personally signed by Founder & CEO Pampana Hari Sai Ganesh — valid for placement portfolios.</p>
-      </div>
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl">🔗</div>
-        <h4 class="font-bold text-white text-lg">LinkedIn Recommendation</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Get a personal recommendation from the Founder on your LinkedIn profile — directly boosting your professional credibility.</p>
-      </div>
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-2xl">👨‍💼</div>
-        <h4 class="font-bold text-white text-lg">Founder Mentorship</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Work directly with the Founder — get rare access to strategic startup decision-making, product planning, and team leadership.</p>
-      </div>
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-2xl">🌱</div>
-        <h4 class="font-bold text-white text-lg">Real Impact</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Work on live products and real research — not busy-work. Your contributions shape the direction of an early-stage startup.</p>
-      </div>
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-rose-500/20 flex items-center justify-center text-2xl">📁</div>
-        <h4 class="font-bold text-white text-lg">Portfolio Projects</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Build a portfolio of actual deliverables — branding, strategy documents, IoT prototypes — you can showcase to future employers.</p>
-      </div>
-      <div class="glass glass-h p-6 rounded-3xl space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-sky-500/20 flex items-center justify-center text-2xl">🚀</div>
-        <h4 class="font-bold text-white text-lg">Startup Exposure</h4>
-        <p class="text-xs text-slate-400 leading-relaxed">Experience every aspect of building a startup from scratch — pitch decks, product development, market research, and fundraising.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ========== FOOTER ========== -->
-<footer class="py-12 border-t border-slate-800 text-center text-xs text-slate-500 space-y-4">
-  <div class="inline-block logo-b"><img src="../logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
-  <p>© 2026 LR AgroSense • Internships Portal • All Rights Reserved.</p>
-  <div class="flex justify-center gap-4 text-[11px] text-slate-400">
-    <a href="index.html" class="hover:text-emerald-400 font-semibold">← Back to Main Site</a>
-    <span>•</span>
-    <a href="mailto:lragrosense@gmail.com" class="hover:text-emerald-400 font-semibold">lragrosense@gmail.com</a>
-  </div>
+<footer class="py-12 px-4 border-t border-slate-800/80 text-center text-xs text-slate-500">
+  <p>© 2026 LR AgroSense. Founded by Pampana Hari Sai Ganesh. All rights reserved.</p>
 </footer>
 
-<!-- ==================== APPLICATION MODAL ==================== -->
-<div id="modal-apply" class="fixed inset-0 z-[60] hidden overflow-y-auto bg-black/70 backdrop-blur-md">
-  <div class="min-h-screen flex items-start justify-center p-4 pt-12">
-    <div class="w-full max-w-2xl bg-[#0c1527] border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
-      <!-- Form Container -->
-      <div id="apply-form-container">
-        <div class="sticky top-0 bg-[#0c1527] border-b border-slate-800 px-6 py-4 flex items-center justify-between z-10">
-          <div>
-            <h3 class="text-lg font-extrabold text-white font-display">Apply Now</h3>
-            <p class="text-xs text-emerald-400 font-semibold mt-0.5" id="apply-position-label-page">Position</p>
-          </div>
-          <button onclick="closeApplyModalPage()" class="text-slate-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-900">✕</button>
-        </div>
-        <form id="apply-form-page" onsubmit="submitApplicationPage(event)" class="p-6 space-y-4">
-          <input type="hidden" id="apply-position-page" value=""/>
-          <p id="apply-error-page" class="hidden text-xs text-rose-400 font-semibold bg-rose-500/10 border border-rose-500/30 rounded-xl px-4 py-2">Please fill all required fields.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div class="sm:col-span-2"><label class="text-slate-400 font-semibold mb-1 block">Full Name <span class="text-rose-400">*</span></label><input id="paf-name" type="text" required placeholder="Your full name" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Email <span class="text-rose-400">*</span></label><input id="paf-email" type="email" required placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Phone <span class="text-rose-400">*</span></label><input id="paf-phone" type="tel" required placeholder="+91 XXXXX XXXXX" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">College / University <span class="text-rose-400">*</span></label><input id="paf-college" type="text" required placeholder="e.g. ANGRAU, Guntur" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Degree / Course <span class="text-rose-400">*</span></label><input id="paf-degree" type="text" required placeholder="e.g. B.Sc. Agriculture" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Graduation Year <span class="text-rose-400">*</span></label><input id="paf-gradyear" type="number" required placeholder="2026" min="2020" max="2030" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Availability <span class="text-rose-400">*</span></label>
-              <select id="paf-avail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60">
-                <option value="">Select availability</option>
-                <option>Immediately</option><option>Within 2 weeks</option><option>Within 1 month</option><option>After exams</option>
-              </select>
-            </div>
-            <div class="sm:col-span-2">
-              <label class="text-slate-400 font-semibold mb-1 block">Resume (Upload PDF/DOC or paste Google Drive link)</label>
-              <input id="paf-resume-file" type="file" accept=".pdf,.doc,.docx" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:text-slate-950 file:font-bold file:text-xs cursor-pointer"/>
-              <input id="paf-resume" type="url" placeholder="Or paste Google Drive / OneDrive link..." class="w-full mt-2 px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/>
-            </div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">LinkedIn Profile <span class="text-slate-600 font-normal">(optional)</span></label><input id="paf-linkedin" type="url" placeholder="https://linkedin.com/in/..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div><label class="text-slate-400 font-semibold mb-1 block">Portfolio / GitHub <span class="text-slate-600 font-normal">(optional)</span></label><input id="paf-portfolio" type="url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none focus:border-emerald-500/60"/></div>
-            <div class="sm:col-span-2"><label class="text-slate-400 font-semibold mb-1 block">Why do you want to join LR AgroSense? <span class="text-rose-400">*</span></label><textarea id="paf-why" required rows="4" placeholder="Share your motivation, what excites you about AgriTech, and what you hope to achieve..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none resize-none focus:border-emerald-500/60"></textarea></div>
-          </div>
-          <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-slate-400">
-            📋 By submitting, you agree that LR AgroSense may store and use your application data for recruitment purposes only. See our <a href="index.html" class="text-emerald-400 underline">Privacy Policy</a>.
-          </div>
-          <button id="page-apply-submit-btn" type="submit" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl transition-all">Submit Application →</button>
-        </form>
-      </div>
-
-      <!-- Congratulations Screen -->
-      <div id="apply-congrats-page" class="hidden p-8 space-y-6 text-center">
-        <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto text-4xl">🎉</div>
-        <div>
-          <h3 class="text-2xl font-extrabold text-white font-display">Application Submitted!</h3>
-          <p class="text-emerald-400 font-semibold mt-1" id="page-succ-position">Position</p>
-        </div>
-        <div class="glass rounded-2xl p-5 text-left space-y-3 text-xs">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-1">
-            <span class="font-bold text-white text-sm">Application Receipt</span>
-            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-xs font-bold" id="page-succ-id">LRA-APP-XXXX</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2 text-[11px]">
-            <div><span class="text-slate-500">Name:</span> <span class="text-white font-semibold" id="page-succ-name">—</span></div>
-            <div><span class="text-slate-500">Email:</span> <span class="text-white" id="page-succ-email">—</span></div>
-            <div><span class="text-slate-500">Phone:</span> <span class="text-white" id="page-succ-phone">—</span></div>
-            <div><span class="text-slate-500">College:</span> <span class="text-white" id="page-succ-college">—</span></div>
-            <div class="col-span-2"><span class="text-slate-500">Submitted:</span> <span class="text-white" id="page-succ-date">—</span></div>
-          </div>
-        </div>
-        <div class="p-4 glass rounded-2xl border border-emerald-500/30 text-xs text-slate-300 text-left space-y-1">
-          <p class="font-bold text-emerald-300">✅ What happens next?</p>
-          <p>1. Founder Pampana Hari Sai Ganesh will review your profile within <strong>1–2 business days</strong>.</p>
-          <p>2. Shortlisted candidates will receive an intro call invite via email.</p>
-          <p>3. Track your application status anytime using your Ref ID above.</p>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a href="index.html" class="flex-1 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-bold text-xs text-center hover:border-emerald-500/40 transition-all">🏠 Return to Homepage</a>
-          <a id="page-track-link" href="index.html" class="flex-1 py-3 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-bold text-xs text-center hover:border-cyan-400 transition-all">🔍 Track My Application Status</a>
-        </div>
-        <button onclick="closeApplyModalPage()" class="text-xs text-slate-500 hover:text-slate-300">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ========== TOAST ========== -->
-<div id="toast-page" class="fixed bottom-6 right-6 z-[70] hidden">
-  <div class="glass rounded-2xl p-4 border border-emerald-500/40 shadow-2xl flex items-center gap-3 text-xs">
-    <span class="text-emerald-400 text-lg">✓</span>
-    <div><p class="font-bold text-white" id="toast-page-title">Success</p><p class="text-slate-400" id="toast-page-msg">Done.</p></div>
-  </div>
-</div>
-
-<!-- ==================== SCRIPTS ==================== -->
+<!-- JavaScript Engine -->
 <script>
-// Force Purge: Always remove any legacy seed roles from localStorage on every load
-(function purgeLegacySeedCache() {
-  try {
-    const raw = localStorage.getItem('lr_internships');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        const cleaned = parsed.filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
-        localStorage.setItem('lr_internships', JSON.stringify(cleaned));
-      }
-    }
-  } catch(e) {
-    localStorage.removeItem('lr_internships');
-  }
-})();
-
-// ========== Seed Data (empty by default) ==========
-const SEED_INTERNSHIPS = [];
-
-let pageInternships = null;
+let pageInternships = [];
 let db = null;
 let pageInternshipsUnsub = null;
 
@@ -378,13 +283,6 @@ function mergeInternshipLists(localList, remoteList) {
   return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
 }
 
-function pushInternshipsToFirestore(list) {
-  if (!db || !db.collection) return;
-  (list || []).filter(isValidInternship).forEach(i => {
-    db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
-  });
-}
-
 // Safe Firebase init
 try {
   const fbConfig = {
@@ -405,35 +303,36 @@ try {
 }
 
 const colorMap = {
-  emerald: { border:'border-emerald-500/30', label:'text-emerald-400', btn:'bg-emerald-500 hover:bg-emerald-400', badgeBg:'bg-emerald-500/20', badgeTxt:'text-emerald-300', glow:'rgba(34,197,94,0.15)' },
-  cyan:    { border:'border-cyan-500/30',    label:'text-cyan-400',    btn:'bg-cyan-500 hover:bg-cyan-400',       badgeBg:'bg-cyan-500/20',    badgeTxt:'text-cyan-300',    glow:'rgba(6,182,212,0.15)'  },
-  amber:   { border:'border-amber-500/30',   label:'text-amber-400',   btn:'bg-amber-500 hover:bg-amber-400',     badgeBg:'bg-amber-500/20',   badgeTxt:'text-amber-300',   glow:'rgba(245,158,11,0.15)' },
-  purple:  { border:'border-purple-500/30',  label:'text-purple-400',  btn:'bg-purple-500 hover:bg-purple-400',   badgeBg:'bg-purple-500/20',  badgeTxt:'text-purple-300',  glow:'rgba(168,85,247,0.15)' },
-  rose:    { border:'border-rose-500/30',    label:'text-rose-400',    btn:'bg-rose-500 hover:bg-rose-400',       badgeBg:'bg-rose-500/20',    badgeTxt:'text-rose-300',    glow:'rgba(244,63,94,0.15)'  }
+  emerald: { border:'border-emerald-500/30', label:'text-emerald-400', btn:'bg-emerald-500 hover:bg-emerald-400', badge:'bg-emerald-500/20 text-emerald-300' },
+  cyan:    { border:'border-cyan-500/30',    label:'text-cyan-400',    btn:'bg-cyan-500 hover:bg-cyan-400',       badge:'bg-cyan-500/20 text-cyan-300'    },
+  amber:   { border:'border-amber-500/30',   label:'text-amber-400',   btn:'bg-amber-500 hover:bg-amber-400',     badge:'bg-amber-500/20 text-amber-300'  },
+  purple:  { border:'border-purple-500/30',  label:'text-purple-400',  btn:'bg-purple-500 hover:bg-purple-400',   badge:'bg-purple-500/20 text-purple-300' },
+  rose:    { border:'border-rose-500/30',    label:'text-rose-400',    btn:'bg-rose-500 hover:bg-rose-400',       badge:'bg-rose-500/20 text-rose-300'    }
 };
 
 function renderPageInternships() {
   const container = document.getElementById('internships-page-list');
-  const statusEl  = document.getElementById('listings-status');
+  const countBadge = document.getElementById('listings-count-badge');
   if (!container) return;
 
-  const rawList = (pageInternships !== null) ? pageInternships : SEED_INTERNSHIPS;
-  const list = rawList.filter(i => !i.id || !i.id.startsWith('intern_seed_'));
-  const visible = list.filter(i => i.status !== 'draft');
-  const liveCount = visible.filter(i => i.status === 'live').length;
-  
-  const statOpenEl = document.getElementById('stat-open');
-  if (statOpenEl) statOpenEl.textContent = liveCount;
+  const localRaw = localStorage.getItem('lr_internships');
+  let localList = [];
+  if (localRaw) {
+    try { localList = JSON.parse(localRaw).filter(isValidInternship); } catch(e){}
+  }
 
-  if (statusEl) statusEl.textContent = `${visible.length} listing${visible.length !== 1 ? 's' : ''} found`;
+  const combined = mergeInternshipLists(localList, pageInternships || []);
+  const visible = combined.filter(i => i.status !== 'draft');
+
+  if (countBadge) countBadge.textContent = `${visible.length} Active`;
 
   if (!visible.length) {
     container.innerHTML = `
-      <div class="text-center py-24 space-y-5">
-        <div class="text-6xl">🌱</div>
-        <h3 class="text-2xl font-bold text-white font-display">No Open Positions Right Now</h3>
-        <p class="text-slate-400 text-sm max-w-md mx-auto">We're growing fast! New internship openings are announced regularly by Founder Pampana Hari Sai Ganesh. Follow us on LinkedIn to never miss an opening.</p>
-        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-8 py-4 rounded-2xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-extrabold text-sm shadow-xl transition-all">Follow LR AgroSense on LinkedIn ↗</a>
+      <div class="text-center py-20 space-y-4 glass rounded-3xl border border-slate-800">
+        <div class="text-5xl">🌱</div>
+        <h3 class="text-xl font-bold text-white font-display">No Open Positions Right Now</h3>
+        <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">We're growing fast! New internship positions are announced regularly by Founder Pampana Hari Sai Ganesh. Follow us on LinkedIn for updates.</p>
+        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs shadow-lg transition-all">Follow LR AgroSense on LinkedIn ↗</a>
       </div>`;
     return;
   }
@@ -441,169 +340,87 @@ function renderPageInternships() {
   container.innerHTML = visible.map((i, idx) => {
     const c = colorMap[i.color] || colorMap.emerald;
     const num = String(idx + 1).padStart(2, '0');
-    const respList = (i.responsibilities || '').split('\n').filter(Boolean).map(r => `<li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5 shrink-0">▹</span>${r.trim()}</li>`).join('');
-    const eligList = (i.eligibility   || '').split('\n').filter(Boolean).map(r => `<li class="flex items-start gap-2"><span class="text-cyan-400 mt-0.5 shrink-0">▹</span>${r.trim()}</li>`).join('');
-    const benList  = (i.benefits      || '').split('\n').filter(Boolean).map(r => `<li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5 shrink-0">✦</span>${r.trim()}</li>`).join('');
+    const respList = (i.responsibilities || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+    const eligList = (i.eligibility   || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+    const benList  = (i.benefits      || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
 
     let cta = '';
     if (i.status === 'live') {
       cta = `<button onclick="openApplyModalPage('${i.id}', '${i.title.replace(/'/g,"\\'")}')"
-        class="px-8 py-4 rounded-2xl ${c.btn} text-slate-950 font-extrabold text-sm shadow-xl transition-all shrink-0 pulse-ring">
+        class="px-8 py-3.5 rounded-xl ${c.btn} text-slate-950 font-extrabold text-xs shadow-lg transition-all shrink-0 pulse-ring">
         Apply Now →
       </button>`;
     } else if (i.status === 'published') {
       const openMs = i.openDate ? new Date(i.openDate).getTime() : null;
       let cdHtml = '';
       if (openMs) {
-        const dateStr = new Date(i.openDate).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
-        cdHtml = `<div id="page-cd-${i.id}" class="countdown-badge px-4 py-2 rounded-xl text-xs font-mono text-amber-300 text-center mt-2">Opens ${dateStr}</div>`;
-        setTimeout(() => startPageCountdown(i.id, openMs), 80);
+        const dateStr = new Date(i.openDate).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+        cdHtml = `<div class="text-xs font-mono text-amber-300 mt-1">Opens ${dateStr}</div>`;
       }
-      cta = `<div class="flex flex-col items-center sm:items-end gap-2 shrink-0">
-        <button disabled class="px-8 py-4 rounded-2xl bg-slate-700 text-slate-500 font-extrabold text-sm cursor-not-allowed">🕐 Coming Soon</button>
+      cta = `<div class="flex flex-col items-end gap-1 shrink-0">
+        <button disabled class="px-6 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs cursor-not-allowed">🕐 Coming Soon</button>
         ${cdHtml}
       </div>`;
     } else if (i.status === 'closed') {
-      cta = `<span class="px-6 py-3 rounded-2xl bg-slate-800 text-slate-500 font-bold text-sm shrink-0">🔒 Applications Closed</span>`;
+      cta = `<span class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs shrink-0">🔒 Applications Closed</span>`;
     }
 
-    const statusPill = i.status === 'live'
-      ? `<span class="${c.badgeBg} ${c.badgeTxt} px-3 py-1 rounded-full text-[10px] font-mono font-bold">● OPEN</span>`
-      : i.status === 'published'
-      ? `<span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-[10px] font-mono font-bold">🕐 COMING SOON</span>`
-      : `<span class="bg-slate-800 text-slate-500 px-3 py-1 rounded-full text-[10px] font-mono font-bold">CLOSED</span>`;
-
     return `
-    <div class="glass glass-h rounded-3xl ${c.border} overflow-hidden card-enter" style="animation-delay:${idx * 0.1}s; box-shadow: 0 0 60px ${c.glow}">
-      <div class="p-6 sm:p-8 border-b border-slate-800/60">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <span class="text-[10px] font-mono ${c.label} font-bold tracking-widest">OPENING ${num}</span>
-              ${statusPill}
-            </div>
-            <h3 class="text-xl sm:text-3xl font-extrabold text-white font-display">${i.title}</h3>
-            <div class="flex flex-wrap gap-2 text-[11px] font-semibold">
-              <span class="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-400">🏠 ${(i.type||'Remote | Part-Time | Unpaid').split('|')[0].trim()}</span>
-              <span class="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-400">📅 ${i.duration || '1–3 Months'}</span>
-              <span class="px-2.5 py-1 rounded-lg bg-slate-900 ${c.label} font-bold">🏢 ${i.department}</span>
-              <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300">📋 ${(i.type||'').split('|')[2]?.trim() || 'Unpaid'}</span>
-            </div>
-          </div>
-          ${cta}
+    <div class="glass glass-h p-6 sm:p-8 rounded-3xl ${c.border} space-y-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="space-y-1">
+          <span class="text-[10px] font-mono ${c.label} font-bold tracking-widest">OPENING ${num}</span>
+          <h3 class="text-2xl font-extrabold text-white font-display">${i.title}</h3>
+          <p class="text-xs text-slate-400 mt-1">Department: ${i.department} • ${i.type || 'Remote | Part-Time | Unpaid'} • ${i.duration || '1–3 Months'}</p>
         </div>
+        ${cta}
       </div>
-      <div class="p-6 sm:p-8 space-y-6 text-sm">
-        <div>
-          <h4 class="font-bold text-white mb-2">📋 About This Role</h4>
-          <p class="text-slate-300 leading-relaxed">${i.description}</p>
-        </div>
-        ${respList ? `<div><h4 class="font-bold text-white mb-3">🎯 Responsibilities</h4><ul class="space-y-1.5 text-slate-400">${respList}</ul></div>` : ''}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          ${eligList ? `<div><h4 class="font-bold text-white mb-3">✅ Eligibility</h4><ul class="space-y-1.5 text-slate-400">${eligList}</ul></div>` : ''}
-          ${benList  ? `<div><h4 class="font-bold text-white mb-3">🎁 What You Get</h4><ul class="space-y-1.5 text-slate-400">${benList}</ul></div>` : ''}
-        </div>
-        ${i.status === 'live' ? `<div class="pt-2">
-          <button onclick="openApplyModalPage('${i.id}', '${i.title.replace(/'/g,"\\'")}')"
-            class="w-full py-4 rounded-2xl ${c.btn} text-slate-950 font-extrabold text-sm shadow-xl transition-all">
-            Apply for ${i.title} →
-          </button>
-        </div>` : ''}
+      <div class="space-y-4 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+        <div><h4 class="font-bold text-white text-sm mb-1">Job Description</h4><p class="leading-relaxed">${i.description}</p></div>
+        ${respList ? `<div><h4 class="font-bold text-white text-sm mb-1">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${respList}</ul></div>` : ''}
+        ${eligList ? `<div><h4 class="font-bold text-white text-sm mb-1">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${eligList}</ul></div>` : ''}
+        ${benList  ? `<div><h4 class="font-bold text-white text-sm mb-1">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${benList}</ul></div>` : ''}
       </div>
     </div>`;
   }).join('');
 }
 
 function loadPageInternships() {
-  ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
-    if (db && db.collection) db.collection('internships').doc(id).delete().catch(() => {});
-  });
-
-  const local = localStorage.getItem('lr_internships');
-  if (local !== null) {
-    try {
-      pageInternships = JSON.parse(local).filter(isValidInternship);
-    } catch(e) {
-      pageInternships = [];
-    }
-  } else {
-    pageInternships = [];
+  const localRaw = localStorage.getItem('lr_internships');
+  if (localRaw) {
+    try { pageInternships = JSON.parse(localRaw).filter(isValidInternship); } catch(e){}
   }
   renderPageInternships();
 
   if (db && db.collection) {
-    withTimeout(db.collection('internships').get(), 3500).then(snap => {
+    db.collection('internships').get().then(snap => {
       const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
       pageInternships = mergeInternshipLists(pageInternships, remote);
       localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-      pushInternshipsToFirestore(pageInternships);
       renderPageInternships();
     }).catch(() => {});
 
     if (!pageInternshipsUnsub) {
       pageInternshipsUnsub = db.collection('internships').onSnapshot(snap => {
         const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
-        const merged = mergeInternshipLists(pageInternships || [], remote);
-        if (JSON.stringify(merged) !== JSON.stringify(pageInternships)) {
-          pageInternships = merged;
-          localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-          renderPageInternships();
-        }
+        pageInternships = mergeInternshipLists(pageInternships, remote);
+        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
+        renderPageInternships();
       }, () => {});
     }
   }
 }
 
-function withTimeout(promise, ms = 3500) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
-  ]);
-}
-
-function startPageCountdown(internId, openDateMs) {
-  const el = document.getElementById('page-cd-' + internId);
-  if (!el) return;
-  function tick() {
-    const diff = openDateMs - Date.now();
-    if (diff <= 0) {
-      const intern = (pageInternships || []).find(i => i.id === internId);
-      if (intern && intern.status === 'published') {
-        intern.status = 'live';
-        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-        if (db && db.collection) db.collection('internships').doc(internId).update({ status: 'live' }).catch(() => {});
-        renderPageInternships();
-      }
-      return;
-    }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    const parts = [];
-    if (d > 0) parts.push(d + 'd');
-    if (h > 0) parts.push(h + 'h');
-    if (m > 0) parts.push(m + 'm');
-    parts.push(s + 's');
-    el.textContent = '⏳ Opens in ' + parts.join(' ');
-    setTimeout(tick, 1000);
-  }
-  tick();
-}
-
-function openApplyModalPage(internId, title) {
+function openApplyModalPage(id, title) {
   document.getElementById('apply-position-page').value = title;
   document.getElementById('apply-position-label-page').textContent = title;
-  document.getElementById('apply-error-page').classList.add('hidden');
-  document.getElementById('apply-form-page').reset();
   document.getElementById('apply-form-container').classList.remove('hidden');
   document.getElementById('apply-congrats-page').classList.add('hidden');
-  document.getElementById('modal-apply').classList.remove('hidden');
-  document.getElementById('modal-apply').scrollTop = 0;
+  document.getElementById('modal-apply').style.display = 'flex';
 }
 
 function closeApplyModalPage() {
-  document.getElementById('modal-apply').classList.add('hidden');
+  document.getElementById('modal-apply').style.display = 'none';
 }
 
 async function submitApplicationPage(e) {
@@ -662,40 +479,9 @@ async function submitApplicationPage(e) {
   document.getElementById('page-succ-id').textContent       = refId;
   document.getElementById('page-succ-position').textContent = pos;
 
-  const trackLink = document.getElementById('page-track-link');
-  if (trackLink) trackLink.href = `index.html#track-${refId}`;
-
   document.getElementById('apply-form-container').classList.add('hidden');
   document.getElementById('apply-congrats-page').classList.remove('hidden');
-  document.getElementById('modal-apply').scrollTop = 0;
-
-  showPageToast('Application Submitted! 🎉', `Ref ID: ${refId} — check your status anytime.`);
   btn.textContent = 'Submit Application →'; btn.disabled = false;
-}
-
-function showPageToast(title, msg) {
-  const t = document.getElementById('toast-page');
-  document.getElementById('toast-page-title').textContent = title;
-  document.getElementById('toast-page-msg').textContent = msg;
-  t.classList.remove('hidden');
-  t.firstElementChild.className = t.firstElementChild.className.replace('toast-out','') + ' toast-in';
-  setTimeout(() => {
-    t.firstElementChild.classList.replace('toast-in','toast-out');
-    setTimeout(() => t.classList.add('hidden'), 400);
-  }, 4000);
-}
-
-function spawnParticles() {
-  const container = document.getElementById('particles');
-  if (!container) return;
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 6 + 2;
-    const colors = ['#22c55e','#38bdf8','#a78bfa','#f59e0b'];
-    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${10+Math.random()*20}s;animation-delay:${Math.random()*10}s;`;
-    container.appendChild(p);
-  }
 }
 
 if (document.readyState === 'loading') {
@@ -703,27 +489,6 @@ if (document.readyState === 'loading') {
 } else {
   loadPageInternships();
 }
-
-setInterval(() => {
-  if (pageInternships) {
-    const now = Date.now();
-    let changed = false;
-    pageInternships.forEach(i => {
-      if (i.status === 'published' && i.openDate) {
-        const ms = new Date(i.openDate).getTime();
-        if (!isNaN(ms) && now >= ms) { i.status = 'live'; changed = true; }
-      }
-    });
-    if (changed) {
-      localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-      renderPageInternships();
-    }
-  }
-}, 30000);
-
-document.getElementById('modal-apply').addEventListener('click', function(e) {
-  if (e.target === this) closeApplyModalPage();
-});
 </script>
 </body>
 </html>
