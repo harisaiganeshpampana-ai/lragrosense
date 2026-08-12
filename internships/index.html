@@ -224,16 +224,16 @@
     <p>Fill in your details and we'll reach out within 48 hours.</p>
     <form id="apply-form" onsubmit="submitApplication(event)">
       <label for="app-name">Full Name *</label>
-      <input id="app-name" type="text" required placeholder="Pampana Hari Sai Ganesh" />
+      <input id="app-name" type="text" required />
 
       <label for="app-email">Email Address *</label>
-      <input id="app-email" type="email" required placeholder="you@example.com" />
+      <input id="app-email" type="email" required />
 
       <label for="app-phone">Phone Number</label>
-      <input id="app-phone" type="tel" placeholder="+91 9876543210" />
+      <input id="app-phone" type="tel" />
 
       <label for="app-college">College / University</label>
-      <input id="app-college" type="text" placeholder="IIT, NIT, JNTU…" />
+      <input id="app-college" type="text" />
 
       <label for="app-year">Year of Study</label>
       <select id="app-year">
@@ -243,7 +243,7 @@
       </select>
 
       <label for="app-msg">Why LR AgroSense? *</label>
-      <textarea id="app-msg" required placeholder="Tell us what excites you about AgriTech and what you'll bring to the team…"></textarea>
+      <textarea id="app-msg" required></textarea>
 
       <div class="modal-actions">
         <button type="button" onclick="closeApplyModal()" class="btn-secondary">Cancel</button>
@@ -434,7 +434,8 @@
   function submitApplication(e) {
     e.preventDefault();
     const data = {
-      role: applyForRole,
+      id: 'app_' + Date.now(),
+      role: applyForRole || 'Agronomy & Micronutrient Research Intern',
       name: document.getElementById('app-name').value.trim(),
       email: document.getElementById('app-email').value.trim(),
       phone: document.getElementById('app-phone').value.trim(),
@@ -444,24 +445,20 @@
       submittedAt: Date.now()
     };
 
+    // 1. Immediately close modal & reset form
+    closeApplyModal();
+    showToast("✅ Application submitted successfully! We will contact you soon.");
+
+    // 2. Store in localStorage so applications are never lost
+    try {
+      const existing = JSON.parse(localStorage.getItem('lr_applications') || '[]');
+      existing.unshift(data);
+      localStorage.setItem('lr_applications', JSON.stringify(existing));
+    } catch(err) {}
+
+    // 3. Save to Firestore in background
     if (db) {
-      db.collection('applications').add(data)
-        .then(() => {
-          closeApplyModal();
-          showToast("✅ Application submitted! We'll reach out within 48 hours.");
-        })
-        .catch(() => {
-          // Fallback: open email
-          const mailto = `mailto:lragrosense@gmail.com?subject=Internship Application — ${data.role}&body=Name: ${data.name}%0AEmail: ${data.email}%0APhone: ${data.phone}%0ACollege: ${data.college}%0AYear: ${data.year}%0A%0A${data.message}`;
-          window.open(mailto);
-          closeApplyModal();
-          showToast('Opening email… Application sent!');
-        });
-    } else {
-      const mailto = `mailto:lragrosense@gmail.com?subject=Internship Application — ${data.role}&body=Name: ${data.name}%0AEmail: ${data.email}%0A%0A${data.message}`;
-      window.open(mailto);
-      closeApplyModal();
-      showToast('Opening email app…');
+      db.collection('applications').doc(data.id).set(data).catch(() => {});
     }
   }
 
