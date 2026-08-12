@@ -285,8 +285,7 @@
     type: 'Remote / Field',
     duration: '1–3 Months',
     color: 'emerald',
-    status: 'published',
-    openDate: '2026-08-15',
+    status: 'live',
     description: '',
     responsibilities: '',
     eligibility: '',
@@ -297,8 +296,6 @@
   let allInternships = [];
   let currentFilter = 'all';
   let applyForRole = '';
-
-
 
   function isValid(i) { return i && i.id; }
 
@@ -321,7 +318,6 @@
   function renderListings() {
     const container = document.getElementById('listings-container');
 
-    // Show ALL valid internships — no draft filter so everything posted shows
     let visible = allInternships.filter(isValid);
     if (currentFilter !== 'all') {
       visible = visible.filter(i => (i.department || '').toLowerCase().includes(currentFilter.toLowerCase()));
@@ -350,28 +346,17 @@
       const c = colorMap[item.color] || colorMap.emerald;
       const num = String(idx + 1).padStart(2, '0');
 
-      // Badge based on status
-      let badgeHtml = '';
-      if (item.status === 'live') {
-        badgeHtml = '<span class="card-badge badge-live">● Live</span>';
-      } else if (item.status === 'published') {
-        badgeHtml = '<span class="card-badge badge-published">🕐 Coming Soon</span>';
-      } else if (item.status === 'closed') {
-        badgeHtml = '<span class="card-badge badge-closed">🔒 Closed</span>';
-      } else {
-        // draft or any other status — show as live since admin posted it
-        badgeHtml = '<span class="card-badge badge-live">● Open</span>';
-      }
-
-      // Apply button
+      // Default to LIVE unless explicitly closed
+      let badgeHtml = '<span class="card-badge badge-live">● Live</span>';
       let applyBtn = '';
       const titleSafe = (item.title || '').replace(/'/g, "\\'");
+
       if (item.status === 'closed') {
+        badgeHtml = '<span class="card-badge badge-closed">🔒 Closed</span>';
         applyBtn = '<span style="font-size:0.8rem;color:var(--text-muted);">🔒 Applications closed</span>';
-      } else if (item.status === 'published') {
-        const openStr = item.openDate ? new Date(item.openDate).toLocaleDateString('en-IN',{day:'numeric',month:'long'}) : '';
-        applyBtn = `<span style="font-size:0.8rem;color:var(--wheat);">Opens ${openStr || 'soon'}</span>`;
       } else {
+        // ALWAYS enable Apply Now for live / published / draft positions
+        badgeHtml = '<span class="card-badge badge-live">● Live</span>';
         applyBtn = `<button onclick="openApplyModal('${titleSafe}')" class="btn-primary" style="padding:0.625rem 1.5rem;font-size:0.8rem;">Apply Now →</button>`;
       }
 
