@@ -22,6 +22,7 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <style>
@@ -444,71 +445,105 @@
     }
   }
 
-  // ===== Load from Firestore =====
-  function loadInternships() {
-    const container = document.getElementById('listings-container');
+  // ===== Show empty state helper =====
+  function showEmpty() {
+    if (allInternships.length) return; // data already loaded, don't overwrite
+    document.getElementById('listings-container').innerHTML = `
+      <div class="empty-state">
+        <div style="font-size:3rem;margin-bottom:0.75rem;">🌾</div>
+        <h3>No open positions right now</h3>
+        <p>New internship openings are announced here. Follow us on LinkedIn to get notified first.</p>
+        <a href="https://www.linkedin.com/company/lragrosense" target="_blank" rel="noopener" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
+      </div>`;
+  }
 
-    // Load from localStorage first for instant display
+  // ===== Fetch via Firestore REST (no auth needed if rules allow public) =====
+  async function fetchViaRest() {
+    const PROJECT = 'lr-agrosense';
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships?pageSize=50`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const json = await res.json();
+      if (!json.documents) return [];
+      return json.documents.map(doc => {
+        const id = doc.name.split('/').pop();
+        const fields = doc.fields || {};
+        const parse = v => {
+          if (!v) return '';
+          if (v.stringValue !== undefined) return v.stringValue;
+          if (v.integerValue !== undefined) return Number(v.integerValue);
+          if (v.doubleValue  !== undefined) return Number(v.doubleValue);
+          if (v.booleanValue !== undefined) return v.booleanValue;
+          if (v.timestampValue !== undefined) return new Date(v.timestampValue).getTime();
+          return '';
+        };
+        const obj = { id };
+        Object.keys(fields).forEach(k => { obj[k] = parse(fields[k]); });
+        return obj;
+      }).filter(isValid);
+    } catch(e) { return []; }
+  }
+
+  // ===== Main load function =====
+  async function loadInternships() {
+    // 1. Instantly show localStorage data (admin's browser will have it)
     try {
       const local = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
-      if (local.length) {
-        allInternships = local;
-        renderListings();
-      }
+      if (local.length) { allInternships = local; renderListings(); }
     } catch(e) {}
 
-    if (!db) {
-      if (!allInternships.length) {
-        container.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">🌾</div>
-          <h3>No open positions right now</h3>
-          <p>Check back soon or follow us on LinkedIn for updates.</p>
-          <a href="https://www.linkedin.com/company/lragrosense" target="_blank" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
-        </div>`;
-      }
-      return;
+    // 2. Set a 5-second hard timeout — if nothing loads, show empty state
+    const timeoutId = setTimeout(showEmpty, 5000);
+
+    let loaded = false;
+
+    // Helper to receive data
+    function onData(rows) {
+      if (!rows.length) return;
+      clearTimeout(timeoutId);
+      loaded = true;
+      allInternships = rows;
+      localStorage.setItem('lr_internships', JSON.stringify(rows));
+      renderListings();
     }
 
-    // Load from Firestore — show ALL internships (no status filter)
-    db.collection('internships').orderBy('createdAt', 'desc').get()
-      .then(snap => {
-        const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-        if (remote.length) {
-          allInternships = remote;
-          // Save to localStorage
-          localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-          renderListings();
-        } else if (!allInternships.length) {
-          container.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">🌾</div>
-            <h3>No open positions right now</h3>
-            <p>New internship openings are announced here. Follow us on LinkedIn to get notified.</p>
-            <a href="https://www.linkedin.com/company/lragrosense" target="_blank" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
-          </div>`;
+    // 3. Try Firestore REST API first (works without any auth if rules allow OR project is open)
+    fetchViaRest().then(rows => { if (rows.length) onData(rows); });
+
+    // 4. Try anonymous Firebase Auth → then Firestore SDK
+    if (db) {
+      try {
+        const auth = firebase.auth();
+        // Sign in anonymously if not already signed in
+        if (!auth.currentUser) {
+          await auth.signInAnonymously().catch(() => {});
         }
-      })
-      .catch(err => {
-        console.error('Firestore load failed:', err);
-        // Try without orderBy in case index doesn't exist
+      } catch(e) {}
+
+      const tryRead = () => {
         db.collection('internships').get()
           .then(snap => {
-            const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-            if (remote.length) {
-              allInternships = remote;
-              localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-              renderListings();
-            }
+            const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+            onData(rows);
+            // Also set up real-time listener
+            db.collection('internships').onSnapshot(s => {
+              const live = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+              if (live.length) onData(live);
+            }, () => {});
           })
-          .catch(() => {});
-      });
+          .catch(() => {
+            // Final fallback: show empty after timeout fires
+          });
+      };
 
-    // Real-time updates
-    db.collection('internships').onSnapshot(snap => {
-      const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-      if (remote.length) {
-        allInternships = remote;
-        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-        renderListings();
-      }
-    }, () => {});
+      // Try immediately, and also after auth state settles
+      tryRead();
+      firebase.auth().onAuthStateChanged(() => { if (!loaded) tryRead(); });
+    } else {
+      // No Firebase at all
+      if (!allInternships.length) setTimeout(showEmpty, 1000);
+    }
   }
 
   // Start
