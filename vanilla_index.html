@@ -220,7 +220,11 @@
       <div id="nav-user-container">
         <button onclick="toggleAuthModal(true)" class="btn-secondary px-3 py-2 text-xs">Sign In</button>
       </div>
-      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg border border-white/10 text-[#9aa396]">Menu</button>
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg border border-white/10 text-[#9aa396] hover:text-white transition-colors" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -2061,8 +2065,15 @@ function initInternshipsPublic() {
     const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
     const local = getInternships();
     allInternships = mergeInternshipLists(local, remote);
+    // Auto-publish any drafts so they display on the website immediately
+    allInternships.forEach(i => {
+      if (i.status === 'draft') {
+        i.status = 'live';
+        i.updatedAt = Date.now();
+        db.collection('internships').doc(i.id).update({ status: 'live', updatedAt: i.updatedAt }).catch(() => {});
+      }
+    });
     localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-    pushInternshipsToFirestore(allInternships);
     checkInternshipAutoActivation();
     renderPublicInternships();
   }).catch(() => {});
@@ -2084,6 +2095,7 @@ function initInternshipsPublic() {
     }, () => {});
   }
 }
+
 
 function renderPublicInternships() {
   const container = document.getElementById('internships-public-list');
