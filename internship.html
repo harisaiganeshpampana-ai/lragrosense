@@ -229,18 +229,49 @@
       <label for="app-email">Email Address *</label>
       <input id="app-email" type="email" required />
 
-      <label for="app-phone">Phone Number</label>
-      <input id="app-phone" type="tel" />
+      <label for="app-phone">Phone Number *</label>
+      <input id="app-phone" type="tel" required />
 
-      <label for="app-college">College / University</label>
-      <input id="app-college" type="text" />
+      <label for="app-college">College / University *</label>
+      <input id="app-college" type="text" required />
 
-      <label for="app-year">Year of Study</label>
-      <select id="app-year">
-        <option value="">Select year</option>
-        <option>1st Year</option><option>2nd Year</option>
-        <option>3rd Year</option><option>4th Year</option><option>Postgraduate</option>
-      </select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div>
+          <label for="app-degree">Degree / Stream</label>
+          <input id="app-degree" type="text" />
+        </div>
+        <div>
+          <label for="app-grad-year">Graduation Year</label>
+          <select id="app-grad-year">
+            <option value="">Select Year</option>
+            <option>2024</option><option>2025</option><option>2026</option>
+            <option>2027</option><option>2028</option><option>2029</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div>
+          <label for="app-year">Year of Study</label>
+          <select id="app-year">
+            <option value="">Select Year</option>
+            <option>1st Year</option><option>2nd Year</option>
+            <option>3rd Year</option><option>4th Year</option><option>Postgraduate</option>
+          </select>
+        </div>
+        <div>
+          <label for="app-avail">Availability</label>
+          <select id="app-avail">
+            <option value="Immediate">Immediate</option>
+            <option value="Within 1 Week">Within 1 Week</option>
+            <option value="Within 2 Weeks">Within 2 Weeks</option>
+            <option value="Part-Time / Flexible">Part-Time / Flexible</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="app-resume">Upload Resume (Optional File Upload)</label>
+      <input id="app-resume" type="file" accept=".pdf,.doc,.docx" style="padding:0.4rem;font-size:0.75rem;" />
 
       <label for="app-msg">Why LR AgroSense? *</label>
       <textarea id="app-msg" required></textarea>
@@ -434,7 +465,7 @@
     if (e.target === this) closeApplyModal();
   });
 
-  function submitApplication(e) {
+  async function submitApplication(e) {
     e.preventDefault();
     const refNum = Math.floor(100000 + Math.random() * 900000);
     const refId = 'LR-' + refNum;
@@ -443,8 +474,27 @@
     const phoneVal = document.getElementById('app-phone').value.trim();
     const collegeVal = document.getElementById('app-college').value.trim();
     const yearVal = document.getElementById('app-year').value;
+    const degreeVal = document.getElementById('app-degree').value.trim();
+    const gradYearVal = document.getElementById('app-grad-year').value;
+    const availVal = document.getElementById('app-avail').value;
     const msgVal = document.getElementById('app-msg').value.trim();
     const posVal = applyForRole || 'Agronomy & Micronutrient Research Intern';
+
+    let resumeLink = '';
+    let resumeName = '';
+    const fileInput = document.getElementById('app-resume');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      resumeName = file.name;
+      try {
+        resumeLink = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => resolve(ev.target.result);
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        });
+      } catch(err) {}
+    }
 
     const data = {
       id: 'app_' + Date.now(),
@@ -455,8 +505,14 @@
       phone: phoneVal,
       college: collegeVal,
       year: yearVal,
+      degree: degreeVal,
+      graduationYear: gradYearVal,
+      availability: availVal,
+      resumeLink: resumeLink,
+      resumeName: resumeName,
       position: posVal,
       role: posVal,
+      whyJoin: msgVal,
       message: msgVal,
       status: 'new',
       dateFormatted: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
