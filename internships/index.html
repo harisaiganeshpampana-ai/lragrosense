@@ -277,8 +277,23 @@
     db = firebase.firestore();
   } catch(e) { console.warn('Firebase init failed:', e); }
 
-  // ===== State =====
-  let allInternships = [];
+  // ===== Active Internship Openings =====
+  const USER_INTERNSHIP = {
+    id: 'intern_1786541283801',
+    title: 'Agronomy & Micronutrient Research Intern',
+    department: 'Agronomy & Research',
+    type: 'Remote / Field',
+    duration: '1–3 Months',
+    color: 'emerald',
+    status: 'live',
+    description: 'Research micro-nutrient formulation, soil NPK telemetry algorithms, and field testing for smallholder farmers.',
+    responsibilities: 'Field testing of soil probes & micronutrient sensors\nLog and analyze soil NPK telemetry datasets\nAssist in preparing research documentation and farmer guides',
+    eligibility: 'Agronomy / Soil Science / Agriculture / Biotech background\nUnderstanding of soil parameters (NPK, pH, EC)\nPassion for sustainable AgriTech innovation',
+    benefits: 'Direct mentorship from Founder Pampana Hari Sai Ganesh\nCertificate of Completion signed by CEO\nLetter of Recommendation upon performance',
+    createdAt: Date.now()
+  };
+
+  let allInternships = [USER_INTERNSHIP];
   let currentFilter = 'all';
   let applyForRole = '';
 
@@ -504,22 +519,27 @@
 
     // Helper to receive data
     function onData(rows) {
-      if (!rows.length) return;
       clearTimeout(timeoutId);
       loaded = true;
-      allInternships = rows;
-      localStorage.setItem('lr_internships', JSON.stringify(rows));
+      const map = new Map();
+      [USER_INTERNSHIP, ...allInternships, ...rows].forEach(item => {
+        if (isValid(item)) map.set(item.id, item);
+      });
+      allInternships = Array.from(map.values());
+      localStorage.setItem('lr_internships', JSON.stringify(allInternships));
       renderListings();
     }
 
-    // 3. Try Firestore REST API first (works without any auth if rules allow OR project is open)
+    // Render immediately with initial USER_INTERNSHIP
+    renderListings();
+
+    // 3. Try Firestore REST API
     fetchViaRest().then(rows => { if (rows.length) onData(rows); });
 
     // 4. Try anonymous Firebase Auth → then Firestore SDK
     if (db) {
       try {
         const auth = firebase.auth();
-        // Sign in anonymously if not already signed in
         if (!auth.currentUser) {
           await auth.signInAnonymously().catch(() => {});
         }
@@ -529,24 +549,17 @@
         db.collection('internships').get()
           .then(snap => {
             const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-            onData(rows);
-            // Also set up real-time listener
+            if (rows.length) onData(rows);
             db.collection('internships').onSnapshot(s => {
               const live = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
               if (live.length) onData(live);
             }, () => {});
           })
-          .catch(() => {
-            // Final fallback: show empty after timeout fires
-          });
+          .catch(() => {});
       };
 
-      // Try immediately, and also after auth state settles
       tryRead();
       firebase.auth().onAuthStateChanged(() => { if (!loaded) tryRead(); });
-    } else {
-      // No Firebase at all
-      if (!allInternships.length) setTimeout(showEmpty, 1000);
     }
   }
 
