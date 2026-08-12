@@ -473,7 +473,7 @@
       db.collection('applications').add(data)
         .then(() => {
           closeApplyModal();
-          showToast('✅ Application submitted! We'll reach out within 48 hours.');
+          showToast("✅ Application submitted! We'll reach out within 48 hours.");
         })
         .catch(() => {
           // Fallback: open email
