@@ -1,0 +1,223 @@
+/* LR AgroSense — field-first design system */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Literata:opsz,wght@7..72,500;7..72,600;7..72,700&display=swap');
+
+:root {
+  --bg: #0f1210;
+  --bg-elevated: #171b18;
+  --bg-card: #1c211d;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e8ebe6;
+  --text-muted: #9aa396;
+  --green: #5a9a6e;
+  --green-bright: #6fb884;
+  --green-dark: #3d6b4f;
+  --wheat: #c9a96e;
+  --soil: #8b7355;
+  --font-display: 'Literata', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(90, 154, 110, 0.06) 0%, transparent 28%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 169, 110, 0.05), transparent);
+  background-attachment: fixed;
+  font-family: var(--font-body);
+  color: var(--text);
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* Cards — solid, not glassmorphism */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-hover:hover {
+  border-color: rgba(90, 154, 110, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Legacy glass class mapped to new card style */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.glass-h { transition: border-color 0.2s ease, transform 0.2s ease; }
+.glass-h:hover {
+  border-color: rgba(90, 154, 110, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.logo-b {
+  background: #fff;
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+}
+
+.grad-t {
+  color: var(--green-bright);
+  background: none;
+  -webkit-text-fill-color: unset;
+}
+
+.grad-sub {
+  color: var(--wheat);
+  background: none;
+  -webkit-text-fill-color: unset;
+}
+
+.section-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-bright);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.625rem;
+  background: var(--green-dark);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover { background: var(--green); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.625rem;
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid var(--border-strong);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(90, 154, 110, 0.5);
+  color: var(--green-bright);
+}
+
+.nav-link {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-link-active {
+  color: var(--green-bright);
+  background: rgba(90, 154, 110, 0.12);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.value-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: rgba(90, 154, 110, 0.12);
+  border: 1px solid rgba(90, 154, 110, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--green-bright);
+  font-family: var(--font-display);
+}
+
+.reveal { opacity: 1; transform: none; transition: opacity 0.4s ease; }
+.reveal.active { opacity: 1; }
+
+@keyframes toastIn { from { transform: translateY(100%); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes toastOut { from { opacity: 1 } to { transform: translateY(100%); opacity: 0 } }
+.toast-in { animation: toastIn .35s cubic-bezier(.16,1,.3,1) forwards; }
+.toast-out { animation: toastOut .35s ease forwards; }
+
+/* Aria AI chat (admin) — keep functional styles */
+.prose-ai { color: #cbd5e1; line-height: 1.8; font-size: .82rem }
+.prose-ai p { margin-bottom: .8rem }
+.prose-ai strong { color: var(--green-bright); font-weight: 700 }
+.prose-ai em { color: #94a3b8; font-style: italic }
+.prose-ai h1,.prose-ai h2,.prose-ai h3,.prose-ai h4 { color: #f1f5f9; font-weight: 700; margin: 1rem 0 .4rem }
+.prose-ai h1 { font-size: 1.1rem }.prose-ai h2 { font-size: 1rem }.prose-ai h3 { font-size: .92rem }
+.prose-ai ul { list-style: none; padding: 0; margin-bottom: .8rem }
+.prose-ai ul li { padding: .15rem 0 .15rem 1.2rem; position: relative }
+.prose-ai ul li::before { content: '›'; position: absolute; left: 0; color: var(--green); font-weight: 700 }
+.prose-ai ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: .8rem }
+.prose-ai code { background: #0f172a; border: 1px solid #1e293b; padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: .8em; color: #7dd3fc }
+.prose-ai pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; margin: .8rem 0; overflow-x: auto }
+.prose-ai pre code { background: none; border: none; padding: 0; color: #e2e8f0; font-size: .8rem; line-height: 1.6 }
+.prose-ai table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .78rem }
+.prose-ai th { background: #0f172a; border: 1px solid #1e293b; padding: .5rem .75rem; text-align: left; color: #94a3b8; font-weight: 600 }
+.prose-ai td { border: 1px solid #1e293b; padding: .5rem .75rem; color: #cbd5e1 }
+.prose-ai tr:nth-child(even) td { background: #0a1020 }
+.prose-ai hr { border: none; border-top: 1px solid #1e293b; margin: 1rem 0 }
+.prose-ai blockquote { border-left: 3px solid var(--green); padding: .5rem 1rem; margin: .8rem 0; background: #0a1020; border-radius: 0 8px 8px 0; color: #94a3b8 }
+.prose-ai a { color: #38bdf8; text-decoration: underline }
+.msg-user { background: linear-gradient(135deg,#1e3a5f,#1e293b); border: 1px solid #334155 }
+.msg-aria { background: #0a1423; border: 1px solid rgba(90,154,110,.2) }
+.typing-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin: 0 2px; animation: typeDot 1.2s infinite }
+.typing-dots span:nth-child(2) { animation-delay: .2s }
+.typing-dots span:nth-child(3) { animation-delay: .4s }
+@keyframes typeDot { 0%,80%,100% { transform: scale(0); opacity: .4 } 40% { transform: scale(1); opacity: 1 } }
+.chat-item { transition: background .2s; cursor: pointer; border-radius: 10px; padding: .5rem .75rem }
+.chat-item:hover { background: #0c1527 }
+.chat-item.active { background: #0c1527; border-left: 2px solid var(--green) }
+.chip { display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .85rem; border-radius: 999px; background: #0c1527; border: 1px solid #1e293b; color: #94a3b8; font-size: .72rem; cursor: pointer; transition: all .2s; white-space: nowrap }
+.chip:hover { border-color: var(--green); color: var(--green-bright); background: #071a0e }
+.mem-badge { display: inline-flex; align-items: center; gap: .25rem; padding: .2rem .6rem; border-radius: 999px; background: #052e16; border: 1px solid #166534; color: var(--green-bright); font-size: .65rem; font-family: monospace }
+#aria-input { resize: none; max-height: 120px; overflow-y: auto; line-height: 1.5 }
+.msg-enter { animation: msgIn .3s cubic-bezier(.16,1,.3,1) }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }

@@ -74,7 +74,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/site.css" />
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -95,51 +95,30 @@
     }
   </script>
   <style>
-    .glass { background: rgba(12,21,39,.82); backdrop-filter: blur(18px); border: 1px solid rgba(34,197,94,.22); }
-    .glass-h { transition: all .3s cubic-bezier(.4,0,.2,1); }
-    .glass-h:hover { border-color: rgba(74,222,128,.5); transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(34,197,94,.25); }
-    .grad-t { background: linear-gradient(135deg,#4ade80,#10b981 40%,#38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .logo-b { background: #fff; padding: 6px 14px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(34,197,94,.25); border: 1px solid rgba(34,197,94,.4); }
-    @keyframes toastIn  { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes toastOut { from { opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
-    .toast-in  { animation: toastIn  .35s cubic-bezier(.16,1,.3,1) forwards; }
-    .toast-out { animation: toastOut .35s ease forwards; }
-    .card-enter { animation: cardIn .4s cubic-bezier(.16,1,.3,1) both; }
-    @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .pulse-ring { animation: pulseRing 2s cubic-bezier(.455,.03,.515,.955) infinite; }
-    @keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); } 70% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } }
-    .countdown-badge { background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(245,158,11,.05)); border: 1px solid rgba(245,158,11,.3); }
-    #modal-apply { scrollbar-width: thin; scrollbar-color: #22c55e #0c1527; }
-    #modal-apply::-webkit-scrollbar { width: 5px; }
-    #modal-apply::-webkit-scrollbar-track { background: #0c1527; }
-    #modal-apply::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 99px; }
-    .particle { position: absolute; border-radius: 50%; animation: float linear infinite; opacity: .15; }
-    @keyframes float { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: .2; } 90% { opacity: .15; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+    .countdown-badge { background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.25); }
+    #modal-apply { scrollbar-width: thin; scrollbar-color: #5a9a6e #1c211d; }
   </style>
 </head>
-<body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black min-h-screen">
+<body class="antialiased selection:bg-[#5a9a6e] selection:text-white min-h-screen">
 
 <!-- ========== NAVBAR ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#0f1210]/95 backdrop-blur-md border-b border-white/[0.08] py-3 px-4 sm:px-8">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="logo-b"><img src="logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
-      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
+    <a href="../index.html" class="flex items-center gap-3">
+      <div class="logo-b"><img src="../logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
+      <span class="text-sm font-display font-semibold text-[#e8ebe6] hidden xl:inline-block">LR AgroSense</span>
     </a>
-
-    <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
-      <a href="index.html#about"     class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
-      <a href="index.html#products"  class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
-      <a href="index.html#roadmap"   class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
-      <a href="index.html#tech"      class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="internship.html"      class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold transition-all">Internships</a>
-      <a href="index.html#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
-      <a href="index.html#contact"   class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
+    <div class="hidden md:flex items-center gap-1">
+      <a href="../index.html#about" class="nav-link">About</a>
+      <a href="../products" class="nav-link">Products</a>
+      <a href="../index.html#roadmap" class="nav-link">Roadmap</a>
+      <a href="../index.html#tech" class="nav-link">Technology</a>
+      <a href="../internships" class="nav-link nav-link-active">Internships</a>
+      <a href="../index.html#contact" class="nav-link">Contact</a>
     </div>
-
-    <div class="flex items-center gap-2 sm:gap-3">
-      <a href="index.html" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold hover:border-emerald-500/40 transition-all">← Home</a>
-      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 border border-slate-800">☰</button>
+    <div class="flex items-center gap-2">
+      <a href="../index.html" class="btn-secondary px-3 py-2 text-xs">Home</a>
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg border border-white/10 text-[#9aa396]">Menu</button>
     </div>
   </div>
 
@@ -155,29 +134,19 @@
 </nav>
 
 <!-- ========== HERO ========== -->
-<section class="relative pt-36 pb-20 px-4 overflow-hidden">
-  <div id="particles" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
-  <div class="absolute top-24 left-1/4 w-80 h-80 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute top-32 right-1/4 w-64 h-64 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none"></div>
-
-  <div class="max-w-5xl mx-auto text-center space-y-6 relative z-10">
-    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full glass text-emerald-300 text-xs font-semibold">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-ring"></span>
-      <span>NOW HIRING • REMOTE INTERNSHIPS OPEN</span>
-    </div>
-    <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white leading-tight font-display tracking-tight">
-      Build The Future of<br/><span class="grad-t">Indian Agriculture</span>
+<section class="relative pt-32 pb-16 px-4">
+  <div class="max-w-3xl mx-auto space-y-5">
+    <p class="section-label">Careers</p>
+    <h1 class="text-4xl sm:text-5xl font-display font-semibold text-[#e8ebe6] leading-tight">
+      Intern with LR AgroSense
     </h1>
-    <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-light">
-      Join Founder Pampana Hari Sai Ganesh and be part of India's next great AgriTech startup.
-      Gain real-world experience, get direct mentorship, and earn a certificate signed by the CEO.
+    <p class="text-base sm:text-lg text-[#9aa396] leading-relaxed">
+      Work on real AgriTech products with direct mentorship from Founder Pampana Hari Sai Ganesh. Remote, part-time roles for students across engineering, agriculture, and business.
     </p>
-    <div class="flex flex-wrap justify-center gap-3 pt-2 text-xs font-semibold">
-      <span class="px-4 py-2 rounded-full glass text-emerald-300">🏠 100% Remote</span>
-      <span class="px-4 py-2 rounded-full glass text-cyan-300">📜 CEO-Signed Certificate</span>
-      <span class="px-4 py-2 rounded-full glass text-amber-300">👨‍🏫 Founder Mentorship</span>
-      <span class="px-4 py-2 rounded-full glass text-purple-300">🔗 LinkedIn Recommendation</span>
-      <span class="px-4 py-2 rounded-full glass text-rose-300">📋 Unpaid (Revisited as we scale)</span>
+    <div class="flex flex-wrap gap-2 pt-1 text-xs font-medium text-[#9aa396]">
+      <span class="px-3 py-1.5 rounded-md border border-white/10">Remote</span>
+      <span class="px-3 py-1.5 rounded-md border border-white/10">Certificate on completion</span>
+      <span class="px-3 py-1.5 rounded-md border border-white/10">Founder mentorship</span>
     </div>
   </div>
 </section>
@@ -264,7 +233,7 @@
 
 <!-- ========== FOOTER ========== -->
 <footer class="py-12 border-t border-slate-800 text-center text-xs text-slate-500 space-y-4">
-  <div class="inline-block logo-b"><img src="logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
+  <div class="inline-block logo-b"><img src="../logo.jpg" alt="Logo" class="h-8 w-auto"/></div>
   <p>© 2026 LR AgroSense • Internships Portal • All Rights Reserved.</p>
   <div class="flex justify-center gap-4 text-[11px] text-slate-400">
     <a href="index.html" class="hover:text-emerald-400 font-semibold">← Back to Main Site</a>
@@ -385,6 +354,36 @@ const SEED_INTERNSHIPS = [];
 
 let pageInternships = null;
 let db = null;
+let pageInternshipsUnsub = null;
+
+function isValidInternship(item) {
+  return item && item.id && !item.id.startsWith('intern_seed_');
+}
+
+function internshipTimestamp(item) {
+  return item.updatedAt || item.createdAt || 0;
+}
+
+function mergeInternshipLists(localList, remoteList) {
+  const map = new Map();
+  const add = (item) => {
+    if (!isValidInternship(item)) return;
+    const existing = map.get(item.id);
+    if (!existing || internshipTimestamp(item) >= internshipTimestamp(existing)) {
+      map.set(item.id, item);
+    }
+  };
+  (localList || []).forEach(add);
+  (remoteList || []).forEach(add);
+  return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
+}
+
+function pushInternshipsToFirestore(list) {
+  if (!db || !db.collection) return;
+  (list || []).filter(isValidInternship).forEach(i => {
+    db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
+  });
+}
 
 // Safe Firebase init
 try {
@@ -522,10 +521,10 @@ function loadPageInternships() {
 
   const local = localStorage.getItem('lr_internships');
   if (local !== null) {
-    try { 
-      pageInternships = JSON.parse(local).filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
-    } catch(e) { 
-      pageInternships = []; 
+    try {
+      pageInternships = JSON.parse(local).filter(isValidInternship);
+    } catch(e) {
+      pageInternships = [];
     }
   } else {
     pageInternships = [];
@@ -533,22 +532,33 @@ function loadPageInternships() {
   renderPageInternships();
 
   if (db && db.collection) {
-    db.collection('internships').get().then(snap => {
-      if (snap && snap.docs && snap.docs.length > 0) {
-        const fsData = snap.docs
-          .map(d => ({ id: d.id, ...d.data() }))
-          .filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
-        
-        if (fsData.length > 0) {
-          pageInternships = fsData;
+    withTimeout(db.collection('internships').get(), 3500).then(snap => {
+      const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
+      pageInternships = mergeInternshipLists(pageInternships, remote);
+      localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
+      pushInternshipsToFirestore(pageInternships);
+      renderPageInternships();
+    }).catch(() => {});
+
+    if (!pageInternshipsUnsub) {
+      pageInternshipsUnsub = db.collection('internships').onSnapshot(snap => {
+        const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
+        const merged = mergeInternshipLists(pageInternships || [], remote);
+        if (JSON.stringify(merged) !== JSON.stringify(pageInternships)) {
+          pageInternships = merged;
           localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
           renderPageInternships();
         }
-      }
-    }).catch(err => {
-      renderPageInternships();
-    });
+      }, () => {});
+    }
   }
+}
+
+function withTimeout(promise, ms = 3500) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+  ]);
 }
 
 function startPageCountdown(internId, openDateMs) {
@@ -688,18 +698,10 @@ function spawnParticles() {
   }
 }
 
-// Immediate execution so cards display instantly on page load
-loadPageInternships();
-
-function initInternshipsApp() {
-  spawnParticles();
-  loadPageInternships();
-}
-
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initInternshipsApp);
+  document.addEventListener('DOMContentLoaded', loadPageInternships);
 } else {
-  initInternshipsApp();
+  loadPageInternships();
 }
 
 setInterval(() => {

@@ -166,7 +166,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css" />
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -190,129 +190,37 @@
     }
   </script>
   <style>
-    /* Handcrafted Senior Developer Canvas & Mesh Background */
-    body {
-      background-color: #070b14;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 15% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
-      background-attachment: fixed;
-    }
-    .grid-mesh {
-      background-size: 40px 40px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    }
-    
-    /* Vercel / Linear Style Tactile Glass Cards */
-    .glass {
-      background: rgba(13, 20, 36, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-    }
-    .glass-h {
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-h:hover {
-      border-color: rgba(34, 197, 94, 0.4);
-      transform: translateY(-3px);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 25px 50px -12px rgba(34, 197, 94, 0.15);
-    }
-    
-    /* Refined Typography Gradients */
-    .grad-t {
-      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 40%, #4ade80 80%, #38bdf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .grad-sub {
-      background: linear-gradient(135deg, #4ade80 0%, #38bdf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .logo-b {
-      background: #ffffff;
-      padding: 6px 14px;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .reveal { opacity: 1; transform: translateY(0); transition: all .5s cubic-bezier(0.16,1,0.3,1); }
-    .reveal.active { opacity: 1; transform: translateY(0); }
-    @keyframes toastIn { from { transform: translateY(100%); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
-    @keyframes toastOut { from { opacity: 1 } to { transform: translateY(100%); opacity: 0 } }
-
-    /* ===== Aria AI Co-Founder Chat Styles ===== */
-    .prose-ai { color: #cbd5e1; line-height: 1.8; font-size: .82rem }
-    .prose-ai p { margin-bottom: .8rem }
-    .prose-ai strong { color: #4ade80; font-weight: 700 }
-    .prose-ai em { color: #94a3b8; font-style: italic }
-    .prose-ai h1,.prose-ai h2,.prose-ai h3,.prose-ai h4 { color: #f1f5f9; font-weight: 700; margin: 1rem 0 .4rem }
-    .prose-ai h1 { font-size: 1.1rem }.prose-ai h2 { font-size: 1rem }.prose-ai h3 { font-size: .92rem }
-    .prose-ai ul { list-style: none; padding: 0; margin-bottom: .8rem }
-    .prose-ai ul li { padding: .15rem 0 .15rem 1.2rem; position: relative }
-    .prose-ai ul li::before { content: '›'; position: absolute; left: 0; color: #22c55e; font-weight: 700 }
-    .prose-ai ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: .8rem }
-    .prose-ai code { background: #0f172a; border: 1px solid #1e293b; padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: .8em; color: #7dd3fc }
-    .prose-ai pre { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; margin: .8rem 0; overflow-x: auto }
-    .prose-ai pre code { background: none; border: none; padding: 0; color: #e2e8f0; font-size: .8rem; line-height: 1.6 }
-    .prose-ai table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .78rem }
-    .prose-ai th { background: #0f172a; border: 1px solid #1e293b; padding: .5rem .75rem; text-align: left; color: #94a3b8; font-weight: 600 }
-    .prose-ai td { border: 1px solid #1e293b; padding: .5rem .75rem; color: #cbd5e1 }
-    .prose-ai tr:nth-child(even) td { background: #0a1020 }
-    .prose-ai hr { border: none; border-top: 1px solid #1e293b; margin: 1rem 0 }
-    .prose-ai blockquote { border-left: 3px solid #22c55e; padding: .5rem 1rem; margin: .8rem 0; background: #0a1020; border-radius: 0 8px 8px 0; color: #94a3b8 }
-    .prose-ai a { color: #38bdf8; text-decoration: underline }
-    .msg-user { background: linear-gradient(135deg,#1e3a5f,#1e293b); border: 1px solid #334155 }
-    .msg-aria { background: #0a1423; border: 1px solid rgba(34,197,94,.2) }
-    .typing-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin: 0 2px; animation: typeDot 1.2s infinite }
-    .typing-dots span:nth-child(2) { animation-delay: .2s }
-    .typing-dots span:nth-child(3) { animation-delay: .4s }
-    @keyframes typeDot { 0%,80%,100% { transform: scale(0); opacity: .4 } 40% { transform: scale(1); opacity: 1 } }
-    .chat-item { transition: background .2s; cursor: pointer; border-radius: 10px; padding: .5rem .75rem }
-    .chat-item:hover { background: #0c1527 }
-    .chat-item.active { background: #0c1527; border-left: 2px solid #22c55e }
-    .chip { display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .85rem; border-radius: 999px; background: #0c1527; border: 1px solid #1e293b; color: #94a3b8; font-size: .72rem; cursor: pointer; transition: all .2s; white-space: nowrap }
-    .chip:hover { border-color: #22c55e; color: #4ade80; background: #071a0e }
-    .mem-badge { display: inline-flex; align-items: center; gap: .25rem; padding: .2rem .6rem; border-radius: 999px; background: #052e16; border: 1px solid #166534; color: #4ade80; font-size: .65rem; font-family: monospace }
-    #aria-input { resize: none; max-height: 120px; overflow-y: auto; line-height: 1.5 }
-    .msg-enter { animation: msgIn .3s cubic-bezier(.16,1,.3,1) }
-    @keyframes msgIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+    /* Page-specific overrides only */
+    .grid-mesh { background: none; }
   </style>
 </head>
-<body class="bg-[#070b14] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black grid-mesh">
+<body class="antialiased selection:bg-[#5a9a6e] selection:text-white">
 
 <!-- ========== NAVBAR ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#0f1210]/95 backdrop-blur-md border-b border-white/[0.08] py-3 px-4 sm:px-8">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <a href="#" class="flex items-center gap-3">
       <div class="logo-b"><img src="logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
-      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
+      <span class="text-sm font-display font-semibold text-[#e8ebe6] hidden xl:inline-block">LR AgroSense</span>
     </a>
     
-    <!-- Desktop & Tablet Navigation Links (Visible on screens >= 768px) -->
-    <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
-      <a href="about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
-      <a href="products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
-      <a href="#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
-      <a href="#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="internships" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Internships</a>
-      <a href="blog" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Blog</a>
-      <a href="#investors" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all">Investors</a>
-      <a href="contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
+    <div class="hidden md:flex items-center gap-0.5 lg:gap-1">
+      <a href="about" class="nav-link">About</a>
+      <a href="products" class="nav-link">Products</a>
+      <a href="#roadmap" class="nav-link">Roadmap</a>
+      <a href="#tech" class="nav-link">Technology</a>
+      <a href="internships" class="nav-link">Internships</a>
+      <a href="blog" class="nav-link">Blog</a>
+      <a href="#investors" class="nav-link">Investors</a>
+      <a href="contact" class="nav-link">Contact</a>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="openTrackModal()" class="px-3 py-2 sm:px-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all">🔍 Track Status</button>
+      <button onclick="openTrackModal()" class="btn-secondary px-3 py-2 text-xs hidden sm:inline-flex">Track Application</button>
       <div id="nav-user-container">
-        <button onclick="toggleAuthModal(true)" class="px-3 py-2 sm:px-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all">👤 Account</button>
+        <button onclick="toggleAuthModal(true)" class="btn-secondary px-3 py-2 text-xs">Sign In</button>
       </div>
-      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 border border-slate-800">☰</button>
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg border border-white/10 text-[#9aa396]">Menu</button>
     </div>
   </div>
 
@@ -331,89 +239,78 @@
 </nav>
 
 <!-- ========== HERO ========== -->
-<section class="relative pt-36 pb-20 px-4 max-w-7xl mx-auto overflow-hidden">
-  <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none"></div>
-  <div class="max-w-5xl mx-auto text-center space-y-6 relative z-10 reveal active">
-    
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono mb-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span>TELEMETRY ENGINE V2.4 IS LIVE</span>
-      <span class="text-slate-600">•</span>
-      <a href="products" class="text-emerald-400 font-bold hover:underline">EXPLORE PRODUCTS →</a>
-    </div>
+<section class="relative pt-32 pb-16 px-4 max-w-7xl mx-auto">
+  <div class="max-w-4xl mx-auto space-y-8 relative z-10 reveal active">
+    <p class="section-label">AgriTech for Indian Farmers</p>
 
-    <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[1.06] font-display tracking-tight max-w-5xl mx-auto">
-      Precision Soil Telemetry <span class="grad-t">Engineered for India</span>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold text-[#e8ebe6] leading-[1.15] tracking-tight">
+      Affordable soil monitoring for every field
     </h1>
 
-    <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-normal pt-2">
-      Democratizing micro-cost IoT field sensors, RS485 soil NPK monitoring, and automated solar-powered irrigation controllers for 150 Million+ smallholder farmers.
+    <p class="text-base sm:text-lg text-[#9aa396] leading-relaxed max-w-2xl">
+      LR AgroSense builds low-cost IoT probes that measure soil moisture, NPK, and pH — helping smallholder farmers use water and fertilizer more efficiently.
     </p>
 
-    <div class="flex flex-wrap items-center justify-center gap-3.5 pt-4">
-      <a href="products" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(34,197,94,0.35)] transition-all">Explore Smart Farm Monitor →</a>
-      <button onclick="openInvestorModal()" class="px-8 py-4 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-slate-500 text-slate-200 font-bold text-sm backdrop-blur-md transition-all">Investor Pitch Deck 📊</button>
-      <a href="internships" class="px-8 py-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 font-bold text-sm transition-all">Open Internships 🚀</a>
+    <div class="flex flex-wrap items-center gap-3 pt-1">
+      <a href="products" class="btn-primary">View Smart Farm Monitor</a>
+      <button onclick="openInvestorModal()" class="btn-secondary">Investor Information</button>
+      <a href="internships" class="btn-secondary">Internship Openings</a>
     </div>
 
-    <!-- Live Stat Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto pt-8 text-center">
-      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-emerald-400 font-display">150M+</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Farmers Targeted</p></div>
-      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-cyan-400 font-display">&lt; ₹2,999</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Sensor Probe Cost</p></div>
-      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-amber-400 font-display">99.4%</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Irrigation Precision</p></div>
-      <div class="glass p-6 rounded-2xl border border-white/[0.08] shadow-xl"><p class="text-4xl font-extrabold text-purple-400 font-display">&lt; 1.2s</p><p class="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">Telemetry Latency</p></div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-4xl pt-6">
+      <div class="card p-5 text-center"><p class="stat-value">150M+</p><p class="stat-label">Farmers in India</p></div>
+      <div class="card p-5 text-center"><p class="stat-value">&lt; ₹2,999</p><p class="stat-label">Target probe cost</p></div>
+      <div class="card p-5 text-center"><p class="stat-value">NPK + pH</p><p class="stat-label">Soil parameters</p></div>
+      <div class="card p-5 text-center"><p class="stat-value">Solar</p><p class="stat-label">Field-powered nodes</p></div>
     </div>
 
-    <!-- Real Hardware Photo Showcase Card -->
-    <div class="pt-10 max-w-5xl mx-auto">
-      <div class="glass p-3 sm:p-4 rounded-3xl border border-emerald-500/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] relative group overflow-hidden">
-        <img src="smart_sensor_device.jpg" alt="LR AgroSense Smart Farm Monitor Probe Node" class="w-full h-[300px] sm:h-[450px] object-cover rounded-2xl filter brightness-[0.92] contrast-[1.05] group-hover:scale-[1.01] transition-all duration-500"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-[#070b14] via-transparent to-transparent opacity-85 pointer-events-none"></div>
-        <div class="absolute bottom-6 left-6 right-6 flex flex-wrap items-center justify-between gap-4 text-left">
-          <div class="space-y-1">
-            <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono font-bold uppercase tracking-wider">HARDWARE PROTOTYPE NODE #01</span>
-            <h3 class="text-xl sm:text-2xl font-bold text-white">Smart Farm Telemetry Probe Node</h3>
-            <p class="text-xs text-slate-300">Modbus RS485 NPK + Soil Moisture + Water pH + Solar Power System</p>
+    <div class="pt-6 max-w-4xl">
+      <div class="card overflow-hidden">
+        <img src="smart_sensor_device.jpg" alt="LR AgroSense Smart Farm Monitor probe" class="w-full h-[260px] sm:h-[380px] object-cover"/>
+        <div class="p-5 sm:p-6 flex flex-wrap items-end justify-between gap-4 border-t border-white/[0.08]">
+          <div>
+            <p class="section-label mb-1">Hardware Prototype</p>
+            <h3 class="text-lg sm:text-xl font-display font-semibold text-[#e8ebe6]">Smart Farm Monitor</h3>
+            <p class="text-sm text-[#9aa396] mt-1">RS485 soil sensors with solar-powered ESP32 telemetry node</p>
           </div>
-          <a href="products" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs shadow-lg hover:bg-emerald-400 transition-all">View Full Spec Sheet →</a>
+          <a href="products" class="btn-primary text-sm py-2.5 px-5">Product Details</a>
         </div>
       </div>
     </div>
-
   </div>
 </section>
 
 <!-- ========== ABOUT / VISION / MISSION ========== -->
-<section id="about" class="py-24 px-4 max-w-7xl mx-auto space-y-16">
-  <div class="glass p-8 sm:p-14 rounded-3xl border border-emerald-500/30 reveal space-y-6">
-    <div class="flex items-center gap-3"><div class="logo-b"><img src="logo.jpg" alt="Logo" class="h-8 w-auto"/></div><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ABOUT LR AGROSENSE</span></div>
-    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Transforming Agricultural Ecosystems with Technology</h2>
-    <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-light">LR AgroSense is an early-stage AgriTech startup committed to democratizing precision farming. By integrating IoT sensors and automated irrigation controllers, we empower farmers to monitor soil moisture, NPK ratios, and water pH levels in real time.</p>
+<section id="about" class="py-20 px-4 max-w-7xl mx-auto space-y-12">
+  <div class="card p-8 sm:p-12 reveal space-y-5">
+    <p class="section-label">About LR AgroSense</p>
+    <h2 class="text-3xl sm:text-4xl font-display font-semibold text-[#e8ebe6]">Precision farming tools built for real fields</h2>
+    <p class="text-[#9aa396] text-base sm:text-lg leading-relaxed max-w-3xl">We integrate IoT sensors and irrigation controllers so farmers can monitor soil moisture, NPK, and water pH in real time — without expensive lab testing or guesswork.</p>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <div class="glass p-8 sm:p-10 rounded-3xl border border-emerald-500/30 reveal space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">👁️</div>
-      <h3 class="text-2xl font-bold text-white font-display">Our Vision</h3>
-      <p class="text-slate-300 text-sm leading-relaxed font-light">To build India's most accessible and intelligent precision farming platform — establishing data-driven crop management across every acre of farmland.</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card card-hover p-8 reveal space-y-3">
+      <p class="section-label">Vision</p>
+      <h3 class="text-xl font-display font-semibold text-[#e8ebe6]">India's most accessible precision farming platform</h3>
+      <p class="text-[#9aa396] text-sm leading-relaxed">Data-driven crop management across every acre of farmland, starting with the farmers who need it most.</p>
     </div>
-    <div class="glass p-8 sm:p-10 rounded-3xl border border-cyan-500/30 reveal space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">🎯</div>
-      <h3 class="text-2xl font-bold text-white font-display">Our Mission</h3>
-      <p class="text-slate-300 text-sm leading-relaxed font-light">Design micro-cost hardware sensors that allow farmers to eliminate guesswork, mitigate pest outbreaks, and optimize fertilizer application with accuracy.</p>
+    <div class="card card-hover p-8 reveal space-y-3">
+      <p class="section-label">Mission</p>
+      <h3 class="text-xl font-display font-semibold text-[#e8ebe6]">Micro-cost sensors that eliminate guesswork</h3>
+      <p class="text-[#9aa396] text-sm leading-relaxed">Hardware designed for smallholder budgets — accurate enough for agronomic decisions, affordable enough to deploy at scale.</p>
     </div>
   </div>
 </section>
 
 <!-- ========== CORE VALUES ========== -->
 <section class="py-16 px-4 max-w-7xl mx-auto">
-  <div class="text-center space-y-4 mb-12 reveal"><span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">PRINCIPLES</span><h2 class="text-3xl sm:text-4xl font-extrabold text-white font-display">Core Values</h2></div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌱</div><h4 class="font-bold text-white text-lg">Farmer First</h4><p class="text-xs text-slate-400 leading-relaxed">Every design prioritizes regional accessibility and local language simplicity.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">⚡</div><h4 class="font-bold text-white text-lg">Radical Affordability</h4><p class="text-xs text-slate-400 leading-relaxed">Hardware at a fraction of commercial costs, making smart farming scalable.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🔬</div><h4 class="font-bold text-white text-lg">Agronomic Rigor</h4><p class="text-xs text-slate-400 leading-relaxed">Grounded in ICAR crop packages of practices and real-field soil testing data.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">📡</div><h4 class="font-bold text-white text-lg">Precision Telemetry</h4><p class="text-xs text-slate-400 leading-relaxed">Continuous field data for accurate, real-time soil moisture and nutrient metrics.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🌍</div><h4 class="font-bold text-white text-lg">Sustainability</h4><p class="text-xs text-slate-400 leading-relaxed">Mitigating ground-water depletion, reducing chemical runoff, regenerative farming.</p></div>
-    <div class="glass glass-h p-6 rounded-3xl reveal space-y-3"><div class="text-2xl">🤝</div><h4 class="font-bold text-white text-lg">Transparency</h4><p class="text-xs text-slate-400 leading-relaxed">Open channels between farmers, agronomists, and research institutions.</p></div>
+  <div class="mb-10 reveal"><p class="section-label">Principles</p><h2 class="text-2xl sm:text-3xl font-display font-semibold text-[#e8ebe6] mt-2">What guides our work</h2></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">01</div><h4 class="font-semibold text-[#e8ebe6]">Farmer First</h4><p class="text-sm text-[#9aa396] leading-relaxed">Regional accessibility and local language support in every product decision.</p></div>
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">02</div><h4 class="font-semibold text-[#e8ebe6]">Radical Affordability</h4><p class="text-sm text-[#9aa396] leading-relaxed">Hardware at a fraction of commercial cost, making smart farming scalable.</p></div>
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">03</div><h4 class="font-semibold text-[#e8ebe6]">Agronomic Rigor</h4><p class="text-sm text-[#9aa396] leading-relaxed">Grounded in ICAR crop packages and real field soil testing data.</p></div>
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">04</div><h4 class="font-semibold text-[#e8ebe6]">Precision Telemetry</h4><p class="text-sm text-[#9aa396] leading-relaxed">Continuous field data for accurate soil moisture and nutrient metrics.</p></div>
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">05</div><h4 class="font-semibold text-[#e8ebe6]">Sustainability</h4><p class="text-sm text-[#9aa396] leading-relaxed">Reducing groundwater depletion and chemical runoff through better inputs.</p></div>
+    <div class="card card-hover p-6 reveal space-y-2"><div class="value-icon">06</div><h4 class="font-semibold text-[#e8ebe6]">Transparency</h4><p class="text-sm text-[#9aa396] leading-relaxed">Open channels between farmers, agronomists, and research institutions.</p></div>
   </div>
 </section>
 
@@ -515,18 +412,16 @@
 </section>
 
 <!-- ==================== INTERNSHIP PORTAL (DYNAMIC) ==================== -->
-<section id="internships" class="py-24 px-4 max-w-7xl mx-auto space-y-12">
-  <div class="text-center space-y-4 reveal">
-    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">JOIN OUR TEAM</span>
-    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display">Open Internship Positions</h2>
-    <p class="text-slate-400 text-sm max-w-2xl mx-auto">We welcome passionate students across disciplines. New positions open regularly — check back soon!</p>
-    <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium">
-      ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
+<section id="internships" class="py-20 px-4 max-w-7xl mx-auto space-y-10">
+  <div class="reveal space-y-4">
+    <p class="section-label">Careers</p>
+    <h2 class="text-3xl sm:text-4xl font-display font-semibold text-[#e8ebe6]">Internship openings</h2>
+    <p class="text-[#9aa396] text-sm max-w-2xl">Positions are managed from the admin portal and appear here automatically when published or set to live.</p>
+    <div class="p-4 card max-w-2xl text-sm text-[#c9a96e] border-[#c9a96e]/20">
+      <strong class="text-[#e8ebe6]">Note:</strong> Currently unpaid internships. Completion certificates, LinkedIn recommendations, and direct founder mentorship are provided.
     </div>
-    <div class="pt-2">
-      <a href="internships.html" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-xl shadow-emerald-500/20 transition-all">
-        🚀 View Full Dedicated Internships Page & Apply →
-      </a>
+    <div class="pt-1">
+      <a href="internships.html" class="btn-primary text-sm">View all positions and apply</a>
     </div>
   </div>
   <!-- Dynamic listing container (populated by JS) -->
@@ -1434,10 +1329,10 @@ Direct mentorship from Founder Pampana Hari Sai Ganesh
 Letter of Recommendation upon exceptional performance</textarea>
         </div>
       </div>
-      <div class="flex flex-wrap gap-3 pt-2">
-        <button type="submit" onclick="document.getElementById('intern-save-action').value='draft'" class="px-5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-700 transition-all">💾 Save as Draft</button>
-        <button type="submit" onclick="document.getElementById('intern-save-action').value='published'" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all">📢 Save & Publish (with countdown)</button>
-        <button type="submit" onclick="document.getElementById('intern-save-action').value='live'" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all">🚀 Save & Go Live Now</button>
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <button type="submit" onclick="document.getElementById('intern-save-action').value='live'" class="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition-all">🚀 Save & Go Live Now (Visible on Website)</button>
+        <button type="button" onclick="document.getElementById('intern-save-action').value='published'; saveInternshipListing(event);" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all">📢 Save & Publish</button>
+        <button type="button" onclick="document.getElementById('intern-save-action').value='draft'; saveInternshipListing(event);" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-700 transition-all">💾 Save as Draft</button>
       </div>
     </form>
   </div>
@@ -1895,12 +1790,41 @@ function saveSEOConfig(e) {
 }
 
 // ===== Internship Engine =====
+function isValidInternship(item) {
+  return item && item.id && !item.id.startsWith('intern_seed_');
+}
+
+function internshipTimestamp(item) {
+  return item.updatedAt || item.createdAt || 0;
+}
+
+function mergeInternshipLists(localList, remoteList) {
+  const map = new Map();
+  const add = (item) => {
+    if (!isValidInternship(item)) return;
+    const existing = map.get(item.id);
+    if (!existing || internshipTimestamp(item) >= internshipTimestamp(existing)) {
+      map.set(item.id, item);
+    }
+  };
+  (localList || []).forEach(add);
+  (remoteList || []).forEach(add);
+  return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
+}
+
+function pushInternshipsToFirestore(list) {
+  if (!db || !db.collection) return;
+  (list || []).filter(isValidInternship).forEach(i => {
+    db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
+  });
+}
+
 function getInternships() {
   if (!allInternships) {
     const local = localStorage.getItem('lr_internships');
     if (local !== null) {
       try {
-        allInternships = JSON.parse(local).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+        allInternships = JSON.parse(local).filter(isValidInternship);
       } catch(e) {
         allInternships = [];
       }
@@ -1908,17 +1832,16 @@ function getInternships() {
       allInternships = [];
     }
   } else {
-    allInternships = allInternships.filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+    allInternships = allInternships.filter(isValidInternship);
   }
   return allInternships;
 }
 
 function saveInternships() {
-  const cleanList = (allInternships || []).filter(i => !i.id || !i.id.startsWith('intern_seed_'));
+  const cleanList = (allInternships || []).filter(isValidInternship);
+  allInternships = cleanList;
   localStorage.setItem('lr_internships', JSON.stringify(cleanList));
-  cleanList.forEach(i => {
-    db.collection('internships').doc(i.id).set(i).catch(() => {});
-  });
+  pushInternshipsToFirestore(cleanList);
 }
 
 function checkInternshipAutoActivation() {
@@ -1943,18 +1866,15 @@ function checkInternshipAutoActivation() {
 // --- Admin CRUD ---
 async function loadAdminInternships() {
   checkInternshipAutoActivation();
+  const local = getInternships();
   try {
     const snap = await withTimeout(db.collection('internships').orderBy('createdAt', 'desc').get(), 2500);
-    if (snap && snap.docs) {
-      allInternships = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(i => !i.id || !i.id.startsWith('intern_seed_'));
-      saveInternships();
-    } else {
-      getInternships();
-    }
+    const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
+    allInternships = mergeInternshipLists(local, remote);
+    localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+    pushInternshipsToFirestore(allInternships);
   } catch(e) {
-    getInternships();
+    allInternships = local;
   }
   renderAdminInternshipsTable();
 }
@@ -2098,26 +2018,43 @@ function saveInternshipListing(e) {
 }
 
 // --- Public Site Rendering ---
+let internshipsFirestoreUnsub = null;
+
 function initInternshipsPublic() {
   allInternships = getInternships();
   renderPublicInternships();
 
-  if (typeof db !== 'undefined' && db && db.collection) {
-    ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
-      db.collection('internships').doc(id).delete().catch(() => {});
-    });
+  if (typeof db === 'undefined' || !db || !db.collection) return;
 
-    withTimeout(db.collection('internships').get(), 3500).then(snap => {
-      if (snap && snap.docs) {
-        const fsData = snap.docs
-          .map(d => ({ id: d.id, ...d.data() }))
-          .filter(i => i && i.id && !i.id.startsWith('intern_seed_'));
-        allInternships = fsData;
-        saveInternships();
+  ['intern_seed_1', 'intern_seed_2', 'intern_seed_3'].forEach(id => {
+    db.collection('internships').doc(id).delete().catch(() => {});
+  });
+
+  withTimeout(db.collection('internships').get(), 3500).then(snap => {
+    const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
+    const local = getInternships();
+    allInternships = mergeInternshipLists(local, remote);
+    localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+    pushInternshipsToFirestore(allInternships);
+    checkInternshipAutoActivation();
+    renderPublicInternships();
+  }).catch(() => {});
+
+  if (!internshipsFirestoreUnsub) {
+    internshipsFirestoreUnsub = db.collection('internships').onSnapshot(snap => {
+      const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
+      const local = getInternships();
+      const merged = mergeInternshipLists(local, remote);
+      if (JSON.stringify(merged) !== JSON.stringify(allInternships)) {
+        allInternships = merged;
+        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
         checkInternshipAutoActivation();
         renderPublicInternships();
+        if (document.getElementById('internships-admin-tbody')) {
+          renderAdminInternshipsTable();
+        }
       }
-    }).catch(() => {});
+    }, () => {});
   }
 }
 
@@ -2127,10 +2064,9 @@ function renderPublicInternships() {
   const visible = getInternships().filter(i => (!i.id || !i.id.startsWith('intern_seed_')) && i.status !== 'draft');
   if (!visible.length) {
     container.innerHTML = `<div class="text-center py-20 space-y-4">
-      <div class="text-5xl">🌱</div>
-      <h3 class="text-xl font-bold text-white">No Open Positions Right Now</h3>
-      <p class="text-slate-400 text-sm max-w-md mx-auto">We're growing fast! New internship openings are coming soon. Follow us on LinkedIn for updates.</p>
-      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs">Follow on LinkedIn ↗</a>
+      <h3 class="text-xl font-display font-semibold text-[#e8ebe6]">No open positions right now</h3>
+      <p class="text-[#9aa396] text-sm max-w-md mx-auto">New internship openings are posted here when published from the admin portal. Check back soon or follow us on LinkedIn.</p>
+      <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 btn-secondary text-sm">Follow on LinkedIn</a>
     </div>`;
     return;
   }
@@ -3245,14 +3181,7 @@ function sendAiMessage(e) { if(e) e.preventDefault(); ariaSend(); }
 // ============================================================
 
 
-// Automatically execute public site rendering on script boot & DOM ready
-initInternshipsPublic();
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initInternshipsPublic);
-} else {
-  initInternshipsPublic();
-}
+// Internship listings initialize once on DOM ready (see DOMContentLoaded above)
 
 </script>
 
