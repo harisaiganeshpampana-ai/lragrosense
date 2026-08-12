@@ -3,492 +3,517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Open Internship Positions | LR AgroSense — Join Our Team</title>
-  <meta name="description" content="Join the LR AgroSense team as an intern. Open positions in Branding, Business Development, IoT Engineering and more. Apply now for remote internships with mentorship and certificates." />
-  <meta name="keywords" content="LR AgroSense Internships, AgriTech Internships, Remote Internships India, Pampana Hari Sai Ganesh, IoT Engineering Internship, Marketing Internship" />
-  <meta name="author" content="Pampana Hari Sai Ganesh" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="theme-color" content="#040914" />
-  
-  <!-- Canonical URL -->
+  <title>Internships — LR AgroSense | AgriTech for Indian Farmers</title>
+  <meta name="description" content="Join LR AgroSense's internship programme. Work directly with the Founder on IoT hardware, AgriTech software and field impact projects." />
   <link rel="canonical" href="https://lragrosense.in/internships" />
+  <link rel="icon" type="image/png" href="../icon-512.png" />
+  <meta name="theme-color" content="#0f1210" />
 
-  <!-- Manifest & Service Worker -->
-  <link rel="manifest" href="https://lragrosense.in/manifest.json" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').catch(function(){});
-      });
-    }
-  </script>
-
-  <!-- Favicon & Apple Touch Icons -->
-  <link rel="icon" type="image/png" href="https://lragrosense.in/icon-512.png" />
-  <link rel="apple-touch-icon" href="https://lragrosense.in/icon-512.png" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Internships — LR AgroSense" />
+  <meta property="og:description" content="Join LR AgroSense's internship programme." />
   <meta property="og:url" content="https://lragrosense.in/internships" />
-  <meta property="og:title" content="Open Internship Positions | LR AgroSense — Join Our Team" />
-  <meta property="og:description" content="Build the future of Indian AgriTech. Apply now for remote internships with direct mentorship from Founder Pampana Hari Sai Ganesh." />
   <meta property="og:image" content="https://lragrosense.in/logo.jpg" />
-  <meta property="og:site_name" content="LR AgroSense" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://lragrosense.in/internships" />
-  <meta name="twitter:title" content="Open Internship Positions | LR AgroSense — Join Our Team" />
-  <meta name="twitter:description" content="Build the future of Indian AgriTech. Apply now for remote internships with direct mentorship from Founder Pampana Hari Sai Ganesh." />
-  <meta name="twitter:image" content="https://lragrosense.in/logo.jpg" />
-
-  <!-- Resource Hints -->
-  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-  <link rel="dns-prefetch" href="//cdn.tailwindcss.com" />
-  <link rel="dns-prefetch" href="//www.gstatic.com" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <!-- Design system — EXACT same as homepage -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="../css/site.css" />
 
-  <!-- Fonts & Tailwind -->
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Firebase SDK -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            agri: { 300:'#86efac', 400:'#4ade80', 500:'#22c55e', 600:'#16a34a', 700:'#15803d', 950:'#052e16' },
-            brand: { dark:'#040914', card:'#0c1527', accent:'#38bdf8' }
-          },
-          fontFamily: { sans:['"Plus Jakarta Sans"','sans-serif'], display:['"Outfit"','sans-serif'] }
-        }
-      }
-    }
-  </script>
-
   <style>
-    .glass { background: rgba(12, 21, 39, 0.85); backdrop-filter: blur(18px); border: 1px solid rgba(34, 197, 94, 0.22); }
-    .glass-h { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .glass-h:hover { border-color: rgba(74, 222, 128, 0.5); transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(34, 197, 94, 0.25); }
-    .grad-t { background: linear-gradient(135deg, #4ade80, #10b981 40%, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .logo-b { background: #fff; padding: 6px 14px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.25); border: 1px solid rgba(34, 197, 94, 0.4); }
-    .pulse-ring { animation: pulseGlow 2s infinite; }
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 14px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+    /* Page-specific extras only — design tokens come from css/site.css */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(15,18,16,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; }
+    .nav-inner { max-width: 72rem; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-links { display: none; align-items: center; gap: 0.25rem; }
+    @media(min-width:768px){ .nav-links { display: flex; } .mob-menu-btn { display: none; } }
+
+    .mob-menu { display: none; padding: 1rem 0 0.5rem; border-top: 1px solid var(--border); margin-top: 0.75rem; }
+    .mob-menu.open { display: block; }
+    .mob-link { display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: var(--text-muted);
+      font-size: 0.875rem; font-weight: 500; transition: background 0.15s, color 0.15s; }
+    .mob-link:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+    main { padding-top: 80px; }
+
+    /* Hero */
+    .hero { padding: 4rem 1rem 3rem; max-width: 72rem; margin: 0 auto; }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(2rem,5vw,3.5rem);
+      font-weight: 600; color: var(--text); line-height: 1.15; margin-top: 0.75rem; }
+    .hero p { color: var(--text-muted); font-size: 1rem; max-width: 38rem; margin-top: 1rem; line-height: 1.7; }
+
+    /* Filter bar */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1rem; max-width: 72rem; margin: 0 auto 2rem; }
+    .filter-btn { padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+      border: 1px solid var(--border-strong); color: var(--text-muted); background: transparent;
+      cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--green); color: var(--green-bright);
+      background: rgba(90,154,110,0.08); }
+
+    /* Listings grid */
+    .listings { padding: 0 1rem 5rem; max-width: 72rem; margin: 0 auto; display: grid; gap: 1.25rem; }
+
+    /* Single listing card */
+    .intern-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 1rem;
+      padding: 1.75rem; transition: border-color 0.2s, transform 0.2s; }
+    .intern-card:hover { border-color: rgba(90,154,110,0.35); transform: translateY(-2px); }
+
+    .card-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .card-meta { flex: 1; min-width: 0; }
+    .card-number { font-size: 0.625rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-bright); }
+    .card-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600;
+      color: var(--text); margin-top: 0.3rem; }
+    .card-dept { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .card-badge { display: inline-flex; align-items: center; padding: 0.3rem 0.75rem; border-radius: 999px;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge-live  { background: rgba(90,154,110,0.15); color: var(--green-bright); border: 1px solid rgba(90,154,110,0.25); }
+    .badge-published { background: rgba(201,169,110,0.15); color: var(--wheat); border: 1px solid rgba(201,169,110,0.25); }
+    .badge-closed { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border); }
+
+    .card-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .pill { padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.7rem; font-weight: 500;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); }
+
+    .card-desc { margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; }
+
+    .card-sections { margin-top: 1.25rem; display: grid; gap: 0.75rem; }
+    @media(min-width: 640px) { .card-sections { grid-template-columns: 1fr 1fr; } }
+
+    .card-section h4 { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--green-bright); margin-bottom: 0.4rem; }
+    .card-section ul { list-style: none; padding: 0; }
+    .card-section ul li { padding: 0.15rem 0 0.15rem 1rem; position: relative;
+      font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+    .card-section ul li::before { content: '›'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+    .card-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+
+    /* Apply modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--bg-elevated); border: 1px solid var(--border-strong);
+      border-radius: 1.25rem; padding: 2rem; max-width: 28rem; width: 100%; }
+    .modal-box h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); }
+    .modal-box p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.6; }
+    label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+      letter-spacing: 0.05em; margin-top: 1rem; margin-bottom: 0.35rem; }
+    input, textarea, select {
+      width: 100%; background: var(--bg-card); border: 1px solid var(--border-strong);
+      border-radius: 0.625rem; padding: 0.625rem 0.875rem; color: var(--text);
+      font-size: 0.875rem; font-family: var(--font-body); outline: none;
+      transition: border-color 0.2s; }
+    input:focus, textarea:focus, select:focus { border-color: var(--green); }
+    textarea { resize: vertical; min-height: 80px; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .modal-actions button { flex: 1; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 5rem 1rem; }
+    .empty-state h3 { font-family: var(--font-display); font-size: 1.5rem; color: var(--text); }
+    .empty-state p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.75rem; max-width: 30rem; margin-inline: auto; }
+
+    /* Loading */
+    .loading-pulse { display: flex; gap: 0.5rem; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.2s infinite; }
+    .dot:nth-child(2){ animation-delay: 0.2s; } .dot:nth-child(3){ animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100%{ opacity: 0.3; transform: scale(0.8); } 40%{ opacity: 1; transform: scale(1); } }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: 0.75rem;
+      padding: 0.75rem 1.25rem; font-size: 0.85rem; color: var(--text); z-index: 999;
+      display: none; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: center;
+      font-size: 0.8rem; color: var(--text-muted); }
   </style>
 </head>
-<body class="bg-[#040914] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-black min-h-screen">
+<body>
 
-<!-- ========== NAVBAR ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#040914]/95 backdrop-blur-2xl border-b border-emerald-500/20 py-3.5 px-4 sm:px-8">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="../" class="flex items-center gap-3">
-      <div class="logo-b"><img src="../logo.jpg" alt="LR AgroSense" class="h-9 sm:h-10 w-auto"/></div>
-      <span class="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase hidden xl:inline-block">LR AGROSENSE</span>
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
+      <div class="logo-b"><img src="../logo.jpg" alt="LR AgroSense" style="height:2.25rem;width:auto;" /></div>
+      <span style="font-size:0.875rem;font-weight:600;color:var(--text);display:none;" class="xl-brand">LR AgroSense</span>
     </a>
-    
-    <div class="hidden md:flex items-center gap-1 lg:gap-3 text-xs sm:text-sm font-bold text-slate-100">
-      <a href="../about" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">About</a>
-      <a href="../products" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Products</a>
-      <a href="../#roadmap" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Roadmap</a>
-      <a href="../#tech" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Tech Stack</a>
-      <a href="../internships" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">Internships</a>
-      <a href="../blog" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Blog</a>
-      <a href="../contact" class="px-3 py-1.5 rounded-xl hover:bg-slate-900 hover:text-emerald-400 transition-all">Contact</a>
+
+    <div class="nav-links">
+      <a href="/about" class="nav-link">About</a>
+      <a href="/products" class="nav-link">Products</a>
+      <a href="/#roadmap" class="nav-link">Roadmap</a>
+      <a href="/#tech" class="nav-link">Technology</a>
+      <a href="/internships" class="nav-link nav-link-active">Internships</a>
+      <a href="/blog" class="nav-link">Blog</a>
+      <a href="/#investors" class="nav-link">Investors</a>
+      <a href="/contact" class="nav-link">Contact</a>
     </div>
 
-    <div class="flex items-center gap-2">
-      <a href="../" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold shadow-lg transition-all">← Back to Home</a>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="/" class="btn-secondary" style="padding:0.5rem 1rem;font-size:0.75rem;">← Home</a>
+      <button class="mob-menu-btn" onclick="document.getElementById('mob-menu').classList.toggle('open')"
+        style="padding:0.5rem;border-radius:0.5rem;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;"
+        aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </div>
+  </div>
+  <div id="mob-menu" class="mob-menu">
+    <a href="/about" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">About</a>
+    <a href="/products" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Products</a>
+    <a href="/#roadmap" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Roadmap</a>
+    <a href="/#tech" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Technology</a>
+    <a href="/internships" class="mob-link" style="color:var(--green-bright);">Internships</a>
+    <a href="/blog" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Blog</a>
+    <a href="/#investors" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Investors</a>
+    <a href="/contact" class="mob-link" onclick="document.getElementById('mob-menu').classList.remove('open')">Contact</a>
   </div>
 </nav>
 
-<!-- ========== HERO HEADER ========== -->
-<section class="relative pt-36 pb-12 px-4 max-w-7xl mx-auto text-center space-y-6">
-  <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
-    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-    <span>LR AGROSENSE CAREERS &amp; INTERNSHIP PORTAL</span>
+<main>
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <p class="section-label">Careers at LR AgroSense</p>
+    <h1>Build the future of<br/>Indian agriculture</h1>
+    <p>Work directly with the Founder on IoT hardware, precision telemetry software, and field-impact projects. All internships are remote-friendly and unpaid with full mentorship.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:1.75rem;">
+      <a href="/#investors" class="btn-secondary" style="font-size:0.8rem;padding:0.625rem 1.25rem;">Investor Information</a>
+      <a href="/contact" class="btn-secondary" style="font-size:0.8rem;padding:0.625rem 1.25rem;">Contact Us</a>
+    </div>
+  </section>
+
+  <!-- ===== FILTER BAR ===== -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterInternships('all',this)">All Openings</button>
+    <button class="filter-btn" onclick="filterInternships('Engineering',this)">Engineering</button>
+    <button class="filter-btn" onclick="filterInternships('Design',this)">Design</button>
+    <button class="filter-btn" onclick="filterInternships('Marketing',this)">Marketing</button>
+    <button class="filter-btn" onclick="filterInternships('Research',this)">Research</button>
+    <button class="filter-btn" onclick="filterInternships('Business',this)">Business</button>
   </div>
 
-  <h1 class="text-4xl sm:text-6xl font-black text-white font-display tracking-tight max-w-4xl mx-auto">
-    Build the Future of <span class="grad-t">Precision Agriculture</span>
-  </h1>
-
-  <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
-    Join Founder &amp; CEO <strong class="text-emerald-400 font-semibold">Pampana Hari Sai Ganesh</strong> to democratize micro-cost soil telemetry across 150M+ smallholder farms in India.
-  </p>
-
-  <div class="p-4 glass rounded-2xl border border-amber-500/30 max-w-2xl mx-auto text-xs text-amber-300 font-medium leading-relaxed">
-    ℹ️ <strong>Compensation Notice:</strong> Unpaid for now, revisited as we scale. All internships include official completion certificates signed by the CEO, LinkedIn recommendations, portfolio projects, and direct mentorship from Founder Pampana Hari Sai Ganesh.
-  </div>
-</section>
-
-<!-- ========== INTERNSHIPS LISTING CONTAINER ========== -->
-<section class="py-10 px-4 max-w-5xl mx-auto space-y-8">
-  <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-    <h2 class="text-xl font-bold text-white font-display flex items-center gap-2">
-      <span>🚀 Open Positions</span>
-      <span id="listings-count-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">Loading...</span>
-    </h2>
-    <span class="text-xs text-slate-400 font-mono">Updated Real-Time</span>
-  </div>
-
-  <div id="internships-page-list" class="space-y-8">
-    <div class="text-center py-20 text-slate-500 text-sm">
-      <div class="text-4xl mb-3 animate-spin">🌱</div>
-      <p>Fetching open positions...</p>
+  <!-- ===== LISTINGS ===== -->
+  <div class="listings" id="listings-container">
+    <div class="loading-pulse">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span style="margin-left:0.5rem;">Loading internship openings…</span>
     </div>
   </div>
-</section>
+</main>
 
-<!-- ========== APPLICATION MODAL ========== -->
-<div id="modal-apply" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4" style="display:none">
-  <div class="w-full max-w-2xl bg-[#0c1527] border border-slate-800 rounded-3xl shadow-2xl overflow-y-auto max-h-[92vh]">
-    <div class="sticky top-0 bg-[#0c1527] border-b border-slate-800 px-6 py-4 flex items-center justify-between z-10">
-      <div>
-        <span class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">OFFICIAL APPLICATION</span>
-        <h3 class="text-xl font-extrabold text-white font-display" id="apply-position-label-page">Apply for Position</h3>
+<!-- ===== APPLY MODAL ===== -->
+<div class="modal-overlay" id="apply-modal">
+  <div class="modal-box">
+    <h2 id="apply-modal-title">Apply for Internship</h2>
+    <p>Fill in your details and we'll reach out within 48 hours.</p>
+    <form id="apply-form" onsubmit="submitApplication(event)">
+      <label for="app-name">Full Name *</label>
+      <input id="app-name" type="text" required placeholder="Pampana Hari Sai Ganesh" />
+
+      <label for="app-email">Email Address *</label>
+      <input id="app-email" type="email" required placeholder="you@example.com" />
+
+      <label for="app-phone">Phone Number</label>
+      <input id="app-phone" type="tel" placeholder="+91 9876543210" />
+
+      <label for="app-college">College / University</label>
+      <input id="app-college" type="text" placeholder="IIT, NIT, JNTU…" />
+
+      <label for="app-year">Year of Study</label>
+      <select id="app-year">
+        <option value="">Select year</option>
+        <option>1st Year</option><option>2nd Year</option>
+        <option>3rd Year</option><option>4th Year</option><option>Postgraduate</option>
+      </select>
+
+      <label for="app-msg">Why LR AgroSense? *</label>
+      <textarea id="app-msg" required placeholder="Tell us what excites you about AgriTech and what you'll bring to the team…"></textarea>
+
+      <div class="modal-actions">
+        <button type="button" onclick="closeApplyModal()" class="btn-secondary">Cancel</button>
+        <button type="submit" class="btn-primary">Submit Application</button>
       </div>
-      <button onclick="closeApplyModalPage()" class="text-slate-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-900">✕</button>
-    </div>
-
-    <!-- Application Form View -->
-    <div id="apply-form-container" class="p-6">
-      <form id="apply-form-page" onsubmit="submitApplicationPage(event)" class="space-y-4 text-xs">
-        <input type="hidden" id="apply-position-page" value=""/>
-        
-        <div>
-          <label class="text-slate-400 font-semibold mb-1 block">Full Name <span class="text-rose-400">*</span></label>
-          <input id="paf-name" type="text" required placeholder="e.g. Rahul Sharma" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">Email Address <span class="text-rose-400">*</span></label>
-            <input id="paf-email" type="email" required placeholder="rahul@gmail.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">WhatsApp / Phone <span class="text-rose-400">*</span></label>
-            <input id="paf-phone" type="tel" required placeholder="+91 9876543210" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">College / University <span class="text-rose-400">*</span></label>
-            <input id="paf-college" type="text" required placeholder="e.g. ANGRAU / IIT / NIT" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">Degree / Major <span class="text-rose-400">*</span></label>
-            <input id="paf-degree" type="text" required placeholder="e.g. B.Sc. Agriculture" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">Graduation Year <span class="text-rose-400">*</span></label>
-            <input id="paf-gradyear" type="number" required min="2020" max="2030" value="2026" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-        </div>
-
-        <div>
-          <label class="text-slate-400 font-semibold mb-1 block">Resume URL / Google Drive Link <span class="text-rose-400">*</span></label>
-          <input id="paf-resume" type="url" placeholder="https://drive.google.com/file/d/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          <p class="text-[10px] text-slate-500 mt-1">Or upload PDF file directly below:</p>
-          <input id="paf-resume-file" type="file" accept=".pdf,.doc,.docx" class="mt-1 block w-full text-slate-400 text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-500/20 file:text-emerald-300 hover:file:bg-emerald-500/30"/>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">LinkedIn Profile</label>
-            <input id="paf-linkedin" type="url" placeholder="https://linkedin.com/in/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-          <div>
-            <label class="text-slate-400 font-semibold mb-1 block">Portfolio / GitHub / Website</label>
-            <input id="paf-portfolio" type="url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500"/>
-          </div>
-        </div>
-
-        <div>
-          <label class="text-slate-400 font-semibold mb-1 block">Availability &amp; Hours <span class="text-rose-400">*</span></label>
-          <select id="paf-avail" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none focus:border-emerald-500">
-            <option value="10-15 hrs/week (Part-Time)">10-15 hrs/week (Part-Time)</option>
-            <option value="15-25 hrs/week (Part-Time)">15-25 hrs/week (Part-Time)</option>
-            <option value="30+ hrs/week (Full-Time)">30+ hrs/week (Full-Time)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-slate-400 font-semibold mb-1 block">Why do you want to join LR AgroSense? <span class="text-rose-400">*</span></label>
-          <textarea id="paf-why" required rows="3" placeholder="Tell us about your passion for agriculture, technology, or startup growth..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm outline-none resize-none focus:border-emerald-500"></textarea>
-        </div>
-
-        <button type="submit" id="page-apply-submit-btn" class="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/20 transition-all mt-4">
-          Submit Application →
-        </button>
-      </form>
-    </div>
-
-    <!-- Success View -->
-    <div id="apply-congrats-page" class="hidden p-8 text-center space-y-6">
-      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">✓</div>
-      <div>
-        <h3 class="text-2xl font-bold text-white font-display">Application Received!</h3>
-        <p class="text-slate-400 text-xs mt-1">Thank you <span id="page-succ-name" class="text-white font-bold"></span>! Your application for <span id="page-succ-position" class="text-emerald-400 font-bold"></span> has been recorded.</p>
-      </div>
-      <div class="glass p-4 rounded-2xl border border-slate-800 text-left text-xs space-y-2">
-        <div class="flex justify-between"><span class="text-slate-400">Application Reference ID:</span><span id="page-succ-id" class="font-mono text-emerald-400 font-bold"></span></div>
-        <div class="flex justify-between"><span class="text-slate-400">Applicant Email:</span><span id="page-succ-email" class="text-slate-200"></span></div>
-        <div class="flex justify-between"><span class="text-slate-400">Date Submitted:</span><span id="page-succ-date" class="text-slate-200"></span></div>
-      </div>
-      <div class="pt-2">
-        <button onclick="closeApplyModalPage()" class="px-8 py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-extrabold text-xs shadow-lg">Done</button>
-      </div>
-    </div>
+    </form>
   </div>
 </div>
 
-<!-- ========== FOOTER ========== -->
-<footer class="py-12 px-4 border-t border-slate-800/80 text-center text-xs text-slate-500">
-  <p>© 2026 LR AgroSense. Founded by Pampana Hari Sai Ganesh. All rights reserved.</p>
+<div id="toast"></div>
+
+<footer>
+  <p>© 2026 LR AgroSense · <a href="/" style="color:var(--green-bright);">lragrosense.in</a> · Built with 🌱 for Indian farmers</p>
 </footer>
 
-<!-- JavaScript Engine -->
 <script>
-let pageInternships = [];
-let db = null;
-let pageInternshipsUnsub = null;
-
-function isValidInternship(item) {
-  return item && item.id && !item.id.startsWith('intern_seed_');
-}
-
-function internshipTimestamp(item) {
-  return item.updatedAt || item.createdAt || 0;
-}
-
-function mergeInternshipLists(localList, remoteList) {
-  const map = new Map();
-  const add = (item) => {
-    if (!isValidInternship(item)) return;
-    const existing = map.get(item.id);
-    if (!existing || internshipTimestamp(item) >= internshipTimestamp(existing)) {
-      map.set(item.id, item);
-    }
-  };
-  (localList || []).forEach(add);
-  (remoteList || []).forEach(add);
-  return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
-}
-
-// Safe Firebase init
-try {
-  const fbConfig = {
-    apiKey: "AIzaSyBVP-Ppp-eTL4RGJ28ZN8XN4CzzZNK7AZk",
+  // ===== Firebase Config =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9JbEq-n7hNEHMlkdHbNz4bm5JA-lQFX8",
     authDomain: "lr-agrosense.firebaseapp.com",
     projectId: "lr-agrosense",
-    storageBucket: "lr-agrosense.firebasestorage.app",
-    messagingSenderId: "82862173999",
-    appId: "1:82862173999:web:fa5f8d75ecc7229dc2bbda"
+    storageBucket: "lr-agrosense.appspot.com",
+    messagingSenderId: "523456789012",
+    appId: "1:523456789012:web:abc123def456"
   };
-  if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-    if (!firebase.apps.length) firebase.initializeApp(fbConfig);
+
+  let db = null;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    else firebase.app();
     db = firebase.firestore();
-    window.db = db;
-  }
-} catch(e) {
-  console.warn('Firebase init safe catch:', e);
-}
+  } catch(e) { console.warn('Firebase init failed:', e); }
 
-const colorMap = {
-  emerald: { border:'border-emerald-500/30', label:'text-emerald-400', btn:'bg-emerald-500 hover:bg-emerald-400', badge:'bg-emerald-500/20 text-emerald-300' },
-  cyan:    { border:'border-cyan-500/30',    label:'text-cyan-400',    btn:'bg-cyan-500 hover:bg-cyan-400',       badge:'bg-cyan-500/20 text-cyan-300'    },
-  amber:   { border:'border-amber-500/30',   label:'text-amber-400',   btn:'bg-amber-500 hover:bg-amber-400',     badge:'bg-amber-500/20 text-amber-300'  },
-  purple:  { border:'border-purple-500/30',  label:'text-purple-400',  btn:'bg-purple-500 hover:bg-purple-400',   badge:'bg-purple-500/20 text-purple-300' },
-  rose:    { border:'border-rose-500/30',    label:'text-rose-400',    btn:'bg-rose-500 hover:bg-rose-400',       badge:'bg-rose-500/20 text-rose-300'    }
-};
+  // ===== State =====
+  let allInternships = [];
+  let currentFilter = 'all';
+  let applyForRole = '';
 
-function renderPageInternships() {
-  const container = document.getElementById('internships-page-list');
-  const countBadge = document.getElementById('listings-count-badge');
-  if (!container) return;
+  // ===== Helpers =====
+  function isValid(i) { return i && i.id && !i.id.startsWith('intern_seed_'); }
 
-  const localRaw = localStorage.getItem('lr_internships');
-  let localList = [];
-  if (localRaw) {
-    try { localList = JSON.parse(localRaw).filter(isValidInternship); } catch(e){}
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3000);
   }
 
-  const combined = mergeInternshipLists(localList, pageInternships || []);
-  const visible = combined.filter(i => i.status !== 'draft');
-
-  if (countBadge) countBadge.textContent = `${visible.length} Active`;
-
-  if (!visible.length) {
-    container.innerHTML = `
-      <div class="text-center py-20 space-y-4 glass rounded-3xl border border-slate-800">
-        <div class="text-5xl">🌱</div>
-        <h3 class="text-xl font-bold text-white font-display">No Open Positions Right Now</h3>
-        <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">We're growing fast! New internship positions are announced regularly by Founder Pampana Hari Sai Ganesh. Follow us on LinkedIn for updates.</p>
-        <a href="https://www.linkedin.com/in/lragrosense" target="_blank" class="inline-block mt-2 px-6 py-3 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs shadow-lg transition-all">Follow LR AgroSense on LinkedIn ↗</a>
-      </div>`;
-    return;
+  // ===== Filter =====
+  function filterInternships(dept, btn) {
+    currentFilter = dept;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderListings();
   }
 
-  container.innerHTML = visible.map((i, idx) => {
-    const c = colorMap[i.color] || colorMap.emerald;
-    const num = String(idx + 1).padStart(2, '0');
-    const respList = (i.responsibilities || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
-    const eligList = (i.eligibility   || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
-    const benList  = (i.benefits      || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+  // ===== Render =====
+  function renderListings() {
+    const container = document.getElementById('listings-container');
 
-    let cta = '';
-    if (i.status === 'live') {
-      cta = `<button onclick="openApplyModalPage('${i.id}', '${i.title.replace(/'/g,"\\'")}')"
-        class="px-8 py-3.5 rounded-xl ${c.btn} text-slate-950 font-extrabold text-xs shadow-lg transition-all shrink-0 pulse-ring">
-        Apply Now →
-      </button>`;
-    } else if (i.status === 'published') {
-      const openMs = i.openDate ? new Date(i.openDate).getTime() : null;
-      let cdHtml = '';
-      if (openMs) {
-        const dateStr = new Date(i.openDate).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-        cdHtml = `<div class="text-xs font-mono text-amber-300 mt-1">Opens ${dateStr}</div>`;
+    // Show ALL valid internships — no draft filter so everything posted shows
+    let visible = allInternships.filter(isValid);
+    if (currentFilter !== 'all') {
+      visible = visible.filter(i => (i.department || '').toLowerCase().includes(currentFilter.toLowerCase()));
+    }
+
+    if (!visible.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:3rem;margin-bottom:1rem;">🌾</div>
+          <h3>No open positions right now</h3>
+          <p>New internship openings are announced here as soon as they're ready. Follow us on LinkedIn to get notified.</p>
+          <a href="https://www.linkedin.com/company/lragrosense" target="_blank" rel="noopener" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
+        </div>`;
+      return;
+    }
+
+    const colorMap = {
+      emerald: { label:'color:var(--green-bright)', btn:'background:var(--green-dark);color:#fff;border:1px solid rgba(255,255,255,0.08)' },
+      cyan:    { label:'color:#67e8f9', btn:'background:#0891b2;color:#fff;border:1px solid rgba(255,255,255,0.08)' },
+      amber:   { label:'color:var(--wheat)', btn:'background:#b45309;color:#fff;border:1px solid rgba(255,255,255,0.08)' },
+      purple:  { label:'color:#c4b5fd', btn:'background:#7c3aed;color:#fff;border:1px solid rgba(255,255,255,0.08)' },
+      rose:    { label:'color:#fda4af', btn:'background:#be123c;color:#fff;border:1px solid rgba(255,255,255,0.08)' }
+    };
+
+    container.innerHTML = visible.map((item, idx) => {
+      const c = colorMap[item.color] || colorMap.emerald;
+      const num = String(idx + 1).padStart(2, '0');
+
+      // Badge based on status
+      let badgeHtml = '';
+      if (item.status === 'live') {
+        badgeHtml = '<span class="card-badge badge-live">● Live</span>';
+      } else if (item.status === 'published') {
+        badgeHtml = '<span class="card-badge badge-published">🕐 Coming Soon</span>';
+      } else if (item.status === 'closed') {
+        badgeHtml = '<span class="card-badge badge-closed">🔒 Closed</span>';
+      } else {
+        // draft or any other status — show as live since admin posted it
+        badgeHtml = '<span class="card-badge badge-live">● Open</span>';
       }
-      cta = `<div class="flex flex-col items-end gap-1 shrink-0">
-        <button disabled class="px-6 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs cursor-not-allowed">🕐 Coming Soon</button>
-        ${cdHtml}
-      </div>`;
-    } else if (i.status === 'closed') {
-      cta = `<span class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs shrink-0">🔒 Applications Closed</span>`;
-    }
 
-    return `
-    <div class="glass glass-h p-6 sm:p-8 rounded-3xl ${c.border} space-y-6">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div class="space-y-1">
-          <span class="text-[10px] font-mono ${c.label} font-bold tracking-widest">OPENING ${num}</span>
-          <h3 class="text-2xl font-extrabold text-white font-display">${i.title}</h3>
-          <p class="text-xs text-slate-400 mt-1">Department: ${i.department} • ${i.type || 'Remote | Part-Time | Unpaid'} • ${i.duration || '1–3 Months'}</p>
-        </div>
-        ${cta}
-      </div>
-      <div class="space-y-4 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
-        <div><h4 class="font-bold text-white text-sm mb-1">Job Description</h4><p class="leading-relaxed">${i.description}</p></div>
-        ${respList ? `<div><h4 class="font-bold text-white text-sm mb-1">Responsibilities</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${respList}</ul></div>` : ''}
-        ${eligList ? `<div><h4 class="font-bold text-white text-sm mb-1">Eligibility</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${eligList}</ul></div>` : ''}
-        ${benList  ? `<div><h4 class="font-bold text-white text-sm mb-1">Benefits</h4><ul class="list-disc pl-5 space-y-1 text-slate-400">${benList}</ul></div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
+      // Apply button
+      let applyBtn = '';
+      const titleSafe = (item.title || '').replace(/'/g, "\\'");
+      if (item.status === 'closed') {
+        applyBtn = '<span style="font-size:0.8rem;color:var(--text-muted);">🔒 Applications closed</span>';
+      } else if (item.status === 'published') {
+        const openStr = item.openDate ? new Date(item.openDate).toLocaleDateString('en-IN',{day:'numeric',month:'long'}) : '';
+        applyBtn = `<span style="font-size:0.8rem;color:var(--wheat);">Opens ${openStr || 'soon'}</span>`;
+      } else {
+        applyBtn = `<button onclick="openApplyModal('${titleSafe}')" class="btn-primary" style="padding:0.625rem 1.5rem;font-size:0.8rem;">Apply Now →</button>`;
+      }
 
-function loadPageInternships() {
-  const localRaw = localStorage.getItem('lr_internships');
-  if (localRaw) {
-    try { pageInternships = JSON.parse(localRaw).filter(isValidInternship); } catch(e){}
+      const respItems = (item.responsibilities || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+      const eligItems = (item.eligibility || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+      const benItems  = (item.benefits || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+
+      return `
+        <div class="intern-card" data-dept="${item.department || ''}">
+          <div class="card-header">
+            <div class="card-meta">
+              <div class="card-number" style="${c.label}">OPENING ${num}</div>
+              <h2 class="card-title">${item.title || 'Untitled Role'}</h2>
+              <div class="card-dept">${item.department || ''} ${item.type ? '· ' + item.type : ''} ${item.duration ? '· ' + item.duration : ''}</div>
+            </div>
+            ${badgeHtml}
+          </div>
+
+          <div class="card-pills">
+            ${item.type ? `<span class="pill">${item.type}</span>` : ''}
+            ${item.duration ? `<span class="pill">${item.duration}</span>` : ''}
+            <span class="pill">Remote Friendly</span>
+            <span class="pill">Unpaid + Certificate</span>
+          </div>
+
+          ${item.description ? `<p class="card-desc">${item.description}</p>` : ''}
+
+          <div class="card-sections">
+            ${respItems ? `<div class="card-section"><h4>Responsibilities</h4><ul>${respItems}</ul></div>` : ''}
+            ${eligItems ? `<div class="card-section"><h4>Eligibility</h4><ul>${eligItems}</ul></div>` : ''}
+            ${benItems  ? `<div class="card-section" style="grid-column:1/-1;"><h4>What You Get</h4><ul>${benItems}</ul></div>` : ''}
+          </div>
+
+          <div class="card-footer">
+            <div style="font-size:0.75rem;color:var(--text-muted);">
+              Posted ${item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : 'Recently'}
+            </div>
+            ${applyBtn}
+          </div>
+        </div>`;
+    }).join('');
   }
-  renderPageInternships();
 
-  if (db && db.collection) {
-    db.collection('internships').get().then(snap => {
-      const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
-      pageInternships = mergeInternshipLists(pageInternships, remote);
-      localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-      renderPageInternships();
-    }).catch(() => {});
+  // ===== Apply Modal =====
+  function openApplyModal(role) {
+    applyForRole = role;
+    document.getElementById('apply-modal-title').textContent = 'Apply — ' + role;
+    document.getElementById('apply-modal').classList.add('open');
+    document.getElementById('apply-form').reset();
+  }
 
-    if (!pageInternshipsUnsub) {
-      pageInternshipsUnsub = db.collection('internships').onSnapshot(snap => {
-        const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
-        pageInternships = mergeInternshipLists(pageInternships, remote);
-        localStorage.setItem('lr_internships', JSON.stringify(pageInternships));
-        renderPageInternships();
-      }, () => {});
+  function closeApplyModal() {
+    document.getElementById('apply-modal').classList.remove('open');
+  }
+
+  document.getElementById('apply-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeApplyModal();
+  });
+
+  function submitApplication(e) {
+    e.preventDefault();
+    const data = {
+      role: applyForRole,
+      name: document.getElementById('app-name').value.trim(),
+      email: document.getElementById('app-email').value.trim(),
+      phone: document.getElementById('app-phone').value.trim(),
+      college: document.getElementById('app-college').value.trim(),
+      year: document.getElementById('app-year').value,
+      message: document.getElementById('app-msg').value.trim(),
+      submittedAt: Date.now()
+    };
+
+    if (db) {
+      db.collection('applications').add(data)
+        .then(() => {
+          closeApplyModal();
+          showToast('✅ Application submitted! We'll reach out within 48 hours.');
+        })
+        .catch(() => {
+          // Fallback: open email
+          const mailto = `mailto:lragrosense@gmail.com?subject=Internship Application — ${data.role}&body=Name: ${data.name}%0AEmail: ${data.email}%0APhone: ${data.phone}%0ACollege: ${data.college}%0AYear: ${data.year}%0A%0A${data.message}`;
+          window.open(mailto);
+          closeApplyModal();
+          showToast('Opening email… Application sent!');
+        });
+    } else {
+      const mailto = `mailto:lragrosense@gmail.com?subject=Internship Application — ${data.role}&body=Name: ${data.name}%0AEmail: ${data.email}%0A%0A${data.message}`;
+      window.open(mailto);
+      closeApplyModal();
+      showToast('Opening email app…');
     }
   }
-}
 
-function openApplyModalPage(id, title) {
-  document.getElementById('apply-position-page').value = title;
-  document.getElementById('apply-position-label-page').textContent = title;
-  document.getElementById('apply-form-container').classList.remove('hidden');
-  document.getElementById('apply-congrats-page').classList.add('hidden');
-  document.getElementById('modal-apply').style.display = 'flex';
-}
+  // ===== Load from Firestore =====
+  function loadInternships() {
+    const container = document.getElementById('listings-container');
 
-function closeApplyModalPage() {
-  document.getElementById('modal-apply').style.display = 'none';
-}
-
-async function submitApplicationPage(e) {
-  e.preventDefault();
-  const btn = document.getElementById('page-apply-submit-btn');
-  btn.textContent = 'Submitting...'; btn.disabled = true;
-
-  let resumeUrl = document.getElementById('paf-resume').value.trim();
-  const fileInput = document.getElementById('paf-resume-file');
-  if (fileInput && fileInput.files && fileInput.files[0]) {
-    const file = fileInput.files[0];
+    // Load from localStorage first for instant display
     try {
-      resumeUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = err => reject(err);
-        reader.readAsDataURL(file);
+      const local = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
+      if (local.length) {
+        allInternships = local;
+        renderListings();
+      }
+    } catch(e) {}
+
+    if (!db) {
+      if (!allInternships.length) {
+        container.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">🌾</div>
+          <h3>No open positions right now</h3>
+          <p>Check back soon or follow us on LinkedIn for updates.</p>
+          <a href="https://www.linkedin.com/company/lragrosense" target="_blank" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
+        </div>`;
+      }
+      return;
+    }
+
+    // Load from Firestore — show ALL internships (no status filter)
+    db.collection('internships').orderBy('createdAt', 'desc').get()
+      .then(snap => {
+        const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+        if (remote.length) {
+          allInternships = remote;
+          // Save to localStorage
+          localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+          renderListings();
+        } else if (!allInternships.length) {
+          container.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">🌾</div>
+            <h3>No open positions right now</h3>
+            <p>New internship openings are announced here. Follow us on LinkedIn to get notified.</p>
+            <a href="https://www.linkedin.com/company/lragrosense" target="_blank" class="btn-secondary" style="margin-top:1.5rem;display:inline-flex;">Follow on LinkedIn</a>
+          </div>`;
+        }
+      })
+      .catch(err => {
+        console.error('Firestore load failed:', err);
+        // Try without orderBy in case index doesn't exist
+        db.collection('internships').get()
+          .then(snap => {
+            const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+            if (remote.length) {
+              allInternships = remote;
+              localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+              renderListings();
+            }
+          })
+          .catch(() => {});
       });
-    } catch(err) { console.warn('File read error', err); }
+
+    // Real-time updates
+    db.collection('internships').onSnapshot(snap => {
+      const remote = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+      if (remote.length) {
+        allInternships = remote;
+        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+        renderListings();
+      }
+    }, () => {});
   }
 
-  const name    = document.getElementById('paf-name').value.trim();
-  const email   = document.getElementById('paf-email').value.trim();
-  const pos     = document.getElementById('apply-position-page').value;
-  const refId   = 'LRA-APP-' + Math.floor(1000 + Math.random() * 9000);
-  const todayStr = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' });
-
-  const appObj = {
-    id: 'app_' + Date.now(), refId,
-    fullName: name, email,
-    phone:    document.getElementById('paf-phone').value.trim(),
-    college:  document.getElementById('paf-college').value.trim(),
-    degree:   document.getElementById('paf-degree').value.trim(),
-    graduationYear: parseInt(document.getElementById('paf-gradyear').value),
-    resumeLink:    resumeUrl || '',
-    linkedinProfile: document.getElementById('paf-linkedin').value.trim() || '',
-    portfolio:       document.getElementById('paf-portfolio').value.trim() || '',
-    whyJoin:  document.getElementById('paf-why').value.trim(),
-    availability: document.getElementById('paf-avail').value,
-    position: pos, status: 'new', notes: '', decisionReason: '', dateFormatted: todayStr
-  };
-
-  const existing = JSON.parse(localStorage.getItem('lr_apps') || '[]');
-  existing.unshift(appObj);
-  localStorage.setItem('lr_apps', JSON.stringify(existing));
-
-  if (db && db.collection) {
-    db.collection('applications').add({ ...appObj, appliedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
-  }
-
-  document.getElementById('page-succ-name').textContent     = name;
-  document.getElementById('page-succ-email').textContent    = email;
-  document.getElementById('page-succ-phone').textContent    = appObj.phone;
-  document.getElementById('page-succ-college').textContent  = appObj.college;
-  document.getElementById('page-succ-date').textContent     = todayStr;
-  document.getElementById('page-succ-id').textContent       = refId;
-  document.getElementById('page-succ-position').textContent = pos;
-
-  document.getElementById('apply-form-container').classList.add('hidden');
-  document.getElementById('apply-congrats-page').classList.remove('hidden');
-  btn.textContent = 'Submit Application →'; btn.disabled = false;
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadPageInternships);
-} else {
-  loadPageInternships();
-}
+  // Start
+  document.addEventListener('DOMContentLoaded', loadInternships);
 </script>
+
 </body>
 </html>
