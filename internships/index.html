@@ -325,21 +325,6 @@
   } catch(e) { console.warn('Firebase init failed:', e); }
 
   // ===== Initial State =====
-  const USER_INTERNSHIP = {
-    id: 'intern_1786541283801',
-    title: 'Agronomy & Micronutrient Research Intern',
-    department: 'Agronomy & Research',
-    type: 'Remote / Field',
-    duration: '1–3 Months',
-    color: 'emerald',
-    status: 'live',
-    description: 'Work directly with Founder Pampana Hari Sai Ganesh on micro-nutrient soil probe telemetry, field sensor calibration, and yield optimization algorithms for smallholder Indian farmers.',
-    responsibilities: 'Conduct field testing of soil NPK and micronutrient sensor probes\nLog, organize, and analyze soil parameter datasets across farm plots\nAssist in preparing technical research papers and farmer guide documentation',
-    eligibility: 'Background in Agronomy, Soil Science, Agriculture, B.Tech/B.Sc or related fields\nFamiliarity with soil parameters (NPK, pH, moisture, EC)\nPassionate about sustainable AgriTech innovation and field impact',
-    benefits: 'Direct mentorship from Founder Pampana Hari Sai Ganesh\nOfficial Certificate of Completion signed by CEO\nLetter of Recommendation upon exceptional performance',
-    createdAt: Date.now()
-  };
-
   let allInternships = [];
   let currentFilter = 'all';
   let applyForRole = '';
@@ -402,15 +387,14 @@
         badgeHtml = '<span class="card-badge badge-closed">🔒 Closed</span>';
         applyBtn = '<span style="font-size:0.8rem;color:var(--text-muted);">🔒 Applications closed</span>';
       } else {
-        // ALWAYS enable Apply Now for live / published / draft positions
         badgeHtml = '<span class="card-badge badge-live">● Live</span>';
         applyBtn = `<button onclick="openApplyModal('${titleSafe}')" class="btn-primary" style="padding:0.625rem 1.5rem;font-size:0.8rem;">Apply Now →</button>`;
       }
 
-      const descText = item.description || USER_INTERNSHIP.description;
-      const respRaw  = item.responsibilities || USER_INTERNSHIP.responsibilities;
-      const eligRaw  = item.eligibility || USER_INTERNSHIP.eligibility;
-      const benRaw   = item.benefits || USER_INTERNSHIP.benefits;
+      const descText = item.description || '';
+      const respRaw  = item.responsibilities || '';
+      const eligRaw  = item.eligibility || '';
+      const benRaw   = item.benefits || '';
 
       const respItems = respRaw.split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
       const eligItems = eligRaw.split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
@@ -434,7 +418,7 @@
             <span class="pill">Unpaid + Certificate</span>
           </div>
 
-          <p class="card-desc">${descText}</p>
+          ${descText ? `<p class="card-desc">${descText}</p>` : ''}
 
           <div class="card-sections">
             ${respItems ? `<div class="card-section"><h4>Responsibilities</h4><ul>${respItems}</ul></div>` : ''}
@@ -555,7 +539,7 @@
       </div>`;
   }
 
-  // ===== Fetch via Firestore REST (no auth needed if rules allow public) =====
+  // ===== Fetch via Firestore REST =====
   async function fetchViaRest() {
     const PROJECT = 'lr-agrosense';
     const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships?pageSize=50`;
@@ -590,39 +574,24 @@
       localData = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
     } catch(e) {}
 
-    if (localData.length > 0) {
-      allInternships = localData;
-    } else {
-      allInternships = [USER_INTERNSHIP];
-    }
+    allInternships = localData;
     renderListings();
 
-    const timeoutId = setTimeout(showEmpty, 5000);
-    let loaded = false;
+    const timeoutId = setTimeout(() => {
+      if (!allInternships.length) showEmpty();
+    }, 3000);
 
     function onData(rows) {
       clearTimeout(timeoutId);
-      loaded = true;
-      if (rows && rows.length > 0) {
-        const map = new Map();
-        // Fallback first, then localData, then remote rows (remote/local overwrites fallback)
-        [USER_INTERNSHIP, ...localData, ...rows].forEach(item => {
-          if (isValid(item)) {
-            const existing = map.get(item.id);
-            // Merge so properties created by user in admin are preserved
-            map.set(item.id, { ...(existing || {}), ...item });
-          }
-        });
-        allInternships = Array.from(map.values());
-        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-        renderListings();
-      }
+      allInternships = rows.filter(isValid);
+      localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+      renderListings();
     }
 
     // Try Firestore REST
-    fetchViaRest().then(rows => { if (rows.length) onData(rows); });
+    fetchViaRest().then(rows => { onData(rows); });
 
-    // Try Firestore SDK
+    // Try Firestore SDK with real-time listener
     if (db) {
       try {
         const auth = firebase.auth();
@@ -631,21 +600,10 @@
         }
       } catch(e) {}
 
-      const tryRead = () => {
-        db.collection('internships').get()
-          .then(snap => {
-            const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-            if (rows.length) onData(rows);
-            db.collection('internships').onSnapshot(s => {
-              const live = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-              if (live.length) onData(live);
-            }, () => {});
-          })
-          .catch(() => {});
-      };
-
-      tryRead();
-      firebase.auth().onAuthStateChanged(() => { if (!loaded) tryRead(); });
+      db.collection('internships').onSnapshot(s => {
+        const live = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+        onData(live);
+      }, () => {});
     }
   }
 
