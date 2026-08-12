@@ -277,7 +277,7 @@
     db = firebase.firestore();
   } catch(e) { console.warn('Firebase init failed:', e); }
 
-  // ===== Active Internship Openings =====
+  // ===== Initial State =====
   const USER_INTERNSHIP = {
     id: 'intern_1786541283801',
     title: 'Agronomy & Micronutrient Research Intern',
@@ -287,14 +287,14 @@
     color: 'emerald',
     status: 'published',
     openDate: '2026-08-15',
-    description: 'Research micro-nutrient formulation, soil NPK telemetry algorithms, and field testing for smallholder farmers.',
-    responsibilities: 'Field testing of soil probes & micronutrient sensors\nLog and analyze soil NPK telemetry datasets\nAssist in preparing research documentation and farmer guides',
-    eligibility: 'Agronomy / Soil Science / Agriculture / Biotech background\nUnderstanding of soil parameters (NPK, pH, EC)\nPassion for sustainable AgriTech innovation',
-    benefits: 'Direct mentorship from Founder Pampana Hari Sai Ganesh\nCertificate of Completion signed by CEO\nLetter of Recommendation upon performance',
+    description: '',
+    responsibilities: '',
+    eligibility: '',
+    benefits: '',
     createdAt: Date.now()
   };
 
-  let allInternships = [USER_INTERNSHIP];
+  let allInternships = [];
   let currentFilter = 'all';
   let applyForRole = '';
 
@@ -504,37 +504,44 @@
 
   // ===== Main load function =====
   async function loadInternships() {
-    // 1. Instantly show localStorage data (admin's browser will have it)
+    let localData = [];
     try {
-      const local = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
-      if (local.length) { allInternships = local; renderListings(); }
+      localData = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
     } catch(e) {}
 
-    // 2. Set a 5-second hard timeout — if nothing loads, show empty state
-    const timeoutId = setTimeout(showEmpty, 5000);
+    if (localData.length > 0) {
+      allInternships = localData;
+    } else {
+      allInternships = [USER_INTERNSHIP];
+    }
+    renderListings();
 
+    const timeoutId = setTimeout(showEmpty, 5000);
     let loaded = false;
 
-    // Helper to receive data
     function onData(rows) {
       clearTimeout(timeoutId);
       loaded = true;
-      const map = new Map();
-      [USER_INTERNSHIP, ...allInternships, ...rows].forEach(item => {
-        if (isValid(item)) map.set(item.id, item);
-      });
-      allInternships = Array.from(map.values());
-      localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-      renderListings();
+      if (rows && rows.length > 0) {
+        const map = new Map();
+        // Fallback first, then localData, then remote rows (remote/local overwrites fallback)
+        [USER_INTERNSHIP, ...localData, ...rows].forEach(item => {
+          if (isValid(item)) {
+            const existing = map.get(item.id);
+            // Merge so properties created by user in admin are preserved
+            map.set(item.id, { ...(existing || {}), ...item });
+          }
+        });
+        allInternships = Array.from(map.values());
+        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+        renderListings();
+      }
     }
 
-    // Render immediately with initial USER_INTERNSHIP
-    renderListings();
-
-    // 3. Try Firestore REST API
+    // Try Firestore REST
     fetchViaRest().then(rows => { if (rows.length) onData(rows); });
 
-    // 4. Try anonymous Firebase Auth → then Firestore SDK
+    // Try Firestore SDK
     if (db) {
       try {
         const auth = firebase.auth();
