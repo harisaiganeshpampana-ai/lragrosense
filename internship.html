@@ -333,10 +333,10 @@
     duration: '1–3 Months',
     color: 'emerald',
     status: 'live',
-    description: '',
-    responsibilities: '',
-    eligibility: '',
-    benefits: '',
+    description: 'Work directly with Founder Pampana Hari Sai Ganesh on micro-nutrient soil probe telemetry, field sensor calibration, and yield optimization algorithms for smallholder Indian farmers.',
+    responsibilities: 'Conduct field testing of soil NPK and micronutrient sensor probes\nLog, organize, and analyze soil parameter datasets across farm plots\nAssist in preparing technical research papers and farmer guide documentation',
+    eligibility: 'Background in Agronomy, Soil Science, Agriculture, B.Tech/B.Sc or related fields\nFamiliarity with soil parameters (NPK, pH, moisture, EC)\nPassionate about sustainable AgriTech innovation and field impact',
+    benefits: 'Direct mentorship from Founder Pampana Hari Sai Ganesh\nOfficial Certificate of Completion signed by CEO\nLetter of Recommendation upon exceptional performance',
     createdAt: Date.now()
   };
 
@@ -407,9 +407,14 @@
         applyBtn = `<button onclick="openApplyModal('${titleSafe}')" class="btn-primary" style="padding:0.625rem 1.5rem;font-size:0.8rem;">Apply Now →</button>`;
       }
 
-      const respItems = (item.responsibilities || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
-      const eligItems = (item.eligibility || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
-      const benItems  = (item.benefits || '').split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+      const descText = item.description || USER_INTERNSHIP.description;
+      const respRaw  = item.responsibilities || USER_INTERNSHIP.responsibilities;
+      const eligRaw  = item.eligibility || USER_INTERNSHIP.eligibility;
+      const benRaw   = item.benefits || USER_INTERNSHIP.benefits;
+
+      const respItems = respRaw.split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+      const eligItems = eligRaw.split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
+      const benItems  = benRaw.split('\n').filter(Boolean).map(r => `<li>${r.trim()}</li>`).join('');
 
       return `
         <div class="intern-card" data-dept="${item.department || ''}">
@@ -429,7 +434,7 @@
             <span class="pill">Unpaid + Certificate</span>
           </div>
 
-          ${item.description ? `<p class="card-desc">${item.description}</p>` : ''}
+          <p class="card-desc">${descText}</p>
 
           <div class="card-sections">
             ${respItems ? `<div class="card-section"><h4>Responsibilities</h4><ul>${respItems}</ul></div>` : ''}
