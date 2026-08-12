@@ -1956,10 +1956,13 @@ function setInternshipStatus(id, status) {
   const item = getInternships().find(i => i.id === id);
   if (!item) return;
   item.status = status;
+  item.updatedAt = Date.now();
   saveInternships();
   renderAdminInternshipsTable();
   renderPublicInternships();
-  db.collection('internships').doc(id).update({ status }).catch(() => {});
+  if (db && db.collection) {
+    db.collection('internships').doc(id).set(item, { merge: true }).catch(() => {});
+  }
   showToast('Listing Updated', `"${item.title}" is now ${status.toUpperCase()}.`);
 }
 
