@@ -587,6 +587,31 @@
 
   // ===== Main load function =====
   async function loadInternships() {
+    // Show spinner/nothing while loading — do NOT trust localStorage status
+    // because admin may have changed status and localStorage is stale
+    allInternships = [];
+    renderListings();
+
+    let firestoreLoaded = false;
+
+    function onData(rows) {
+      firestoreLoaded = true;
+      if (rows && rows.length > 0) {
+        // Firestore is the SINGLE source of truth — overwrite everything
+        allInternships = rows.filter(isValid);
+        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+      } else {
+        // Firestore is empty — seed the default role INTO Firestore
+        allInternships = [DEFAULT_USER_ROLE];
+        localStorage.setItem('lr_internships', JSON.stringify(allInternships));
+        if (db) {
+          db.collection('internships').doc(DEFAULT_USER_ROLE.id).set(DEFAULT_USER_ROLE).catch(() => {});
+        }
+      }
+      renderListings();
+    }
+
+    // Show local cache ONLY as a brief placeholder (max 1 second) while Firestore loads
     let localData = [];
     try {
       localData = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
@@ -594,34 +619,19 @@
 
     if (localData.length > 0) {
       allInternships = localData;
+      renderListings();
     } else {
       allInternships = [DEFAULT_USER_ROLE];
-    }
-    renderListings();
-
-    const timeoutId = setTimeout(() => {
-      if (!allInternships.length) showEmpty();
-    }, 3000);
-
-    function onData(rows) {
-      clearTimeout(timeoutId);
-      if (rows && rows.length > 0) {
-        allInternships = rows.filter(isValid);
-      } else if (!localData.length) {
-        // Database is empty online — seed the user's role into Firestore
-        allInternships = [DEFAULT_USER_ROLE];
-        if (db) {
-          db.collection('internships').doc(DEFAULT_USER_ROLE.id).set(DEFAULT_USER_ROLE).catch(() => {});
-        }
-      }
-      localStorage.setItem('lr_internships', JSON.stringify(allInternships));
       renderListings();
     }
 
-    // Try Firestore REST
-    fetchViaRest().then(rows => { onData(rows); });
+    // Try Firestore REST first (fast, no auth needed)
+    const restRows = await fetchViaRest().catch(() => []);
+    if (restRows && restRows.length > 0) {
+      onData(restRows);
+    }
 
-    // Try Firestore SDK with real-time listener
+    // Try Firestore SDK with REAL-TIME listener — this is the key sync mechanism
     if (db) {
       try {
         const auth = firebase.auth();
@@ -630,10 +640,27 @@
         }
       } catch(e) {}
 
-      db.collection('internships').onSnapshot(s => {
-        const live = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-        onData(live);
-      }, () => {});
+      // onSnapshot fires immediately with current data AND on every admin change
+      db.collection('internships').onSnapshot(snap => {
+        const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
+        onData(rows);
+      }, err => {
+        console.warn('Firestore snapshot error:', err);
+        // If Firestore fails, fall back to local cache
+        if (!firestoreLoaded && localData.length > 0) {
+          allInternships = localData;
+          renderListings();
+        } else if (!firestoreLoaded) {
+          allInternships = [DEFAULT_USER_ROLE];
+          renderListings();
+        }
+      });
+    } else {
+      // No Firestore — use local cache or default
+      if (!firestoreLoaded) {
+        allInternships = localData.length > 0 ? localData : [DEFAULT_USER_ROLE];
+        renderListings();
+      }
     }
   }
 
