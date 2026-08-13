@@ -1870,6 +1870,8 @@ function saveInternships() {
   const cleanList = (allInternships || []).filter(isValidInternship);
   allInternships = cleanList;
   localStorage.setItem('lr_internships', JSON.stringify(cleanList));
+  // Signal internships page to reload — picked up via window storage event
+  localStorage.setItem('lr_internships_updated', Date.now().toString());
   pushInternshipsToFirestore(cleanList);
 }
 
