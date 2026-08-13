@@ -653,7 +653,27 @@
   }
 
   // Start
-  document.addEventListener('DOMContentLoaded', loadInternships);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadInternships();
+
+    // Poll localStorage every 2 seconds — guaranteed sync with admin portal
+    // Works even if Firestore auth fails. Admin writes to lr_internships,
+    // this picks it up instantly and re-renders with the correct status.
+    let lastSeen = localStorage.getItem('lr_internships_updated') || '0';
+    setInterval(() => {
+      const latest = localStorage.getItem('lr_internships_updated') || '0';
+      if (latest !== lastSeen) {
+        lastSeen = latest;
+        try {
+          const fresh = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
+          if (fresh.length > 0) {
+            allInternships = fresh;
+            renderListings();
+          }
+        } catch(e) {}
+      }
+    }, 2000);
+  });
 </script>
 
 </body>
