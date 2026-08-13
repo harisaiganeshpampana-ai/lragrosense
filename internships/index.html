@@ -585,70 +585,63 @@
     createdAt: Date.now()
   };
 
-  // ===== Apply data rows from any source =====
-  function applyRows(rows) {
-    if (rows && rows.length > 0) {
+  // Returns the most recent updatedAt across all items (used to compare freshness)
+  function maxTs(list) {
+    return Math.max(...(list || []).map(i => i.updatedAt || i.createdAt || 0), 0);
+  }
+
+  function getLocalData() {
+    try {
+      return JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
+    } catch(e) { return []; }
+  }
+
+  // Only apply remote rows if they are NEWER than what admin already saved locally
+  function applyIfNewer(rows) {
+    if (!rows || rows.length === 0) return;
+    const localTs  = maxTs(getLocalData());
+    const remoteTs = maxTs(rows);
+    if (remoteTs >= localTs) {
       allInternships = rows.filter(isValid);
       localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-    } else {
-      // Firestore empty — seed default and write to Firestore
-      allInternships = [DEFAULT_USER_ROLE];
-      localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-      if (db) {
-        db.collection('internships').doc(DEFAULT_USER_ROLE.id).set(DEFAULT_USER_ROLE).catch(() => {});
-      }
+      renderListings();
     }
-    renderListings();
+    // else: local admin data is newer — keep it, don't override
   }
 
   // ===== Main load function =====
   async function loadInternships() {
-    // 1. Show local cache immediately while Firestore loads
-    let localData = [];
-    try {
-      localData = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
-    } catch(e) {}
-
+    // 1. Read from localStorage immediately (admin writes here)
+    let localData = getLocalData();
     allInternships = localData.length > 0 ? localData : [DEFAULT_USER_ROLE];
     renderListings();
 
-    // 2. Listen for admin changes on the SAME browser (storage event fires across tabs)
+    // 2. Listen for admin changes in other tabs via storage event
     window.addEventListener('storage', e => {
       if (e.key === 'lr_internships_updated' || e.key === 'lr_internships') {
-        try {
-          const fresh = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
-          if (fresh.length > 0) {
-            allInternships = fresh;
-            renderListings();
-          }
-        } catch(err) {}
+        const fresh = getLocalData();
+        if (fresh.length > 0) {
+          allInternships = fresh;
+          renderListings();
+        }
       }
     });
 
-    // 3. Fetch from Firestore REST (no auth, works in all browsers)
-    const restRows = await fetchViaRest().catch(() => []);
-    applyRows(restRows);
-
-    // 4. Firestore SDK real-time listener (best for cross-device)
+    // 3. Firestore SDK real-time listener (cross-device sync)
+    //    Only updates if Firestore data is NEWER than admin localStorage
     if (db) {
       try { await firebase.auth().signInAnonymously().catch(() => {}); } catch(e) {}
 
       db.collection('internships').onSnapshot(snap => {
         const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
-        applyRows(rows);
-      }, () => {
-        // Snapshot failed — fallback: poll REST every 10 seconds
-        setInterval(async () => {
-          const rows = await fetchViaRest().catch(() => []);
-          if (rows && rows.length > 0) applyRows(rows);
-        }, 10000);
-      });
-    } else {
-      // No SDK — poll REST every 10 seconds
-      setInterval(async () => {
-        const rows = await fetchViaRest().catch(() => []);
-        if (rows && rows.length > 0) applyRows(rows);
-      }, 10000);
+        if (rows.length > 0) {
+          applyIfNewer(rows);
+        } else {
+          // Firestore empty — seed it with current local data
+          const seed = getLocalData().length > 0 ? getLocalData() : [DEFAULT_USER_ROLE];
+          if (db) seed.forEach(item => db.collection('internships').doc(item.id).set(item).catch(() => {}));
+        }
+      }, () => {}); // silently ignore snapshot errors
     }
   }
 
@@ -656,21 +649,17 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadInternships();
 
-    // Poll localStorage every 2 seconds — guaranteed sync with admin portal
-    // Works even if Firestore auth fails. Admin writes to lr_internships,
-    // this picks it up instantly and re-renders with the correct status.
+    // Poll localStorage every 2 seconds — guaranteed same-browser sync with admin
     let lastSeen = localStorage.getItem('lr_internships_updated') || '0';
     setInterval(() => {
       const latest = localStorage.getItem('lr_internships_updated') || '0';
       if (latest !== lastSeen) {
         lastSeen = latest;
-        try {
-          const fresh = JSON.parse(localStorage.getItem('lr_internships') || '[]').filter(isValid);
-          if (fresh.length > 0) {
-            allInternships = fresh;
-            renderListings();
-          }
-        } catch(e) {}
+        const fresh = getLocalData();
+        if (fresh.length > 0) {
+          allInternships = fresh;
+          renderListings();
+        }
       }
     }, 2000);
   });
