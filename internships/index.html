@@ -617,6 +617,23 @@
       }
     });
 
+    // Firestore REST polling every 5 seconds — cross-browser sync (Chrome, Opera, Edge)
+    // When admin saves in Edge → writes to Firestore → Chrome/Opera polls and picks it up
+    async function pollFirestore() {
+      const rows = await fetchViaRest().catch(() => []);
+      if (rows && rows.length > 0) {
+        const localData = getLocalData();
+        const localTs  = Math.max(...localData.map(i => i.updatedAt || i.createdAt || 0), 0);
+        const remoteTs = Math.max(...rows.map(i => i.updatedAt || i.createdAt || 0), 0);
+        if (remoteTs > localTs || localData.length === 0) {
+          localStorage.setItem('lr_internships', JSON.stringify(rows));
+          // refresh() will pick this up via the 500ms poll
+        }
+      }
+    }
+    pollFirestore(); // run once immediately on load
+    setInterval(pollFirestore, 5000); // then every 5 seconds
+
     // Try Firestore SDK in background for cross-device sync ONLY
     // Never overrides if admin has made changes (admin uses updatedAt timestamp)
     if (db) {
@@ -624,7 +641,6 @@
       db.collection('internships').onSnapshot(snap => {
         const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isValid);
         if (rows.length > 0) {
-          // Only apply Firestore data if it's newer than what's in localStorage
           const localData = getLocalData();
           const localTs  = Math.max(...localData.map(i => i.updatedAt || i.createdAt || 0), 0);
           const remoteTs = Math.max(...rows.map(i => i.updatedAt || i.createdAt || 0), 0);
