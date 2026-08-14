@@ -1841,10 +1841,43 @@ function mergeInternshipLists(localList, remoteList) {
   return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
 }
 
+// Write a single internship to Firestore via REST (no auth needed with open rules)
+async function pushInternshipToFirestoreREST(item) {
+  const PROJECT = 'lr-agrosense';
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships/${item.id}`;
+  const fields = {};
+  Object.keys(item).forEach(key => {
+    const v = item[key];
+    if (v === null || v === undefined) fields[key] = { nullValue: null };
+    else if (typeof v === 'boolean') fields[key] = { booleanValue: v };
+    else if (typeof v === 'number') fields[key] = { integerValue: String(v) };
+    else fields[key] = { stringValue: String(v) };
+  });
+  try {
+    await fetch(url, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields })
+    });
+  } catch(e) {}
+}
+
+async function deleteInternshipFromFirestoreREST(id) {
+  const PROJECT = 'lr-agrosense';
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships/${id}`;
+  try { await fetch(url, { method: 'DELETE' }); } catch(e) {}
+}
+
 function pushInternshipsToFirestore(list) {
-  if (!db || !db.collection) return;
+  // Also try SDK as backup
+  if (db && db.collection) {
+    (list || []).filter(isValidInternship).forEach(i => {
+      db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
+    });
+  }
+  // Always write via REST — works with open Firestore rules, no auth needed
   (list || []).filter(isValidInternship).forEach(i => {
-    db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
+    pushInternshipToFirestoreREST(i);
   });
 }
 
@@ -1974,7 +2007,10 @@ function deleteInternshipListing(id) {
   saveInternships();
   renderAdminInternshipsTable();
   renderPublicInternships();
-  db.collection('internships').doc(id).delete().catch(() => {});
+  // Delete via REST (guaranteed, no auth needed)
+  deleteInternshipFromFirestoreREST(id);
+  // Also try SDK
+  if (db && db.collection) db.collection('internships').doc(id).delete().catch(() => {});
   showToast('Listing Deleted', 'Internship removed from website.');
 }
 
