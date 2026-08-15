@@ -1841,45 +1841,66 @@ function mergeInternshipLists(localList, remoteList) {
   return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
 }
 
-// Write a single internship to Firestore via REST (no auth needed with open rules)
-async function pushInternshipToFirestoreREST(item) {
-  const PROJECT = 'lr-agrosense';
-  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships/${item.id}`;
-  const fields = {};
-  Object.keys(item).forEach(key => {
-    const v = item[key];
-    if (v === null || v === undefined) fields[key] = { nullValue: null };
-    else if (typeof v === 'boolean') fields[key] = { booleanValue: v };
-    else if (typeof v === 'number') fields[key] = { integerValue: String(v) };
-    else fields[key] = { stringValue: String(v) };
-  });
+// ===== CROSS-BROWSER SYNC via GitHub file =====
+// Admin saves → GitHub API updates /data/internships.json in repo
+// Chrome/Opera reads from https://lragrosense.in/data/internships.json every 5s
+
+const GITHUB_OWNER = 'harisaiganeshpampana-ai';
+const GITHUB_REPO  = 'lragrosense';
+const GITHUB_FILE  = 'data/internships.json';
+// GitHub PAT with repo scope — needed to write to the repo
+// Get from: https://github.com/settings/tokens/new → repo → Generate
+const GITHUB_TOKEN = localStorage.getItem('lr_github_token') || '';
+
+async function pushInternshipsToGitHub(list) {
+  if (!list || list.length === 0) return;
+  const token = localStorage.getItem('lr_github_token') || GITHUB_TOKEN;
+  if (!token) return; // no token — skip GitHub sync (same-browser still works)
   try {
-    await fetch(url, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields })
-    });
+    // Get current file SHA (needed for update)
+    const metaResp = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+      { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+    );
+    const meta = metaResp.ok ? await metaResp.json() : {};
+    const sha = meta.sha || undefined;
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2))));
+    const body = { message: 'Update internships status', content, ...(sha ? { sha } : {}) };
+
+    await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(body)
+      }
+    );
   } catch(e) {}
 }
 
-async function deleteInternshipFromFirestoreREST(id) {
-  const PROJECT = 'lr-agrosense';
-  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/internships/${id}`;
-  try { await fetch(url, { method: 'DELETE' }); } catch(e) {}
-}
-
 function pushInternshipsToFirestore(list) {
-  // Also try SDK as backup
+  // Also try Firebase SDK as backup
   if (db && db.collection) {
     (list || []).filter(isValidInternship).forEach(i => {
       db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
     });
   }
-  // Always write via REST — works with open Firestore rules, no auth needed
-  (list || []).filter(isValidInternship).forEach(i => {
-    pushInternshipToFirestoreREST(i);
-  });
+  // Push to GitHub file for cross-browser sync
+  pushInternshipsToGitHub(list);
 }
+
+async function deleteInternshipFromFirestoreREST(id) {
+  // handled by pushInternshipsToFirestore removing it from list
+}
+async function pushInternshipToFirestoreREST(item) {
+  // handled by pushInternshipsToFirestore
+}
+
 
 function getInternships() {
   if (!allInternships) {
