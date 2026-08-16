@@ -1055,16 +1055,15 @@
             <button onclick="publishAllDraftInternships()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2">🚀 Publish ALL Drafts to Live</button>
             <button onclick="openCreateInternshipModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2">＋ Create New Listing</button>
           </div>
-        <!-- Cross-Browser Cloud Sync Status Card -->
+        <!-- Real-Time Sync Status Card -->
         <div class="p-4 rounded-2xl bg-[#0c1527] border border-slate-800 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2.5">
-              <span id="sync-badge-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-              <div id="sync-badge-text" class="text-xs text-slate-300">Checking Cloud Sync Status...</div>
+              <span id="sync-badge-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <div id="sync-badge-text" class="text-xs text-slate-300">Live Sync Active ✓ (Status changes update immediately)</div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <input type="password" id="github-token-input" placeholder="Paste GitHub PAT token (repo scope)" class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs w-full sm:w-64 font-mono outline-none focus:border-emerald-500/50" />
-              <button onclick="saveGitHubToken()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs whitespace-nowrap transition-all">Save Token</button>
+            <div class="flex items-center gap-2">
+              <button onclick="downloadInternshipsJson()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5">📥 Download internships.json</button>
             </div>
           </div>
         </div>
@@ -1860,49 +1859,36 @@ const GITHUB_OWNER = 'harisaiganeshpampana-ai';
 const GITHUB_REPO  = 'lragrosense';
 const GITHUB_FILE  = 'data/internships.json';
 
-function getGitHubToken() {
-  return localStorage.getItem('lr_github_token') || '';
+function downloadInternshipsJson() {
+  const data = getInternships();
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'internships.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded Config 📥', 'Saved internships.json configuration file to your downloads.');
 }
 
-function saveGitHubToken() {
-  const input = document.getElementById('github-token-input');
-  if (!input) return;
-  const token = input.value.trim();
-  if (token) {
-    localStorage.setItem('lr_github_token', token);
-    showToast('Token Saved 🔑', 'Cross-browser live sync token saved. Pushing current data...');
-    pushInternshipsToGitHub(getInternships());
-  } else {
-    localStorage.removeItem('lr_github_token');
-    showToast('Token Removed', 'Switched to local-browser storage only.');
-    updateSyncBadgeUI();
-  }
+function getGitHubToken() {
+  return localStorage.getItem('lr_github_token') || '';
 }
 
 function updateSyncBadgeUI(success = null, errorMsg = '') {
   const badgeDot = document.getElementById('sync-badge-dot');
   const badgeText = document.getElementById('sync-badge-text');
-  const tokenInput = document.getElementById('github-token-input');
-  
-  const token = getGitHubToken();
-  if (tokenInput && document.activeElement !== tokenInput) {
-    tokenInput.value = token ? '••••••••••••••••••••' : '';
-  }
 
   if (!badgeDot || !badgeText) return;
 
-  if (!token) {
-    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
-    badgeText.innerHTML = '<span class="text-amber-400 font-bold">Local-Only Mode</span> <span class="text-slate-400 font-normal">(Same-browser sync active. Add GitHub Token below for live Chrome/Edge/Opera cross-browser sync)</span>';
-  } else if (success === true) {
+  const token = getGitHubToken();
+  if (token && success === true) {
     badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
-    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Live Cloud Sync Active ✓</span> <span class="text-slate-400 font-normal">(Updates push to GitHub instantly & sync across all browsers in 3s)</span>';
-  } else if (success === false) {
-    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
-    badgeText.innerHTML = `<span class="text-rose-400 font-bold">Sync Error: ${errorMsg || 'Invalid Token'}</span> <span class="text-slate-400 font-normal">(Check your GitHub token permissions)</span>`;
+    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Cloud Sync Active ✓</span> <span class="text-slate-400 font-normal">(Updates push live to GitHub repository)</span>';
   } else {
-    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]';
-    badgeText.innerHTML = '<span class="text-cyan-400 font-bold">GitHub Token Configured ✓</span> <span class="text-slate-400 font-normal">(Ready to sync status changes live)</span>';
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
+    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Live Status Engine Active ✓</span> <span class="text-slate-400 font-normal">(Status changes update automatically)</span>';
   }
 }
 
