@@ -1055,7 +1055,20 @@
             <button onclick="publishAllDraftInternships()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2">🚀 Publish ALL Drafts to Live</button>
             <button onclick="openCreateInternshipModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2">＋ Create New Listing</button>
           </div>
+        <!-- Cross-Browser Cloud Sync Status Card -->
+        <div class="p-4 rounded-2xl bg-[#0c1527] border border-slate-800 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span id="sync-badge-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <div id="sync-badge-text" class="text-xs text-slate-300">Checking Cloud Sync Status...</div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <input type="password" id="github-token-input" placeholder="Paste GitHub PAT token (repo scope)" class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs w-full sm:w-64 font-mono outline-none focus:border-emerald-500/50" />
+              <button onclick="saveGitHubToken()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs whitespace-nowrap transition-all">Save Token</button>
+            </div>
+          </div>
         </div>
+
         <!-- Status Legend -->
         <div class="flex flex-wrap gap-2 text-[10px]">
           <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 font-mono">⬛ DRAFT — hidden from website</span>
@@ -1842,64 +1855,124 @@ function mergeInternshipLists(localList, remoteList) {
 }
 
 // ===== CROSS-BROWSER SYNC via GitHub file =====
-// Admin saves → GitHub API updates /data/internships.json in repo
-// Chrome/Opera reads from https://lragrosense.in/data/internships.json every 5s
-
+// ===== CROSS-BROWSER SYNC via GitHub API =====
 const GITHUB_OWNER = 'harisaiganeshpampana-ai';
 const GITHUB_REPO  = 'lragrosense';
 const GITHUB_FILE  = 'data/internships.json';
-// GitHub PAT with repo scope — needed to write to the repo
-// Get from: https://github.com/settings/tokens/new → repo → Generate
-const GITHUB_TOKEN = localStorage.getItem('lr_github_token') || '';
+
+function getGitHubToken() {
+  return localStorage.getItem('lr_github_token') || '';
+}
+
+function saveGitHubToken() {
+  const input = document.getElementById('github-token-input');
+  if (!input) return;
+  const token = input.value.trim();
+  if (token) {
+    localStorage.setItem('lr_github_token', token);
+    showToast('Token Saved 🔑', 'Cross-browser live sync token saved. Pushing current data...');
+    pushInternshipsToGitHub(getInternships());
+  } else {
+    localStorage.removeItem('lr_github_token');
+    showToast('Token Removed', 'Switched to local-browser storage only.');
+    updateSyncBadgeUI();
+  }
+}
+
+function updateSyncBadgeUI(success = null, errorMsg = '') {
+  const badgeDot = document.getElementById('sync-badge-dot');
+  const badgeText = document.getElementById('sync-badge-text');
+  const tokenInput = document.getElementById('github-token-input');
+  
+  const token = getGitHubToken();
+  if (tokenInput && document.activeElement !== tokenInput) {
+    tokenInput.value = token ? '••••••••••••••••••••' : '';
+  }
+
+  if (!badgeDot || !badgeText) return;
+
+  if (!token) {
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+    badgeText.innerHTML = '<span class="text-amber-400 font-bold">Local-Only Mode</span> <span class="text-slate-400 font-normal">(Same-browser sync active. Add GitHub Token below for live Chrome/Edge/Opera cross-browser sync)</span>';
+  } else if (success === true) {
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
+    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Live Cloud Sync Active ✓</span> <span class="text-slate-400 font-normal">(Updates push to GitHub instantly & sync across all browsers in 3s)</span>';
+  } else if (success === false) {
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+    badgeText.innerHTML = `<span class="text-rose-400 font-bold">Sync Error: ${errorMsg || 'Invalid Token'}</span> <span class="text-slate-400 font-normal">(Check your GitHub token permissions)</span>`;
+  } else {
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]';
+    badgeText.innerHTML = '<span class="text-cyan-400 font-bold">GitHub Token Configured ✓</span> <span class="text-slate-400 font-normal">(Ready to sync status changes live)</span>';
+  }
+}
 
 async function pushInternshipsToGitHub(list) {
-  if (!list || list.length === 0) return;
-  const token = localStorage.getItem('lr_github_token') || GITHUB_TOKEN;
-  if (!token) return; // no token — skip GitHub sync (same-browser still works)
+  const cleanList = (list || []).filter(isValidInternship);
+  if (!cleanList || cleanList.length === 0) return;
+  
+  const token = getGitHubToken();
+  updateSyncBadgeUI(null);
+  
+  if (!token) {
+    updateSyncBadgeUI();
+    return;
+  }
+  
   try {
-    // Get current file SHA (needed for update)
-    const metaResp = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-      { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
-    );
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+    const metaResp = await fetch(url, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
     const meta = metaResp.ok ? await metaResp.json() : {};
     const sha = meta.sha || undefined;
 
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2))));
-    const body = { message: 'Update internships status', content, ...(sha ? { sha } : {}) };
+    const jsonStr = JSON.stringify(cleanList, null, 2);
+    // Robust UTF-8 Base64 encoding
+    const utf8Bytes = new TextEncoder().encode(jsonStr);
+    let binary = '';
+    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const contentBase64 = btoa(binary);
 
-    await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify(body)
-      }
-    );
-  } catch(e) {}
+    const body = {
+      message: 'Update internships status live from Admin',
+      content: contentBase64,
+      ...(sha ? { sha } : {})
+    };
+
+    const putResp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (putResp.ok) {
+      updateSyncBadgeUI(true);
+    } else {
+      updateSyncBadgeUI(false, `HTTP ${putResp.status}`);
+    }
+  } catch(e) {
+    updateSyncBadgeUI(false, e.message);
+  }
 }
 
 function pushInternshipsToFirestore(list) {
-  // Also try Firebase SDK as backup
   if (db && db.collection) {
     (list || []).filter(isValidInternship).forEach(i => {
       db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
     });
   }
-  // Push to GitHub file for cross-browser sync
   pushInternshipsToGitHub(list);
 }
 
-async function deleteInternshipFromFirestoreREST(id) {
-  // handled by pushInternshipsToFirestore removing it from list
-}
-async function pushInternshipToFirestoreREST(item) {
-  // handled by pushInternshipsToFirestore
-}
+async function deleteInternshipFromFirestoreREST(id) {}
+async function pushInternshipToFirestoreREST(item) {}
 
 
 function getInternships() {
@@ -1951,16 +2024,9 @@ function checkInternshipAutoActivation() {
 // --- Admin CRUD ---
 async function loadAdminInternships() {
   checkInternshipAutoActivation();
+  updateSyncBadgeUI();
   const local = getInternships();
-  try {
-    const snap = await withTimeout(db.collection('internships').orderBy('createdAt', 'desc').get(), 2500);
-    const remote = (snap?.docs || []).map(d => ({ id: d.id, ...d.data() })).filter(isValidInternship);
-    allInternships = mergeInternshipLists(local, remote);
-    localStorage.setItem('lr_internships', JSON.stringify(allInternships));
-    pushInternshipsToFirestore(allInternships);
-  } catch(e) {
-    allInternships = local;
-  }
+  allInternships = local;
   renderAdminInternshipsTable();
 }
 

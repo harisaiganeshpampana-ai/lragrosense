@@ -617,27 +617,52 @@
       }
     });
 
-    // Poll /data/internships.json every 5 seconds — cross-browser sync
-    // When admin in Edge saves → GitHub file is updated → Chrome/Opera picks it up here
+    // Poll GitHub Contents API + local data file every 3 seconds for instant cross-browser sync
     async function pollGitHubFile() {
       try {
-        const resp = await fetch('/data/internships.json?t=' + Date.now());
-        if (!resp.ok) return;
-        const rows = await resp.json();
-        if (!rows || !rows.length) return;
-        const validRows = rows.filter(isValid);
-        if (!validRows.length) return;
+        let validRows = null;
+
+        // Method 1: Fetch via GitHub Contents API directly (real-time 0s cache delay)
+        try {
+          const ghUrl = `https://api.github.com/repos/harisaiganeshpampana-ai/lragrosense/contents/data/internships.json?t=${Date.now()}`;
+          const res = await fetch(ghUrl, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.content) {
+              const rawStr = decodeURIComponent(escape(atob(json.content.replace(/\s/g, ''))));
+              const parsed = JSON.parse(rawStr);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                validRows = parsed.filter(isValid);
+              }
+            }
+          }
+        } catch(e1) {}
+
+        // Method 2: Fallback to static data file
+        if (!validRows) {
+          const resp = await fetch('/data/internships.json?t=' + Date.now());
+          if (resp.ok) {
+            const rows = await resp.json();
+            if (Array.isArray(rows) && rows.length > 0) {
+              validRows = rows.filter(isValid);
+            }
+          }
+        }
+
+        if (!validRows || validRows.length === 0) return;
+
         const localData = getLocalData();
         const localTs  = Math.max(...localData.map(i => i.updatedAt || i.createdAt || 0), 0);
         const remoteTs = Math.max(...validRows.map(i => i.updatedAt || i.createdAt || 0), 0);
-        if (remoteTs > localTs || localData.length === 0) {
+
+        if (remoteTs >= localTs || localData.length === 0) {
           localStorage.setItem('lr_internships', JSON.stringify(validRows));
-          // 500ms poll will pick this up and re-render
+          refresh();
         }
       } catch(e) {}
     }
-    pollGitHubFile(); // run once on load
-    setInterval(pollGitHubFile, 5000); // then every 5 seconds
+    pollGitHubFile();
+    setInterval(pollGitHubFile, 3000);
   });
 </script>
 
