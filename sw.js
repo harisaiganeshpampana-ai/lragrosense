@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lragrosense-v3';
+const CACHE_NAME = 'lragrosense-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -22,7 +22,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          return caches.delete(key);
         })
       );
     }).then(() => self.clients.claim())
@@ -31,6 +31,15 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  
+  const url = new URL(event.request.url);
+
+  // NEVER cache data JSON files, API calls, or GitHub API in Service Worker
+  if (url.pathname.includes('/data/') || url.pathname.endsWith('.json') || url.hostname.includes('github') || url.hostname.includes('api')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   // Always fetch HTML dynamically from network first
   if (event.request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
@@ -38,6 +47,7 @@ self.addEventListener('fetch', event => {
     );
     return;
   }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       return cached || fetch(event.request);

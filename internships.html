@@ -629,7 +629,7 @@
         // Method 1: Fetch via GitHub Contents API directly (real-time 0s cache delay)
         try {
           const ghUrl = `https://api.github.com/repos/harisaiganeshpampana-ai/lragrosense/contents/data/internships.json?t=${Date.now()}`;
-          const res = await fetch(ghUrl, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+          const res = await fetch(ghUrl, { cache: 'no-store', headers: { 'Accept': 'application/vnd.github.v3+json' } });
           if (res.ok) {
             const json = await res.json();
             if (json && json.content) {
@@ -644,7 +644,7 @@
 
         // Method 2: Fallback to static data file
         if (!validRows) {
-          const resp = await fetch('/data/internships.json?t=' + Date.now());
+          const resp = await fetch('/data/internships.json?t=' + Date.now(), { cache: 'no-store' });
           if (resp.ok) {
             const rows = await resp.json();
             if (Array.isArray(rows) && rows.length > 0) {
