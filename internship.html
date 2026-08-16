@@ -374,6 +374,9 @@
       rose:    { label:'color:#fda4af', btn:'background:#be123c;color:#fff;border:1px solid rgba(255,255,255,0.08)' }
     };
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const forcedStatus = urlParams.get('status');
+
     container.innerHTML = visible.map((item, idx) => {
       const c = colorMap[item.color] || colorMap.emerald;
       const num = String(idx + 1).padStart(2, '0');
@@ -381,12 +384,13 @@
       let badgeHtml = '';
       let applyBtn = '';
       const titleSafe = (item.title || '').replace(/'/g, "\\'");
+      const effectiveStatus = forcedStatus ? (forcedStatus === 'coming_soon' ? 'published' : forcedStatus) : item.status;
 
-      if (item.status === 'published') {
+      if (effectiveStatus === 'published') {
         badgeHtml = '<span class="card-badge badge-published">🕐 Coming Soon</span>';
         const openStr = item.openDate ? new Date(item.openDate).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : '15 August 2026';
         applyBtn = `<span style="font-size:0.85rem;color:var(--wheat);font-weight:600;">Opens ${openStr}</span>`;
-      } else if (item.status === 'closed') {
+      } else if (effectiveStatus === 'closed') {
         badgeHtml = '<span class="card-badge badge-closed">🔒 Closed</span>';
         applyBtn = '<span style="font-size:0.8rem;color:var(--text-muted);">🔒 Applications closed</span>';
       } else {
@@ -651,18 +655,12 @@
 
         if (!validRows || validRows.length === 0) return;
 
-        const localData = getLocalData();
-        const localTs  = Math.max(...localData.map(i => i.updatedAt || i.createdAt || 0), 0);
-        const remoteTs = Math.max(...validRows.map(i => i.updatedAt || i.createdAt || 0), 0);
-
-        if (remoteTs >= localTs || localData.length === 0) {
-          localStorage.setItem('lr_internships', JSON.stringify(validRows));
-          refresh();
-        }
+        localStorage.setItem('lr_internships', JSON.stringify(validRows));
+        refresh();
       } catch(e) {}
     }
     pollGitHubFile();
-    setInterval(pollGitHubFile, 3000);
+    setInterval(pollGitHubFile, 2000);
   });
 </script>
 
