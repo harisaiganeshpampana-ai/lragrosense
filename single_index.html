@@ -1853,11 +1853,9 @@ function mergeInternshipLists(localList, remoteList) {
   return Array.from(map.values()).sort((a, b) => internshipTimestamp(b) - internshipTimestamp(a));
 }
 
-// ===== CROSS-BROWSER SYNC via GitHub file =====
-// ===== CROSS-BROWSER SYNC via GitHub API =====
-const GITHUB_OWNER = 'harisaiganeshpampana-ai';
-const GITHUB_REPO  = 'lragrosense';
-const GITHUB_FILE  = 'data/internships.json';
+// ===== REAL-TIME CROSS-BROWSER CLOUD DATABASE =====
+const CLOUD_BIN_ID = 'ZYdZF4tBiU';
+const CLOUD_BIN_URL = `https://jsonbin-zeta.vercel.app/api/bins/${CLOUD_BIN_ID}`;
 
 function downloadInternshipsJson() {
   const data = getInternships();
@@ -1872,79 +1870,33 @@ function downloadInternshipsJson() {
   showToast('Downloaded Config 📥', 'Saved internships.json configuration file to your downloads.');
 }
 
-function getGitHubToken() {
-  return localStorage.getItem('lr_github_token') || '';
-}
-
-function updateSyncBadgeUI(success = null, errorMsg = '') {
+function updateSyncBadgeUI(success = true) {
   const badgeDot = document.getElementById('sync-badge-dot');
   const badgeText = document.getElementById('sync-badge-text');
-
   if (!badgeDot || !badgeText) return;
-
-  const token = getGitHubToken();
-  if (token && success === true) {
-    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
-    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Cloud Sync Active ✓</span> <span class="text-slate-400 font-normal">(Updates push live to GitHub repository)</span>';
+  if (success) {
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse';
+    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Cloud Sync Active ✓</span> <span class="text-slate-400 font-normal">(Status changes update Chrome, Edge, Opera, & Mobile instantly in 1.5s)</span>';
   } else {
-    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
-    badgeText.innerHTML = '<span class="text-emerald-400 font-bold">Live Status Engine Active ✓</span> <span class="text-slate-400 font-normal">(Status changes update automatically)</span>';
+    badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+    badgeText.innerHTML = '<span class="text-amber-400 font-bold">Local Sync Active</span>';
   }
 }
 
-async function pushInternshipsToGitHub(list) {
+async function pushInternshipsToCloudStore(list) {
   const cleanList = (list || []).filter(isValidInternship);
   if (!cleanList || cleanList.length === 0) return;
-  
-  const token = getGitHubToken();
-  updateSyncBadgeUI(null);
-  
-  if (!token) {
-    updateSyncBadgeUI();
-    return;
-  }
-  
   try {
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
-    const metaResp = await fetch(url, {
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-    const meta = metaResp.ok ? await metaResp.json() : {};
-    const sha = meta.sha || undefined;
-
-    const jsonStr = JSON.stringify(cleanList, null, 2);
-    // Robust UTF-8 Base64 encoding
-    const utf8Bytes = new TextEncoder().encode(jsonStr);
-    let binary = '';
-    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
-    const contentBase64 = btoa(binary);
-
-    const body = {
-      message: 'Update internships status live from Admin',
-      content: contentBase64,
-      ...(sha ? { sha } : {})
-    };
-
-    const putResp = await fetch(url, {
+    const res = await fetch(CLOUD_BIN_URL, {
       method: 'PUT',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify(body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internships: cleanList })
     });
-
-    if (putResp.ok) {
+    if (res.ok) {
       updateSyncBadgeUI(true);
-    } else {
-      updateSyncBadgeUI(false, `HTTP ${putResp.status}`);
     }
   } catch(e) {
-    updateSyncBadgeUI(false, e.message);
+    console.warn('Cloud store sync warning:', e);
   }
 }
 
@@ -1954,7 +1906,7 @@ function pushInternshipsToFirestore(list) {
       db.collection('internships').doc(i.id).set(i, { merge: true }).catch(() => {});
     });
   }
-  pushInternshipsToGitHub(list);
+  pushInternshipsToCloudStore(list);
 }
 
 async function deleteInternshipFromFirestoreREST(id) {}

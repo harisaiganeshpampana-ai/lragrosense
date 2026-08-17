@@ -621,28 +621,26 @@
       }
     });
 
-    // Poll GitHub Contents API + local data file every 3 seconds for instant cross-browser sync
-    async function pollGitHubFile() {
+    const CLOUD_BIN_URL = 'https://jsonbin-zeta.vercel.app/api/bins/ZYdZF4tBiU';
+
+    // Poll Cloud Database every 1.5 seconds for instant cross-browser & mobile sync
+    async function pollCloudStore() {
       try {
         let validRows = null;
 
-        // Method 1: Fetch via GitHub Contents API directly (real-time 0s cache delay)
+        // Method 1: Fetch via Realtime Cloud Database (1.5s cross-browser sync worldwide)
         try {
-          const ghUrl = `https://api.github.com/repos/harisaiganeshpampana-ai/lragrosense/contents/data/internships.json?t=${Date.now()}`;
-          const res = await fetch(ghUrl, { cache: 'no-store', headers: { 'Accept': 'application/vnd.github.v3+json' } });
+          const res = await fetch(CLOUD_BIN_URL + '?t=' + Date.now(), { cache: 'no-store' });
           if (res.ok) {
             const json = await res.json();
-            if (json && json.content) {
-              const rawStr = decodeURIComponent(escape(atob(json.content.replace(/\s/g, ''))));
-              const parsed = JSON.parse(rawStr);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                validRows = parsed.filter(isValid);
-              }
+            const rows = json.internships || (Array.isArray(json) ? json : null);
+            if (rows && rows.length > 0) {
+              validRows = rows.filter(isValid);
             }
           }
         } catch(e1) {}
 
-        // Method 2: Fallback to static data file
+        // Method 2: Fallback to repository data file
         if (!validRows) {
           const resp = await fetch('/data/internships.json?t=' + Date.now(), { cache: 'no-store' });
           if (resp.ok) {
@@ -659,8 +657,8 @@
         refresh();
       } catch(e) {}
     }
-    pollGitHubFile();
-    setInterval(pollGitHubFile, 2000);
+    pollCloudStore();
+    setInterval(pollCloudStore, 1500);
   });
 </script>
 
