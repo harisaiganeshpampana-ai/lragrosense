@@ -1,18 +1,104 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowUp,
   Camera,
-  Image as ImageIcon,
+  ChevronDown,
+  Folder,
   Leaf,
   Menu,
+  MessageSquare,
+  MoreHorizontal,
   Plus,
+  Search,
   Sparkles,
+  Sprout,
   X,
 } from "lucide-react";
 
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || ""
-).replace(/\/$/, "");
+const STORAGE_KEY = "lr-ai-conversations-v1";
+
+const exploreItems = [
+  {
+    title: "Identify a plant",
+    prompt: "Identify this plant and tell me the important information about it.",
+  },
+  {
+    title: "Check plant disease",
+    prompt: "Check this plant for possible diseases and explain what you observe.",
+  },
+  {
+    title: "Check symptoms",
+    prompt: "Analyze these plant symptoms and explain the possible causes.",
+  },
+  {
+    title: "Nutrient problems",
+    prompt: "Could these symptoms be related to a nutrient deficiency? Explain the possibilities.",
+  },
+  {
+    title: "Crop health",
+    prompt: "Give me a complete crop health assessment based on the information I provide.",
+  },
+  {
+    title: "Pest problems",
+    prompt: "Could this plant have pest damage? Explain what signs I should look for.",
+  },
+];
+
+const defaultProjects = [
+  "My Farm",
+  "Crop Research",
+];
+
+function createConversation() {
+  return {
+    id: crypto.randomUUID(),
+    title: "New chat",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    messages: [],
+  };
+}
+
+function loadConversations() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (!saved) {
+      return [];
+    }
+
+    const parsed = JSON.parse(saved);
+
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveConversations(conversations) {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(conversations)
+    );
+  } catch {
+    // Ignore local storage errors.
+  }
+}
+
+function makeTitle(text) {
+  const cleaned = text
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) {
+    return "New chat";
+  }
+
+  return cleaned.length > 42
+    ? `${cleaned.slice(0, 42)}...`
+    : cleaned;
+}
 
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -26,84 +112,221 @@ function fileToDataUrl(file) {
 }
 
 export default function LRAI() {
-  const fileInputRef = useRef(null);
+  const [conversations, setConversations] = useState(
+    loadConversations
+  );
 
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState("");
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [input, setInput] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const textareaRef = useRef(null);
+  const imageInputRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  const activeChat =
+    conversations.find(
+      (chat) => chat.id === activeChatId
+    ) || null;
+
+  useEffect(() => {
+    saveConversations(conversations);
+  }, [conversations]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [activeChat?.messages, loading]);
+
+  useEffect(() => {
+    if (!activeChatId && conversations.length > 0) {
+      setActiveChatId(conversations[0].id);
+    }
+  }, [activeChatId, conversations]);
+
+  const startNewChat = () => {
+    setActiveChatId(null);
+    setInput("");
+    setSelectedImage(null);
+    setImagePreview("");
+    setSidebarOpen(false);
+
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 100);
+  };
+
+  const openChat = (id) => {
+    setActiveChatId(id);
+    setSidebarOpen(false);
+  };
 
   const handleImage = (event) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    setError("");
-    setAnswer("");
-
     if (!file.type.startsWith("image/")) {
-      setError("Please select a valid image.");
       return;
     }
 
     if (file.size > 12 * 1024 * 1024) {
-      setError("Please select an image smaller than 12 MB.");
+      alert("Please choose an image smaller than 12 MB.");
       return;
     }
 
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
+    setSelectedImage(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
-  const removeImage = () => {
-    setImage(null);
-    setPreview("");
-    setAnswer("");
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+    setImagePreview("");
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
     }
   };
 
-  const askLR = async () => {
-    setError("");
-    setAnswer("");
+  const updateChat = (chatId, updater) => {
+    setConversations((current) =>
+      current.map((chat) =>
+        chat.id === chatId
+          ? updater(chat)
+          : chat
+      )
+    );
+  };
 
-    if (!image) {
-      setError("Upload a plant or crop image first.");
+  const sendMessage = async () => {
+    const text = input.trim();
+
+    if (!text && !selectedImage) {
       return;
     }
 
-    if (!question.trim()) {
-      setError("Ask LR AI a question about the image.");
-      return;
+    let chatId = activeChatId;
+    let chat = activeChat;
+
+    if (!chat) {
+      const newChat = createConversation();
+
+      chatId = newChat.id;
+      chat = newChat;
+
+      setConversations((current) => [
+        newChat,
+        ...current,
+      ]);
+
+      setActiveChatId(newChat.id);
     }
 
-    if (!API_BASE_URL) {
-      setError(
-        "LR AI backend is not connected yet. Your Gemini API key must remain on the secure server."
-      );
-      return;
+    let imageData = null;
+
+    if (selectedImage) {
+      try {
+        imageData = await fileToDataUrl(
+          selectedImage
+        );
+      } catch {
+        return;
+      }
     }
+
+    const userMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content:
+        text ||
+        "Please analyze this plant image.",
+      image: imageData,
+      createdAt: Date.now(),
+    };
+
+    const nextTitle =
+      chat.title === "New chat"
+        ? makeTitle(
+            text ||
+              "Plant image analysis"
+          )
+        : chat.title;
+
+    updateChat(chatId, (current) => ({
+      ...current,
+      title: nextTitle,
+      updatedAt: Date.now(),
+      messages: [
+        ...current.messages,
+        userMessage,
+      ],
+    }));
+
+    setInput("");
+    removeSelectedImage();
+    setLoading(true);
 
     try {
-      setLoading(true);
+      /*
+       * The secure backend will be connected here.
+       *
+       * The Gemini API key must NEVER be placed
+       * inside this frontend application.
+       */
 
-      const imageData = await fileToDataUrl(image);
+      const apiBase = (
+        import.meta.env.VITE_API_BASE_URL || ""
+      ).replace(/\/$/, "");
+
+      if (!apiBase) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 600)
+        );
+
+        const demoMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content:
+            "LR AI is ready for agricultural analysis, but the secure AI server is not connected yet. Once the backend is connected, I will analyze your plant image and answer your question using the AI model.",
+          createdAt: Date.now(),
+        };
+
+        updateChat(chatId, (current) => ({
+          ...current,
+          updatedAt: Date.now(),
+          messages: [
+            ...current.messages,
+            demoMessage,
+          ],
+        }));
+
+        return;
+      }
 
       const response = await fetch(
-        `${API_BASE_URL}/api/analyze`,
+        `${apiBase}/api/analyze`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            question:
+              text ||
+              "Analyze this plant image.",
             image: imageData,
-            question: question.trim(),
           }),
         }
       );
@@ -112,431 +335,611 @@ export default function LRAI() {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "LR AI could not analyze the image."
+          data.error ||
+            "LR AI could not process the request."
         );
       }
 
-      setAnswer(data.answer || "No answer was returned.");
-    } catch (err) {
-      setError(
-        err.message ||
-          "Something went wrong while connecting to LR AI."
-      );
+      const assistantMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content:
+          data.answer ||
+          "I could not generate an answer.",
+        createdAt: Date.now(),
+      };
+
+      updateChat(chatId, (current) => ({
+        ...current,
+        updatedAt: Date.now(),
+        messages: [
+          ...current.messages,
+          assistantMessage,
+        ],
+      }));
+    } catch (error) {
+      const errorMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content:
+          error.message ||
+          "Something went wrong while connecting to LR AI.",
+        createdAt: Date.now(),
+      };
+
+      updateChat(chatId, (current) => ({
+        ...current,
+        updatedAt: Date.now(),
+        messages: [
+          ...current.messages,
+          errorMessage,
+        ],
+      }));
     } finally {
       setLoading(false);
     }
   };
 
-  const newAnalysis = () => {
-    setImage(null);
-    setPreview("");
-    setQuestion("");
-    setAnswer("");
-    setError("");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+      event.preventDefault();
+      sendMessage();
     }
   };
+
+  const useExplorePrompt = (prompt) => {
+    setInput(prompt);
+    setExploreOpen(false);
+    setSidebarOpen(false);
+
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 100);
+  };
+
+  const deleteChat = (chatId) => {
+    setConversations((current) =>
+      current.filter(
+        (chat) => chat.id !== chatId
+      )
+    );
+
+    if (activeChatId === chatId) {
+      setActiveChatId(null);
+    }
+  };
+
+  const filteredChats =
+    searchText.trim()
+      ? conversations.filter((chat) =>
+          chat.title
+            .toLowerCase()
+            .includes(
+              searchText
+                .toLowerCase()
+                .trim()
+            )
+        )
+      : conversations;
 
   return (
     <div className="lr-ai-app">
 
-      {/* HEADER */}
+      {/* MOBILE OVERLAY */}
 
-      <header className="lr-ai-header">
-        <div className="lr-ai-header-inner">
+      {sidebarOpen && (
+        <button
+          className="sidebar-overlay"
+          onClick={() =>
+            setSidebarOpen(false)
+          }
+          aria-label="Close sidebar"
+        />
+      )}
 
-          <a href="/lr-ai.html" className="lr-ai-brand">
-            <div className="lr-ai-logo-mark">
+      {/* ==================================================
+          SIDEBAR
+          ================================================== */}
+
+      <aside
+        className={`lr-ai-sidebar ${
+          sidebarOpen ? "sidebar-visible" : ""
+        }`}
+      >
+
+        <div className="sidebar-top">
+
+          {/* BRAND */}
+
+          <div className="lr-ai-brand">
+            <div className="lr-ai-mark">
               LR
             </div>
 
-            <div>
+            <div className="lr-ai-brand-text">
               <strong>LR AI</strong>
               <span>Plant Intelligence</span>
             </div>
-          </a>
+          </div>
 
-          <nav
-            className={`lr-ai-nav-menu ${
-              mobileMenu ? "open" : ""
-            }`}
-          >
-            <a href="#about">About</a>
-            <a href="#how-it-works">How it works</a>
-
-            <a
-              href="https://lragrosense.in"
-              className="company-link"
-            >
-              LR AgroSense
-            </a>
-          </nav>
+          {/* NEW CHAT */}
 
           <button
-            className="mobile-ai-menu"
+            className="new-chat-button"
+            onClick={startNewChat}
+          >
+            <Plus size={18} />
+            <span>New chat</span>
+          </button>
+
+          {/* SEARCH */}
+
+          {searchOpen && (
+            <div className="chat-search">
+              <Search size={15} />
+
+              <input
+                autoFocus
+                value={searchText}
+                onChange={(event) =>
+                  setSearchText(
+                    event.target.value
+                  )
+                }
+                placeholder="Search chats"
+              />
+
+              <button
+                onClick={() => {
+                  setSearchOpen(false);
+                  setSearchText("");
+                }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {!searchOpen && (
+            <button
+              className="sidebar-action"
+              onClick={() =>
+                setSearchOpen(true)
+              }
+            >
+              <Search size={17} />
+              Search
+            </button>
+          )}
+
+          {/* EXPLORE */}
+
+          <button
+            className="sidebar-action"
             onClick={() =>
-              setMobileMenu((value) => !value)
+              setExploreOpen(
+                (value) => !value
+              )
             }
           >
-            {mobileMenu ? (
-              <X size={20} />
-            ) : (
-              <Menu size={20} />
-            )}
+            <Sparkles size={17} />
+
+            <span>Explore</span>
+
+            <ChevronDown
+              className={`sidebar-chevron ${
+                exploreOpen ? "rotated" : ""
+              }`}
+              size={15}
+            />
           </button>
-        </div>
-      </header>
 
-      {/* MAIN */}
+          {exploreOpen && (
+            <div className="explore-menu">
 
-      <main>
-
-        {/* HERO */}
-
-        <section className="ai-hero">
-
-          <div className="ai-container">
-
-            <div className="ai-hero-copy">
-
-              <div className="ai-label">
-                <Sparkles size={15} />
-                LR AI
-              </div>
-
-              <h1>
-                Understand your
-                <br />
-                <span>plants better.</span>
-              </h1>
-
-              <p>
-                Upload a plant or crop image and ask
-                LR AI what you want to know.
-              </p>
+              {exploreItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() =>
+                    useExplorePrompt(
+                      item.prompt
+                    )
+                  }
+                >
+                  <Leaf size={14} />
+                  {item.title}
+                </button>
+              ))}
 
             </div>
+          )}
 
-            {/* AI WORKSPACE */}
+          {/* PROJECTS */}
 
-            <div className="ai-workspace">
+          <button
+            className="sidebar-section-title"
+            onClick={() =>
+              setProjectsOpen(
+                (value) => !value
+              )
+            }
+          >
+            <span>Projects</span>
 
-              {/* INPUT */}
+            <ChevronDown
+              size={14}
+              className={
+                projectsOpen
+                  ? "rotated"
+                  : ""
+              }
+            />
+          </button>
 
-              <section className="ai-panel">
+          {projectsOpen && (
+            <div className="projects-list">
 
-                <div className="panel-title">
-                  <div>
-                    <h2>Ask LR AI</h2>
-                    <p>
-                      Upload an image and ask your
-                      question.
-                    </p>
-                  </div>
-
-                  <Sparkles size={19} />
-                </div>
-
-                {!preview ? (
+              {defaultProjects.map(
+                (project) => (
                   <button
-                    className="image-upload"
+                    key={project}
+                    className="project-item"
+                    onClick={() => {
+                      setInput(
+                        `Let's work on my ${project} project.`
+                      );
+
+                      setTimeout(() => {
+                        textareaRef.current?.focus();
+                      }, 100);
+                    }}
+                  >
+                    <Folder size={16} />
+                    <span>{project}</span>
+                  </button>
+                )
+              )}
+
+            </div>
+          )}
+
+        </div>
+
+        {/* RECENT */}
+
+        <div className="recent-section">
+
+          <div className="recent-heading">
+            <span>Recent</span>
+
+            {conversations.length > 0 && (
+              <span className="recent-count">
+                {conversations.length}
+              </span>
+            )}
+          </div>
+
+          <div className="recent-list">
+
+            {filteredChats.length === 0 ? (
+              <div className="empty-recent">
+                No conversations yet.
+              </div>
+            ) : (
+              filteredChats.map((chat) => (
+                <div
+                  key={chat.id}
+                  className={`chat-item ${
+                    activeChatId === chat.id
+                      ? "active"
+                      : ""
+                  }`}
+                >
+
+                  <button
+                    className="chat-item-main"
                     onClick={() =>
-                      fileInputRef.current?.click()
+                      openChat(chat.id)
                     }
                   >
-                    <div className="upload-icon">
-                      <ImageIcon size={23} />
-                    </div>
-
-                    <strong>
-                      Upload plant image
-                    </strong>
-
-                    <span>
-                      JPG, PNG or WEBP
-                    </span>
-                  </button>
-                ) : (
-                  <div className="selected-image">
-
-                    <img
-                      src={preview}
-                      alt="Selected plant"
+                    <MessageSquare
+                      size={15}
                     />
 
-                    <button
-                      className="remove-image"
-                      onClick={removeImage}
-                    >
-                      <X size={17} />
-                    </button>
-
-                  </div>
-                )}
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handleImage}
-                />
-
-                <div className="question-section">
-
-                  <label>
-                    Your question
-                  </label>
-
-                  <textarea
-                    value={question}
-                    onChange={(e) =>
-                      setQuestion(e.target.value)
-                    }
-                    placeholder="What is happening to this plant?"
-                  />
-
-                </div>
-
-                <div className="quick-questions">
-
-                  <button
-                    onClick={() =>
-                      setQuestion(
-                        "What plant is this?"
-                      )
-                    }
-                  >
-                    Identify plant
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      setQuestion(
-                        "What disease could affect this plant?"
-                      )
-                    }
-                  >
-                    Check disease
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      setQuestion(
-                        "Why are the leaves changing colour?"
-                      )
-                    }
-                  >
-                    Check symptoms
-                  </button>
-
-                </div>
-
-                {error && (
-                  <div className="ai-error">
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  className="ask-button"
-                  onClick={askLR}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      Ask LR AI
-                      <ArrowUp size={17} />
-                    </>
-                  )}
-                </button>
-
-              </section>
-
-              {/* RESPONSE */}
-
-              <section className="ai-response">
-
-                <div className="response-header">
-                  <div className="response-avatar">
-                    <Sparkles size={17} />
-                  </div>
-
-                  <div>
-                    <strong>LR AI</strong>
                     <span>
-                      Agricultural intelligence
+                      {chat.title}
                     </span>
-                  </div>
+                  </button>
+
+                  <button
+                    className="chat-more"
+                    onClick={() =>
+                      deleteChat(chat.id)
+                    }
+                    title="Delete chat"
+                  >
+                    <MoreHorizontal
+                      size={15}
+                    />
+                  </button>
+
                 </div>
-
-                {!answer ? (
-                  <div className="response-empty">
-
-                    <div className="leaf-icon">
-                      <Leaf size={26} />
-                    </div>
-
-                    <h3>
-                      Your analysis will appear here
-                    </h3>
-
-                    <p>
-                      Upload an image and ask a
-                      question to start.
-                    </p>
-
-                  </div>
-                ) : (
-                  <div className="response-content">
-
-                    <div className="response-note">
-                      LR AI provides an initial
-                      assessment. Important agricultural
-                      decisions should be confirmed with
-                      appropriate field or laboratory
-                      testing.
-                    </div>
-
-                    <div className="answer">
-                      {answer}
-                    </div>
-
-                    <button
-                      className="new-analysis"
-                      onClick={newAnalysis}
-                    >
-                      <Plus size={16} />
-                      New analysis
-                    </button>
-
-                  </div>
-                )}
-
-              </section>
-
-            </div>
+              ))
+            )}
 
           </div>
 
-        </section>
+        </div>
 
-        {/* ABOUT */}
+        {/* SIDEBAR FOOTER */}
 
-        <section
-          id="about"
-          className="ai-information"
-        >
-          <div className="ai-container">
+        <div className="sidebar-footer">
 
-            <div className="information-grid">
-
-              <div>
-                <span className="small-label">
-                  ABOUT LR AI
-                </span>
-
-                <h2>
-                  Agricultural intelligence,
-                  made simple.
-                </h2>
-              </div>
-
-              <p>
-                LR AI is designed to help users
-                understand plant and crop conditions
-                using images, questions and
-                agricultural intelligence.
-              </p>
-
-            </div>
-
-          </div>
-        </section>
-
-        {/* HOW IT WORKS */}
-
-        <section
-          id="how-it-works"
-          className="how-section"
-        >
-          <div className="ai-container">
-
-            <span className="small-label">
-              HOW IT WORKS
-            </span>
-
-            <h2>
-              From image to insight.
-            </h2>
-
-            <div className="steps">
-
-              <div>
-                <span>01</span>
-                <h3>Upload</h3>
-                <p>
-                  Upload a clear image of your
-                  plant or crop.
-                </p>
-              </div>
-
-              <div>
-                <span>02</span>
-                <h3>Ask</h3>
-                <p>
-                  Ask LR AI a question in normal
-                  language.
-                </p>
-              </div>
-
-              <div>
-                <span>03</span>
-                <h3>Understand</h3>
-                <p>
-                  Receive an AI-powered analysis
-                  and practical next steps.
-                </p>
-              </div>
-
-            </div>
-
-          </div>
-        </section>
-
-      </main>
-
-      {/* FOOTER */}
-
-      <footer className="lr-ai-footer">
-        <div className="ai-container">
-
-          <div className="footer-ai-brand">
-            <div className="lr-ai-logo-mark">
-              LR
-            </div>
+          <div className="ai-status">
+            <span className="status-dot" />
 
             <div>
               <strong>LR AI</strong>
-              <span>
-                Plant & Crop Intelligence
-              </span>
+              <span>Plant intelligence</span>
             </div>
           </div>
 
-          <div>
-            © {new Date().getFullYear()} LR AI
+        </div>
+
+      </aside>
+
+      {/* ==================================================
+          MAIN
+          ================================================== */}
+
+      <main className="lr-ai-main">
+
+        {/* TOP BAR */}
+
+        <header className="lr-ai-topbar">
+
+          <button
+            className="mobile-sidebar-button"
+            onClick={() =>
+              setSidebarOpen(true)
+            }
+            aria-label="Open sidebar"
+          >
+            <Menu size={21} />
+          </button>
+
+          <div className="mobile-page-title">
+            {activeChat?.title ||
+              "LR AI"}
+          </div>
+
+          <div className="topbar-right">
+
+            <a
+              href="https://lragrosense.in"
+              className="back-company"
+            >
+              LR AgroSense
+            </a>
+
+          </div>
+
+        </header>
+
+        {/* ==================================================
+            CHAT
+            ================================================== */}
+
+        <div className="chat-area">
+
+          {!activeChat ||
+          activeChat.messages.length === 0 ? (
+            <div className="welcome-screen">
+
+              <div className="welcome-mark">
+                <Sparkles size={25} />
+              </div>
+
+              <h1>
+                How can LR AI help?
+              </h1>
+
+              <p>
+                Ask questions about plants,
+                crops, diseases, pests, soil
+                and agricultural problems.
+              </p>
+
+              <div className="welcome-suggestions">
+
+                {exploreItems
+                  .slice(0, 4)
+                  .map((item) => (
+                    <button
+                      key={item.title}
+                      onClick={() =>
+                        useExplorePrompt(
+                          item.prompt
+                        )
+                      }
+                    >
+                      <Leaf size={15} />
+                      {item.title}
+                    </button>
+                  ))}
+
+              </div>
+
+            </div>
+          ) : (
+            <div className="messages-container">
+
+              {activeChat.messages.map(
+                (message) => (
+                  <div
+                    key={message.id}
+                    className={`message-row ${
+                      message.role ===
+                      "user"
+                        ? "user-message"
+                        : "assistant-message"
+                    }`}
+                  >
+
+                    <div className="message-inner">
+
+                      <div className="message-avatar">
+                        {message.role ===
+                        "user" ? (
+                          "You"
+                        ) : (
+                          <Sparkles size={15} />
+                        )}
+                      </div>
+
+                      <div className="message-body">
+
+                        {message.image && (
+                          <img
+                            src={message.image}
+                            alt="Uploaded plant"
+                            className="message-image"
+                          />
+                        )}
+
+                        <div className="message-text">
+                          {message.content}
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                )
+              )}
+
+              {loading && (
+                <div className="message-row assistant-message">
+
+                  <div className="message-inner">
+
+                    <div className="message-avatar">
+                      <Sparkles size={15} />
+                    </div>
+
+                    <div className="typing-indicator">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
+
+              <div
+                ref={messagesEndRef}
+                className="message-end"
+              />
+
+            </div>
+          )}
+
+        </div>
+
+        {/* ==================================================
+            INPUT
+            ================================================== */}
+
+        <div className="input-area">
+
+          <div className="input-container">
+
+            {imagePreview && (
+              <div className="image-attachment">
+
+                <img
+                  src={imagePreview}
+                  alt="Selected plant"
+                />
+
+                <button
+                  onClick={
+                    removeSelectedImage
+                  }
+                  aria-label="Remove image"
+                >
+                  <X size={14} />
+                </button>
+
+              </div>
+            )}
+
+            <div className="input-box">
+
+              <button
+                className="attach-button"
+                onClick={() =>
+                  imageInputRef.current?.click()
+                }
+                aria-label="Upload image"
+                title="Upload plant image"
+              >
+                <Camera size={20} />
+              </button>
+
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImage}
+              />
+
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(event) =>
+                  setInput(
+                    event.target.value
+                  )
+                }
+                onKeyDown={handleKeyDown}
+                placeholder="Message LR AI..."
+                rows={1}
+              />
+
+              <button
+                className="send-button"
+                onClick={sendMessage}
+                disabled={
+                  loading ||
+                  (!input.trim() &&
+                    !selectedImage)
+                }
+                aria-label="Send message"
+              >
+                <ArrowUp size={18} />
+              </button>
+
+            </div>
+
+            <div className="input-disclaimer">
+              LR AI can make mistakes. Verify important
+              agricultural decisions with appropriate
+              testing or an agricultural professional.
+            </div>
+
           </div>
 
         </div>
-      </footer>
+
+      </main>
 
     </div>
   );
