@@ -19,26 +19,29 @@ import {
   MapPin,
   Linkedin,
   ExternalLink,
-  Sparkles,
+  ChevronRight,
 } from "lucide-react";
 
 const products = [
   {
     icon: Sprout,
     title: "Smart Farm Monitor",
-    text: "Affordable IoT-based monitoring for soil and farm conditions, designed to help farmers make better irrigation and crop-management decisions.",
+    text:
+      "Affordable IoT-based monitoring for soil and farm conditions, designed to help farmers make better irrigation and crop-management decisions.",
     status: "In Development",
-  },
-  {
-    icon: Sparkles,
-    title: "AgriMind AI",
-    text: "An agricultural intelligence system designed to understand crop images, symptoms, farmer questions and farm data to support early crop-health decisions.",
-    status: "Research",
   },
   {
     icon: Satellite,
     title: "Smart Farm Station",
-    text: "A future integrated station combining soil, weather and environmental data to provide a broader picture of field conditions.",
+    text:
+      "A future integrated station combining soil, weather and environmental data to provide a broader picture of field conditions.",
+    status: "Research",
+  },
+  {
+    icon: FlaskConical,
+    title: "Agricultural Intelligence",
+    text:
+      "Research into intelligent agricultural systems that combine field data, crop information and agricultural knowledge.",
     status: "Research",
   },
 ];
@@ -47,22 +50,26 @@ const technology = [
   {
     icon: Cpu,
     title: "IoT Sensors",
-    text: "Connected sensors for collecting useful soil and environmental measurements from the field.",
+    text:
+      "Connected sensors for collecting useful soil and environmental measurements from the field.",
   },
   {
     icon: Cloud,
     title: "Cloud Intelligence",
-    text: "Farm data can be securely transferred and organized for monitoring, analysis and future AI systems.",
+    text:
+      "Farm data can be securely transferred and organized for monitoring, analysis and future intelligent systems.",
   },
   {
     icon: Smartphone,
     title: "Farmer-Friendly Apps",
-    text: "Simple interfaces designed around the way farmers actually need to receive and understand information.",
+    text:
+      "Simple interfaces designed around the way farmers need to receive and understand information.",
   },
   {
     icon: FlaskConical,
     title: "Research & Validation",
-    text: "New agricultural technologies are developed through testing, field observation and validation before large-scale claims.",
+    text:
+      "New agricultural technologies are developed through testing, field observation and validation.",
   },
 ];
 
@@ -70,33 +77,58 @@ const roadmap = [
   {
     number: "01",
     title: "Smart Farm Monitor",
-    text: "Build and validate an affordable IoT monitoring system for important farm parameters.",
+    text:
+      "Build and validate an affordable IoT monitoring system for important farm parameters.",
   },
   {
     number: "02",
     title: "Field Testing",
-    text: "Work with farmers and agricultural experts to test real-world conditions and improve the system.",
+    text:
+      "Work with farmers and agricultural experts to test real-world conditions and improve the system.",
   },
   {
     number: "03",
-    title: "AgriMind AI",
-    text: "Develop AI-assisted crop-health analysis using plant images, farmer questions and agricultural data.",
+    title: "Agricultural Intelligence",
+    text:
+      "Develop intelligent agricultural systems using crop information, farmer questions and agricultural data.",
   },
   {
     number: "04",
     title: "Smart Farm Intelligence",
-    text: "Combine soil, weather, crop and environmental information into one intelligent farming ecosystem.",
+    text:
+      "Combine soil, weather, crop and environmental information into one intelligent farming ecosystem.",
+  },
+];
+
+const faqs = [
+  {
+    q: "What is LR AgroSense?",
+    a:
+      "LR AgroSense is an early-stage AgriTech startup focused on developing affordable technologies using IoT, agricultural data and intelligent systems.",
+  },
+  {
+    q: "What technologies is LR AgroSense developing?",
+    a:
+      "Our roadmap includes smart farm monitoring, IoT sensing, environmental monitoring and future intelligent agricultural systems.",
+  },
+  {
+    q: "Is LR AgroSense currently developing hardware?",
+    a:
+      "Yes. Smart agricultural monitoring hardware is part of our development roadmap, with research and field validation planned before wider deployment.",
+  },
+  {
+    q: "Where can I explore LR AgroSense applications?",
+    a:
+      "Open the menu and select Explore. The Explore page will contain LR AgroSense applications and platforms as they become available.",
   },
 ];
 
 function App() {
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
-
+  const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
 
   const closeMenu = () => {
-    setMobileMenuOpen(false);
+    setMenuOpen(false);
   };
 
   const scrollToSection = (id) => {
@@ -117,11 +149,13 @@ function App() {
 
       {/* =====================================================
           NAVBAR
-          ===================================================== */}
+      ===================================================== */}
 
       <header className="navbar">
 
         <div className="nav-container">
+
+          {/* COMPANY LOGO */}
 
           <a
             href="#top"
@@ -140,97 +174,15 @@ function App() {
             </div>
           </a>
 
-          <nav
-            className={`nav-links ${
-              mobileMenuOpen
-                ? "nav-links-open"
-                : ""
-            }`}
-          >
-            <button
-              onClick={() =>
-                scrollToSection("about")
-              }
-            >
-              About
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("products")
-              }
-            >
-              Products
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("technology")
-              }
-            >
-              Technology
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("research")
-              }
-            >
-              Research
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("roadmap")
-              }
-            >
-              Roadmap
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("internships")
-              }
-            >
-              Internships
-            </button>
-
-            <button
-              onClick={() =>
-                scrollToSection("contact")
-              }
-            >
-              Contact
-            </button>
-
-            <a
-              href="/lr-ai.html"
-              className="nav-ai-button"
-              onClick={closeMenu}
-            >
-              <Sparkles size={15} />
-              Try LR AI
-            </a>
-          </nav>
+          {/* THREE LINE MENU */}
 
           <button
-            className="mobile-menu-button"
-            onClick={() =>
-              setMobileMenuOpen(
-                (value) => !value
-              )
-            }
-            aria-label={
-              mobileMenuOpen
-                ? "Close menu"
-                : "Open menu"
-            }
+            className="main-menu-button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
           >
-            {mobileMenuOpen ? (
-              <X size={22} />
-            ) : (
-              <Menu size={22} />
-            )}
+            <Menu size={27} strokeWidth={1.8} />
           </button>
 
         </div>
@@ -238,10 +190,201 @@ function App() {
       </header>
 
       {/* =====================================================
-          HERO
-          ===================================================== */}
+          SIDE MENU OVERLAY
+      ===================================================== */}
+
+      <div
+        className={`menu-overlay ${
+          menuOpen ? "menu-overlay-visible" : ""
+        }`}
+        onClick={closeMenu}
+      />
+
+      {/* =====================================================
+          SIDE MENU
+      ===================================================== */}
+
+      <aside
+        className={`side-menu ${
+          menuOpen ? "side-menu-open" : ""
+        }`}
+        aria-hidden={!menuOpen}
+      >
+
+        <div className="side-menu-header">
+
+          <div className="side-menu-brand">
+
+            <img
+              src="/company_logo.jpg"
+              alt="LR AgroSense"
+            />
+
+            <div>
+              <strong>LR AgroSense</strong>
+              <span>Smart Farming • IoT</span>
+            </div>
+
+          </div>
+
+          <button
+            className="side-menu-close"
+            onClick={closeMenu}
+            aria-label="Close menu"
+          >
+            <X size={22} />
+          </button>
+
+        </div>
+
+        <div className="side-menu-content">
+
+          {/* COMPANY */}
+
+          <div className="side-menu-group">
+
+            <span className="side-menu-label">
+              Company
+            </span>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("about")
+              }
+            >
+              <span>About</span>
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("products")
+              }
+            >
+              <span>Products</span>
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("technology")
+              }
+            >
+              <span>Technology</span>
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("research")
+              }
+            >
+              <span>Research</span>
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("roadmap")
+              }
+            >
+              <span>Roadmap</span>
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("internships")
+              }
+            >
+              <span>Internships</span>
+              <ChevronRight size={17} />
+            </button>
+
+          </div>
+
+          {/* EXPLORE */}
+
+          <div className="side-menu-group">
+
+            <span className="side-menu-label">
+              Explore
+            </span>
+
+            <a
+              href="/explore.html"
+              className="side-menu-explore"
+              onClick={closeMenu}
+            >
+
+              <div className="explore-icon">
+                ✦
+              </div>
+
+              <div className="explore-info">
+                <strong>Explore LR AgroSense</strong>
+                <span>
+                  Applications & platforms
+                </span>
+              </div>
+
+              <ChevronRight size={18} />
+
+            </a>
+
+          </div>
+
+          {/* CONTACT */}
+
+          <div className="side-menu-group">
+
+            <span className="side-menu-label">
+              Support
+            </span>
+
+            <button
+              className="side-menu-link"
+              onClick={() =>
+                scrollToSection("contact")
+              }
+            >
+              <span>Contact</span>
+              <ChevronRight size={17} />
+            </button>
+
+          </div>
+
+        </div>
+
+        <div className="side-menu-footer">
+
+          <span>
+            LR AgroSense
+          </span>
+
+          <small>
+            Building technology for better agriculture.
+          </small>
+
+        </div>
+
+      </aside>
+
+      {/* =====================================================
+          MAIN CONTENT
+      ===================================================== */}
 
       <main id="top">
+
+        {/* =====================================================
+            HERO
+        ===================================================== */}
 
         <section className="hero">
 
@@ -265,8 +408,8 @@ function App() {
               <p>
                 LR AgroSense is building affordable
                 agricultural technologies that combine
-                IoT, field data and AI to help farmers
-                make better decisions.
+                IoT, field data and intelligent systems
+                to help farmers make better decisions.
               </p>
 
               <div className="hero-actions">
@@ -281,13 +424,15 @@ function App() {
                   <ArrowRight size={17} />
                 </button>
 
-                <a
-                  href="/lr-ai.html"
+                <button
                   className="secondary-button"
+                  onClick={() =>
+                    scrollToSection("about")
+                  }
                 >
-                  <Sparkles size={17} />
-                  Try LR AI
-                </a>
+                  About LR AgroSense
+                  <ArrowRight size={17} />
+                </button>
 
               </div>
 
@@ -303,8 +448,8 @@ function App() {
         </section>
 
         {/* =====================================================
-            INTRO STRIP
-            ===================================================== */}
+            INTRO
+        ===================================================== */}
 
         <section className="intro-strip">
 
@@ -313,6 +458,7 @@ function App() {
             <div className="intro-grid">
 
               <div>
+
                 <span className="section-label">
                   Our focus
                 </span>
@@ -321,6 +467,7 @@ function App() {
                   Technology should solve
                   real agricultural problems.
                 </h2>
+
               </div>
 
               <p>
@@ -341,7 +488,7 @@ function App() {
 
         {/* =====================================================
             ABOUT
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="about"
@@ -431,7 +578,7 @@ function App() {
 
         {/* =====================================================
             PRODUCTS
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="products"
@@ -453,61 +600,49 @@ function App() {
 
               <p>
                 Our product roadmap connects field
-                sensing, agricultural data and AI into
-                a long-term farming intelligence platform.
+                sensing, agricultural data and
+                intelligent systems into a long-term
+                farming platform.
               </p>
 
             </div>
 
             <div className="products-grid">
 
-              {products.map(
-                (product) => {
-                  const Icon = product.icon;
+              {products.map((product) => {
 
-                  return (
-                    <article
-                      className="product-card"
-                      key={product.title}
-                    >
+                const Icon = product.icon;
 
-                      <div className="product-top">
+                return (
+                  <article
+                    className="product-card"
+                    key={product.title}
+                  >
 
-                        <div className="product-icon">
-                          <Icon size={22} />
-                        </div>
+                    <div className="product-top">
 
-                        <span className="product-status">
-                          {product.status}
-                        </span>
-
+                      <div className="product-icon">
+                        <Icon size={22} />
                       </div>
 
-                      <h3>
-                        {product.title}
-                      </h3>
+                      <span className="product-status">
+                        {product.status}
+                      </span>
 
-                      <p>
-                        {product.text}
-                      </p>
+                    </div>
 
-                      {product.title ===
-                        "AgriMind AI" && (
-                        <a
-                          href="/lr-ai.html"
-                          className="product-link"
-                        >
-                          Explore LR AI
-                          <ArrowRight
-                            size={15}
-                          />
-                        </a>
-                      )}
+                    <h3>
+                      {product.title}
+                    </h3>
 
-                    </article>
-                  );
-                }
-              )}
+                    <p>
+                      {product.text}
+                    </p>
+
+                  </article>
+                );
+
+              })}
 
             </div>
 
@@ -517,7 +652,7 @@ function App() {
 
         {/* =====================================================
             TECHNOLOGY
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="technology"
@@ -542,7 +677,8 @@ function App() {
                 <p>
                   Our long-term technology architecture
                   combines sensors, connectivity, cloud
-                  systems, agricultural knowledge and AI.
+                  systems, agricultural knowledge and
+                  intelligent software.
                 </p>
 
                 <div className="technology-flow">
@@ -569,8 +705,8 @@ function App() {
                   <ArrowRight size={16} />
 
                   <div>
-                    <Sparkles size={18} />
-                    AI
+                    <FlaskConical size={18} />
+                    Intelligence
                   </div>
 
                 </div>
@@ -579,34 +715,36 @@ function App() {
 
               <div className="technology-cards">
 
-                {technology.map(
-                  (item) => {
-                    const Icon = item.icon;
+                {technology.map((item) => {
 
-                    return (
-                      <div
-                        className="technology-card"
-                        key={item.title}
-                      >
+                  const Icon = item.icon;
 
-                        <div className="card-icon">
-                          <Icon size={19} />
-                        </div>
+                  return (
+                    <div
+                      className="technology-card"
+                      key={item.title}
+                    >
 
-                        <div>
-                          <h3>
-                            {item.title}
-                          </h3>
+                      <div className="card-icon">
+                        <Icon size={19} />
+                      </div>
 
-                          <p>
-                            {item.text}
-                          </p>
-                        </div>
+                      <div>
+
+                        <h3>
+                          {item.title}
+                        </h3>
+
+                        <p>
+                          {item.text}
+                        </p>
 
                       </div>
-                    );
-                  }
-                )}
+
+                    </div>
+                  );
+
+                })}
 
               </div>
 
@@ -618,7 +756,7 @@ function App() {
 
         {/* =====================================================
             RESEARCH
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="research"
@@ -734,70 +872,8 @@ function App() {
         </section>
 
         {/* =====================================================
-            LR AI FEATURE
-            ===================================================== */}
-
-        <section className="ai-section">
-
-          <div className="section-container">
-
-            <div className="ai-card">
-
-              <div className="ai-content">
-
-                <span className="section-label">
-                  LR AI
-                </span>
-
-                <h2>
-                  Ask questions about
-                  your crops.
-                </h2>
-
-                <p>
-                  LR AI is our agricultural intelligence
-                  interface designed to help users ask
-                  questions about plants, crop symptoms,
-                  diseases, pests and farming problems.
-                </p>
-
-                <a
-                  href="/lr-ai.html"
-                  className="primary-button"
-                >
-                  Open LR AI
-                  <ArrowRight size={17} />
-                </a>
-
-              </div>
-
-              <div className="ai-visual">
-
-                <div className="ai-orb">
-                  <Sparkles size={32} />
-                </div>
-
-                <div className="ai-floating-card card-one">
-                  <Leaf size={15} />
-                  Plant analysis
-                </div>
-
-                <div className="ai-floating-card card-two">
-                  <Sprout size={15} />
-                  Crop health
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* =====================================================
             ROADMAP
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="roadmap"
@@ -827,37 +903,36 @@ function App() {
 
             <div className="roadmap">
 
-              {roadmap.map(
-                (item, index) => (
-                  <div
-                    className="roadmap-item"
-                    key={item.number}
-                  >
+              {roadmap.map((item, index) => (
 
-                    <div className="roadmap-number">
-                      {item.number}
-                    </div>
+                <div
+                  className="roadmap-item"
+                  key={item.number}
+                >
 
-                    <div className="roadmap-content">
+                  <div className="roadmap-number">
+                    {item.number}
+                  </div>
 
-                      <h3>
-                        {item.title}
-                      </h3>
+                  <div className="roadmap-content">
 
-                      <p>
-                        {item.text}
-                      </p>
+                    <h3>
+                      {item.title}
+                    </h3>
 
-                    </div>
-
-                    {index <
-                      roadmap.length - 1 && (
-                      <div className="roadmap-line" />
-                    )}
+                    <p>
+                      {item.text}
+                    </p>
 
                   </div>
-                )
-              )}
+
+                  {index < roadmap.length - 1 && (
+                    <div className="roadmap-line" />
+                  )}
+
+                </div>
+
+              ))}
 
             </div>
 
@@ -867,7 +942,7 @@ function App() {
 
         {/* =====================================================
             INTERNSHIPS
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="internships"
@@ -919,9 +994,7 @@ function App() {
                 <button
                   className="primary-button"
                   onClick={() =>
-                    scrollToSection(
-                      "contact"
-                    )
+                    scrollToSection("contact")
                   }
                 >
                   Get in touch
@@ -938,7 +1011,7 @@ function App() {
 
         {/* =====================================================
             FAQ
-            ===================================================== */}
+        ===================================================== */}
 
         <section className="section faq-section">
 
@@ -958,61 +1031,50 @@ function App() {
 
             <div className="faq-list">
 
-              {[
-                {
-                  q: "What is LR AgroSense?",
-                  a: "LR AgroSense is an early-stage AgriTech startup focused on developing affordable technologies using IoT, agricultural data and AI.",
-                },
-                {
-                  q: "What is LR AI?",
-                  a: "LR AI is a separate agricultural AI interface being developed to help users ask questions about plants, crops, symptoms, diseases, pests and farming problems.",
-                },
-                {
-                  q: "Can LR AI diagnose every plant disease?",
-                  a: "No. Agricultural AI should not claim certainty when an image is unclear or when multiple conditions can produce similar symptoms. LR AI is designed to provide useful analysis while identifying uncertainty and recommending appropriate confirmation.",
-                },
-                {
-                  q: "What is the Smart Farm Monitor?",
-                  a: "It is LR AgroSense's planned IoT-based farm monitoring system for collecting useful soil and environmental information and helping farmers make better decisions.",
-                },
-              ].map(
-                (item, index) => (
-                  <div
-                    className={`faq-item ${
-                      openFaq === index
-                        ? "faq-open"
-                        : ""
-                    }`}
-                    key={item.q}
+              {faqs.map((item, index) => (
+
+                <div
+                  className={`faq-item ${
+                    openFaq === index
+                      ? "faq-open"
+                      : ""
+                  }`}
+                  key={item.q}
+                >
+
+                  <button
+                    onClick={() =>
+                      setOpenFaq(
+                        openFaq === index
+                          ? null
+                          : index
+                      )
+                    }
                   >
 
-                    <button
-                      onClick={() =>
-                        setOpenFaq(
-                          openFaq === index
-                            ? null
-                            : index
-                        )
-                      }
-                    >
-                      <span>{item.q}</span>
+                    <span>
+                      {item.q}
+                    </span>
 
-                      <ChevronDown
-                        size={18}
-                      />
-                    </button>
+                    <ChevronDown size={18} />
 
-                    {openFaq === index && (
-                      <div className="faq-answer">
-                        <p>
-                          {item.a}
-                        </p>
-                      </div>
-                    )}
+                  </button>
 
-                  </div>
-                )
-              )}
+                  {openFaq === index && (
+
+                    <div className="faq-answer">
+
+                      <p>
+                        {item.a}
+                      </p>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
 
             </div>
 
@@ -1022,7 +1084,7 @@ function App() {
 
         {/* =====================================================
             CONTACT
-            ===================================================== */}
+        ===================================================== */}
 
         <section
           id="contact"
@@ -1059,16 +1121,19 @@ function App() {
                   href="mailto:contact@lragrosense.in"
                   className="contact-item"
                 >
+
                   <div className="contact-icon">
                     <Mail size={18} />
                   </div>
 
                   <div>
                     <span>Email</span>
+
                     <strong>
                       contact@lragrosense.in
                     </strong>
                   </div>
+
                 </a>
 
                 <div className="contact-item">
@@ -1079,6 +1144,7 @@ function App() {
 
                   <div>
                     <span>Focus</span>
+
                     <strong>
                       Agriculture • India
                     </strong>
@@ -1099,6 +1165,7 @@ function App() {
 
                   <div>
                     <span>LinkedIn</span>
+
                     <strong>
                       LR AgroSense
                     </strong>
@@ -1123,7 +1190,7 @@ function App() {
 
       {/* =====================================================
           FOOTER
-          ===================================================== */}
+      ===================================================== */}
 
       <footer className="footer">
 
@@ -1160,6 +1227,14 @@ function App() {
 
               <button
                 onClick={() =>
+                  scrollToSection("products")
+                }
+              >
+                Products
+              </button>
+
+              <button
+                onClick={() =>
                   scrollToSection("research")
                 }
               >
@@ -1174,45 +1249,19 @@ function App() {
                 Roadmap
               </button>
 
-              <button
-                onClick={() =>
-                  scrollToSection(
-                    "internships"
-                  )
-                }
-              >
-                Internships
-              </button>
-
             </div>
 
             <div className="footer-column">
 
-              <h4>Technology</h4>
+              <h4>Explore</h4>
 
-              <button
-                onClick={() =>
-                  scrollToSection(
-                    "products"
-                  )
-                }
-              >
-                Products
-              </button>
-
-              <button
-                onClick={() =>
-                  scrollToSection(
-                    "technology"
-                  )
-                }
-              >
-                Technology
-              </button>
-
-              <a href="/lr-ai.html">
-                LR AI
+              <a href="/explore.html">
+                Explore LR AgroSense
               </a>
+
+              <span className="footer-coming-soon">
+                More applications coming soon
+              </span>
 
             </div>
 
@@ -1222,9 +1271,7 @@ function App() {
 
               <button
                 onClick={() =>
-                  scrollToSection(
-                    "contact"
-                  )
+                  scrollToSection("contact")
                 }
               >
                 Contact
@@ -1238,12 +1285,6 @@ function App() {
                 LinkedIn
               </a>
 
-              <a
-                href="https://lragrosense.in"
-              >
-                Website
-              </a>
-
             </div>
 
           </div>
@@ -1251,8 +1292,8 @@ function App() {
           <div className="footer-bottom">
 
             <span>
-              © {new Date().getFullYear()} LR
-              AgroSense. All rights reserved.
+              © {new Date().getFullYear()} LR AgroSense.
+              All rights reserved.
             </span>
 
             <span>
