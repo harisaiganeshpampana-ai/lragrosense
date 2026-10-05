@@ -1,469 +1,765 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import {
+  ArrowRight,
+  Camera,
+  CheckCircle2,
+  ChevronDown,
+  Cloud,
+  Cpu,
+  Leaf,
+  Menu,
+  MessageCircle,
+  Microscope,
+  ShieldCheck,
+  Sparkles,
+  Upload,
+  X,
+  Zap,
+} from "lucide-react";
 
-const products = [
-  {
-    title: "Smart Farm Monitor",
-    description:
-      "An affordable IoT-based monitoring system designed to help farmers understand soil and farm conditions.",
-    status: "In Development",
-  },
-  {
-    title: "AgriMind AI",
-    description:
-      "Our future AI platform for crop-health intelligence, combining farm data, crop information and visual analysis.",
-    status: "Research",
-  },
-  {
-    title: "Smart Farm Station",
-    description:
-      "A future integrated station combining soil, weather and environmental monitoring for smarter farm decisions.",
-    status: "Roadmap",
-  },
-];
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
-const roadmap = [
-  {
-    phase: "01",
-    title: "Research & Foundation",
-    text: "Study real farmer problems, validate agricultural needs and build the technical foundation.",
-  },
-  {
-    phase: "02",
-    title: "Smart Farm Monitor",
-    text: "Develop and field-test an affordable IoT monitoring system for soil and farm conditions.",
-  },
-  {
-    phase: "03",
-    title: "AI Crop Intelligence",
-    text: "Develop AI-assisted crop health and agricultural decision-support capabilities.",
-  },
-  {
-    phase: "04",
-    title: "Integrated Smart Farming",
-    text: "Connect soil, weather, crop and farm data into one intelligent agricultural ecosystem.",
-  },
-];
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
 
-  const closeMenu = () => {
-    setMenuOpen(false);
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function App() {
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+
+  const [plantImage, setPlantImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [question, setQuestion] = useState("");
+  const [analysis, setAnalysis] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState("");
+
+  const fileInputRef = useRef(null);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setError("");
+    setAnalysis("");
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please upload a valid image file.");
+      return;
+    }
+
+    if (file.size > 12 * 1024 * 1024) {
+      setError("Please upload an image smaller than 12 MB.");
+      return;
+    }
+
+    setPlantImage(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setPlantImage(null);
+    setImagePreview("");
+    setAnalysis("");
+    setError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const analyzePlant = async () => {
+    setError("");
+    setAnalysis("");
+
+    if (!plantImage) {
+      setError("Please upload a plant or crop image first.");
+      return;
+    }
+
+    if (!question.trim()) {
+      setError("Please ask LR AI a question about the plant.");
+      return;
+    }
+
+    if (!API_BASE_URL) {
+      setError(
+        "LR AI is ready, but the secure AI server is not connected yet. The Gemini API key must be kept on the backend."
+      );
+      return;
+    }
+
+    try {
+      setAnalyzing(true);
+
+      const image = await fileToDataUrl(plantImage);
+
+      const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image,
+          question: question.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "LR AI could not analyze the image.");
+      }
+
+      setAnalysis(data.answer || "No analysis was returned.");
+    } catch (err) {
+      setError(
+        err.message || "Something went wrong while analyzing the image."
+      );
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const resetAI = () => {
+    setPlantImage(null);
+    setImagePreview("");
+    setQuestion("");
+    setAnalysis("");
+    setError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const scrollTo = (id) => {
+    setMobileMenu(false);
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+    });
   };
 
   return (
-    <div className="app">
-      {/* NAVIGATION */}
+    <div className="site-shell">
+      {/* NAVBAR */}
       <header className="navbar">
-        <a href="#home" className="brand" onClick={closeMenu}>
-          <img
-            src="/company_logo.jpg"
-            alt="LR AgroSense logo"
-            className="brand-logo"
-          />
-
-          <div>
-            <div className="brand-name">LR AgroSense</div>
-            <div className="brand-tagline">
-              AI • IoT • Smart Farming
-            </div>
-          </div>
-        </a>
-
-        {/* DESKTOP NAVIGATION */}
-        <nav className="nav-links" aria-label="Main navigation">
-          <a href="#about">About</a>
-          <a href="#products">Products</a>
-          <a href="#technology">Technology</a>
-          <a href="#research">Research</a>
-          <a href="#roadmap">Roadmap</a>
-          <a href="#internships">Internships</a>
-          <a href="#contact">Contact</a>
-        </nav>
-
-        <div className="navbar-actions">
-          <a href="#contact" className="nav-button">
-            Connect
-          </a>
-
-          {/* MOBILE MENU BUTTON */}
+        <div className="container navbar-inner">
           <button
-            className="mobile-menu-toggle"
-            type="button"
-            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(!menuOpen)}
+            className="brand"
+            onClick={() => scrollTo("home")}
+            aria-label="LR AgroSense home"
           >
-            {menuOpen ? "×" : "☰"}
+            <img
+              src="/company_logo.jpg"
+              alt="LR AgroSense"
+              className="brand-logo"
+            />
+            <span>LR AgroSense</span>
+          </button>
+
+          <nav className={`nav-links ${mobileMenu ? "nav-open" : ""}`}>
+            <button onClick={() => scrollTo("about")}>About</button>
+            <button onClick={() => scrollTo("products")}>Products</button>
+            <button onClick={() => scrollTo("technology")}>
+              Technology
+            </button>
+            <button onClick={() => scrollTo("research")}>Research</button>
+            <button onClick={() => scrollTo("roadmap")}>Roadmap</button>
+            <button onClick={() => scrollTo("internships")}>
+              Internships
+            </button>
+            <button onClick={() => scrollTo("contact")}>Contact</button>
+
+            {/* LR AI */}
+            <button
+              className="lr-ai-nav"
+              onClick={() => {
+                setShowAI(true);
+                setMobileMenu(false);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              <Sparkles size={16} />
+              LR AI
+            </button>
+
+            <button
+              className="nav-connect"
+              onClick={() => scrollTo("contact")}
+            >
+              Connect
+              <ArrowRight size={15} />
+            </button>
+          </nav>
+
+          <button
+            className="mobile-menu-button"
+            onClick={() => setMobileMenu((value) => !value)}
+            aria-label="Open navigation"
+          >
+            {mobileMenu ? <X size={23} /> : <Menu size={23} />}
           </button>
         </div>
       </header>
 
-      {/* MOBILE NAVIGATION */}
-      {menuOpen && (
-        <nav className="mobile-menu" aria-label="Mobile navigation">
-          <a href="#about" onClick={closeMenu}>
-            About
-          </a>
+      {/* HOME */}
+      {!showAI ? (
+        <main>
+          <section id="home" className="hero-section">
+            <div className="hero-overlay" />
 
-          <a href="#products" onClick={closeMenu}>
-            Products
-          </a>
-
-          <a href="#technology" onClick={closeMenu}>
-            Technology
-          </a>
-
-          <a href="#research" onClick={closeMenu}>
-            Research
-          </a>
-
-          <a href="#roadmap" onClick={closeMenu}>
-            Roadmap
-          </a>
-
-          <a href="#internships" onClick={closeMenu}>
-            Internships
-          </a>
-
-          <a href="#contact" onClick={closeMenu}>
-            Contact
-          </a>
-        </nav>
-      )}
-
-      {/* HERO */}
-      <main>
-        <section id="home" className="hero">
-          <div className="hero-overlay"></div>
-
-          <div className="hero-content">
-            <div className="eyebrow">
-              BUILDING THE FUTURE OF AGRICULTURE
-            </div>
-
-            <h1>
-              Technology that
-              <span> understands farming.</span>
-            </h1>
-
-            <p>
-              LR AgroSense is building affordable AI and IoT solutions to help
-              farmers understand their fields, make better decisions and move
-              towards smarter, more sustainable agriculture.
-            </p>
-
-            <div className="hero-actions">
-              <a href="#products" className="primary-button">
-                Explore Our Work
-              </a>
-
-              <a href="#about" className="secondary-button">
-                Learn About LR AgroSense
-              </a>
-            </div>
-
-            <div className="hero-note">
-              Early-stage AgriTech startup • Research • Innovation • Field
-              Solutions
-            </div>
-          </div>
-        </section>
-
-        {/* ABOUT */}
-        <section id="about" className="section">
-          <div className="section-heading">
-            <span>01 — ABOUT</span>
-            <h2>
-              Building practical technology for real agricultural problems.
-            </h2>
-          </div>
-
-          <div className="about-grid">
-            <div>
-              <p className="large-text">
-                LR AgroSense is an early-stage AgriTech startup dedicated to
-                developing innovative, affordable and technology-driven
-                solutions for agriculture.
-              </p>
-
-              <p>
-                Our approach starts with understanding farmers and the problems
-                they face in the field. We then combine agriculture,
-                electronics, IoT, software and artificial intelligence to
-                develop practical solutions.
-              </p>
-
-              <p>
-                Our long-term goal is to create an integrated agricultural
-                technology ecosystem that helps farmers improve productivity,
-                use resources efficiently and reduce avoidable losses.
-              </p>
-            </div>
-
-            <div className="info-card">
-              <div className="card-number">01</div>
-
-              <h3>Our Vision</h3>
-
-              <p>
-                To become a leading AgriTech company by helping farmers reduce
-                losses, promoting sustainable agriculture and enabling
-                healthier food.
-              </p>
-
-              <div className="card-divider"></div>
-
-              <div className="card-number">02</div>
-
-              <h3>Our Mission</h3>
-
-              <p>
-                Develop affordable smart agricultural technologies that solve
-                real-world farming problems.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* PRODUCTS */}
-        <section id="products" className="section dark-section">
-          <div className="section-heading">
-            <span>02 — PRODUCTS & PROJECTS</span>
-
-            <h2>
-              From sensing the field to understanding the field.
-            </h2>
-          </div>
-
-          <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.title}>
-                <div className="product-status">
-                  {product.status}
+            <div className="container hero-content">
+              <div className="hero-copy">
+                <div className="eyebrow">
+                  <span className="eyebrow-dot" />
+                  Building the future of agriculture
                 </div>
 
-                <h3>{product.title}</h3>
+                <h1>
+                  Smarter farming.
+                  <br />
+                  <span>Better decisions.</span>
+                </h1>
 
-                <p>{product.description}</p>
+                <p>
+                  LR AgroSense builds affordable agricultural technologies
+                  combining IoT, soil monitoring, weather intelligence and AI
+                  to help farmers make better decisions.
+                </p>
 
-                <a href="#contact">Learn More →</a>
-              </article>
-            ))}
-          </div>
-        </section>
+                <div className="hero-actions">
+                  <button
+                    className="primary-button"
+                    onClick={() => scrollTo("products")}
+                  >
+                    Explore Technology
+                    <ArrowRight size={18} />
+                  </button>
 
-        {/* TECHNOLOGY */}
-        <section id="technology" className="section">
-          <div className="section-heading">
-            <span>03 — TECHNOLOGY</span>
-
-            <h2>
-              A connected approach to smarter agriculture.
-            </h2>
-          </div>
-
-          <div className="technology-grid">
-            <div className="technology-card">
-              <div className="tech-number">01</div>
-
-              <h3>IoT & Sensors</h3>
-
-              <p>
-                We are exploring sensor-based systems for collecting useful
-                field and environmental information.
-              </p>
-            </div>
-
-            <div className="technology-card">
-              <div className="tech-number">02</div>
-
-              <h3>Data & Analytics</h3>
-
-              <p>
-                Agricultural measurements can be converted into useful
-                information for understanding changing farm conditions.
-              </p>
-            </div>
-
-            <div className="technology-card">
-              <div className="tech-number">03</div>
-
-              <h3>Artificial Intelligence</h3>
-
-              <p>
-                AI will be used to support agricultural analysis, crop-health
-                intelligence and decision-making.
-              </p>
-            </div>
-
-            <div className="technology-card">
-              <div className="tech-number">04</div>
-
-              <h3>Farmer-Focused Design</h3>
-
-              <p>
-                Technology should remain affordable, understandable and useful
-                for farmers in real field conditions.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* RESEARCH */}
-        <section id="research" className="section research-section">
-          <div className="research-content">
-            <div className="section-heading">
-              <span>04 — RESEARCH</span>
-
-              <h2>
-                Research before claims. Validation before scale.
-              </h2>
-            </div>
-
-            <p>
-              Agriculture is complex. Soil conditions, crop varieties, weather,
-              management practices and disease symptoms can interact in many
-              ways.
-            </p>
-
-            <p>
-              LR AgroSense is therefore taking a research-first approach. Our
-              future crop-health systems will combine multiple sources of
-              information instead of relying on a single measurement.
-            </p>
-
-            <div className="research-points">
-              <div>✓ Soil and environmental data</div>
-              <div>✓ Crop and field information</div>
-              <div>✓ Plant images and visual symptoms</div>
-              <div>✓ Expert and laboratory validation</div>
-            </div>
-          </div>
-        </section>
-
-        {/* ROADMAP */}
-        <section id="roadmap" className="section">
-          <div className="section-heading">
-            <span>05 — ROADMAP</span>
-
-            <h2>
-              Our journey from research to real-world impact.
-            </h2>
-          </div>
-
-          <div className="roadmap">
-            {roadmap.map((item) => (
-              <div className="roadmap-item" key={item.phase}>
-                <div className="roadmap-phase">
-                  {item.phase}
-                </div>
-
-                <div>
-                  <h3>{item.title}</h3>
-
-                  <p>{item.text}</p>
+                  <button
+                    className="secondary-button"
+                    onClick={() => setShowAI(true)}
+                  >
+                    <Sparkles size={18} />
+                    Try LR AI
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* INTERNSHIPS */}
-        <section id="internships" className="section dark-section">
-          <div className="internship-box">
-            <div>
-              <span>06 — INTERNSHIPS</span>
-
-              <h2>
-                Build with us. Learn by solving real problems.
-              </h2>
-
-              <p>
-                LR AgroSense offers project-based opportunities for students
-                and researchers interested in agriculture, IoT, AI, software,
-                business and related fields.
-              </p>
             </div>
+          </section>
 
-            <a
-              href="#contact"
-              className="primary-button light-button"
-              onClick={closeMenu}
-            >
-              Internship Enquiry
-            </a>
-          </div>
-        </section>
+          {/* ABOUT */}
+          <section id="about" className="section">
+            <div className="container">
+              <div className="section-heading">
+                <span>ABOUT LR AGROSENSE</span>
+                <h2>Technology built around real agricultural problems.</h2>
+                <p>
+                  We are developing affordable and practical technologies
+                  designed around the needs of farmers.
+                </p>
+              </div>
 
-        {/* CONTACT */}
-        <section id="contact" className="section contact-section">
-          <div className="section-heading">
-            <span>07 — CONTACT</span>
+              <div className="about-grid">
+                <article className="info-card">
+                  <Leaf size={28} />
+                  <h3>Farmer First</h3>
+                  <p>
+                    Solutions are designed around real farm conditions,
+                    practical decisions and affordability.
+                  </p>
+                </article>
 
-            <h2>
-              Let's build the future of agriculture.
-            </h2>
-          </div>
+                <article className="info-card">
+                  <Cpu size={28} />
+                  <h3>Smart Technology</h3>
+                  <p>
+                    IoT, sensors, cloud systems and AI work together to turn
+                    agricultural data into useful information.
+                  </p>
+                </article>
 
-          <div className="contact-grid">
-            <div>
-              <p className="large-text">
-                Interested in our work, research, internships or future
-                collaboration?
-              </p>
-
-              <p>
-                We are open to connecting with farmers, students, researchers,
-                agricultural professionals, technology experts and potential
-                partners.
-              </p>
+                <article className="info-card">
+                  <ShieldCheck size={28} />
+                  <h3>Research First</h3>
+                  <p>
+                    We focus on testing, validation and field evidence before
+                    making strong agricultural claims.
+                  </p>
+                </article>
+              </div>
             </div>
+          </section>
 
-            <div className="contact-card">
-              <h3>LR AgroSense</h3>
+          {/* PRODUCTS */}
+          <section id="products" className="section section-soft">
+            <div className="container">
+              <div className="section-heading">
+                <span>OUR TECHNOLOGY</span>
+                <h2>Building an intelligent agricultural ecosystem.</h2>
+                <p>
+                  LR AgroSense is developing hardware, software and AI
+                  technologies that can work together.
+                </p>
+              </div>
 
-              <p>AI • IoT • Smart Farming</p>
+              <div className="product-grid">
+                <article className="product-card">
+                  <div className="product-icon">
+                    <Cloud />
+                  </div>
+                  <h3>Smart Farm Monitor</h3>
+                  <p>
+                    Monitor important soil conditions such as moisture, pH,
+                    temperature and nutrient-related parameters.
+                  </p>
+                  <span className="product-status">In Development</span>
+                </article>
 
-              <a href="mailto:contact@lragrosense.in">
-                contact@lragrosense.in
-              </a>
+                <article className="product-card featured-product">
+                  <div className="product-icon">
+                    <Sparkles />
+                  </div>
+                  <h3>LR AI</h3>
+                  <p>
+                    AI-powered plant and crop analysis that lets farmers ask
+                    questions using images and natural language.
+                  </p>
+                  <button
+                    className="text-button"
+                    onClick={() => setShowAI(true)}
+                  >
+                    Open LR AI <ArrowRight size={16} />
+                  </button>
+                </article>
+
+                <article className="product-card">
+                  <div className="product-icon">
+                    <Zap />
+                  </div>
+                  <h3>Smart Farm Station</h3>
+                  <p>
+                    A future farm intelligence station combining soil,
+                    weather and environmental monitoring.
+                  </p>
+                  <span className="product-status">Research</span>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          {/* TECHNOLOGY */}
+          <section id="technology" className="section">
+            <div className="container">
+              <div className="section-heading">
+                <span>TECHNOLOGY</span>
+                <h2>From farm data to useful decisions.</h2>
+              </div>
+
+              <div className="technology-grid">
+                <article>
+                  <Microscope />
+                  <h3>Sensing</h3>
+                  <p>
+                    Agricultural sensors collect important information from
+                    soil and the surrounding environment.
+                  </p>
+                </article>
+
+                <article>
+                  <Cloud />
+                  <h3>Connectivity</h3>
+                  <p>
+                    Data can be transferred through connected IoT systems for
+                    monitoring and analysis.
+                  </p>
+                </article>
+
+                <article>
+                  <Sparkles />
+                  <h3>Artificial Intelligence</h3>
+                  <p>
+                    AI can combine agricultural information with farmer
+                    questions to provide useful insights.
+                  </p>
+                </article>
+
+                <article>
+                  <MessageCircle />
+                  <h3>Farmer Interface</h3>
+                  <p>
+                    Information should be understandable and actionable rather
+                    than simply showing technical numbers.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          {/* RESEARCH */}
+          <section id="research" className="section section-dark">
+            <div className="container">
+              <div className="section-heading light-heading">
+                <span>RESEARCH</span>
+                <h2>We build with validation in mind.</h2>
+                <p>
+                  Agricultural technology needs evidence. Our research focuses
+                  on understanding crop conditions, soil parameters, farmer
+                  problems and field-level requirements.
+                </p>
+              </div>
+
+              <div className="research-list">
+                <div>
+                  <CheckCircle2 />
+                  <span>Field data collection</span>
+                </div>
+                <div>
+                  <CheckCircle2 />
+                  <span>Sensor validation</span>
+                </div>
+                <div>
+                  <CheckCircle2 />
+                  <span>Crop-health research</span>
+                </div>
+                <div>
+                  <CheckCircle2 />
+                  <span>AI model validation</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ROADMAP */}
+          <section id="roadmap" className="section">
+            <div className="container">
+              <div className="section-heading">
+                <span>ROADMAP</span>
+                <h2>Building step by step.</h2>
+              </div>
+
+              <div className="roadmap">
+                <div className="roadmap-item">
+                  <span>01</span>
+                  <div>
+                    <h3>Smart Farm Monitor</h3>
+                    <p>
+                      Develop and validate the first affordable farm
+                      monitoring system.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="roadmap-item">
+                  <span>02</span>
+                  <div>
+                    <h3>LR AI</h3>
+                    <p>
+                      Develop AI-powered crop and plant health analysis using
+                      images and agricultural context.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="roadmap-item">
+                  <span>03</span>
+                  <div>
+                    <h3>Smart Farm Intelligence</h3>
+                    <p>
+                      Combine soil, weather, crop and AI information into a
+                      connected agricultural intelligence platform.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* INTERNSHIPS */}
+          <section id="internships" className="section section-soft">
+            <div className="container">
+              <div className="section-heading">
+                <span>INTERNSHIPS</span>
+                <h2>Work on real agricultural technology problems.</h2>
+                <p>
+                  LR AgroSense offers project-based opportunities for students
+                  interested in agriculture, IoT, AI, research and business.
+                </p>
+              </div>
+
+              <button
+                className="primary-button"
+                onClick={() => scrollTo("contact")}
+              >
+                Join LR AgroSense
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          </section>
+
+          {/* CONTACT */}
+          <section id="contact" className="section">
+            <div className="container contact-box">
+              <div>
+                <span>CONTACT</span>
+                <h2>Let's build the future of agriculture.</h2>
+                <p>
+                  Interested in collaborating, researching or working with LR
+                  AgroSense?
+                </p>
+              </div>
 
               <a
-                href="https://lragrosense.in"
-                target="_blank"
-                rel="noreferrer"
+                className="primary-button"
+                href="mailto:contact@lragrosense.in"
               >
-                lragrosense.in
+                Contact Us
+                <ArrowRight size={18} />
               </a>
             </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      ) : (
+        /* LR AI PAGE */
+        <main className="lr-ai-page">
+          <section className="lr-ai-hero">
+            <div className="container">
+              <button
+                className="back-button"
+                onClick={() => setShowAI(false)}
+              >
+                ← Back to LR AgroSense
+              </button>
+
+              <div className="lr-ai-title">
+                <div className="ai-badge">
+                  <Sparkles size={18} />
+                  LR AI
+                </div>
+
+                <h1>
+                  Ask questions about your
+                  <span> plants and crops.</span>
+                </h1>
+
+                <p>
+                  Upload a plant or crop image and ask LR AI what you want to
+                  know. LR AI can analyze the visible condition and provide
+                  possible causes, risks and practical next steps.
+                </p>
+              </div>
+
+              <div className="lr-ai-workspace">
+                <div className="ai-input-card">
+                  <div className="ai-card-header">
+                    <div>
+                      <h2>Plant Analysis</h2>
+                      <p>Upload an image to begin.</p>
+                    </div>
+                    <Camera size={24} />
+                  </div>
+
+                  {!imagePreview ? (
+                    <button
+                      className="upload-area"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload size={32} />
+                      <strong>Upload plant image</strong>
+                      <span>
+                        JPG, PNG or WEBP · Maximum 12 MB
+                      </span>
+                    </button>
+                  ) : (
+                    <div className="image-preview-wrapper">
+                      <img
+                        src={imagePreview}
+                        alt="Selected plant"
+                        className="plant-preview"
+                      />
+
+                      <button
+                        className="remove-image-button"
+                        onClick={removeImage}
+                        aria-label="Remove image"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  )}
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleImageChange}
+                  />
+
+                  <label className="question-label">
+                    Ask LR AI
+                  </label>
+
+                  <textarea
+                    className="ai-question"
+                    value={question}
+                    onChange={(event) => setQuestion(event.target.value)}
+                    placeholder="Example: Why are these leaves turning yellow?"
+                    rows={5}
+                  />
+
+                  <div className="suggested-questions">
+                    <button
+                      onClick={() =>
+                        setQuestion(
+                          "What plant is this and what is its current condition?"
+                        )
+                      }
+                    >
+                      Identify this plant
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setQuestion(
+                          "What disease or pest problem could be affecting this plant?"
+                        )
+                      }
+                    >
+                      Check disease
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setQuestion(
+                          "Why are the leaves changing colour and what should I check?"
+                        )
+                      }
+                    >
+                      Check symptoms
+                    </button>
+                  </div>
+
+                  {error && <div className="ai-error">{error}</div>}
+
+                  <button
+                    className="analyze-button"
+                    onClick={analyzePlant}
+                    disabled={analyzing}
+                  >
+                    {analyzing ? (
+                      <>
+                        <span className="loading-dot" />
+                        LR AI is analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={18} />
+                        Analyze with LR AI
+                      </>
+                    )}
+                  </button>
+
+                  {(plantImage || question || analysis) && (
+                    <button className="reset-ai-button" onClick={resetAI}>
+                      Start a new analysis
+                    </button>
+                  )}
+                </div>
+
+                <div className="ai-result-card">
+                  <div className="ai-card-header">
+                    <div>
+                      <h2>LR AI Analysis</h2>
+                      <p>Your agricultural analysis will appear here.</p>
+                    </div>
+                    <Sparkles size={24} />
+                  </div>
+
+                  {!analysis ? (
+                    <div className="empty-analysis">
+                      <div className="empty-analysis-icon">
+                        <Leaf size={34} />
+                      </div>
+
+                      <h3>Ready to analyze</h3>
+
+                      <p>
+                        Upload a clear image of the plant, leaf, fruit or crop
+                        and ask your question.
+                      </p>
+
+                      <div className="analysis-features">
+                        <span>
+                          <CheckCircle2 size={15} />
+                          Plant identification
+                        </span>
+
+                        <span>
+                          <CheckCircle2 size={15} />
+                          Disease & pest possibilities
+                        </span>
+
+                        <span>
+                          <CheckCircle2 size={15} />
+                          Nutrient-stress possibilities
+                        </span>
+
+                        <span>
+                          <CheckCircle2 size={15} />
+                          Recommended next steps
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="analysis-result">
+                      <div className="result-disclaimer">
+                        <ShieldCheck size={17} />
+                        AI analysis is an initial assessment. Confirm important
+                        agricultural decisions with appropriate field or
+                        laboratory testing.
+                      </div>
+
+                      <div className="analysis-text">
+                        {analysis}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      )}
 
       {/* FOOTER */}
       <footer className="footer">
-        <div>
-          <strong>LR AgroSense</strong>
+        <div className="container footer-inner">
+          <div>
+            <strong>LR AgroSense</strong>
+            <p>
+              Affordable technology for smarter and more sustainable
+              agriculture.
+            </p>
+          </div>
 
-          <p>
-            Building technology for smarter and more sustainable agriculture.
-          </p>
-        </div>
-
-        <div className="footer-links">
-          <a href="#about">About</a>
-          <a href="#products">Products</a>
-          <a href="#roadmap">Roadmap</a>
-          <a href="#contact">Contact</a>
-        </div>
-
-        <div className="copyright">
-          © {new Date().getFullYear()} LR AgroSense. All rights reserved.
+          <div className="footer-right">
+            <span>© {new Date().getFullYear()} LR AgroSense</span>
+            <button onClick={() => setShowAI(true)}>
+              ✦ LR AI
+            </button>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
-
-export default App;
