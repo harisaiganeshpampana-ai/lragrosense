@@ -17,7 +17,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        lrAi: resolve(__dirname, "lr-ai.html")
+        lrAi: resolve(__dirname, "lr-ai.html"),
+        explore: resolve(__dirname, "explore.html")
       }
     }
   }
