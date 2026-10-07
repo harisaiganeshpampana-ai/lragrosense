@@ -425,6 +425,22 @@
       border-radius: 13px;
 
       font-size: 23px;
+
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* LR AI logo */
+
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+
+      display: block;
+
+      object-fit: contain;
+
+      border-radius: 13px;
     }
 
     .status {
@@ -803,7 +819,10 @@
             <div class="app-top">
 
               <div class="app-icon">
-                ✦
+                <img
+                  src="/lr-ai-logo.png"
+                  alt="LR AI"
+                />
               </div>
 
               <span class="status">
