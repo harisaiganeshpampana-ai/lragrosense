@@ -456,7 +456,10 @@ export default function LRAI() {
 
           <div className="lr-ai-brand">
             <div className="lr-ai-mark">
-              LR
+              <img
+                src="/lr-ai-logo.png"
+                alt="LR AI"
+              />
             </div>
 
             <div className="lr-ai-brand-text">
