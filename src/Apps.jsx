@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronRight,
@@ -8,6 +8,7 @@ import {
   Github,
   Grid2X2,
   Leaf,
+  LoaderCircle,
   Mail,
   Palette,
   Plus,
@@ -20,50 +21,49 @@ import {
 
 import "./apps.css";
 
-const apps = [
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://lragrosense.onrender.com"
+).replace(/\/$/, "");
+
+const appDefinitions = [
   {
     id: "canva",
     name: "Canva",
-    description: "Create presentations, posters, documents and visual designs",
+    description:
+      "Create presentations, posters, documents and visual designs",
     category: "Design",
     icon: Palette,
     iconClass: "app-canva",
     popular: true,
-    installed: false,
-    status: "available",
   },
   {
     id: "google-drive",
     name: "Google Drive",
     description: "Drive, Docs, Sheets and Slides",
-    category: "Productivity",
+    category: "Storage",
     icon: Cloud,
     iconClass: "app-drive",
     popular: true,
-    installed: false,
-    status: "available",
   },
   {
     id: "github",
     name: "GitHub",
-    description: "Work with repositories, code, issues and development projects",
+    description:
+      "Work with repositories, code, issues and development projects",
     category: "Developer",
     icon: Github,
     iconClass: "app-github",
     popular: true,
-    installed: false,
-    status: "available",
   },
   {
     id: "gmail",
     name: "Gmail",
     description: "Read, summarize and manage your Gmail",
-    category: "Productivity",
+    category: "Communication",
     icon: Mail,
     iconClass: "app-gmail",
     popular: true,
-    installed: false,
-    status: "available",
   },
   {
     id: "google-docs",
@@ -73,8 +73,6 @@ const apps = [
     icon: FileText,
     iconClass: "app-docs",
     popular: false,
-    installed: false,
-    status: "available",
   },
   {
     id: "developer-tools",
@@ -84,8 +82,6 @@ const apps = [
     icon: Code2,
     iconClass: "app-developer",
     popular: false,
-    installed: false,
-    status: "coming",
   },
   {
     id: "lr-farm-data",
@@ -95,8 +91,6 @@ const apps = [
     icon: Sprout,
     iconClass: "app-lr",
     popular: true,
-    installed: false,
-    status: "native",
   },
   {
     id: "crop-doctor",
@@ -106,8 +100,6 @@ const apps = [
     icon: Leaf,
     iconClass: "app-crop",
     popular: true,
-    installed: false,
-    status: "native",
   },
   {
     id: "agricultural-data",
@@ -117,82 +109,134 @@ const apps = [
     icon: Grid2X2,
     iconClass: "app-agri",
     popular: false,
-    installed: false,
-    status: "coming",
   },
 ];
 
-const installedApps = [
-  {
-    id: "github",
-    name: "GitHub",
-    icon: Github,
-    iconClass: "app-github",
-  },
-  {
-    id: "canva",
-    name: "Canva",
-    icon: Palette,
-    iconClass: "app-canva",
-  },
-  {
-    id: "lr-farm-data",
-    name: "LR Farm Data",
-    icon: Sprout,
-    iconClass: "app-lr",
-  },
-];
+const fallbackStatuses = {
+  canva: "available",
+  "google-drive": "coming",
+  github: "coming",
+  gmail: "coming",
+  "google-docs": "coming",
+  "developer-tools": "coming",
+  "lr-farm-data": "native",
+  "crop-doctor": "native",
+  "agricultural-data": "coming",
+};
 
 export default function Apps({ onClose }) {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("Public");
   const [selectedApp, setSelectedApp] = useState(null);
 
+  const [backendApps, setBackendApps] = useState([]);
+  const [loadingApps, setLoadingApps] = useState(true);
+  const [backendError, setBackendError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadApps = async () => {
+      try {
+        setLoadingApps(true);
+        setBackendError(false);
+
+        const response = await fetch(`${API_BASE}/api/apps`);
+
+        if (!response.ok) {
+          throw new Error(`Apps API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.apps)) {
+          throw new Error("Invalid apps API response");
+        }
+
+        if (!cancelled) {
+          setBackendApps(data.apps);
+        }
+      } catch (error) {
+        console.error("LR AI Apps API error:", error);
+
+        if (!cancelled) {
+          setBackendError(true);
+          setBackendApps([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingApps(false);
+        }
+      }
+    };
+
+    loadApps();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const apps = useMemo(() => {
+    return appDefinitions.map((definition) => {
+      const backendApp = backendApps.find(
+        (item) => item.id === definition.id
+      );
+
+      return {
+        ...definition,
+
+        description:
+          backendApp?.description || definition.description,
+
+        category:
+          backendApp?.category || definition.category,
+
+        status:
+          backendApp?.status ||
+          fallbackStatuses[definition.id] ||
+          "coming",
+
+        connected: Boolean(backendApp?.connected),
+      };
+    });
+  }, [backendApps]);
+
+  const installedApps = useMemo(() => {
+    return apps.filter((app) => app.connected);
+  }, [apps]);
+
   const query = searchText.trim().toLowerCase();
 
+  const matchesQuery = (app) => {
+    if (!query) {
+      return true;
+    }
+
+    return (
+      app.name.toLowerCase().includes(query) ||
+      app.description.toLowerCase().includes(query) ||
+      app.category.toLowerCase().includes(query)
+    );
+  };
+
   const filteredPopular = useMemo(() => {
-    return apps.filter((app) => {
-      if (!app.popular) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      return (
-        app.name.toLowerCase().includes(query) ||
-        app.description.toLowerCase().includes(query) ||
-        app.category.toLowerCase().includes(query)
-      );
-    });
-  }, [query]);
+    return apps.filter(
+      (app) => app.popular && matchesQuery(app)
+    );
+  }, [apps, query]);
 
   const filteredNoteworthy = useMemo(() => {
-    return apps.filter((app) => {
-      if (app.popular) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      return (
-        app.name.toLowerCase().includes(query) ||
-        app.description.toLowerCase().includes(query) ||
-        app.category.toLowerCase().includes(query)
-      );
-    });
-  }, [query]);
+    return apps.filter(
+      (app) => !app.popular && matchesQuery(app)
+    );
+  }, [apps, query]);
 
   return (
     <div className="lr-ai-apps-page">
 
-      {/* PAGE HEADER */}
-
+      {/* HEADER */}
       <header className="apps-page-header">
-
         <div className="apps-header-left">
 
           <button
@@ -208,55 +252,41 @@ export default function Apps({ onClose }) {
           </button>
 
           <div className="apps-heading">
-
             <div className="apps-heading-brand">
               <Sparkles size={12} />
               <span>LR AI</span>
             </div>
 
             <h1>Apps</h1>
-
           </div>
-
         </div>
-
 
         <button
           type="button"
           className="apps-settings-button"
           onClick={() =>
             alert(
-              "App settings will be available when app connections are implemented."
+              "App settings will be available when user-specific connections are implemented."
             )
           }
         >
           <Settings2 size={15} />
           <span>Settings</span>
         </button>
-
       </header>
 
-
       {/* INTRO */}
-
       <section className="apps-intro">
-
-        <h2>
-          Connect LR AI with your tools
-        </h2>
+        <h2>Connect LR AI with your tools</h2>
 
         <p>
-          Connect apps you use for study, work,
-          development and agriculture. LR AI will
-          be able to work with connected tools when
-          the integration is available.
+          Connect apps you use for study, work, development and
+          agriculture. LR AI will be able to work with connected
+          tools when the integration is available.
         </p>
-
       </section>
 
-
       {/* SEARCH */}
-
       <div className="apps-search">
 
         <Search size={18} />
@@ -279,12 +309,42 @@ export default function Apps({ onClose }) {
             <X size={14} />
           </button>
         )}
-
       </div>
 
+      {/* BACKEND STATUS */}
+      <div
+        className="apps-backend-status"
+        aria-live="polite"
+      >
+        {loadingApps ? (
+          <>
+            <LoaderCircle
+              size={13}
+              className="apps-loading-icon"
+            />
+
+            <span>Loading apps...</span>
+          </>
+        ) : backendError ? (
+          <>
+            <span className="apps-status-warning-dot" />
+
+            <span>
+              Using local app information
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="apps-status-online-dot" />
+
+            <span>
+              Connected to LR AI backend
+            </span>
+          </>
+        )}
+      </div>
 
       {/* INSTALLED */}
-
       {!query && (
         <section className="apps-section installed-section">
 
@@ -300,39 +360,46 @@ export default function Apps({ onClose }) {
 
           </div>
 
+          {installedApps.length > 0 ? (
 
-          <div className="installed-apps">
+            <div className="installed-apps">
 
-            {installedApps.map((app) => (
-              <button
-                type="button"
-                key={app.id}
-                className="installed-app"
-                title={app.name}
-                onClick={() => {
-                  const fullApp = apps.find(
-                    (item) => item.id === app.id
-                  );
+              {installedApps.map((app) => {
+                const Icon = app.icon;
 
-                  setSelectedApp(fullApp);
-                }}
-              >
-                <div
-                  className={`installed-app-icon ${app.iconClass}`}
-                >
-                  <app.icon size={22} />
-                </div>
-              </button>
-            ))}
+                return (
+                  <button
+                    type="button"
+                    key={app.id}
+                    className="installed-app"
+                    title={app.name}
+                    onClick={() =>
+                      setSelectedApp(app)
+                    }
+                  >
+                    <div
+                      className={`installed-app-icon ${app.iconClass}`}
+                    >
+                      <Icon size={22} />
+                    </div>
+                  </button>
+                );
+              })}
 
-          </div>
+            </div>
+
+          ) : (
+
+            <div className="apps-installed-empty">
+              No connected apps yet.
+            </div>
+
+          )}
 
         </section>
       )}
 
-
       {/* PUBLIC / PERSONAL */}
-
       <div className="apps-account-tabs">
 
         <button
@@ -361,9 +428,7 @@ export default function Apps({ onClose }) {
 
       </div>
 
-
-      {/* PERSONAL TAB */}
-
+      {/* PERSONAL */}
       {activeTab === "Personal" ? (
 
         <section className="personal-apps-empty">
@@ -372,13 +437,10 @@ export default function Apps({ onClose }) {
             <Grid2X2 size={22} />
           </div>
 
-          <h3>
-            Your personal apps
-          </h3>
+          <h3>Your personal apps</h3>
 
           <p>
-            Apps you connect privately to LR AI
-            will appear here.
+            Apps you connect privately to LR AI will appear here.
           </p>
 
           <button
@@ -394,8 +456,8 @@ export default function Apps({ onClose }) {
       ) : (
 
         <>
-          {/* POPULAR */}
 
+          {/* POPULAR */}
           <section className="apps-section">
 
             <div className="apps-section-heading">
@@ -410,7 +472,6 @@ export default function Apps({ onClose }) {
 
             </div>
 
-
             {filteredPopular.length > 0 ? (
 
               <div className="apps-list">
@@ -419,22 +480,26 @@ export default function Apps({ onClose }) {
                   <AppListItem
                     key={app.id}
                     app={app}
-                    onOpen={() => setSelectedApp(app)}
+                    onOpen={() =>
+                      setSelectedApp(app)
+                    }
                   />
                 ))}
 
               </div>
 
             ) : (
+
               <EmptySearch />
+
             )}
 
           </section>
 
-
           {/* NEW & NOTEWORTHY */}
-
-          <section className="apps-section noteworthy-section">
+          <section
+            className="apps-section noteworthy-section"
+          >
 
             <div className="apps-section-heading">
 
@@ -448,7 +513,6 @@ export default function Apps({ onClose }) {
 
             </div>
 
-
             {filteredNoteworthy.length > 0 ? (
 
               <div className="apps-list">
@@ -457,14 +521,18 @@ export default function Apps({ onClose }) {
                   <AppListItem
                     key={app.id}
                     app={app}
-                    onOpen={() => setSelectedApp(app)}
+                    onOpen={() =>
+                      setSelectedApp(app)
+                    }
                   />
                 ))}
 
               </div>
 
             ) : (
+
               <EmptySearch />
+
             )}
 
           </section>
@@ -473,28 +541,25 @@ export default function Apps({ onClose }) {
 
       )}
 
-
       {/* FOOTER */}
-
       <div className="apps-marketplace-footer">
 
         <Sprout size={15} />
 
         <span>
-          More agriculture and productivity apps
-          are coming to LR AI.
+          More agriculture and productivity apps are coming to LR AI.
         </span>
 
       </div>
 
-
-      {/* APP DETAILS */}
-
+      {/* APP DETAILS MODAL */}
       {selectedApp && (
 
         <div
           className="app-modal-overlay"
-          onMouseDown={() => setSelectedApp(null)}
+          onMouseDown={() =>
+            setSelectedApp(null)
+          }
         >
 
           <div
@@ -507,17 +572,17 @@ export default function Apps({ onClose }) {
             <button
               type="button"
               className="app-modal-close"
-              onClick={() => setSelectedApp(null)}
+              onClick={() =>
+                setSelectedApp(null)
+              }
             >
               <X size={17} />
             </button>
-
 
             <AppIcon
               app={selectedApp}
               large
             />
-
 
             <div className="app-modal-category">
               {selectedApp.category}
@@ -531,7 +596,6 @@ export default function Apps({ onClose }) {
               {selectedApp.description}.
             </p>
 
-
             <div className="app-modal-status">
 
               <strong>
@@ -539,43 +603,54 @@ export default function Apps({ onClose }) {
               </strong>
 
               <span>
-
                 <span className="status-dot" />
 
-                {selectedApp.status === "native"
-                  ? "LR AgroSense app"
-                  : selectedApp.status === "coming"
-                    ? "Coming soon"
-                    : "Available for connection"}
-
+                {selectedApp.connected
+                  ? "Connected"
+                  : selectedApp.status === "native"
+                    ? "LR AgroSense app"
+                    : selectedApp.status === "coming"
+                      ? "Coming soon"
+                      : "Available for connection"}
               </span>
 
             </div>
 
-
             <button
               type="button"
               className="app-modal-connect"
-              onClick={() =>
-                alert(
-                  `${selectedApp.name} integration will be connected here when the API/OAuth integration is implemented.`
-                )
+              disabled={
+                selectedApp.status === "coming"
               }
+              onClick={() => {
+
+                if (
+                  selectedApp.status === "coming"
+                ) {
+                  return;
+                }
+
+                alert(
+                  `${selectedApp.name} connection will be handled by the secure LR AI backend.`
+                );
+
+              }}
             >
 
-              {selectedApp.status === "coming"
-                ? "Coming soon"
-                : `Connect ${selectedApp.name}`}
+              {selectedApp.connected
+                ? `Open ${selectedApp.name}`
+                : selectedApp.status === "coming"
+                  ? "Coming soon"
+                  : `Connect ${selectedApp.name}`}
 
               <ChevronRight size={16} />
 
             </button>
 
-
             <small>
-              LR AI will only access information
-              that you authorize when integrations
-              are implemented.
+              LR AI will only access information that you
+              authorize. App credentials and secrets will remain
+              on the secure backend.
             </small>
 
           </div>
@@ -589,11 +664,9 @@ export default function Apps({ onClose }) {
 }
 
 
-/* =========================================================
-   APP LIST ITEM
-   ========================================================= */
-
+/* APP LIST ITEM */
 function AppListItem({ app, onOpen }) {
+
   const Icon = app.icon;
 
   return (
@@ -609,7 +682,6 @@ function AppListItem({ app, onOpen }) {
         <Icon size={24} />
       </div>
 
-
       <div className="app-list-content">
 
         <h3>
@@ -622,15 +694,12 @@ function AppListItem({ app, onOpen }) {
 
       </div>
 
-
       <div className="app-list-action">
 
-        {app.status === "native" ? (
+        {app.connected ? (
 
           <span className="app-native">
-
             <Check size={11} />
-
           </span>
 
         ) : app.status === "coming" ? (
@@ -652,32 +721,31 @@ function AppListItem({ app, onOpen }) {
 }
 
 
-/* =========================================================
-   APP ICON
-   ========================================================= */
-
+/* APP ICON */
 function AppIcon({ app, large = false }) {
+
   const Icon = app.icon;
 
   return (
     <div
-      className={`app-modal-icon ${
-        app.iconClass
-      } ${large ? "large" : ""}`}
+      className={`app-modal-icon ${app.iconClass} ${
+        large ? "large" : ""
+      }`}
     >
-      <Icon size={large ? 30 : 23} />
+      <Icon
+        size={large ? 30 : 23}
+      />
     </div>
   );
 }
 
 
-/* =========================================================
-   EMPTY SEARCH
-   ========================================================= */
-
+/* EMPTY SEARCH */
 function EmptySearch() {
+
   return (
     <div className="apps-no-results">
+
       <Search size={20} />
 
       <strong>
@@ -687,6 +755,7 @@ function EmptySearch() {
       <span>
         Try searching for another app.
       </span>
+
     </div>
   );
 }
