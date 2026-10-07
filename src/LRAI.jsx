@@ -3,6 +3,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+
 import Apps from "./Apps";
 
 import {
@@ -20,11 +21,13 @@ import {
   X,
 } from "lucide-react";
 
-const STORAGE_KEY =
-  "lr-ai-conversations-v1";
+const STORAGE_KEY = "lr-ai-conversations-v1";
 
 const CANVA_API_BASE =
   "https://lragrosense.onrender.com";
+
+const CANVA_SESSION_KEY =
+  "lr-ai-canva-session-v1";
 
 const exploreItems = [
   {
@@ -77,16 +80,13 @@ function createConversation() {
 function loadConversations() {
   try {
     const saved =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
+      localStorage.getItem(STORAGE_KEY);
 
     if (!saved) {
       return [];
     }
 
-    const parsed =
-      JSON.parse(saved);
+    const parsed = JSON.parse(saved);
 
     return Array.isArray(parsed)
       ? parsed
@@ -96,15 +96,11 @@ function loadConversations() {
   }
 }
 
-function saveConversations(
-  conversations
-) {
+function saveConversations(conversations) {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(
-        conversations
-      )
+      JSON.stringify(conversations)
     );
   } catch {
     // Ignore local storage errors.
@@ -126,30 +122,53 @@ function makeTitle(text) {
 }
 
 function fileToDataUrl(file) {
-  return new Promise(
-    (resolve, reject) => {
-      const reader =
-        new FileReader();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-      reader.onload = () =>
-        resolve(
-          reader.result
-        );
+    reader.onload = () =>
+      resolve(reader.result);
 
-      reader.onerror = reject;
+    reader.onerror = reject;
 
-      reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+  });
+}
+
+function getCanvaClientSession() {
+  try {
+    let session =
+      localStorage.getItem(
+        CANVA_SESSION_KEY
+      );
+
+    if (
+      !session ||
+      session.length < 32
+    ) {
+      session =
+        crypto
+          .randomUUID()
+          .replace(/-/g, "");
+
+      localStorage.setItem(
+        CANVA_SESSION_KEY,
+        session
+      );
     }
-  );
+
+    return session;
+  } catch {
+    return crypto
+      .randomUUID()
+      .replace(/-/g, "");
+  }
 }
 
 export default function LRAI() {
   const [
     conversations,
     setConversations,
-  ] = useState(
-    loadConversations
-  );
+  ] = useState(loadConversations);
 
   const [
     activeChatId,
@@ -206,10 +225,6 @@ export default function LRAI() {
     setAppsOpen,
   ] = useState(false);
 
-  /*
-   * PLUS / CONNECTORS
-   */
-
   const [
     plusMenuOpen,
     setPlusMenuOpen,
@@ -245,13 +260,8 @@ export default function LRAI() {
   const activeChat =
     conversations.find(
       (chat) =>
-        chat.id ===
-        activeChatId
+        chat.id === activeChatId
     ) || null;
-
-  /*
-   * SAVE CONVERSATIONS
-   */
 
   useEffect(() => {
     saveConversations(
@@ -259,24 +269,14 @@ export default function LRAI() {
     );
   }, [conversations]);
 
-  /*
-   * SCROLL TO BOTTOM
-   */
-
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView(
-      {
-        behavior: "smooth",
-      }
-    );
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, [
     activeChat?.messages,
     loading,
   ]);
-
-  /*
-   * SELECT FIRST CHAT
-   */
 
   useEffect(() => {
     if (
@@ -294,26 +294,23 @@ export default function LRAI() {
 
   /*
    * CANVA STATUS
-   *
-   * This checks the real backend
-   * connection instead of hardcoding
-   * Canva as connected.
    */
 
   const checkCanvaStatus =
     async () => {
-      setCanvaStatusLoading(
-        true
-      );
+      setCanvaStatusLoading(true);
 
       try {
+        const clientSession =
+          getCanvaClientSession();
+
         const response =
           await fetch(
-            `${CANVA_API_BASE}/api/apps/canva/status`,
+            `${CANVA_API_BASE}/api/apps/canva/status?client_session=${encodeURIComponent(
+              clientSession
+            )}`,
             {
               method: "GET",
-              credentials:
-                "include",
               cache: "no-store",
             }
           );
@@ -328,31 +325,25 @@ export default function LRAI() {
           await response.json();
 
         setCanvaConnected(
-          Boolean(
-            data?.connected
-          )
+          Boolean(data?.connected)
         );
-      } catch {
-        /*
-         * If the status endpoint cannot
-         * be reached, do not falsely show
-         * Canva as connected.
-         */
+      } catch (error) {
+        console.error(
+          "Canva status error:",
+          error
+        );
+
         setCanvaConnected(false);
       } finally {
-        setCanvaStatusLoading(
-          false
-        );
+        setCanvaStatusLoading(false);
       }
     };
 
   /*
-   * CHECK CANVA WHEN LR AI LOADS
+   * CANVA STATUS ON LOAD
    */
 
   useEffect(() => {
-    checkCanvaStatus();
-
     const params =
       new URLSearchParams(
         window.location.search
@@ -361,21 +352,36 @@ export default function LRAI() {
     const canvaResult =
       params.get("canva");
 
+    const callbackSession =
+      params.get("client_session");
+
     /*
-     * OAuth successfully returned
+     * If Canva returned a client session,
+     * make sure this browser remembers it.
      */
+    if (
+      callbackSession &&
+      callbackSession.length >= 32
+    ) {
+      try {
+        localStorage.setItem(
+          CANVA_SESSION_KEY,
+          callbackSession
+        );
+      } catch {
+        // Ignore storage errors.
+      }
+    }
 
     if (
-      canvaResult ===
-      "connected"
+      canvaResult === "connected"
     ) {
       setCanvaConnected(true);
-
       setPlusMenuOpen(true);
-
       setConnectorsOpen(true);
 
       params.delete("canva");
+      params.delete("client_session");
 
       const cleanQuery =
         params.toString();
@@ -390,24 +396,18 @@ export default function LRAI() {
         }${window.location.hash}`
       );
 
-      /*
-       * Confirm with backend after
-       * OAuth redirect.
-       */
-
       setTimeout(() => {
         checkCanvaStatus();
       }, 300);
-    }
 
-    /*
-     * OAuth failed
-     */
+      return;
+    }
 
     if (
       canvaResult === "error"
     ) {
       params.delete("canva");
+      params.delete("client_session");
 
       const cleanQuery =
         params.toString();
@@ -421,7 +421,15 @@ export default function LRAI() {
             : ""
         }${window.location.hash}`
       );
+
+      setCanvaConnected(false);
+
+      console.error(
+        "Canva connection failed."
+      );
     }
+
+    checkCanvaStatus();
   }, []);
 
   /*
@@ -456,13 +464,21 @@ export default function LRAI() {
   }, []);
 
   /*
-   * START CANVA OAUTH
+   * START CANVA CONNECTION
    */
 
   const startCanvaConnection =
     () => {
+      const clientSession =
+        getCanvaClientSession();
+
+      const connectUrl =
+        `${CANVA_API_BASE}/api/apps/canva/connect?client_session=${encodeURIComponent(
+          clientSession
+        )}`;
+
       window.location.href =
-        `${CANVA_API_BASE}/api/apps/canva/connect`;
+        connectUrl;
     };
 
   /*
@@ -471,18 +487,25 @@ export default function LRAI() {
 
   const disconnectCanva =
     async () => {
-      setCanvaStatusLoading(
-        true
-      );
+      setCanvaStatusLoading(true);
 
       try {
+        const clientSession =
+          getCanvaClientSession();
+
         const response =
           await fetch(
             `${CANVA_API_BASE}/api/apps/canva/disconnect`,
             {
               method: "POST",
-              credentials:
-                "include",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                client_session:
+                  clientSession,
+              }),
             }
           );
 
@@ -492,17 +515,18 @@ export default function LRAI() {
           );
         }
 
-        setCanvaConnected(
-          false
+        setCanvaConnected(false);
+      } catch (error) {
+        console.error(
+          "Canva disconnect error:",
+          error
         );
-      } catch {
+
         alert(
           "Could not disconnect Canva. Please try again."
         );
       } finally {
-        setCanvaStatusLoading(
-          false
-        );
+        setCanvaStatusLoading(false);
       }
     };
 
@@ -512,24 +536,16 @@ export default function LRAI() {
 
   const startNewChat = () => {
     setActiveChatId(null);
-
     setInput("");
-
     setSelectedImage(null);
-
     setImagePreview("");
-
     setAppsOpen(false);
-
     setSidebarOpen(false);
-
     setPlusMenuOpen(false);
-
     setConnectorsOpen(false);
 
     if (imageInputRef.current) {
-      imageInputRef.current.value =
-        "";
+      imageInputRef.current.value = "";
     }
 
     setTimeout(() => {
@@ -543,13 +559,9 @@ export default function LRAI() {
 
   const openChat = (id) => {
     setAppsOpen(false);
-
     setPlusMenuOpen(false);
-
     setConnectorsOpen(false);
-
     setActiveChatId(id);
-
     setSidebarOpen(false);
   };
 
@@ -557,9 +569,7 @@ export default function LRAI() {
    * IMAGE UPLOAD
    */
 
-  const handleImage = (
-    event
-  ) => {
+  const handleImage = (event) => {
     const file =
       event.target.files?.[0];
 
@@ -568,9 +578,7 @@ export default function LRAI() {
     }
 
     if (
-      !file.type.startsWith(
-        "image/"
-      )
+      !file.type.startsWith("image/")
     ) {
       return;
     }
@@ -600,12 +608,10 @@ export default function LRAI() {
   const removeSelectedImage =
     () => {
       setSelectedImage(null);
-
       setImagePreview("");
 
       if (imageInputRef.current) {
-        imageInputRef.current.value =
-          "";
+        imageInputRef.current.value = "";
       }
     };
 
@@ -654,11 +660,8 @@ export default function LRAI() {
         const newChat =
           createConversation();
 
-        chatId =
-          newChat.id;
-
-        chat =
-          newChat;
+        chatId = newChat.id;
+        chat = newChat;
 
         setConversations(
           (current) => [
@@ -692,13 +695,11 @@ export default function LRAI() {
           text ||
           "Please analyze this plant image.",
         image: imageData,
-        createdAt:
-          Date.now(),
+        createdAt: Date.now(),
       };
 
       const nextTitle =
-        chat.title ===
-        "New chat"
+        chat.title === "New chat"
           ? makeTitle(
               text ||
                 "Plant image analysis"
@@ -710,8 +711,7 @@ export default function LRAI() {
         (current) => ({
           ...current,
           title: nextTitle,
-          updatedAt:
-            Date.now(),
+          updatedAt: Date.now(),
           messages: [
             ...current.messages,
             userMessage,
@@ -720,9 +720,7 @@ export default function LRAI() {
       );
 
       setInput("");
-
       removeSelectedImage();
-
       setLoading(true);
 
       try {
@@ -746,16 +744,14 @@ export default function LRAI() {
             role: "assistant",
             content:
               "LR AI is ready for agricultural analysis, but the secure AI server is not connected yet. Once the backend is connected, I will analyze your plant image and answer your question using the AI model.",
-            createdAt:
-              Date.now(),
+            createdAt: Date.now(),
           };
 
           updateChat(
             chatId,
             (current) => ({
               ...current,
-              updatedAt:
-                Date.now(),
+              updatedAt: Date.now(),
               messages: [
                 ...current.messages,
                 demoMessage,
@@ -794,23 +790,20 @@ export default function LRAI() {
           );
         }
 
-        const assistantMessage =
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content:
-              data.answer ||
-              "I could not generate an answer.",
-            createdAt:
-              Date.now(),
-          };
+        const assistantMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content:
+            data.answer ||
+            "I could not generate an answer.",
+          createdAt: Date.now(),
+        };
 
         updateChat(
           chatId,
           (current) => ({
             ...current,
-            updatedAt:
-              Date.now(),
+            updatedAt: Date.now(),
             messages: [
               ...current.messages,
               assistantMessage,
@@ -818,23 +811,20 @@ export default function LRAI() {
           })
         );
       } catch (error) {
-        const errorMessage =
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content:
-              error.message ||
-              "Something went wrong while connecting to LR AI.",
-            createdAt:
-              Date.now(),
-          };
+        const errorMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content:
+            error.message ||
+            "Something went wrong while connecting to LR AI.",
+          createdAt: Date.now(),
+        };
 
         updateChat(
           chatId,
           (current) => ({
             ...current,
-            updatedAt:
-              Date.now(),
+            updatedAt: Date.now(),
             messages: [
               ...current.messages,
               errorMessage,
@@ -850,15 +840,12 @@ export default function LRAI() {
    * ENTER TO SEND
    */
 
-  const handleKeyDown = (
-    event
-  ) => {
+  const handleKeyDown = (event) => {
     if (
       event.key === "Enter" &&
       !event.shiftKey
     ) {
       event.preventDefault();
-
       sendMessage();
     }
   };
@@ -870,15 +857,10 @@ export default function LRAI() {
   const useExplorePrompt =
     (prompt) => {
       setAppsOpen(false);
-
       setInput(prompt);
-
       setExploreOpen(false);
-
       setSidebarOpen(false);
-
       setPlusMenuOpen(false);
-
       setConnectorsOpen(false);
 
       setTimeout(() => {
@@ -890,9 +872,7 @@ export default function LRAI() {
    * DELETE CHAT
    */
 
-  const deleteChat = (
-    chatId
-  ) => {
+  const deleteChat = (chatId) => {
     setConversations(
       (current) =>
         current.filter(
@@ -929,8 +909,6 @@ export default function LRAI() {
   return (
     <div className="lr-ai-app">
 
-      {/* MOBILE OVERLAY */}
-
       {sidebarOpen && (
         <button
           className="sidebar-overlay"
@@ -952,10 +930,7 @@ export default function LRAI() {
       >
         <div className="sidebar-top">
 
-          {/* BRAND */}
-
           <div className="lr-ai-brand">
-
             <div className="lr-ai-mark">
               <img
                 src="/lr-ai-logo.png"
@@ -972,10 +947,7 @@ export default function LRAI() {
                 Plant Intelligence
               </span>
             </div>
-
           </div>
-
-          {/* NEW CHAT */}
 
           <button
             className="new-chat-button"
@@ -984,30 +956,21 @@ export default function LRAI() {
             }
           >
             <Plus size={18} />
-
             <span>
               New chat
             </span>
           </button>
 
-          {/* SEARCH */}
-
           {searchOpen && (
             <div className="chat-search">
-
               <Search size={15} />
 
               <input
                 autoFocus
-                value={
-                  searchText
-                }
-                onChange={(
-                  event
-                ) =>
+                value={searchText}
+                onChange={(event) =>
                   setSearchText(
-                    event.target
-                      .value
+                    event.target.value
                   )
                 }
                 placeholder="Search chats"
@@ -1015,19 +978,13 @@ export default function LRAI() {
 
               <button
                 onClick={() => {
-                  setSearchOpen(
-                    false
-                  );
-
-                  setSearchText(
-                    ""
-                  );
+                  setSearchOpen(false);
+                  setSearchText("");
                 }}
                 aria-label="Close search"
               >
                 <X size={14} />
               </button>
-
             </div>
           )}
 
@@ -1035,25 +992,19 @@ export default function LRAI() {
             <button
               className="sidebar-action"
               onClick={() =>
-                setSearchOpen(
-                  true
-                )
+                setSearchOpen(true)
               }
             >
               <Search size={17} />
-
               Search
             </button>
           )}
-
-          {/* EXPLORE */}
 
           <button
             className="sidebar-action"
             onClick={() =>
               setExploreOpen(
-                (value) =>
-                  !value
+                (value) => !value
               )
             }
           >
@@ -1075,13 +1026,10 @@ export default function LRAI() {
 
           {exploreOpen && (
             <div className="explore-menu">
-
               {exploreItems.map(
                 (item) => (
                   <button
-                    key={
-                      item.title
-                    }
+                    key={item.title}
                     onClick={() =>
                       useExplorePrompt(
                         item.prompt
@@ -1089,16 +1037,12 @@ export default function LRAI() {
                     }
                   >
                     <Leaf size={14} />
-
                     {item.title}
                   </button>
                 )
               )}
-
             </div>
           )}
-
-          {/* APPS */}
 
           <button
             className={`sidebar-action ${
@@ -1107,25 +1051,11 @@ export default function LRAI() {
                 : ""
             }`}
             onClick={() => {
-              setAppsOpen(
-                true
-              );
-
-              setExploreOpen(
-                false
-              );
-
-              setSidebarOpen(
-                false
-              );
-
-              setPlusMenuOpen(
-                false
-              );
-
-              setConnectorsOpen(
-                false
-              );
+              setAppsOpen(true);
+              setExploreOpen(false);
+              setSidebarOpen(false);
+              setPlusMenuOpen(false);
+              setConnectorsOpen(false);
             }}
           >
             <Grid2X2 size={17} />
@@ -1135,14 +1065,11 @@ export default function LRAI() {
             </span>
           </button>
 
-          {/* PROJECTS */}
-
           <button
             className="sidebar-section-title"
             onClick={() =>
               setProjectsOpen(
-                (value) =>
-                  !value
+                (value) => !value
               )
             }
           >
@@ -1162,16 +1089,13 @@ export default function LRAI() {
 
           {projectsOpen && (
             <div className="projects-list">
-
               {defaultProjects.map(
                 (project) => (
                   <button
                     key={project}
                     className="project-item"
                     onClick={() => {
-                      setAppsOpen(
-                        false
-                      );
+                      setAppsOpen(false);
 
                       setInput(
                         `Let's work on my ${project} project.`
@@ -1182,9 +1106,7 @@ export default function LRAI() {
                       }, 100);
                     }}
                   >
-                    <Folder
-                      size={16}
-                    />
+                    <Folder size={16} />
 
                     <span>
                       {project}
@@ -1192,18 +1114,12 @@ export default function LRAI() {
                   </button>
                 )
               )}
-
             </div>
           )}
-
         </div>
 
-        {/* RECENT */}
-
         <div className="recent-section">
-
           <div className="recent-heading">
-
             <span>
               Recent
             </span>
@@ -1211,16 +1127,12 @@ export default function LRAI() {
             {conversations.length >
               0 && (
               <span className="recent-count">
-                {
-                  conversations.length
-                }
+                {conversations.length}
               </span>
             )}
-
           </div>
 
           <div className="recent-list">
-
             {filteredChats.length ===
             0 ? (
               <div className="empty-recent">
@@ -1238,7 +1150,6 @@ export default function LRAI() {
                         : ""
                     }`}
                   >
-
                     <button
                       className="chat-item-main"
                       onClick={() =>
@@ -1252,9 +1163,7 @@ export default function LRAI() {
                       />
 
                       <span>
-                        {
-                          chat.title
-                        }
+                        {chat.title}
                       </span>
                     </button>
 
@@ -1272,22 +1181,15 @@ export default function LRAI() {
                         size={15}
                       />
                     </button>
-
                   </div>
                 )
               )
             )}
-
           </div>
-
         </div>
 
-        {/* FOOTER */}
-
         <div className="sidebar-footer">
-
           <div className="ai-status">
-
             <span className="status-dot" />
 
             <div>
@@ -1299,27 +1201,20 @@ export default function LRAI() {
                 Plant intelligence
               </span>
             </div>
-
           </div>
-
         </div>
-
       </aside>
 
       {/* MAIN */}
 
       <main className="lr-ai-main">
 
-        {/* TOP BAR */}
-
         <header className="lr-ai-topbar">
 
           <button
             className="mobile-sidebar-button"
             onClick={() =>
-              setSidebarOpen(
-                true
-              )
+              setSidebarOpen(true)
             }
             aria-label="Open sidebar"
           >
@@ -1334,28 +1229,21 @@ export default function LRAI() {
           </div>
 
           <div className="topbar-right">
-
             <a
               href="https://lragrosense.in"
               className="back-company"
             >
               LR AgroSense
             </a>
-
           </div>
-
         </header>
-
-        {/* CHAT AREA */}
 
         <div className="chat-area">
 
           {appsOpen ? (
             <Apps
               onClose={() =>
-                setAppsOpen(
-                  false
-                )
+                setAppsOpen(false)
               }
             />
           ) : !activeChat ||
@@ -1380,7 +1268,6 @@ export default function LRAI() {
               </p>
 
               <div className="welcome-suggestions">
-
                 {exploreItems
                   .slice(0, 4)
                   .map(
@@ -1401,9 +1288,7 @@ export default function LRAI() {
                       </button>
                     )
                   )}
-
               </div>
-
             </div>
 
           ) : (
@@ -1421,11 +1306,9 @@ export default function LRAI() {
                         : "assistant-message"
                     }`}
                   >
-
                     <div className="message-inner">
 
                       <div className="message-avatar">
-
                         {message.role ===
                         "user" ? (
                           "You"
@@ -1434,7 +1317,6 @@ export default function LRAI() {
                             size={15}
                           />
                         )}
-
                       </div>
 
                       <div className="message-body">
@@ -1450,28 +1332,22 @@ export default function LRAI() {
                         )}
 
                         <div className="message-text">
-                          {
-                            message.content
-                          }
+                          {message.content}
                         </div>
 
                       </div>
 
                     </div>
-
                   </div>
                 )
               )}
 
               {loading && (
                 <div className="message-row assistant-message">
-
                   <div className="message-inner">
 
                     <div className="message-avatar">
-                      <Sparkles
-                        size={15}
-                      />
+                      <Sparkles size={15} />
                     </div>
 
                     <div className="typing-indicator">
@@ -1481,7 +1357,6 @@ export default function LRAI() {
                     </div>
 
                   </div>
-
                 </div>
               )}
 
@@ -1524,9 +1399,7 @@ export default function LRAI() {
 
               <div
                 className="input-box composer-box"
-                ref={
-                  composerMenuRef
-                }
+                ref={composerMenuRef}
               >
 
                 {/* PLUS BUTTON */}
@@ -1539,13 +1412,10 @@ export default function LRAI() {
                   }`}
                   onClick={() => {
                     setPlusMenuOpen(
-                      (value) =>
-                        !value
+                      (value) => !value
                     );
 
-                    setConnectorsOpen(
-                      false
-                    );
+                    setConnectorsOpen(false);
                   }}
                   aria-label="Open tools and connectors"
                   title="Add files, tools and connectors"
@@ -1554,18 +1424,14 @@ export default function LRAI() {
                   <Plus size={21} />
                 </button>
 
-                {/* HIDDEN IMAGE INPUT */}
+                {/* IMAGE INPUT */}
 
                 <input
-                  ref={
-                    imageInputRef
-                  }
+                  ref={imageInputRef}
                   type="file"
                   accept="image/*"
                   hidden
-                  onChange={
-                    handleImage
-                  }
+                  onChange={handleImage}
                 />
 
                 {/* PLUS MENU */}
@@ -1573,21 +1439,14 @@ export default function LRAI() {
                 {plusMenuOpen && (
                   <div className="composer-menu">
 
-                    {/* ADD FILES */}
-
                     <button
                       className="composer-menu-item"
                       type="button"
                       onClick={() => {
                         imageInputRef.current?.click();
 
-                        setPlusMenuOpen(
-                          false
-                        );
-
-                        setConnectorsOpen(
-                          false
-                        );
+                        setPlusMenuOpen(false);
+                        setConnectorsOpen(false);
                       }}
                     >
                       <span className="composer-menu-icon">
@@ -1602,8 +1461,6 @@ export default function LRAI() {
                         Ctrl+U
                       </span>
                     </button>
-
-                    {/* ADD TO PROJECT */}
 
                     <button
                       className="composer-menu-item"
@@ -1623,15 +1480,11 @@ export default function LRAI() {
 
                     <div className="composer-menu-divider" />
 
-                    {/* SKILLS */}
-
                     <button
                       className="composer-menu-item"
                       type="button"
                     >
-                      <Sparkles
-                        size={17}
-                      />
+                      <Sparkles size={17} />
 
                       <span className="composer-menu-label">
                         Skills
@@ -1654,16 +1507,13 @@ export default function LRAI() {
                       type="button"
                       onClick={() => {
                         setConnectorsOpen(
-                          (value) =>
-                            !value
+                          (value) => !value
                         );
 
                         checkCanvaStatus();
                       }}
                     >
-                      <Grid2X2
-                        size={17}
-                      />
+                      <Grid2X2 size={17} />
 
                       <span className="composer-menu-label">
                         Connectors
@@ -1680,15 +1530,14 @@ export default function LRAI() {
                     {connectorsOpen && (
                       <div className="connectors-submenu">
 
-                        {/* ADD CONNECTOR */}
-
                         <button
                           className="connector-menu-item"
                           type="button"
+                          onClick={() => {
+                            startCanvaConnection();
+                          }}
                         >
-                          <Plus
-                            size={17}
-                          />
+                          <Plus size={17} />
 
                           <span>
                             Add connector
@@ -1700,15 +1549,14 @@ export default function LRAI() {
                           />
                         </button>
 
-                        {/* MANAGE CONNECTORS */}
-
                         <button
                           className="connector-menu-item"
                           type="button"
+                          onClick={() => {
+                            checkCanvaStatus();
+                          }}
                         >
-                          <Folder
-                            size={17}
-                          />
+                          <Folder size={17} />
 
                           <span>
                             Manage connectors
@@ -1717,7 +1565,7 @@ export default function LRAI() {
 
                         <div className="composer-menu-divider" />
 
-                        {/* CANVA */}
+                        {/* ONLY REAL CONNECTOR */}
 
                         <div className="connector-row">
 
@@ -1752,133 +1600,25 @@ export default function LRAI() {
                                 startCanvaConnection();
                               }
                             }}
+                            aria-label={
+                              canvaConnected
+                                ? "Disconnect Canva"
+                                : "Connect Canva"
+                            }
                           >
                             <span />
                           </button>
 
                         </div>
 
-                        {/* GAMMA */}
-
-                        <div className="connector-row connector-row-disabled">
-
-                          <span className="connector-app-icon gamma-icon">
-                            G
-                          </span>
-
-                          <span className="connector-app-name">
-                            Gamma
-                          </span>
-
-                          <span className="connector-soon">
-                            Soon
-                          </span>
-
-                        </div>
-
-                        {/* UNSPLASH */}
-
-                        <div className="connector-row connector-row-disabled">
-
-                          <span className="connector-app-icon unsplash-icon">
-                            U
-                          </span>
-
-                          <span className="connector-app-name">
-                            Unsplash
-                          </span>
-
-                          <span className="connector-soon">
-                            Soon
-                          </span>
-
-                        </div>
-
-                        {/* BLENDER */}
-
-                        <div className="connector-row connector-row-disabled">
-
-                          <span className="connector-app-icon blender-icon">
-                            B
-                          </span>
-
-                          <span className="connector-app-name">
-                            Blender
-                          </span>
-
-                          <span className="connector-soon">
-                            Soon
-                          </span>
-
-                        </div>
-
-                        <div className="composer-menu-divider" />
-
-                        {/* ADD FROM CANVA */}
-
-                        <button
-                          className="connector-menu-item"
-                          type="button"
-                          onClick={() => {
-                            if (
-                              !canvaConnected
-                            ) {
-                              startCanvaConnection();
-
-                              return;
-                            }
-
-                            alert(
-                              "Canva is connected. Canva content actions will be added here."
-                            );
-                          }}
-                        >
-                          <span className="connector-app-icon canva-icon">
-                            C
-                          </span>
-
-                          <span>
-                            Add from Canva
-                          </span>
-
-                          <ChevronDown
-                            size={15}
-                            className="composer-menu-chevron"
-                          />
-                        </button>
-
-                        {/* TOOL ACCESS */}
-
-                        <button
-                          className="connector-menu-item"
-                          type="button"
-                        >
-                          <Search
-                            size={17}
-                          />
-
-                          <span>
-                            Tool access
-                          </span>
-
-                          <ChevronDown
-                            size={15}
-                            className="composer-menu-chevron"
-                          />
-                        </button>
-
                       </div>
                     )}
-
-                    {/* DESIGN SYSTEM */}
 
                     <button
                       className="composer-menu-item"
                       type="button"
                     >
-                      <Sparkles
-                        size={17}
-                      />
+                      <Sparkles size={17} />
 
                       <span className="composer-menu-label">
                         Design system
@@ -1889,8 +1629,6 @@ export default function LRAI() {
                         className="composer-menu-chevron"
                       />
                     </button>
-
-                    {/* PLUGINS */}
 
                     <button
                       className="composer-menu-item"
@@ -1905,15 +1643,11 @@ export default function LRAI() {
 
                     <div className="composer-menu-divider" />
 
-                    {/* WEB SEARCH */}
-
                     <button
                       className="composer-menu-item"
                       type="button"
                     >
-                      <Search
-                        size={17}
-                      />
+                      <Search size={17} />
 
                       <span className="composer-menu-label">
                         Web search
@@ -1924,15 +1658,11 @@ export default function LRAI() {
                       </span>
                     </button>
 
-                    {/* MEMORY */}
-
                     <button
                       className="composer-menu-item"
                       type="button"
                     >
-                      <MessageSquare
-                        size={17}
-                      />
+                      <MessageSquare size={17} />
 
                       <span className="composer-menu-label">
                         Memory
@@ -1956,9 +1686,7 @@ export default function LRAI() {
                       event.target.value
                     )
                   }
-                  onKeyDown={
-                    handleKeyDown
-                  }
+                  onKeyDown={handleKeyDown}
                   placeholder="Message LR AI..."
                   rows={1}
                 />
@@ -1967,9 +1695,7 @@ export default function LRAI() {
 
                 <button
                   className="send-button"
-                  onClick={
-                    sendMessage
-                  }
+                  onClick={sendMessage}
                   disabled={
                     loading ||
                     (!input.trim() &&
@@ -1977,9 +1703,7 @@ export default function LRAI() {
                   }
                   aria-label="Send message"
                 >
-                  <ArrowUp
-                    size={18}
-                  />
+                  <ArrowUp size={18} />
                 </button>
 
               </div>
