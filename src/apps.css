@@ -11,10 +11,6 @@
   overflow-y: auto;
 }
 
-/* =========================================================
-   HEADER
-   ========================================================= */
-
 .apps-page-header {
   display: flex;
   align-items: center;
@@ -141,7 +137,9 @@
   background: var(--lr-ai-green);
   color: white;
 
-  box-shadow: 0 8px 24px rgba(38, 112, 68, 0.15);
+  box-shadow:
+    0 8px 24px
+    rgba(38, 112, 68, 0.15);
 }
 
 .apps-hero-content h2 {
@@ -195,7 +193,10 @@
 
 .apps-search-box:focus-within {
   border-color: #b7c5ba;
-  box-shadow: 0 0 0 3px rgba(38, 112, 68, 0.07);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(38, 112, 68, 0.07);
 }
 
 .apps-search-box > svg {
@@ -250,6 +251,7 @@
   margin-bottom: 31px;
 
   overflow-x: auto;
+
   scrollbar-width: none;
 }
 
@@ -286,6 +288,7 @@
 
 .apps-category.active {
   border-color: var(--lr-ai-green);
+
   background: var(--lr-ai-green);
   color: white;
 }
@@ -333,12 +336,18 @@
 }
 
 /* =========================================================
-   APP GRID
+   GRID
    ========================================================= */
 
 .apps-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
   gap: 13px;
 }
 
@@ -370,7 +379,11 @@
 
 .app-card:hover {
   border-color: #cbd2cb;
-  box-shadow: 0 9px 28px rgba(24, 35, 26, 0.07);
+
+  box-shadow:
+    0 9px 28px
+    rgba(24, 35, 26, 0.07);
+
   transform: translateY(-2px);
 }
 
@@ -378,6 +391,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 10px;
 
   margin-bottom: 16px;
@@ -424,6 +438,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 8px;
 
   margin-top: 17px;
@@ -454,7 +469,7 @@
 }
 
 /* =========================================================
-   APP ICONS
+   ICONS
    ========================================================= */
 
 .app-icon {
@@ -540,7 +555,8 @@
   border: 1px dashed #d7dbd6;
   border-radius: 14px;
 
-  background: rgba(255, 255, 255, 0.55);
+  background:
+    rgba(255, 255, 255, 0.55);
 
   text-align: center;
 }
@@ -618,12 +634,13 @@
 }
 
 /* =========================================================
-   DETAILS MODAL
+   MODAL
    ========================================================= */
 
 .app-details-overlay {
   position: fixed;
   inset: 0;
+
   z-index: 500;
 
   display: flex;
@@ -632,7 +649,9 @@
 
   padding: 20px;
 
-  background: rgba(20, 26, 21, 0.32);
+  background:
+    rgba(20, 26, 21, 0.32);
+
   backdrop-filter: blur(4px);
 }
 
@@ -648,11 +667,14 @@
 
   background: white;
 
-  box-shadow: 0 25px 80px rgba(15, 25, 17, 0.18);
+  box-shadow:
+    0 25px 80px
+    rgba(15, 25, 17, 0.18);
 }
 
 .app-details-close {
   position: absolute;
+
   top: 15px;
   right: 15px;
 
@@ -680,7 +702,9 @@
 
   font-size: 9px;
   font-weight: 750;
+
   text-transform: uppercase;
+
   letter-spacing: 0.06em;
 }
 
@@ -688,6 +712,7 @@
   margin: 0 0 7px;
 
   font-size: 21px;
+
   letter-spacing: -0.025em;
 }
 
@@ -745,6 +770,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 8px;
 
   border: 0;
@@ -768,7 +794,25 @@
 
   font-size: 8px !important;
   line-height: 1.5 !important;
+
   text-align: center;
+}
+
+/* =========================================================
+   SIDEBAR ACTIVE STATE
+   ========================================================= */
+
+.sidebar-action-active {
+  background:
+    var(--lr-ai-green-soft) !important;
+
+  color:
+    var(--lr-ai-green) !important;
+}
+
+.sidebar-action-active:hover {
+  background:
+    var(--lr-ai-green-soft) !important;
 }
 
 /* =========================================================
@@ -777,31 +821,49 @@
 
 @media (max-width: 1050px) {
   .apps-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
   }
 }
 
 @media (max-width: 800px) {
+
   .lr-ai-apps-page {
-    padding: 25px 20px 45px;
+    padding:
+      25px
+      20px
+      45px;
   }
 
   .apps-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
   .apps-hero {
     padding: 20px;
   }
+
 }
 
 @media (max-width: 560px) {
+
   .lr-ai-apps-page {
-    padding: 20px 14px 40px;
+    padding:
+      20px
+      14px
+      40px;
   }
 
   .apps-page-header {
-    align-items: flex-start;
+    align-items:
+      flex-start;
   }
 
   .apps-settings-button span {
@@ -810,8 +872,11 @@
 
   .apps-settings-button {
     width: 38px;
+
     padding: 0;
-    justify-content: center;
+
+    justify-content:
+      center;
   }
 
   .apps-page-header h1 {
@@ -819,7 +884,8 @@
   }
 
   .apps-hero {
-    align-items: flex-start;
+    align-items:
+      flex-start;
   }
 
   .apps-hero-icon {
@@ -840,7 +906,8 @@
   }
 
   .apps-section-heading {
-    align-items: flex-start;
+    align-items:
+      flex-start;
   }
 
   .app-card-content p {
@@ -848,6 +915,8 @@
   }
 
   .apps-future-card {
-    align-items: flex-start;
+    align-items:
+      flex-start;
   }
+
 }
