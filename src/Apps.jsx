@@ -1,4 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import {
   Check,
   ChevronRight,
@@ -21,10 +26,22 @@ import {
 
 import "./apps.css";
 
+/*
+|--------------------------------------------------------------------------
+| LR AI Backend
+|--------------------------------------------------------------------------
+*/
+
 const API_BASE = (
   import.meta.env.VITE_API_BASE_URL ||
   "https://lragrosense.onrender.com"
 ).replace(/\/$/, "");
+
+/*
+|--------------------------------------------------------------------------
+| App definitions
+|--------------------------------------------------------------------------
+*/
 
 const appDefinitions = [
   {
@@ -40,7 +57,8 @@ const appDefinitions = [
   {
     id: "google-drive",
     name: "Google Drive",
-    description: "Drive, Docs, Sheets and Slides",
+    description:
+      "Drive, Docs, Sheets and Slides",
     category: "Storage",
     icon: Cloud,
     iconClass: "app-drive",
@@ -59,7 +77,8 @@ const appDefinitions = [
   {
     id: "gmail",
     name: "Gmail",
-    description: "Read, summarize and manage your Gmail",
+    description:
+      "Read, summarize and manage your Gmail",
     category: "Communication",
     icon: Mail,
     iconClass: "app-gmail",
@@ -68,7 +87,8 @@ const appDefinitions = [
   {
     id: "google-docs",
     name: "Google Docs",
-    description: "Create, edit and summarize documents",
+    description:
+      "Create, edit and summarize documents",
     category: "Productivity",
     icon: FileText,
     iconClass: "app-docs",
@@ -77,7 +97,8 @@ const appDefinitions = [
   {
     id: "developer-tools",
     name: "Developer Tools",
-    description: "Useful tools for software development workflows",
+    description:
+      "Useful tools for software development workflows",
     category: "Developer",
     icon: Code2,
     iconClass: "app-developer",
@@ -86,7 +107,8 @@ const appDefinitions = [
   {
     id: "lr-farm-data",
     name: "LR Farm Data",
-    description: "Connect your LR AgroSense farm data with LR AI",
+    description:
+      "Connect your LR AgroSense farm data with LR AI",
     category: "Agriculture",
     icon: Sprout,
     iconClass: "app-lr",
@@ -95,7 +117,8 @@ const appDefinitions = [
   {
     id: "crop-doctor",
     name: "Crop Doctor",
-    description: "Analyze crop symptoms and agricultural observations",
+    description:
+      "Analyze crop symptoms and agricultural observations",
     category: "Agriculture",
     icon: Leaf,
     iconClass: "app-crop",
@@ -104,13 +127,20 @@ const appDefinitions = [
   {
     id: "agricultural-data",
     name: "Agricultural Data",
-    description: "Work with agricultural datasets and information",
+    description:
+      "Work with agricultural datasets and information",
     category: "Agriculture",
     icon: Grid2X2,
     iconClass: "app-agri",
     popular: false,
   },
 ];
+
+/*
+|--------------------------------------------------------------------------
+| Fallback statuses
+|--------------------------------------------------------------------------
+*/
 
 const fallbackStatuses = {
   canva: "available",
@@ -124,119 +154,355 @@ const fallbackStatuses = {
   "agricultural-data": "coming",
 };
 
-export default function Apps({ onClose }) {
-  const [searchText, setSearchText] = useState("");
-  const [activeTab, setActiveTab] = useState("Public");
-  const [selectedApp, setSelectedApp] = useState(null);
+/*
+|--------------------------------------------------------------------------
+| Main Apps component
+|--------------------------------------------------------------------------
+*/
 
-  const [backendApps, setBackendApps] = useState([]);
-  const [loadingApps, setLoadingApps] = useState(true);
-  const [backendError, setBackendError] = useState(false);
+export default function Apps({
+  onClose,
+}) {
+  const [searchText, setSearchText] =
+    useState("");
 
-  useEffect(() => {
-    let cancelled = false;
+  const [activeTab, setActiveTab] =
+    useState("Public");
 
-    const loadApps = async () => {
-      try {
-        setLoadingApps(true);
-        setBackendError(false);
+  const [selectedApp, setSelectedApp] =
+    useState(null);
 
-        const response = await fetch(`${API_BASE}/api/apps`);
+  const [backendApps, setBackendApps] =
+    useState([]);
 
-        if (!response.ok) {
-          throw new Error(`Apps API returned ${response.status}`);
-        }
+  const [loadingApps, setLoadingApps] =
+    useState(true);
 
-        const data = await response.json();
+  const [backendError, setBackendError] =
+    useState(false);
 
-        if (!data.success || !Array.isArray(data.apps)) {
-          throw new Error("Invalid apps API response");
-        }
+  const [notice, setNotice] =
+    useState(null);
 
-        if (!cancelled) {
-          setBackendApps(data.apps);
-        }
-      } catch (error) {
-        console.error("LR AI Apps API error:", error);
+  /*
+  |--------------------------------------------------------------------------
+  | Load apps from backend
+  |--------------------------------------------------------------------------
+  */
 
-        if (!cancelled) {
-          setBackendError(true);
-          setBackendApps([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingApps(false);
-        }
+  const loadApps = async () => {
+    try {
+      setLoadingApps(true);
+      setBackendError(false);
+
+      const response =
+        await fetch(
+          `${API_BASE}/api/apps`,
+          {
+            credentials: "include",
+          }
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          `Apps API returned ${response.status}`
+        );
       }
-    };
 
-    loadApps();
+      const data =
+        await response.json();
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      if (
+        !data.success ||
+        !Array.isArray(data.apps)
+      ) {
+        throw new Error(
+          "Invalid apps API response"
+        );
+      }
 
-  const apps = useMemo(() => {
-    return appDefinitions.map((definition) => {
-      const backendApp = backendApps.find(
-        (item) => item.id === definition.id
+      setBackendApps(
+        data.apps
+      );
+    } catch (error) {
+      console.error(
+        "LR AI Apps API error:",
+        error
       );
 
-      return {
-        ...definition,
-
-        description:
-          backendApp?.description || definition.description,
-
-        category:
-          backendApp?.category || definition.category,
-
-        status:
-          backendApp?.status ||
-          fallbackStatuses[definition.id] ||
-          "coming",
-
-        connected: Boolean(backendApp?.connected),
-      };
-    });
-  }, [backendApps]);
-
-  const installedApps = useMemo(() => {
-    return apps.filter((app) => app.connected);
-  }, [apps]);
-
-  const query = searchText.trim().toLowerCase();
-
-  const matchesQuery = (app) => {
-    if (!query) {
-      return true;
+      setBackendError(true);
+      setBackendApps([]);
+    } finally {
+      setLoadingApps(false);
     }
-
-    return (
-      app.name.toLowerCase().includes(query) ||
-      app.description.toLowerCase().includes(query) ||
-      app.category.toLowerCase().includes(query)
-    );
   };
 
-  const filteredPopular = useMemo(() => {
-    return apps.filter(
-      (app) => app.popular && matchesQuery(app)
-    );
-  }, [apps, query]);
+  /*
+  |--------------------------------------------------------------------------
+  | Load apps when component opens
+  |--------------------------------------------------------------------------
+  */
 
-  const filteredNoteworthy = useMemo(() => {
-    return apps.filter(
-      (app) => !app.popular && matchesQuery(app)
+  useEffect(() => {
+    loadApps();
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Handle Canva OAuth result
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const canvaStatus =
+      params.get("canva");
+
+    if (
+      canvaStatus ===
+      "connected"
+    ) {
+      setNotice({
+        type: "success",
+        message:
+          "Canva connected successfully.",
+      });
+
+      loadApps();
+
+      /*
+       * Remove query parameter
+       * from browser URL.
+       */
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+    }
+
+    if (
+      canvaStatus ===
+      "error"
+    ) {
+      setNotice({
+        type: "error",
+        message:
+          "Canva connection failed. Please try again.",
+      });
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+    }
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Automatically hide notice
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    if (!notice) {
+      return;
+    }
+
+    const timer =
+      setTimeout(() => {
+        setNotice(null);
+      }, 5000);
+
+    return () =>
+      clearTimeout(timer);
+  }, [notice]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Merge backend apps with frontend definitions
+  |--------------------------------------------------------------------------
+  */
+
+  const apps = useMemo(() => {
+    return appDefinitions.map(
+      (definition) => {
+        const backendApp =
+          backendApps.find(
+            (item) =>
+              item.id ===
+              definition.id
+          );
+
+        return {
+          ...definition,
+
+          description:
+            backendApp?.description ||
+            definition.description,
+
+          category:
+            backendApp?.category ||
+            definition.category,
+
+          status:
+            backendApp?.status ||
+            fallbackStatuses[
+              definition.id
+            ] ||
+            "coming",
+
+          connected:
+            Boolean(
+              backendApp?.connected
+            ),
+        };
+      }
     );
-  }, [apps, query]);
+  }, [backendApps]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Installed apps
+  |--------------------------------------------------------------------------
+  */
+
+  const installedApps =
+    useMemo(() => {
+      return apps.filter(
+        (app) =>
+          app.connected
+      );
+    }, [apps]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Search
+  |--------------------------------------------------------------------------
+  */
+
+  const query =
+    searchText
+      .trim()
+      .toLowerCase();
+
+  const matchesQuery =
+    (app) => {
+      if (!query) {
+        return true;
+      }
+
+      return (
+        app.name
+          .toLowerCase()
+          .includes(query) ||
+        app.description
+          .toLowerCase()
+          .includes(query) ||
+        app.category
+          .toLowerCase()
+          .includes(query)
+      );
+    };
+
+  const filteredPopular =
+    useMemo(() => {
+      return apps.filter(
+        (app) =>
+          app.popular &&
+          matchesQuery(app)
+      );
+    }, [apps, query]);
+
+  const filteredNoteworthy =
+    useMemo(() => {
+      return apps.filter(
+        (app) =>
+          !app.popular &&
+          matchesQuery(app)
+      );
+    }, [apps, query]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Start Canva OAuth
+  |--------------------------------------------------------------------------
+  */
+
+  const connectCanva = () => {
+    window.location.href =
+      `${API_BASE}/api/apps/canva/connect`;
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Disconnect Canva
+  |--------------------------------------------------------------------------
+  */
+
+  const disconnectCanva =
+    async () => {
+      try {
+        const response =
+          await fetch(
+            `${API_BASE}/api/apps/canva/disconnect`,
+            {
+              method: "POST",
+              credentials:
+                "include",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            "Unable to disconnect Canva."
+          );
+        }
+
+        await loadApps();
+
+        setSelectedApp(
+          null
+        );
+
+        setNotice({
+          type: "success",
+          message:
+            "Canva disconnected.",
+        });
+      } catch (error) {
+        console.error(
+          "Canva disconnect error:",
+          error
+        );
+
+        setNotice({
+          type: "error",
+          message:
+            "Could not disconnect Canva.",
+        });
+      }
+    };
 
   return (
     <div className="lr-ai-apps-page">
 
-      {/* HEADER */}
+      {/* -------------------------------------------------- */}
+      {/* Header */}
+      {/* -------------------------------------------------- */}
+
       <header className="apps-page-header">
+
         <div className="apps-header-left">
 
           <button
@@ -252,41 +518,94 @@ export default function Apps({ onClose }) {
           </button>
 
           <div className="apps-heading">
+
             <div className="apps-heading-brand">
               <Sparkles size={12} />
-              <span>LR AI</span>
+              <span>
+                LR AI
+              </span>
             </div>
 
-            <h1>Apps</h1>
+            <h1>
+              Apps
+            </h1>
+
           </div>
+
         </div>
 
         <button
           type="button"
           className="apps-settings-button"
           onClick={() =>
-            alert(
-              "App settings will be available when user-specific connections are implemented."
-            )
+            setNotice({
+              type: "success",
+              message:
+                "App settings will be available soon.",
+            })
           }
         >
           <Settings2 size={15} />
-          <span>Settings</span>
+          <span>
+            Settings
+          </span>
         </button>
+
       </header>
 
-      {/* INTRO */}
+      {/* -------------------------------------------------- */}
+      {/* Notification */}
+      {/* -------------------------------------------------- */}
+
+      {notice && (
+        <div
+          className={`apps-notice ${
+            notice.type ===
+            "error"
+              ? "apps-notice-error"
+              : "apps-notice-success"
+          }`}
+        >
+          <span>
+            {notice.message}
+          </span>
+
+          <button
+            type="button"
+            onClick={() =>
+              setNotice(null)
+            }
+            aria-label="Close notification"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* -------------------------------------------------- */}
+      {/* Introduction */}
+      {/* -------------------------------------------------- */}
+
       <section className="apps-intro">
-        <h2>Connect LR AI with your tools</h2>
+
+        <h2>
+          Connect LR AI with your tools
+        </h2>
 
         <p>
-          Connect apps you use for study, work, development and
-          agriculture. LR AI will be able to work with connected
-          tools when the integration is available.
+          Connect apps you use for study,
+          work, development and agriculture.
+          LR AI will be able to work with
+          connected tools when the integration
+          is available.
         </p>
+
       </section>
 
-      {/* SEARCH */}
+      {/* -------------------------------------------------- */}
+      {/* Search */}
+      {/* -------------------------------------------------- */}
+
       <div className="apps-search">
 
         <Search size={18} />
@@ -296,7 +615,9 @@ export default function Apps({ onClose }) {
           placeholder="Search apps"
           value={searchText}
           onChange={(event) =>
-            setSearchText(event.target.value)
+            setSearchText(
+              event.target.value
+            )
           }
         />
 
@@ -304,18 +625,25 @@ export default function Apps({ onClose }) {
           <button
             type="button"
             className="apps-clear-search"
-            onClick={() => setSearchText("")}
+            onClick={() =>
+              setSearchText("")
+            }
           >
             <X size={14} />
           </button>
         )}
+
       </div>
 
-      {/* BACKEND STATUS */}
+      {/* -------------------------------------------------- */}
+      {/* Backend status */}
+      {/* -------------------------------------------------- */}
+
       <div
         className="apps-backend-status"
         aria-live="polite"
       >
+
         {loadingApps ? (
           <>
             <LoaderCircle
@@ -323,7 +651,9 @@ export default function Apps({ onClose }) {
               className="apps-loading-icon"
             />
 
-            <span>Loading apps...</span>
+            <span>
+              Loading apps...
+            </span>
           </>
         ) : backendError ? (
           <>
@@ -342,9 +672,13 @@ export default function Apps({ onClose }) {
             </span>
           </>
         )}
+
       </div>
 
-      {/* INSTALLED */}
+      {/* -------------------------------------------------- */}
+      {/* Installed */}
+      {/* -------------------------------------------------- */}
+
       {!query && (
         <section className="apps-section installed-section">
 
@@ -360,56 +694,68 @@ export default function Apps({ onClose }) {
 
           </div>
 
-          {installedApps.length > 0 ? (
-
+          {installedApps.length >
+          0 ? (
             <div className="installed-apps">
 
-              {installedApps.map((app) => {
-                const Icon = app.icon;
+              {installedApps.map(
+                (app) => {
+                  const Icon =
+                    app.icon;
 
-                return (
-                  <button
-                    type="button"
-                    key={app.id}
-                    className="installed-app"
-                    title={app.name}
-                    onClick={() =>
-                      setSelectedApp(app)
-                    }
-                  >
-                    <div
-                      className={`installed-app-icon ${app.iconClass}`}
+                  return (
+                    <button
+                      type="button"
+                      key={app.id}
+                      className="installed-app"
+                      title={app.name}
+                      onClick={() =>
+                        setSelectedApp(
+                          app
+                        )
+                      }
                     >
-                      <Icon size={22} />
-                    </div>
-                  </button>
-                );
-              })}
+                      <div
+                        className={`installed-app-icon ${app.iconClass}`}
+                      >
+                        <Icon
+                          size={22}
+                        />
+                      </div>
+                    </button>
+                  );
+                }
+              )}
 
             </div>
-
           ) : (
-
             <div className="apps-installed-empty">
               No connected apps yet.
             </div>
-
           )}
 
         </section>
       )}
 
-      {/* PUBLIC / PERSONAL */}
+      {/* -------------------------------------------------- */}
+      {/* Account tabs */}
+      {/* -------------------------------------------------- */}
+
       <div className="apps-account-tabs">
 
         <button
           type="button"
           className={
-            activeTab === "Public"
+            activeTab ===
+            "Public"
               ? "apps-account-tab active"
               : "apps-account-tab"
           }
-          onClick={() => setActiveTab("Public")}
+          onClick={() =>
+            setActiveTab(
+              "Public"
+            )
+          }
         >
           Public
         </button>
@@ -417,47 +763,62 @@ export default function Apps({ onClose }) {
         <button
           type="button"
           className={
-            activeTab === "Personal"
+            activeTab ===
+            "Personal"
               ? "apps-account-tab active"
               : "apps-account-tab"
           }
-          onClick={() => setActiveTab("Personal")}
+          onClick={() =>
+            setActiveTab(
+              "Personal"
+            )
+          }
         >
           Personal
         </button>
 
       </div>
 
-      {/* PERSONAL */}
-      {activeTab === "Personal" ? (
+      {/* -------------------------------------------------- */}
+      {/* Personal */}
+      {/* -------------------------------------------------- */}
 
+      {activeTab ===
+      "Personal" ? (
         <section className="personal-apps-empty">
 
           <div className="personal-empty-icon">
             <Grid2X2 size={22} />
           </div>
 
-          <h3>Your personal apps</h3>
+          <h3>
+            Your personal apps
+          </h3>
 
           <p>
-            Apps you connect privately to LR AI will appear here.
+            Apps you connect privately
+            to LR AI will appear here.
           </p>
 
           <button
             type="button"
-            onClick={() => setActiveTab("Public")}
+            onClick={() =>
+              setActiveTab(
+                "Public"
+              )
+            }
           >
             Explore public apps
             <ChevronRight size={15} />
           </button>
 
         </section>
-
       ) : (
-
         <>
+          {/* -------------------------------------------------- */}
+          {/* Popular */}
+          {/* -------------------------------------------------- */}
 
-          {/* POPULAR */}
           <section className="apps-section">
 
             <div className="apps-section-heading">
@@ -472,34 +833,36 @@ export default function Apps({ onClose }) {
 
             </div>
 
-            {filteredPopular.length > 0 ? (
-
+            {filteredPopular.length >
+            0 ? (
               <div className="apps-list">
 
-                {filteredPopular.map((app) => (
-                  <AppListItem
-                    key={app.id}
-                    app={app}
-                    onOpen={() =>
-                      setSelectedApp(app)
-                    }
-                  />
-                ))}
+                {filteredPopular.map(
+                  (app) => (
+                    <AppListItem
+                      key={app.id}
+                      app={app}
+                      onOpen={() =>
+                        setSelectedApp(
+                          app
+                        )
+                      }
+                    />
+                  )
+                )}
 
               </div>
-
             ) : (
-
               <EmptySearch />
-
             )}
 
           </section>
 
-          {/* NEW & NOTEWORTHY */}
-          <section
-            className="apps-section noteworthy-section"
-          >
+          {/* -------------------------------------------------- */}
+          {/* New and Noteworthy */}
+          {/* -------------------------------------------------- */}
+
+          <section className="apps-section noteworthy-section">
 
             <div className="apps-section-heading">
 
@@ -513,48 +876,53 @@ export default function Apps({ onClose }) {
 
             </div>
 
-            {filteredNoteworthy.length > 0 ? (
-
+            {filteredNoteworthy.length >
+            0 ? (
               <div className="apps-list">
 
-                {filteredNoteworthy.map((app) => (
-                  <AppListItem
-                    key={app.id}
-                    app={app}
-                    onOpen={() =>
-                      setSelectedApp(app)
-                    }
-                  />
-                ))}
+                {filteredNoteworthy.map(
+                  (app) => (
+                    <AppListItem
+                      key={app.id}
+                      app={app}
+                      onOpen={() =>
+                        setSelectedApp(
+                          app
+                        )
+                      }
+                    />
+                  )
+                )}
 
               </div>
-
             ) : (
-
               <EmptySearch />
-
             )}
 
           </section>
-
         </>
-
       )}
 
-      {/* FOOTER */}
+      {/* -------------------------------------------------- */}
+      {/* Footer */}
+      {/* -------------------------------------------------- */}
+
       <div className="apps-marketplace-footer">
 
         <Sprout size={15} />
 
         <span>
-          More agriculture and productivity apps are coming to LR AI.
+          More agriculture and productivity
+          apps are coming to LR AI.
         </span>
 
       </div>
 
-      {/* APP DETAILS MODAL */}
-      {selectedApp && (
+      {/* -------------------------------------------------- */}
+      {/* App modal */}
+      {/* -------------------------------------------------- */}
 
+      {selectedApp && (
         <div
           className="app-modal-overlay"
           onMouseDown={() =>
@@ -573,7 +941,9 @@ export default function Apps({ onClose }) {
               type="button"
               className="app-modal-close"
               onClick={() =>
-                setSelectedApp(null)
+                setSelectedApp(
+                  null
+                )
               }
             >
               <X size={17} />
@@ -603,70 +973,141 @@ export default function Apps({ onClose }) {
               </strong>
 
               <span>
+
                 <span className="status-dot" />
 
                 {selectedApp.connected
                   ? "Connected"
-                  : selectedApp.status === "native"
+                  : selectedApp.status ===
+                    "native"
                     ? "LR AgroSense app"
-                    : selectedApp.status === "coming"
+                    : selectedApp.status ===
+                      "coming"
                       ? "Coming soon"
                       : "Available for connection"}
+
               </span>
 
             </div>
 
-            <button
-              type="button"
-              className="app-modal-connect"
-              disabled={
-                selectedApp.status === "coming"
-              }
-              onClick={() => {
+            {/* ------------------------------------------------ */}
+            {/* Canva connected */}
+            {/* ------------------------------------------------ */}
 
-                if (
-                  selectedApp.status === "coming"
-                ) {
-                  return;
+            {selectedApp.id ===
+              "canva" &&
+            selectedApp.connected ? (
+              <div className="app-modal-actions">
+
+                <button
+                  type="button"
+                  className="app-modal-connect"
+                  onClick={() => {
+                    setNotice({
+                      type: "success",
+                      message:
+                        "Canva is connected and ready for LR AI.",
+                    });
+                  }}
+                >
+                  Open Canva connection
+                  <ChevronRight
+                    size={16}
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  className="app-modal-disconnect"
+                  onClick={
+                    disconnectCanva
+                  }
+                >
+                  Disconnect Canva
+                </button>
+
+              </div>
+            ) : (
+              /* ---------------------------------------------- */
+              /* Normal connection button */
+              /* ---------------------------------------------- */
+
+              <button
+                type="button"
+                className="app-modal-connect"
+                disabled={
+                  selectedApp.status ===
+                  "coming"
                 }
+                onClick={() => {
 
-                alert(
-                  `${selectedApp.name} connection will be handled by the secure LR AI backend.`
-                );
+                  if (
+                    selectedApp.status ===
+                    "coming"
+                  ) {
+                    return;
+                  }
 
-              }}
-            >
+                  /*
+                   * Canva OAuth
+                   */
 
-              {selectedApp.connected
-                ? `Open ${selectedApp.name}`
-                : selectedApp.status === "coming"
-                  ? "Coming soon"
-                  : `Connect ${selectedApp.name}`}
+                  if (
+                    selectedApp.id ===
+                    "canva"
+                  ) {
+                    connectCanva();
+                    return;
+                  }
 
-              <ChevronRight size={16} />
+                  setNotice({
+                    type: "success",
+                    message:
+                      `${selectedApp.name} connection will be available soon.`,
+                  });
+                }}
+              >
 
-            </button>
+                {selectedApp.connected
+                  ? `Open ${selectedApp.name}`
+                  : selectedApp.status ===
+                    "coming"
+                    ? "Coming soon"
+                    : `Connect ${selectedApp.name}`}
+
+                <ChevronRight
+                  size={16}
+                />
+
+              </button>
+            )}
 
             <small>
-              LR AI will only access information that you
-              authorize. App credentials and secrets will remain
-              on the secure backend.
+              LR AI will only access information
+              that you authorize. App credentials
+              and secrets remain on the secure
+              backend.
             </small>
 
           </div>
 
         </div>
-
       )}
 
     </div>
   );
 }
 
+/*
+|--------------------------------------------------------------------------
+| App list item
+|--------------------------------------------------------------------------
+*/
 
-/* APP LIST ITEM */
-function AppListItem({ app, onOpen }) {
-
+function AppListItem({
+  app,
+  onOpen,
+}) {
   const Icon = app.icon;
 
   return (
@@ -697,21 +1138,16 @@ function AppListItem({ app, onOpen }) {
       <div className="app-list-action">
 
         {app.connected ? (
-
           <span className="app-native">
             <Check size={11} />
           </span>
-
-        ) : app.status === "coming" ? (
-
+        ) : app.status ===
+          "coming" ? (
           <span className="app-coming">
             Soon
           </span>
-
         ) : (
-
           <Plus size={19} />
-
         )}
 
       </div>
@@ -720,29 +1156,46 @@ function AppListItem({ app, onOpen }) {
   );
 }
 
+/*
+|--------------------------------------------------------------------------
+| App icon
+|--------------------------------------------------------------------------
+*/
 
-/* APP ICON */
-function AppIcon({ app, large = false }) {
-
+function AppIcon({
+  app,
+  large = false,
+}) {
   const Icon = app.icon;
 
   return (
     <div
-      className={`app-modal-icon ${app.iconClass} ${
-        large ? "large" : ""
+      className={`app-modal-icon ${
+        app.iconClass
+      } ${
+        large
+          ? "large"
+          : ""
       }`}
     >
       <Icon
-        size={large ? 30 : 23}
+        size={
+          large
+            ? 30
+            : 23
+        }
       />
     </div>
   );
 }
 
+/*
+|--------------------------------------------------------------------------
+| Empty search
+|--------------------------------------------------------------------------
+*/
 
-/* EMPTY SEARCH */
 function EmptySearch() {
-
   return (
     <div className="apps-no-results">
 
