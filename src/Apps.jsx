@@ -18,6 +18,8 @@ import {
   X,
 } from "lucide-react";
 
+import "./apps.css";
+
 const apps = [
   {
     id: "canva",
@@ -130,38 +132,61 @@ const categories = [
 ];
 
 export default function Apps({ onClose }) {
-  const [searchText, setSearchText] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedApp, setSelectedApp] = useState(null);
+  const [searchText, setSearchText] =
+    useState("");
+
+  const [activeCategory, setActiveCategory] =
+    useState("All");
+
+  const [selectedApp, setSelectedApp] =
+    useState(null);
 
   const filteredApps = useMemo(() => {
-    const query = searchText.trim().toLowerCase();
+    const query =
+      searchText.trim().toLowerCase();
 
     return apps.filter((app) => {
       const matchesSearch =
         !query ||
-        app.name.toLowerCase().includes(query) ||
-        app.description.toLowerCase().includes(query) ||
-        app.category.toLowerCase().includes(query);
+        app.name
+          .toLowerCase()
+          .includes(query) ||
+        app.description
+          .toLowerCase()
+          .includes(query) ||
+        app.category
+          .toLowerCase()
+          .includes(query);
 
       const matchesCategory =
         activeCategory === "All"
           ? true
           : activeCategory === "Popular"
             ? app.popular
-            : app.category === activeCategory;
+            : app.category ===
+              activeCategory;
 
-      return matchesSearch && matchesCategory;
+      return (
+        matchesSearch &&
+        matchesCategory
+      );
     });
   }, [searchText, activeCategory]);
 
-  const popularApps = apps.filter((app) => app.popular);
+  const popularApps =
+    apps.filter(
+      (app) => app.popular
+    );
 
   return (
     <div className="lr-ai-apps-page">
+
       {/* HEADER */}
+
       <div className="apps-page-header">
+
         <div className="apps-header-left">
+
           <button
             className="apps-back-button"
             onClick={onClose}
@@ -172,13 +197,16 @@ export default function Apps({ onClose }) {
           </button>
 
           <div>
+
             <div className="apps-eyebrow">
               <Sparkles size={13} />
               LR AI
             </div>
 
             <h1>Apps</h1>
+
           </div>
+
         </div>
 
         <button
@@ -194,34 +222,52 @@ export default function Apps({ onClose }) {
           <Settings2 size={17} />
           <span>Settings</span>
         </button>
+
       </div>
 
       {/* HERO */}
+
       <section className="apps-hero">
+
         <div className="apps-hero-icon">
           <Grid2X2 size={25} />
         </div>
 
         <div className="apps-hero-content">
-          <h2>Connect LR AI with your tools</h2>
+
+          <h2>
+            Connect LR AI with
+            your tools
+          </h2>
 
           <p>
-            Connect apps you use for study, work, development and
-            agriculture. LR AI will be able to work with connected tools
-            when the integration is available.
+            Connect apps you use
+            for study, work,
+            development and
+            agriculture. LR AI will
+            be able to work with
+            connected tools when the
+            integration is available.
           </p>
+
         </div>
+
       </section>
 
       {/* SEARCH */}
+
       <div className="apps-search-row">
+
         <div className="apps-search-box">
+
           <Search size={18} />
 
           <input
             value={searchText}
             onChange={(event) =>
-              setSearchText(event.target.value)
+              setSearchText(
+                event.target.value
+              )
             }
             placeholder="Search apps"
             aria-label="Search apps"
@@ -231,224 +277,366 @@ export default function Apps({ onClose }) {
             <button
               type="button"
               className="apps-search-clear"
-              onClick={() => setSearchText("")}
+              onClick={() =>
+                setSearchText("")
+              }
               aria-label="Clear search"
             >
               <X size={15} />
             </button>
           )}
+
         </div>
+
       </div>
 
       {/* CATEGORIES */}
+
       <div className="apps-category-row">
-        {categories.map((category) => (
-          <button
-            key={category}
-            type="button"
-            className={
-              activeCategory === category
-                ? "apps-category active"
-                : "apps-category"
-            }
-            onClick={() => setActiveCategory(category)}
-          >
-            {category}
-          </button>
-        ))}
+
+        {categories.map(
+          (category) => (
+            <button
+              key={category}
+              type="button"
+              className={
+                activeCategory ===
+                category
+                  ? "apps-category active"
+                  : "apps-category"
+              }
+              onClick={() =>
+                setActiveCategory(
+                  category
+                )
+              }
+            >
+              {category}
+            </button>
+          )
+        )}
+
       </div>
 
       {/* POPULAR */}
-      {!searchText && activeCategory === "All" && (
-        <section className="apps-section">
-          <div className="apps-section-heading">
-            <div>
-              <h3>Popular</h3>
-              <p>Useful integrations to get started with LR AI.</p>
+
+      {!searchText &&
+        activeCategory ===
+          "All" && (
+          <section className="apps-section">
+
+            <div className="apps-section-heading">
+
+              <div>
+
+                <h3>Popular</h3>
+
+                <p>
+                  Useful integrations
+                  to get started with
+                  LR AI.
+                </p>
+
+              </div>
+
+              <span>
+                {popularApps.length} apps
+              </span>
+
             </div>
 
-            <span>{popularApps.length} apps</span>
-          </div>
+            <div className="apps-grid">
 
-          <div className="apps-grid">
-            {popularApps.slice(0, 4).map((app) => (
-              <AppCard
-                key={app.id}
-                app={app}
-                onOpen={() => setSelectedApp(app)}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+              {popularApps
+                .slice(0, 4)
+                .map((app) => (
+                  <AppCard
+                    key={app.id}
+                    app={app}
+                    onOpen={() =>
+                      setSelectedApp(
+                        app
+                      )
+                    }
+                  />
+                ))}
+
+            </div>
+
+          </section>
+        )}
 
       {/* ALL APPS */}
+
       <section className="apps-section">
+
         <div className="apps-section-heading">
+
           <div>
+
             <h3>
-              {activeCategory === "All"
+              {activeCategory ===
+              "All"
                 ? "All apps"
                 : activeCategory}
             </h3>
 
             <p>
-              Explore tools and services that can work with LR AI.
+              Explore tools and
+              services that can work
+              with LR AI.
             </p>
+
           </div>
 
-          <span>{filteredApps.length} apps</span>
+          <span>
+            {filteredApps.length} apps
+          </span>
+
         </div>
 
-        {filteredApps.length > 0 ? (
+        {filteredApps.length >
+        0 ? (
           <div className="apps-grid">
-            {filteredApps.map((app) => (
-              <AppCard
-                key={app.id}
-                app={app}
-                onOpen={() => setSelectedApp(app)}
-              />
-            ))}
+
+            {filteredApps.map(
+              (app) => (
+                <AppCard
+                  key={app.id}
+                  app={app}
+                  onOpen={() =>
+                    setSelectedApp(
+                      app
+                    )
+                  }
+                />
+              )
+            )}
+
           </div>
         ) : (
+
           <div className="apps-empty">
+
             <Search size={24} />
-            <h3>No apps found</h3>
+
+            <h3>
+              No apps found
+            </h3>
+
             <p>
-              Try another search or choose a different category.
+              Try another search
+              or choose a different
+              category.
             </p>
+
           </div>
         )}
+
       </section>
 
-      {/* FUTURE NOTE */}
+      {/* FUTURE */}
+
       <section className="apps-future-card">
+
         <div className="apps-future-icon">
           <Sprout size={20} />
         </div>
 
         <div>
-          <strong>More LR AgroSense apps are coming</strong>
+
+          <strong>
+            More LR AgroSense apps
+            are coming
+          </strong>
 
           <p>
-            LR AI will gradually connect agriculture tools,
-            farm monitoring, crop health and agricultural data
-            into one workspace.
+            LR AI will gradually
+            connect agriculture
+            tools, farm monitoring,
+            crop health and
+            agricultural data into
+            one workspace.
           </p>
+
         </div>
+
       </section>
 
-      {/* APP DETAILS MODAL */}
+      {/* APP DETAILS */}
+
       {selectedApp && (
+
         <div
           className="app-details-overlay"
-          onMouseDown={() => setSelectedApp(null)}
+          onMouseDown={() =>
+            setSelectedApp(null)
+          }
         >
+
           <div
             className="app-details-modal"
             onMouseDown={(event) =>
               event.stopPropagation()
             }
           >
+
             <button
               className="app-details-close"
-              onClick={() => setSelectedApp(null)}
+              onClick={() =>
+                setSelectedApp(null)
+              }
               aria-label="Close"
             >
               <X size={18} />
             </button>
 
-            <AppIcon app={selectedApp} large />
+            <AppIcon
+              app={selectedApp}
+              large
+            />
 
             <div className="app-details-category">
               {selectedApp.category}
             </div>
 
-            <h2>{selectedApp.name}</h2>
+            <h2>
+              {selectedApp.name}
+            </h2>
 
-            <p>{selectedApp.description}</p>
+            <p>
+              {selectedApp.description}
+            </p>
 
             <div className="app-permission-box">
-              <strong>Connection status</strong>
+
+              <strong>
+                Connection status
+              </strong>
 
               <div className="app-status-row">
+
                 <span className="app-status-dot" />
+
                 {selectedApp.status}
+
               </div>
+
             </div>
 
             <button
               className="app-connect-button"
-              onClick={() => {
+              onClick={() =>
                 alert(
                   `${selectedApp.name} connection will be added in the next integration phase.`
-                );
-              }}
+                )
+              }
             >
-              Connect {selectedApp.name}
-              <ChevronRight size={17} />
+              Connect{" "}
+              {selectedApp.name}
+
+              <ChevronRight
+                size={17}
+              />
             </button>
 
             <p className="app-security-note">
-              LR AI will only access information that you
-              authorize when the real connection is implemented.
+              LR AI will only access
+              information that you
+              authorize when the real
+              connection is implemented.
             </p>
+
           </div>
+
         </div>
+
       )}
+
     </div>
   );
 }
 
-function AppCard({ app, onOpen }) {
+function AppCard({
+  app,
+  onOpen,
+}) {
   return (
     <button
       type="button"
       className="app-card"
       onClick={onOpen}
     >
+
       <div className="app-card-top">
+
         <AppIcon app={app} />
 
         <div className="app-card-arrow">
           <ChevronRight size={17} />
         </div>
+
       </div>
 
       <div className="app-card-content">
+
         <h4>{app.name}</h4>
 
-        <p>{app.description}</p>
+        <p>
+          {app.description}
+        </p>
+
       </div>
 
       <div className="app-card-footer">
-        <span>{app.category}</span>
 
-        {app.status === "LR AgroSense" ? (
+        <span>
+          {app.category}
+        </span>
+
+        {app.status ===
+        "LR AgroSense" ? (
+
           <span className="app-native-badge">
             <Check size={11} />
             LR app
           </span>
+
         ) : (
+
           <span className="app-coming-badge">
             {app.status}
           </span>
+
         )}
+
       </div>
+
     </button>
   );
 }
 
-function AppIcon({ app, large = false }) {
+function AppIcon({
+  app,
+  large = false,
+}) {
   const Icon = app.icon;
 
   return (
     <div
-      className={`app-icon ${app.iconClass} ${
-        large ? "large" : ""
+      className={`app-icon ${
+        app.iconClass
+      } ${
+        large
+          ? "large"
+          : ""
       }`}
     >
-      <Icon size={large ? 29 : 22} />
+      <Icon
+        size={
+          large ? 29 : 22
+        }
+      />
     </div>
   );
 }
