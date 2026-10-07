@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import Apps from "./Apps";
 import {
   ArrowUp,
   Camera,
   ChevronDown,
   Folder,
+  Grid2X2,
   Leaf,
   Menu,
   MessageSquare,
@@ -11,7 +13,6 @@ import {
   Plus,
   Search,
   Sparkles,
-  Sprout,
   X,
 } from "lucide-react";
 
@@ -20,34 +21,37 @@ const STORAGE_KEY = "lr-ai-conversations-v1";
 const exploreItems = [
   {
     title: "Identify a plant",
-    prompt: "Identify this plant and tell me the important information about it.",
+    prompt:
+      "Identify this plant and tell me the important information about it.",
   },
   {
     title: "Check plant disease",
-    prompt: "Check this plant for possible diseases and explain what you observe.",
+    prompt:
+      "Check this plant for possible diseases and explain what you observe.",
   },
   {
     title: "Check symptoms",
-    prompt: "Analyze these plant symptoms and explain the possible causes.",
+    prompt:
+      "Analyze these plant symptoms and explain the possible causes.",
   },
   {
     title: "Nutrient problems",
-    prompt: "Could these symptoms be related to a nutrient deficiency? Explain the possibilities.",
+    prompt:
+      "Could these symptoms be related to a nutrient deficiency? Explain the possibilities.",
   },
   {
     title: "Crop health",
-    prompt: "Give me a complete crop health assessment based on the information I provide.",
+    prompt:
+      "Give me a complete crop health assessment based on the information I provide.",
   },
   {
     title: "Pest problems",
-    prompt: "Could this plant have pest damage? Explain what signs I should look for.",
+    prompt:
+      "Could this plant have pest damage? Explain what signs I should look for.",
   },
 ];
 
-const defaultProjects = [
-  "My Farm",
-  "Crop Research",
-];
+const defaultProjects = ["My Farm", "Crop Research"];
 
 function createConversation() {
   return {
@@ -112,20 +116,39 @@ function fileToDataUrl(file) {
 }
 
 export default function LRAI() {
-  const [conversations, setConversations] = useState(
-    loadConversations
-  );
+  const [conversations, setConversations] =
+    useState(loadConversations);
 
-  const [activeChatId, setActiveChatId] = useState(null);
+  const [activeChatId, setActiveChatId] =
+    useState(null);
+
   const [input, setInput] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
+
+  const [selectedImage, setSelectedImage] =
+    useState(null);
+
+  const [imagePreview, setImagePreview] =
+    useState("");
+
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [exploreOpen, setExploreOpen] = useState(false);
-  const [projectsOpen, setProjectsOpen] = useState(true);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
+  const [exploreOpen, setExploreOpen] =
+    useState(false);
+
+  const [projectsOpen, setProjectsOpen] =
+    useState(true);
+
+  const [searchOpen, setSearchOpen] =
+    useState(false);
+
+  const [searchText, setSearchText] =
+    useState("");
+
+  const [appsOpen, setAppsOpen] =
+    useState(false);
 
   const textareaRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -147,7 +170,10 @@ export default function LRAI() {
   }, [activeChat?.messages, loading]);
 
   useEffect(() => {
-    if (!activeChatId && conversations.length > 0) {
+    if (
+      !activeChatId &&
+      conversations.length > 0
+    ) {
       setActiveChatId(conversations[0].id);
     }
   }, [activeChatId, conversations]);
@@ -157,6 +183,7 @@ export default function LRAI() {
     setInput("");
     setSelectedImage(null);
     setImagePreview("");
+    setAppsOpen(false);
     setSidebarOpen(false);
 
     if (imageInputRef.current) {
@@ -169,6 +196,7 @@ export default function LRAI() {
   };
 
   const openChat = (id) => {
+    setAppsOpen(false);
     setActiveChatId(id);
     setSidebarOpen(false);
   };
@@ -176,19 +204,27 @@ export default function LRAI() {
   const handleImage = (event) => {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       return;
     }
 
     if (file.size > 12 * 1024 * 1024) {
-      alert("Please choose an image smaller than 12 MB.");
+      alert(
+        "Please choose an image smaller than 12 MB."
+      );
+
       return;
     }
 
     setSelectedImage(file);
-    setImagePreview(URL.createObjectURL(file));
+
+    setImagePreview(
+      URL.createObjectURL(file)
+    );
   };
 
   const removeSelectedImage = () => {
@@ -238,9 +274,10 @@ export default function LRAI() {
 
     if (selectedImage) {
       try {
-        imageData = await fileToDataUrl(
-          selectedImage
-        );
+        imageData =
+          await fileToDataUrl(
+            selectedImage
+          );
       } catch {
         return;
       }
@@ -279,15 +316,9 @@ export default function LRAI() {
     setLoading(true);
 
     try {
-      /*
-       * The secure backend will be connected here.
-       *
-       * The Gemini API key must NEVER be placed
-       * inside this frontend application.
-       */
-
       const apiBase = (
-        import.meta.env.VITE_API_BASE_URL || ""
+        import.meta.env.VITE_API_BASE_URL ||
+        ""
       ).replace(/\/$/, "");
 
       if (!apiBase) {
@@ -320,7 +351,8 @@ export default function LRAI() {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
           body: JSON.stringify({
             question:
@@ -391,6 +423,7 @@ export default function LRAI() {
   };
 
   const useExplorePrompt = (prompt) => {
+    setAppsOpen(false);
     setInput(prompt);
     setExploreOpen(false);
     setSidebarOpen(false);
@@ -412,18 +445,17 @@ export default function LRAI() {
     }
   };
 
-  const filteredChats =
-    searchText.trim()
-      ? conversations.filter((chat) =>
-          chat.title
-            .toLowerCase()
-            .includes(
-              searchText
-                .toLowerCase()
-                .trim()
-            )
-        )
-      : conversations;
+  const filteredChats = searchText.trim()
+    ? conversations.filter((chat) =>
+        chat.title
+          .toLowerCase()
+          .includes(
+            searchText
+              .toLowerCase()
+              .trim()
+          )
+      )
+    : conversations;
 
   return (
     <div className="lr-ai-app">
@@ -440,13 +472,13 @@ export default function LRAI() {
         />
       )}
 
-      {/* ==================================================
-          SIDEBAR
-          ================================================== */}
+      {/* SIDEBAR */}
 
       <aside
         className={`lr-ai-sidebar ${
-          sidebarOpen ? "sidebar-visible" : ""
+          sidebarOpen
+            ? "sidebar-visible"
+            : ""
         }`}
       >
 
@@ -455,6 +487,7 @@ export default function LRAI() {
           {/* BRAND */}
 
           <div className="lr-ai-brand">
+
             <div className="lr-ai-mark">
               <img
                 src="/lr-ai-logo.png"
@@ -464,8 +497,11 @@ export default function LRAI() {
 
             <div className="lr-ai-brand-text">
               <strong>LR AI</strong>
-              <span>Plant Intelligence</span>
+              <span>
+                Plant Intelligence
+              </span>
             </div>
+
           </div>
 
           {/* NEW CHAT */}
@@ -482,6 +518,7 @@ export default function LRAI() {
 
           {searchOpen && (
             <div className="chat-search">
+
               <Search size={15} />
 
               <input
@@ -500,9 +537,11 @@ export default function LRAI() {
                   setSearchOpen(false);
                   setSearchText("");
                 }}
+                aria-label="Close search"
               >
                 <X size={14} />
               </button>
+
             </div>
           )}
 
@@ -534,7 +573,9 @@ export default function LRAI() {
 
             <ChevronDown
               className={`sidebar-chevron ${
-                exploreOpen ? "rotated" : ""
+                exploreOpen
+                  ? "rotated"
+                  : ""
               }`}
               size={15}
             />
@@ -543,22 +584,42 @@ export default function LRAI() {
           {exploreOpen && (
             <div className="explore-menu">
 
-              {exploreItems.map((item) => (
-                <button
-                  key={item.title}
-                  onClick={() =>
-                    useExplorePrompt(
-                      item.prompt
-                    )
-                  }
-                >
-                  <Leaf size={14} />
-                  {item.title}
-                </button>
-              ))}
+              {exploreItems.map(
+                (item) => (
+                  <button
+                    key={item.title}
+                    onClick={() =>
+                      useExplorePrompt(
+                        item.prompt
+                      )
+                    }
+                  >
+                    <Leaf size={14} />
+                    {item.title}
+                  </button>
+                )
+              )}
 
             </div>
           )}
+
+          {/* APPS */}
+
+          <button
+            className={`sidebar-action ${
+              appsOpen
+                ? "sidebar-action-active"
+                : ""
+            }`}
+            onClick={() => {
+              setAppsOpen(true);
+              setExploreOpen(false);
+              setSidebarOpen(false);
+            }}
+          >
+            <Grid2X2 size={17} />
+            <span>Apps</span>
+          </button>
 
           {/* PROJECTS */}
 
@@ -591,6 +652,8 @@ export default function LRAI() {
                     key={project}
                     className="project-item"
                     onClick={() => {
+                      setAppsOpen(false);
+
                       setInput(
                         `Let's work on my ${project} project.`
                       );
@@ -601,7 +664,9 @@ export default function LRAI() {
                     }}
                   >
                     <Folder size={16} />
-                    <span>{project}</span>
+                    <span>
+                      {project}
+                    </span>
                   </button>
                 )
               )}
@@ -632,71 +697,79 @@ export default function LRAI() {
                 No conversations yet.
               </div>
             ) : (
-              filteredChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className={`chat-item ${
-                    activeChatId === chat.id
-                      ? "active"
-                      : ""
-                  }`}
-                >
-
-                  <button
-                    className="chat-item-main"
-                    onClick={() =>
-                      openChat(chat.id)
-                    }
+              filteredChats.map(
+                (chat) => (
+                  <div
+                    key={chat.id}
+                    className={`chat-item ${
+                      activeChatId ===
+                      chat.id
+                        ? "active"
+                        : ""
+                    }`}
                   >
-                    <MessageSquare
-                      size={15}
-                    />
 
-                    <span>
-                      {chat.title}
-                    </span>
-                  </button>
+                    <button
+                      className="chat-item-main"
+                      onClick={() =>
+                        openChat(chat.id)
+                      }
+                    >
+                      <MessageSquare
+                        size={15}
+                      />
 
-                  <button
-                    className="chat-more"
-                    onClick={() =>
-                      deleteChat(chat.id)
-                    }
-                    title="Delete chat"
-                  >
-                    <MoreHorizontal
-                      size={15}
-                    />
-                  </button>
+                      <span>
+                        {chat.title}
+                      </span>
+                    </button>
 
-                </div>
-              ))
+                    <button
+                      className="chat-more"
+                      onClick={() =>
+                        deleteChat(
+                          chat.id
+                        )
+                      }
+                      title="Delete chat"
+                      aria-label="Delete chat"
+                    >
+                      <MoreHorizontal
+                        size={15}
+                      />
+                    </button>
+
+                  </div>
+                )
+              )
             )}
 
           </div>
 
         </div>
 
-        {/* SIDEBAR FOOTER */}
+        {/* FOOTER */}
 
         <div className="sidebar-footer">
 
           <div className="ai-status">
+
             <span className="status-dot" />
 
             <div>
               <strong>LR AI</strong>
-              <span>Plant intelligence</span>
+              <span>
+                Plant intelligence
+              </span>
             </div>
+
           </div>
 
         </div>
 
       </aside>
 
-      {/* ==================================================
-          MAIN
-          ================================================== */}
+      {/* MAIN */}
 
       <main className="lr-ai-main">
 
@@ -715,8 +788,10 @@ export default function LRAI() {
           </button>
 
           <div className="mobile-page-title">
-            {activeChat?.title ||
-              "LR AI"}
+            {appsOpen
+              ? "Apps"
+              : activeChat?.title ||
+                "LR AI"}
           </div>
 
           <div className="topbar-right">
@@ -732,14 +807,22 @@ export default function LRAI() {
 
         </header>
 
-        {/* ==================================================
-            CHAT
-            ================================================== */}
+        {/* CHAT AREA */}
 
         <div className="chat-area">
 
-          {!activeChat ||
-          activeChat.messages.length === 0 ? (
+          {appsOpen ? (
+
+            <Apps
+              onClose={() =>
+                setAppsOpen(false)
+              }
+            />
+
+          ) : !activeChat ||
+            activeChat.messages.length ===
+              0 ? (
+
             <div className="welcome-screen">
 
               <div className="welcome-mark">
@@ -751,9 +834,10 @@ export default function LRAI() {
               </h1>
 
               <p>
-                Ask questions about plants,
-                crops, diseases, pests, soil
-                and agricultural problems.
+                Ask questions about
+                plants, crops, diseases,
+                pests, soil and
+                agricultural problems.
               </p>
 
               <div className="welcome-suggestions">
@@ -777,7 +861,9 @@ export default function LRAI() {
               </div>
 
             </div>
+
           ) : (
+
             <div className="messages-container">
 
               {activeChat.messages.map(
@@ -795,19 +881,25 @@ export default function LRAI() {
                     <div className="message-inner">
 
                       <div className="message-avatar">
+
                         {message.role ===
                         "user" ? (
                           "You"
                         ) : (
-                          <Sparkles size={15} />
+                          <Sparkles
+                            size={15}
+                          />
                         )}
+
                       </div>
 
                       <div className="message-body">
 
                         {message.image && (
                           <img
-                            src={message.image}
+                            src={
+                              message.image
+                            }
                             alt="Uploaded plant"
                             className="message-image"
                           />
@@ -831,7 +923,9 @@ export default function LRAI() {
                   <div className="message-inner">
 
                     <div className="message-avatar">
-                      <Sparkles size={15} />
+                      <Sparkles
+                        size={15}
+                      />
                     </div>
 
                     <div className="typing-indicator">
@@ -855,92 +949,95 @@ export default function LRAI() {
 
         </div>
 
-        {/* ==================================================
-            INPUT
-            ================================================== */}
+        {/* INPUT */}
 
-        <div className="input-area">
+        {!appsOpen && (
+          <div className="input-area">
 
-          <div className="input-container">
+            <div className="input-container">
 
-            {imagePreview && (
-              <div className="image-attachment">
+              {imagePreview && (
+                <div className="image-attachment">
 
-                <img
-                  src={imagePreview}
-                  alt="Selected plant"
+                  <img
+                    src={imagePreview}
+                    alt="Selected plant"
+                  />
+
+                  <button
+                    onClick={
+                      removeSelectedImage
+                    }
+                    aria-label="Remove image"
+                  >
+                    <X size={14} />
+                  </button>
+
+                </div>
+              )}
+
+              <div className="input-box">
+
+                <button
+                  className="attach-button"
+                  onClick={() =>
+                    imageInputRef.current?.click()
+                  }
+                  aria-label="Upload image"
+                  title="Upload plant image"
+                >
+                  <Camera size={20} />
+                </button>
+
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImage}
+                />
+
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(event) =>
+                    setInput(
+                      event.target.value
+                    )
+                  }
+                  onKeyDown={handleKeyDown}
+                  placeholder="Message LR AI..."
+                  rows={1}
                 />
 
                 <button
-                  onClick={
-                    removeSelectedImage
+                  className="send-button"
+                  onClick={sendMessage}
+                  disabled={
+                    loading ||
+                    (!input.trim() &&
+                      !selectedImage)
                   }
-                  aria-label="Remove image"
+                  aria-label="Send message"
                 >
-                  <X size={14} />
+                  <ArrowUp size={18} />
                 </button>
 
               </div>
-            )}
 
-            <div className="input-box">
+              <div className="input-disclaimer">
+                LR AI can make mistakes.
+                Verify important
+                agricultural decisions
+                with appropriate testing
+                or an agricultural
+                professional.
+              </div>
 
-              <button
-                className="attach-button"
-                onClick={() =>
-                  imageInputRef.current?.click()
-                }
-                aria-label="Upload image"
-                title="Upload plant image"
-              >
-                <Camera size={20} />
-              </button>
-
-              <input
-                ref={imageInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleImage}
-              />
-
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(event) =>
-                  setInput(
-                    event.target.value
-                  )
-                }
-                onKeyDown={handleKeyDown}
-                placeholder="Message LR AI..."
-                rows={1}
-              />
-
-              <button
-                className="send-button"
-                onClick={sendMessage}
-                disabled={
-                  loading ||
-                  (!input.trim() &&
-                    !selectedImage)
-                }
-                aria-label="Send message"
-              >
-                <ArrowUp size={18} />
-              </button>
-
-            </div>
-
-            <div className="input-disclaimer">
-              LR AI can make mistakes. Verify important
-              agricultural decisions with appropriate
-              testing or an agricultural professional.
             </div>
 
           </div>
-
-        </div>
+        )}
 
       </main>
 
