@@ -1,8 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Apps from "./Apps";
+
 import {
   ArrowUp,
-  Camera,
   ChevronDown,
   Folder,
   Grid2X2,
@@ -16,7 +20,11 @@ import {
   X,
 } from "lucide-react";
 
-const STORAGE_KEY = "lr-ai-conversations-v1";
+const STORAGE_KEY =
+  "lr-ai-conversations-v1";
+
+const CANVA_API_BASE =
+  "https://lragrosense.onrender.com";
 
 const exploreItems = [
   {
@@ -51,7 +59,10 @@ const exploreItems = [
   },
 ];
 
-const defaultProjects = ["My Farm", "Crop Research"];
+const defaultProjects = [
+  "My Farm",
+  "Crop Research",
+];
 
 function createConversation() {
   return {
@@ -65,25 +76,35 @@ function createConversation() {
 
 function loadConversations() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
 
     if (!saved) {
       return [];
     }
 
-    const parsed = JSON.parse(saved);
+    const parsed =
+      JSON.parse(saved);
 
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed)
+      ? parsed
+      : [];
   } catch {
     return [];
   }
 }
 
-function saveConversations(conversations) {
+function saveConversations(
+  conversations
+) {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(conversations)
+      JSON.stringify(
+        conversations
+      )
     );
   } catch {
     // Ignore local storage errors.
@@ -105,89 +126,410 @@ function makeTitle(text) {
 }
 
 function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+  return new Promise(
+    (resolve, reject) => {
+      const reader =
+        new FileReader();
 
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
+      reader.onload = () =>
+        resolve(
+          reader.result
+        );
 
-    reader.readAsDataURL(file);
-  });
+      reader.onerror = reject;
+
+      reader.readAsDataURL(file);
+    }
+  );
 }
 
 export default function LRAI() {
-  const [conversations, setConversations] =
-    useState(loadConversations);
+  const [
+    conversations,
+    setConversations,
+  ] = useState(
+    loadConversations
+  );
 
-  const [activeChatId, setActiveChatId] =
-    useState(null);
+  const [
+    activeChatId,
+    setActiveChatId,
+  ] = useState(null);
 
-  const [input, setInput] = useState("");
+  const [
+    input,
+    setInput,
+  ] = useState("");
 
-  const [selectedImage, setSelectedImage] =
-    useState(null);
+  const [
+    selectedImage,
+    setSelectedImage,
+  ] = useState(null);
 
-  const [imagePreview, setImagePreview] =
-    useState("");
+  const [
+    imagePreview,
+    setImagePreview,
+  ] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [
+    sidebarOpen,
+    setSidebarOpen,
+  ] = useState(false);
 
-  const [exploreOpen, setExploreOpen] =
-    useState(false);
+  const [
+    exploreOpen,
+    setExploreOpen,
+  ] = useState(false);
 
-  const [projectsOpen, setProjectsOpen] =
-    useState(true);
+  const [
+    projectsOpen,
+    setProjectsOpen,
+  ] = useState(true);
 
-  const [searchOpen, setSearchOpen] =
-    useState(false);
+  const [
+    searchOpen,
+    setSearchOpen,
+  ] = useState(false);
 
-  const [searchText, setSearchText] =
-    useState("");
+  const [
+    searchText,
+    setSearchText,
+  ] = useState("");
 
-  const [appsOpen, setAppsOpen] =
-    useState(false);
+  const [
+    appsOpen,
+    setAppsOpen,
+  ] = useState(false);
 
-  const textareaRef = useRef(null);
-  const imageInputRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  /*
+   * PLUS / CONNECTORS
+   */
+
+  const [
+    plusMenuOpen,
+    setPlusMenuOpen,
+  ] = useState(false);
+
+  const [
+    connectorsOpen,
+    setConnectorsOpen,
+  ] = useState(false);
+
+  const [
+    canvaConnected,
+    setCanvaConnected,
+  ] = useState(false);
+
+  const [
+    canvaStatusLoading,
+    setCanvaStatusLoading,
+  ] = useState(false);
+
+  const textareaRef =
+    useRef(null);
+
+  const imageInputRef =
+    useRef(null);
+
+  const messagesEndRef =
+    useRef(null);
+
+  const composerMenuRef =
+    useRef(null);
 
   const activeChat =
     conversations.find(
-      (chat) => chat.id === activeChatId
+      (chat) =>
+        chat.id ===
+        activeChatId
     ) || null;
 
-  useEffect(() => {
-    saveConversations(conversations);
-  }, [conversations]);
+  /*
+   * SAVE CONVERSATIONS
+   */
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [activeChat?.messages, loading]);
+    saveConversations(
+      conversations
+    );
+  }, [conversations]);
+
+  /*
+   * SCROLL TO BOTTOM
+   */
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView(
+      {
+        behavior: "smooth",
+      }
+    );
+  }, [
+    activeChat?.messages,
+    loading,
+  ]);
+
+  /*
+   * SELECT FIRST CHAT
+   */
 
   useEffect(() => {
     if (
       !activeChatId &&
       conversations.length > 0
     ) {
-      setActiveChatId(conversations[0].id);
+      setActiveChatId(
+        conversations[0].id
+      );
     }
-  }, [activeChatId, conversations]);
+  }, [
+    activeChatId,
+    conversations,
+  ]);
+
+  /*
+   * CANVA STATUS
+   *
+   * This checks the real backend
+   * connection instead of hardcoding
+   * Canva as connected.
+   */
+
+  const checkCanvaStatus =
+    async () => {
+      setCanvaStatusLoading(
+        true
+      );
+
+      try {
+        const response =
+          await fetch(
+            `${CANVA_API_BASE}/api/apps/canva/status`,
+            {
+              method: "GET",
+              credentials:
+                "include",
+              cache: "no-store",
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            "Could not check Canva status."
+          );
+        }
+
+        const data =
+          await response.json();
+
+        setCanvaConnected(
+          Boolean(
+            data?.connected
+          )
+        );
+      } catch {
+        /*
+         * If the status endpoint cannot
+         * be reached, do not falsely show
+         * Canva as connected.
+         */
+        setCanvaConnected(false);
+      } finally {
+        setCanvaStatusLoading(
+          false
+        );
+      }
+    };
+
+  /*
+   * CHECK CANVA WHEN LR AI LOADS
+   */
+
+  useEffect(() => {
+    checkCanvaStatus();
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const canvaResult =
+      params.get("canva");
+
+    /*
+     * OAuth successfully returned
+     */
+
+    if (
+      canvaResult ===
+      "connected"
+    ) {
+      setCanvaConnected(true);
+
+      setPlusMenuOpen(true);
+
+      setConnectorsOpen(true);
+
+      params.delete("canva");
+
+      const cleanQuery =
+        params.toString();
+
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${
+          cleanQuery
+            ? `?${cleanQuery}`
+            : ""
+        }${window.location.hash}`
+      );
+
+      /*
+       * Confirm with backend after
+       * OAuth redirect.
+       */
+
+      setTimeout(() => {
+        checkCanvaStatus();
+      }, 300);
+    }
+
+    /*
+     * OAuth failed
+     */
+
+    if (
+      canvaResult === "error"
+    ) {
+      params.delete("canva");
+
+      const cleanQuery =
+        params.toString();
+
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${
+          cleanQuery
+            ? `?${cleanQuery}`
+            : ""
+        }${window.location.hash}`
+      );
+    }
+  }, []);
+
+  /*
+   * CLOSE MENU WHEN CLICKING OUTSIDE
+   */
+
+  useEffect(() => {
+    const handleOutsideClick =
+      (event) => {
+        if (
+          composerMenuRef.current &&
+          !composerMenuRef.current.contains(
+            event.target
+          )
+        ) {
+          setPlusMenuOpen(false);
+          setConnectorsOpen(false);
+        }
+      };
+
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
+    };
+  }, []);
+
+  /*
+   * START CANVA OAUTH
+   */
+
+  const startCanvaConnection =
+    () => {
+      window.location.href =
+        `${CANVA_API_BASE}/api/apps/canva/connect`;
+    };
+
+  /*
+   * DISCONNECT CANVA
+   */
+
+  const disconnectCanva =
+    async () => {
+      setCanvaStatusLoading(
+        true
+      );
+
+      try {
+        const response =
+          await fetch(
+            `${CANVA_API_BASE}/api/apps/canva/disconnect`,
+            {
+              method: "POST",
+              credentials:
+                "include",
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            "Could not disconnect Canva."
+          );
+        }
+
+        setCanvaConnected(
+          false
+        );
+      } catch {
+        alert(
+          "Could not disconnect Canva. Please try again."
+        );
+      } finally {
+        setCanvaStatusLoading(
+          false
+        );
+      }
+    };
+
+  /*
+   * NEW CHAT
+   */
 
   const startNewChat = () => {
     setActiveChatId(null);
+
     setInput("");
+
     setSelectedImage(null);
+
     setImagePreview("");
+
     setAppsOpen(false);
+
     setSidebarOpen(false);
 
+    setPlusMenuOpen(false);
+
+    setConnectorsOpen(false);
+
     if (imageInputRef.current) {
-      imageInputRef.current.value = "";
+      imageInputRef.current.value =
+        "";
     }
 
     setTimeout(() => {
@@ -195,24 +537,48 @@ export default function LRAI() {
     }, 100);
   };
 
+  /*
+   * OPEN CHAT
+   */
+
   const openChat = (id) => {
     setAppsOpen(false);
+
+    setPlusMenuOpen(false);
+
+    setConnectorsOpen(false);
+
     setActiveChatId(id);
+
     setSidebarOpen(false);
   };
 
-  const handleImage = (event) => {
-    const file = event.target.files?.[0];
+  /*
+   * IMAGE UPLOAD
+   */
+
+  const handleImage = (
+    event
+  ) => {
+    const file =
+      event.target.files?.[0];
 
     if (!file) {
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
       return;
     }
 
-    if (file.size > 12 * 1024 * 1024) {
+    if (
+      file.size >
+      12 * 1024 * 1024
+    ) {
       alert(
         "Please choose an image smaller than 12 MB."
       );
@@ -227,235 +593,338 @@ export default function LRAI() {
     );
   };
 
-  const removeSelectedImage = () => {
-    setSelectedImage(null);
-    setImagePreview("");
+  /*
+   * REMOVE IMAGE
+   */
 
-    if (imageInputRef.current) {
-      imageInputRef.current.value = "";
-    }
-  };
+  const removeSelectedImage =
+    () => {
+      setSelectedImage(null);
 
-  const updateChat = (chatId, updater) => {
-    setConversations((current) =>
-      current.map((chat) =>
-        chat.id === chatId
-          ? updater(chat)
-          : chat
-      )
+      setImagePreview("");
+
+      if (imageInputRef.current) {
+        imageInputRef.current.value =
+          "";
+      }
+    };
+
+  /*
+   * UPDATE CHAT
+   */
+
+  const updateChat = (
+    chatId,
+    updater
+  ) => {
+    setConversations(
+      (current) =>
+        current.map(
+          (chat) =>
+            chat.id === chatId
+              ? updater(chat)
+              : chat
+        )
     );
   };
 
-  const sendMessage = async () => {
-    const text = input.trim();
+  /*
+   * SEND MESSAGE
+   */
 
-    if (!text && !selectedImage) {
-      return;
-    }
+  const sendMessage =
+    async () => {
+      const text =
+        input.trim();
 
-    let chatId = activeChatId;
-    let chat = activeChat;
-
-    if (!chat) {
-      const newChat = createConversation();
-
-      chatId = newChat.id;
-      chat = newChat;
-
-      setConversations((current) => [
-        newChat,
-        ...current,
-      ]);
-
-      setActiveChatId(newChat.id);
-    }
-
-    let imageData = null;
-
-    if (selectedImage) {
-      try {
-        imageData =
-          await fileToDataUrl(
-            selectedImage
-          );
-      } catch {
+      if (
+        !text &&
+        !selectedImage
+      ) {
         return;
       }
-    }
 
-    const userMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content:
-        text ||
-        "Please analyze this plant image.",
-      image: imageData,
-      createdAt: Date.now(),
-    };
+      let chatId =
+        activeChatId;
 
-    const nextTitle =
-      chat.title === "New chat"
-        ? makeTitle(
-            text ||
-              "Plant image analysis"
-          )
-        : chat.title;
+      let chat =
+        activeChat;
 
-    updateChat(chatId, (current) => ({
-      ...current,
-      title: nextTitle,
-      updatedAt: Date.now(),
-      messages: [
-        ...current.messages,
-        userMessage,
-      ],
-    }));
+      if (!chat) {
+        const newChat =
+          createConversation();
 
-    setInput("");
-    removeSelectedImage();
-    setLoading(true);
+        chatId =
+          newChat.id;
 
-    try {
-      const apiBase = (
-        import.meta.env.VITE_API_BASE_URL ||
-        ""
-      ).replace(/\/$/, "");
+        chat =
+          newChat;
 
-      if (!apiBase) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, 600)
+        setConversations(
+          (current) => [
+            newChat,
+            ...current,
+          ]
         );
 
-        const demoMessage = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content:
-            "LR AI is ready for agricultural analysis, but the secure AI server is not connected yet. Once the backend is connected, I will analyze your plant image and answer your question using the AI model.",
-          createdAt: Date.now(),
-        };
+        setActiveChatId(
+          newChat.id
+        );
+      }
 
-        updateChat(chatId, (current) => ({
+      let imageData = null;
+
+      if (selectedImage) {
+        try {
+          imageData =
+            await fileToDataUrl(
+              selectedImage
+            );
+        } catch {
+          return;
+        }
+      }
+
+      const userMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content:
+          text ||
+          "Please analyze this plant image.",
+        image: imageData,
+        createdAt:
+          Date.now(),
+      };
+
+      const nextTitle =
+        chat.title ===
+        "New chat"
+          ? makeTitle(
+              text ||
+                "Plant image analysis"
+            )
+          : chat.title;
+
+      updateChat(
+        chatId,
+        (current) => ({
           ...current,
-          updatedAt: Date.now(),
+          title: nextTitle,
+          updatedAt:
+            Date.now(),
           messages: [
             ...current.messages,
-            demoMessage,
+            userMessage,
           ],
-        }));
-
-        return;
-      }
-
-      const response = await fetch(
-        `${apiBase}/api/analyze`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            question:
-              text ||
-              "Analyze this plant image.",
-            image: imageData,
-          }),
-        }
+        })
       );
 
-      const data = await response.json();
+      setInput("");
 
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-            "LR AI could not process the request."
+      removeSelectedImage();
+
+      setLoading(true);
+
+      try {
+        const apiBase = (
+          import.meta.env
+            .VITE_API_BASE_URL ||
+          ""
+        ).replace(/\/$/, "");
+
+        if (!apiBase) {
+          await new Promise(
+            (resolve) =>
+              setTimeout(
+                resolve,
+                600
+              )
+          );
+
+          const demoMessage = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              "LR AI is ready for agricultural analysis, but the secure AI server is not connected yet. Once the backend is connected, I will analyze your plant image and answer your question using the AI model.",
+            createdAt:
+              Date.now(),
+          };
+
+          updateChat(
+            chatId,
+            (current) => ({
+              ...current,
+              updatedAt:
+                Date.now(),
+              messages: [
+                ...current.messages,
+                demoMessage,
+              ],
+            })
+          );
+
+          return;
+        }
+
+        const response =
+          await fetch(
+            `${apiBase}/api/analyze`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                question:
+                  text ||
+                  "Analyze this plant image.",
+                image: imageData,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+              "LR AI could not process the request."
+          );
+        }
+
+        const assistantMessage =
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              data.answer ||
+              "I could not generate an answer.",
+            createdAt:
+              Date.now(),
+          };
+
+        updateChat(
+          chatId,
+          (current) => ({
+            ...current,
+            updatedAt:
+              Date.now(),
+            messages: [
+              ...current.messages,
+              assistantMessage,
+            ],
+          })
         );
+      } catch (error) {
+        const errorMessage =
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              error.message ||
+              "Something went wrong while connecting to LR AI.",
+            createdAt:
+              Date.now(),
+          };
+
+        updateChat(
+          chatId,
+          (current) => ({
+            ...current,
+            updatedAt:
+              Date.now(),
+            messages: [
+              ...current.messages,
+              errorMessage,
+            ],
+          })
+        );
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const assistantMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content:
-          data.answer ||
-          "I could not generate an answer.",
-        createdAt: Date.now(),
-      };
+  /*
+   * ENTER TO SEND
+   */
 
-      updateChat(chatId, (current) => ({
-        ...current,
-        updatedAt: Date.now(),
-        messages: [
-          ...current.messages,
-          assistantMessage,
-        ],
-      }));
-    } catch (error) {
-      const errorMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content:
-          error.message ||
-          "Something went wrong while connecting to LR AI.",
-        createdAt: Date.now(),
-      };
-
-      updateChat(chatId, (current) => ({
-        ...current,
-        updatedAt: Date.now(),
-        messages: [
-          ...current.messages,
-          errorMessage,
-        ],
-      }));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (
+    event
+  ) => {
     if (
       event.key === "Enter" &&
       !event.shiftKey
     ) {
       event.preventDefault();
+
       sendMessage();
     }
   };
 
-  const useExplorePrompt = (prompt) => {
-    setAppsOpen(false);
-    setInput(prompt);
-    setExploreOpen(false);
-    setSidebarOpen(false);
+  /*
+   * EXPLORE PROMPT
+   */
 
-    setTimeout(() => {
-      textareaRef.current?.focus();
-    }, 100);
-  };
+  const useExplorePrompt =
+    (prompt) => {
+      setAppsOpen(false);
 
-  const deleteChat = (chatId) => {
-    setConversations((current) =>
-      current.filter(
-        (chat) => chat.id !== chatId
-      )
+      setInput(prompt);
+
+      setExploreOpen(false);
+
+      setSidebarOpen(false);
+
+      setPlusMenuOpen(false);
+
+      setConnectorsOpen(false);
+
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+    };
+
+  /*
+   * DELETE CHAT
+   */
+
+  const deleteChat = (
+    chatId
+  ) => {
+    setConversations(
+      (current) =>
+        current.filter(
+          (chat) =>
+            chat.id !== chatId
+        )
     );
 
-    if (activeChatId === chatId) {
+    if (
+      activeChatId === chatId
+    ) {
       setActiveChatId(null);
     }
   };
 
-  const filteredChats = searchText.trim()
-    ? conversations.filter((chat) =>
-        chat.title
-          .toLowerCase()
-          .includes(
-            searchText
+  /*
+   * SEARCH
+   */
+
+  const filteredChats =
+    searchText.trim()
+      ? conversations.filter(
+          (chat) =>
+            chat.title
               .toLowerCase()
-              .trim()
-          )
-      )
-    : conversations;
+              .includes(
+                searchText
+                  .toLowerCase()
+                  .trim()
+              )
+        )
+      : conversations;
 
   return (
     <div className="lr-ai-app">
@@ -481,7 +950,6 @@ export default function LRAI() {
             : ""
         }`}
       >
-
         <div className="sidebar-top">
 
           {/* BRAND */}
@@ -496,7 +964,10 @@ export default function LRAI() {
             </div>
 
             <div className="lr-ai-brand-text">
-              <strong>LR AI</strong>
+              <strong>
+                LR AI
+              </strong>
+
               <span>
                 Plant Intelligence
               </span>
@@ -508,10 +979,15 @@ export default function LRAI() {
 
           <button
             className="new-chat-button"
-            onClick={startNewChat}
+            onClick={
+              startNewChat
+            }
           >
             <Plus size={18} />
-            <span>New chat</span>
+
+            <span>
+              New chat
+            </span>
           </button>
 
           {/* SEARCH */}
@@ -523,10 +999,15 @@ export default function LRAI() {
 
               <input
                 autoFocus
-                value={searchText}
-                onChange={(event) =>
+                value={
+                  searchText
+                }
+                onChange={(
+                  event
+                ) =>
                   setSearchText(
-                    event.target.value
+                    event.target
+                      .value
                   )
                 }
                 placeholder="Search chats"
@@ -534,8 +1015,13 @@ export default function LRAI() {
 
               <button
                 onClick={() => {
-                  setSearchOpen(false);
-                  setSearchText("");
+                  setSearchOpen(
+                    false
+                  );
+
+                  setSearchText(
+                    ""
+                  );
                 }}
                 aria-label="Close search"
               >
@@ -549,10 +1035,13 @@ export default function LRAI() {
             <button
               className="sidebar-action"
               onClick={() =>
-                setSearchOpen(true)
+                setSearchOpen(
+                  true
+                )
               }
             >
               <Search size={17} />
+
               Search
             </button>
           )}
@@ -563,13 +1052,16 @@ export default function LRAI() {
             className="sidebar-action"
             onClick={() =>
               setExploreOpen(
-                (value) => !value
+                (value) =>
+                  !value
               )
             }
           >
             <Sparkles size={17} />
 
-            <span>Explore</span>
+            <span>
+              Explore
+            </span>
 
             <ChevronDown
               className={`sidebar-chevron ${
@@ -587,7 +1079,9 @@ export default function LRAI() {
               {exploreItems.map(
                 (item) => (
                   <button
-                    key={item.title}
+                    key={
+                      item.title
+                    }
                     onClick={() =>
                       useExplorePrompt(
                         item.prompt
@@ -595,6 +1089,7 @@ export default function LRAI() {
                     }
                   >
                     <Leaf size={14} />
+
                     {item.title}
                   </button>
                 )
@@ -612,13 +1107,32 @@ export default function LRAI() {
                 : ""
             }`}
             onClick={() => {
-              setAppsOpen(true);
-              setExploreOpen(false);
-              setSidebarOpen(false);
+              setAppsOpen(
+                true
+              );
+
+              setExploreOpen(
+                false
+              );
+
+              setSidebarOpen(
+                false
+              );
+
+              setPlusMenuOpen(
+                false
+              );
+
+              setConnectorsOpen(
+                false
+              );
             }}
           >
             <Grid2X2 size={17} />
-            <span>Apps</span>
+
+            <span>
+              Apps
+            </span>
           </button>
 
           {/* PROJECTS */}
@@ -627,11 +1141,14 @@ export default function LRAI() {
             className="sidebar-section-title"
             onClick={() =>
               setProjectsOpen(
-                (value) => !value
+                (value) =>
+                  !value
               )
             }
           >
-            <span>Projects</span>
+            <span>
+              Projects
+            </span>
 
             <ChevronDown
               size={14}
@@ -652,7 +1169,9 @@ export default function LRAI() {
                     key={project}
                     className="project-item"
                     onClick={() => {
-                      setAppsOpen(false);
+                      setAppsOpen(
+                        false
+                      );
 
                       setInput(
                         `Let's work on my ${project} project.`
@@ -663,7 +1182,10 @@ export default function LRAI() {
                       }, 100);
                     }}
                   >
-                    <Folder size={16} />
+                    <Folder
+                      size={16}
+                    />
+
                     <span>
                       {project}
                     </span>
@@ -681,18 +1203,26 @@ export default function LRAI() {
         <div className="recent-section">
 
           <div className="recent-heading">
-            <span>Recent</span>
 
-            {conversations.length > 0 && (
+            <span>
+              Recent
+            </span>
+
+            {conversations.length >
+              0 && (
               <span className="recent-count">
-                {conversations.length}
+                {
+                  conversations.length
+                }
               </span>
             )}
+
           </div>
 
           <div className="recent-list">
 
-            {filteredChats.length === 0 ? (
+            {filteredChats.length ===
+            0 ? (
               <div className="empty-recent">
                 No conversations yet.
               </div>
@@ -712,7 +1242,9 @@ export default function LRAI() {
                     <button
                       className="chat-item-main"
                       onClick={() =>
-                        openChat(chat.id)
+                        openChat(
+                          chat.id
+                        )
                       }
                     >
                       <MessageSquare
@@ -720,7 +1252,9 @@ export default function LRAI() {
                       />
 
                       <span>
-                        {chat.title}
+                        {
+                          chat.title
+                        }
                       </span>
                     </button>
 
@@ -757,7 +1291,10 @@ export default function LRAI() {
             <span className="status-dot" />
 
             <div>
-              <strong>LR AI</strong>
+              <strong>
+                LR AI
+              </strong>
+
               <span>
                 Plant intelligence
               </span>
@@ -780,7 +1317,9 @@ export default function LRAI() {
           <button
             className="mobile-sidebar-button"
             onClick={() =>
-              setSidebarOpen(true)
+              setSidebarOpen(
+                true
+              )
             }
             aria-label="Open sidebar"
           >
@@ -812,13 +1351,13 @@ export default function LRAI() {
         <div className="chat-area">
 
           {appsOpen ? (
-
             <Apps
               onClose={() =>
-                setAppsOpen(false)
+                setAppsOpen(
+                  false
+                )
               }
             />
-
           ) : !activeChat ||
             activeChat.messages.length ===
               0 ? (
@@ -844,19 +1383,24 @@ export default function LRAI() {
 
                 {exploreItems
                   .slice(0, 4)
-                  .map((item) => (
-                    <button
-                      key={item.title}
-                      onClick={() =>
-                        useExplorePrompt(
-                          item.prompt
-                        )
-                      }
-                    >
-                      <Leaf size={15} />
-                      {item.title}
-                    </button>
-                  ))}
+                  .map(
+                    (item) => (
+                      <button
+                        key={
+                          item.title
+                        }
+                        onClick={() =>
+                          useExplorePrompt(
+                            item.prompt
+                          )
+                        }
+                      >
+                        <Leaf size={15} />
+
+                        {item.title}
+                      </button>
+                    )
+                  )}
 
               </div>
 
@@ -906,7 +1450,9 @@ export default function LRAI() {
                         )}
 
                         <div className="message-text">
-                          {message.content}
+                          {
+                            message.content
+                          }
                         </div>
 
                       </div>
@@ -976,26 +1522,431 @@ export default function LRAI() {
                 </div>
               )}
 
-              <div className="input-box">
+              <div
+                className="input-box composer-box"
+                ref={
+                  composerMenuRef
+                }
+              >
+
+                {/* PLUS BUTTON */}
 
                 <button
-                  className="attach-button"
-                  onClick={() =>
-                    imageInputRef.current?.click()
-                  }
-                  aria-label="Upload image"
-                  title="Upload plant image"
+                  className={`attach-button plus-menu-button ${
+                    plusMenuOpen
+                      ? "plus-menu-button-active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    setPlusMenuOpen(
+                      (value) =>
+                        !value
+                    );
+
+                    setConnectorsOpen(
+                      false
+                    );
+                  }}
+                  aria-label="Open tools and connectors"
+                  title="Add files, tools and connectors"
+                  type="button"
                 >
-                  <Camera size={20} />
+                  <Plus size={21} />
                 </button>
 
+                {/* HIDDEN IMAGE INPUT */}
+
                 <input
-                  ref={imageInputRef}
+                  ref={
+                    imageInputRef
+                  }
                   type="file"
                   accept="image/*"
                   hidden
-                  onChange={handleImage}
+                  onChange={
+                    handleImage
+                  }
                 />
+
+                {/* PLUS MENU */}
+
+                {plusMenuOpen && (
+                  <div className="composer-menu">
+
+                    {/* ADD FILES */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                      onClick={() => {
+                        imageInputRef.current?.click();
+
+                        setPlusMenuOpen(
+                          false
+                        );
+
+                        setConnectorsOpen(
+                          false
+                        );
+                      }}
+                    >
+                      <span className="composer-menu-icon">
+                        📎
+                      </span>
+
+                      <span className="composer-menu-label">
+                        Add files or photos
+                      </span>
+
+                      <span className="composer-menu-shortcut">
+                        Ctrl+U
+                      </span>
+                    </button>
+
+                    {/* ADD TO PROJECT */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <Folder size={17} />
+
+                      <span className="composer-menu-label">
+                        Add to project
+                      </span>
+
+                      <ChevronDown
+                        size={15}
+                        className="composer-menu-chevron"
+                      />
+                    </button>
+
+                    <div className="composer-menu-divider" />
+
+                    {/* SKILLS */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <Sparkles
+                        size={17}
+                      />
+
+                      <span className="composer-menu-label">
+                        Skills
+                      </span>
+
+                      <ChevronDown
+                        size={15}
+                        className="composer-menu-chevron"
+                      />
+                    </button>
+
+                    {/* CONNECTORS */}
+
+                    <button
+                      className={`composer-menu-item ${
+                        connectorsOpen
+                          ? "composer-menu-item-active"
+                          : ""
+                      }`}
+                      type="button"
+                      onClick={() => {
+                        setConnectorsOpen(
+                          (value) =>
+                            !value
+                        );
+
+                        checkCanvaStatus();
+                      }}
+                    >
+                      <Grid2X2
+                        size={17}
+                      />
+
+                      <span className="composer-menu-label">
+                        Connectors
+                      </span>
+
+                      <ChevronDown
+                        size={15}
+                        className="composer-menu-chevron"
+                      />
+                    </button>
+
+                    {/* CONNECTORS SUBMENU */}
+
+                    {connectorsOpen && (
+                      <div className="connectors-submenu">
+
+                        {/* ADD CONNECTOR */}
+
+                        <button
+                          className="connector-menu-item"
+                          type="button"
+                        >
+                          <Plus
+                            size={17}
+                          />
+
+                          <span>
+                            Add connector
+                          </span>
+
+                          <ChevronDown
+                            size={15}
+                            className="composer-menu-chevron"
+                          />
+                        </button>
+
+                        {/* MANAGE CONNECTORS */}
+
+                        <button
+                          className="connector-menu-item"
+                          type="button"
+                        >
+                          <Folder
+                            size={17}
+                          />
+
+                          <span>
+                            Manage connectors
+                          </span>
+                        </button>
+
+                        <div className="composer-menu-divider" />
+
+                        {/* CANVA */}
+
+                        <div className="connector-row">
+
+                          <span className="connector-app-icon canva-icon">
+                            C
+                          </span>
+
+                          <span className="connector-app-name">
+                            Canva
+                          </span>
+
+                          <button
+                            className={`connector-switch ${
+                              canvaConnected
+                                ? "connector-switch-on"
+                                : ""
+                            }`}
+                            type="button"
+                            role="switch"
+                            aria-checked={
+                              canvaConnected
+                            }
+                            disabled={
+                              canvaStatusLoading
+                            }
+                            onClick={() => {
+                              if (
+                                canvaConnected
+                              ) {
+                                disconnectCanva();
+                              } else {
+                                startCanvaConnection();
+                              }
+                            }}
+                          >
+                            <span />
+                          </button>
+
+                        </div>
+
+                        {/* GAMMA */}
+
+                        <div className="connector-row connector-row-disabled">
+
+                          <span className="connector-app-icon gamma-icon">
+                            G
+                          </span>
+
+                          <span className="connector-app-name">
+                            Gamma
+                          </span>
+
+                          <span className="connector-soon">
+                            Soon
+                          </span>
+
+                        </div>
+
+                        {/* UNSPLASH */}
+
+                        <div className="connector-row connector-row-disabled">
+
+                          <span className="connector-app-icon unsplash-icon">
+                            U
+                          </span>
+
+                          <span className="connector-app-name">
+                            Unsplash
+                          </span>
+
+                          <span className="connector-soon">
+                            Soon
+                          </span>
+
+                        </div>
+
+                        {/* BLENDER */}
+
+                        <div className="connector-row connector-row-disabled">
+
+                          <span className="connector-app-icon blender-icon">
+                            B
+                          </span>
+
+                          <span className="connector-app-name">
+                            Blender
+                          </span>
+
+                          <span className="connector-soon">
+                            Soon
+                          </span>
+
+                        </div>
+
+                        <div className="composer-menu-divider" />
+
+                        {/* ADD FROM CANVA */}
+
+                        <button
+                          className="connector-menu-item"
+                          type="button"
+                          onClick={() => {
+                            if (
+                              !canvaConnected
+                            ) {
+                              startCanvaConnection();
+
+                              return;
+                            }
+
+                            alert(
+                              "Canva is connected. Canva content actions will be added here."
+                            );
+                          }}
+                        >
+                          <span className="connector-app-icon canva-icon">
+                            C
+                          </span>
+
+                          <span>
+                            Add from Canva
+                          </span>
+
+                          <ChevronDown
+                            size={15}
+                            className="composer-menu-chevron"
+                          />
+                        </button>
+
+                        {/* TOOL ACCESS */}
+
+                        <button
+                          className="connector-menu-item"
+                          type="button"
+                        >
+                          <Search
+                            size={17}
+                          />
+
+                          <span>
+                            Tool access
+                          </span>
+
+                          <ChevronDown
+                            size={15}
+                            className="composer-menu-chevron"
+                          />
+                        </button>
+
+                      </div>
+                    )}
+
+                    {/* DESIGN SYSTEM */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <Sparkles
+                        size={17}
+                      />
+
+                      <span className="composer-menu-label">
+                        Design system
+                      </span>
+
+                      <ChevronDown
+                        size={15}
+                        className="composer-menu-chevron"
+                      />
+                    </button>
+
+                    {/* PLUGINS */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <Plus size={17} />
+
+                      <span className="composer-menu-label">
+                        Add plugins
+                      </span>
+                    </button>
+
+                    <div className="composer-menu-divider" />
+
+                    {/* WEB SEARCH */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <Search
+                        size={17}
+                      />
+
+                      <span className="composer-menu-label">
+                        Web search
+                      </span>
+
+                      <span className="composer-menu-check">
+                        ✓
+                      </span>
+                    </button>
+
+                    {/* MEMORY */}
+
+                    <button
+                      className="composer-menu-item"
+                      type="button"
+                    >
+                      <MessageSquare
+                        size={17}
+                      />
+
+                      <span className="composer-menu-label">
+                        Memory
+                      </span>
+
+                      <span className="composer-menu-check">
+                        ✓
+                      </span>
+                    </button>
+
+                  </div>
+                )}
+
+                {/* TEXTAREA */}
 
                 <textarea
                   ref={textareaRef}
@@ -1005,14 +1956,20 @@ export default function LRAI() {
                       event.target.value
                     )
                   }
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={
+                    handleKeyDown
+                  }
                   placeholder="Message LR AI..."
                   rows={1}
                 />
 
+                {/* SEND */}
+
                 <button
                   className="send-button"
-                  onClick={sendMessage}
+                  onClick={
+                    sendMessage
+                  }
                   disabled={
                     loading ||
                     (!input.trim() &&
@@ -1020,7 +1977,9 @@ export default function LRAI() {
                   }
                   aria-label="Send message"
                 >
-                  <ArrowUp size={18} />
+                  <ArrowUp
+                    size={18}
+                  />
                 </button>
 
               </div>
