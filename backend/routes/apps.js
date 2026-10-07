@@ -19,6 +19,7 @@ const apps = [
     status: "available",
     connected: false,
   },
+
   {
     id: "google-drive",
     name: "Google Drive",
@@ -28,6 +29,7 @@ const apps = [
     status: "coming",
     connected: false,
   },
+
   {
     id: "github",
     name: "GitHub",
@@ -37,6 +39,7 @@ const apps = [
     status: "coming",
     connected: false,
   },
+
   {
     id: "gmail",
     name: "Gmail",
@@ -46,6 +49,7 @@ const apps = [
     status: "coming",
     connected: false,
   },
+
   {
     id: "google-docs",
     name: "Google Docs",
@@ -55,6 +59,7 @@ const apps = [
     status: "coming",
     connected: false,
   },
+
   {
     id: "lr-farm-data",
     name: "LR Farm Data",
@@ -64,6 +69,7 @@ const apps = [
     status: "native",
     connected: true,
   },
+
   {
     id: "crop-doctor",
     name: "Crop Doctor",
@@ -73,6 +79,7 @@ const apps = [
     status: "native",
     connected: true,
   },
+
   {
     id: "agricultural-data",
     name: "Agricultural Data",
@@ -86,25 +93,31 @@ const apps = [
 
 /*
 |--------------------------------------------------------------------------
-| Canva connection storage
+| CANVA CONNECTION STORAGE
 |--------------------------------------------------------------------------
 |
-| IMPORTANT:
-| - The browser stores ONLY an anonymous random session ID.
-| - Canva access/refresh tokens stay on the backend.
-| - No Canva token is sent to the frontend.
+| Browser:
+|   Stores only an anonymous random client session ID.
 |
-| This is temporary storage for the current prototype.
-| A database should be used later for production.
+| Backend:
+|   Stores Canva access/refresh tokens.
+|
+| Canva tokens are NEVER sent to the browser.
+|
+| NOTE:
+| This Map is temporary prototype storage.
+| Render restart/redeploy will clear connections.
+| Production should use a database.
 |
 */
 
 const canvaConnections = new Map();
+
 const pendingOAuth = new Map();
 
 /*
 |--------------------------------------------------------------------------
-| Helpers
+| HELPERS
 |--------------------------------------------------------------------------
 */
 
@@ -133,8 +146,7 @@ function getFrontendUrl() {
     const url = new URL(configured);
 
     /*
-     * Only allow the LR AgroSense frontend.
-     * This prevents an open redirect.
+     * Only allow the LR AgroSense website.
      */
 
     if (
@@ -150,12 +162,24 @@ function getFrontendUrl() {
   }
 }
 
-function redirectToFrontend(result, clientSession = null) {
-  const url = new URL(getFrontendUrl());
+function redirectToFrontend(
+  result,
+  clientSession = null
+) {
+  const url =
+    new URL(getFrontendUrl());
 
-  url.searchParams.set("canva", result);
+  url.searchParams.set(
+    "canva",
+    result
+  );
 
-  if (clientSession) {
+  if (
+    clientSession &&
+    isValidClientSession(
+      clientSession
+    )
+  ) {
     url.searchParams.set(
       "client_session",
       clientSession
@@ -176,21 +200,29 @@ router.get("/", (req, res) => {
     req.query.client_session;
 
   const canvaConnected =
-    isValidClientSession(clientSession) &&
+    isValidClientSession(
+      clientSession
+    ) &&
     Boolean(
-      canvaConnections.get(clientSession)
+      canvaConnections.get(
+        clientSession
+      )
     );
 
-  const responseApps = apps.map((app) => {
-    if (app.id === "canva") {
-      return {
-        ...app,
-        connected: canvaConnected,
-      };
-    }
+  const responseApps =
+    apps.map((app) => {
+      if (
+        app.id === "canva"
+      ) {
+        return {
+          ...app,
+          connected:
+            canvaConnected,
+        };
+      }
 
-    return app;
-  });
+      return app;
+    });
 
   res.status(200).json({
     success: true,
@@ -216,7 +248,10 @@ router.get(
     const clientSession =
       req.query.client_session;
 
-    if (!clientId || !redirectUri) {
+    if (
+      !clientId ||
+      !redirectUri
+    ) {
       console.error(
         "Canva environment variables are missing."
       );
@@ -255,7 +290,7 @@ router.get(
       createRandomId(64);
 
     /*
-     * PKCE challenge.
+     * PKCE SHA-256 challenge.
      */
 
     const codeChallenge =
@@ -265,19 +300,20 @@ router.get(
         .digest("base64url");
 
     /*
-     * Store OAuth request.
-     *
-     * We do NOT depend on a cross-site cookie.
+     * Save pending OAuth request.
      */
 
-    pendingOAuth.set(state, {
-      clientSession,
-      codeVerifier,
-      createdAt: Date.now(),
-    });
+    pendingOAuth.set(
+      state,
+      {
+        clientSession,
+        codeVerifier,
+        createdAt: Date.now(),
+      }
+    );
 
     /*
-     * Canva REST API scopes.
+     * Canva scopes.
      */
 
     const scope = [
@@ -331,7 +367,7 @@ router.get(
       "Starting Canva OAuth..."
     );
 
-    res.redirect(
+    return res.redirect(
       authorizationUrl.toString()
     );
   }
@@ -346,12 +382,17 @@ router.get(
 router.get(
   "/canva/callback",
   async (req, res) => {
-    const code = req.query.code;
-    const state = req.query.state;
-    const error = req.query.error;
+    const code =
+      req.query.code;
+
+    const state =
+      req.query.state;
+
+    const error =
+      req.query.error;
 
     /*
-     * User denied Canva authorization.
+     * User denied authorization.
      */
 
     if (error) {
@@ -368,10 +409,13 @@ router.get(
     }
 
     /*
-     * Missing OAuth parameters.
+     * Missing parameters.
      */
 
-    if (!code || !state) {
+    if (
+      !code ||
+      !state
+    ) {
       console.error(
         "Canva callback missing code or state."
       );
@@ -384,11 +428,13 @@ router.get(
     }
 
     /*
-     * Find the pending OAuth request.
+     * Find pending OAuth request.
      */
 
     const pending =
-      pendingOAuth.get(state);
+      pendingOAuth.get(
+        state
+      );
 
     if (!pending) {
       console.error(
@@ -403,10 +449,12 @@ router.get(
     }
 
     /*
-     * OAuth state is one-time use.
+     * State is one-time use.
      */
 
-    pendingOAuth.delete(state);
+    pendingOAuth.delete(
+      state
+    );
 
     const {
       clientSession,
@@ -415,11 +463,12 @@ router.get(
     } = pending;
 
     /*
-     * OAuth request expires after 10 minutes.
+     * Expire OAuth after 10 minutes.
      */
 
     if (
-      Date.now() - createdAt >
+      Date.now() -
+        createdAt >
       10 * 60 * 1000
     ) {
       console.error(
@@ -455,16 +504,19 @@ router.get(
       }
 
       /*
-       * Basic authentication.
+       * Canva token endpoint uses
+       * HTTP Basic authentication.
        */
 
       const basicCredentials =
         Buffer.from(
           `${clientId}:${clientSecret}`
-        ).toString("base64");
+        ).toString(
+          "base64"
+        );
 
       /*
-       * Token request.
+       * Token request body.
        */
 
       const body =
@@ -490,6 +542,10 @@ router.get(
         redirectUri
       );
 
+      /*
+       * Exchange authorization code.
+       */
+
       const tokenResponse =
         await fetch(
           "https://api.canva.com/rest/v1/oauth/token",
@@ -511,7 +567,9 @@ router.get(
       const tokenData =
         await tokenResponse.json();
 
-      if (!tokenResponse.ok) {
+      if (
+        !tokenResponse.ok
+      ) {
         console.error(
           "Canva token exchange failed:",
           tokenData
@@ -523,7 +581,7 @@ router.get(
       }
 
       /*
-       * Store Canva tokens ONLY on backend.
+       * Store token ONLY on backend.
        */
 
       canvaConnections.set(
@@ -561,8 +619,7 @@ router.get(
       );
 
       console.log(
-        "Canva connected successfully for client session:",
-        clientSession
+        "Canva connected successfully."
       );
 
       return res.redirect(
@@ -609,7 +666,7 @@ router.get(
         )
       );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       id: "canva",
       name: "Canva",
@@ -642,7 +699,7 @@ router.post(
       );
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message:
         "Canva disconnected.",
@@ -659,20 +716,24 @@ router.post(
 router.get(
   "/:id/status",
   (req, res) => {
-    const app = apps.find(
-      (item) =>
-        item.id === req.params.id
-    );
+    const app =
+      apps.find(
+        (item) =>
+          item.id ===
+          req.params.id
+      );
 
     if (!app) {
       return res.status(404).json({
         success: false,
-        message: "App not found",
+        message:
+          "App not found",
       });
     }
 
     if (
-      req.params.id === "canva"
+      req.params.id ===
+      "canva"
     ) {
       const clientSession =
         req.query.client_session;
@@ -696,11 +757,12 @@ router.get(
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       id: app.id,
       name: app.name,
-      connected: app.connected,
+      connected:
+        app.connected,
       status: app.status,
     });
   }
@@ -715,15 +777,18 @@ router.get(
 router.get(
   "/:id",
   (req, res) => {
-    const app = apps.find(
-      (item) =>
-        item.id === req.params.id
-    );
+    const app =
+      apps.find(
+        (item) =>
+          item.id ===
+          req.params.id
+      );
 
     if (!app) {
       return res.status(404).json({
         success: false,
-        message: "App not found",
+        message:
+          "App not found",
       });
     }
 
@@ -733,24 +798,27 @@ router.get(
       const clientSession =
         req.query.client_session;
 
+      const connected =
+        isValidClientSession(
+          clientSession
+        ) &&
+        Boolean(
+          canvaConnections.get(
+            clientSession
+          )
+        );
+
       return res.status(200).json({
         success: true,
+
         app: {
           ...app,
-          connected:
-            isValidClientSession(
-              clientSession
-            ) &&
-            Boolean(
-              canvaConnections.get(
-                clientSession
-              )
-            ),
+          connected,
         },
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       app,
     });
