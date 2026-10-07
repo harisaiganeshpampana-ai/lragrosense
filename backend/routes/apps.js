@@ -3,6 +3,12 @@ import crypto from "crypto";
 
 const router = express.Router();
 
+/*
+|--------------------------------------------------------------------------
+| LR AI Apps
+|--------------------------------------------------------------------------
+*/
+
 const apps = [
   {
     id: "canva",
@@ -52,7 +58,7 @@ const apps = [
     id: "lr-farm-data",
     name: "LR Farm Data",
     description:
-      "Work with agricultural field and farm data.",
+      "Connect your LR AgroSense farm data with LR AI.",
     category: "Agriculture",
     status: "native",
     connected: true,
@@ -61,7 +67,7 @@ const apps = [
     id: "crop-doctor",
     name: "Crop Doctor",
     description:
-      "Agricultural AI assistance for crop health and farming questions.",
+      "Analyze crop symptoms and agricultural observations.",
     category: "Agriculture",
     status: "native",
     connected: true,
@@ -70,9 +76,9 @@ const apps = [
     id: "agricultural-data",
     name: "Agricultural Data",
     description:
-      "Analyze agricultural datasets and farm information.",
+      "Work with agricultural datasets and information.",
     category: "Agriculture",
-    status: "native",
+    status: "coming",
     connected: false,
   },
 ];
@@ -82,16 +88,23 @@ const apps = [
 | Temporary session storage
 |--------------------------------------------------------------------------
 |
-| This is intentionally in-memory for the first Canva integration test.
+| This is for the first integration test.
 |
 | IMPORTANT:
-| - Tokens disappear if Render restarts/redeploys.
-| - This is NOT our final production storage.
-| - Later we will move this to a database and encrypt sensitive tokens.
+| Tokens are stored in server memory.
+| A Render restart/redeploy will remove the connection.
+|
+| Later we should move this to a real database.
 |
 */
 
 const sessions = new Map();
+
+/*
+|--------------------------------------------------------------------------
+| Cookie helpers
+|--------------------------------------------------------------------------
+*/
 
 function getCookie(req, name) {
   const cookieHeader = req.headers.cookie;
@@ -118,7 +131,10 @@ function createSessionId() {
 }
 
 function getOrCreateSession(req, res) {
-  let sessionId = getCookie(req, "lr_ai_session");
+  let sessionId = getCookie(
+    req,
+    "lr_ai_session"
+  );
 
   if (!sessionId || !sessions.has(sessionId)) {
     sessionId = createSessionId();
@@ -132,7 +148,7 @@ function getOrCreateSession(req, res) {
       "Set-Cookie",
       `lr_ai_session=${encodeURIComponent(
         sessionId
-      )}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
+      )}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=604800`
     );
   }
 
@@ -156,72 +172,25 @@ function getOrCreateSession(req, res) {
 */
 
 router.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    apps,
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| GET /api/apps/:id
-|--------------------------------------------------------------------------
-*/
-
-router.get("/:id", (req, res) => {
-  const app = apps.find(
-    (item) => item.id === req.params.id
+  const { session } = getOrCreateSession(
+    req,
+    res
   );
 
-  if (!app) {
-    return res.status(404).json({
-      success: false,
-      message: "App not found",
-    });
-  }
+  const responseApps = apps.map((app) => {
+    if (app.id === "canva") {
+      return {
+        ...app,
+        connected: Boolean(session.canva),
+      };
+    }
 
-  res.status(200).json({
-    success: true,
-    app,
+    return app;
   });
-});
-
-/*
-|--------------------------------------------------------------------------
-| GET /api/apps/:id/status
-|--------------------------------------------------------------------------
-*/
-
-router.get("/:id/status", (req, res) => {
-  const app = apps.find(
-    (item) => item.id === req.params.id
-  );
-
-  if (!app) {
-    return res.status(404).json({
-      success: false,
-      message: "App not found",
-    });
-  }
-
-  if (req.params.id === "canva") {
-    const { session } = getOrCreateSession(req, res);
-
-    return res.status(200).json({
-      success: true,
-      id: "canva",
-      name: "Canva",
-      connected: Boolean(session.canva),
-      status: "available",
-    });
-  }
 
   res.status(200).json({
     success: true,
-    id: app.id,
-    name: app.name,
-    connected: app.connected,
-    status: app.status,
+    apps: responseApps,
   });
 });
 
@@ -230,330 +199,444 @@ router.get("/:id/status", (req, res) => {
 | GET /api/apps/canva/connect
 |--------------------------------------------------------------------------
 |
-| Starts Canva OAuth using PKCE.
+| Starts Canva OAuth.
 |
 */
 
-router.get("/canva/connect", (req, res) => {
-  const clientId = process.env.CANVA_CLIENT_ID;
-  const redirectUri = process.env.CANVA_REDIRECT_URI;
+router.get(
+  "/canva/connect",
+  (req, res) => {
+    const clientId =
+      process.env.CANVA_CLIENT_ID;
 
-  if (!clientId || !redirectUri) {
-    return res.status(500).json({
-      success: false,
-      message:
-        "Canva environment variables are not configured.",
-    });
-  }
+    const redirectUri =
+      process.env.CANVA_REDIRECT_URI;
 
-  const { session } = getOrCreateSession(req, res);
+    if (!clientId || !redirectUri) {
+      console.error(
+        "Canva environment variables are missing."
+      );
 
-  const state = crypto
-    .randomBytes(32)
-    .toString("base64url");
+      return res.status(500).json({
+        success: false,
+        message:
+          "Canva environment variables are not configured.",
+      });
+    }
 
-  const codeVerifier = crypto
-    .randomBytes(64)
-    .toString("base64url");
+    const { session } =
+      getOrCreateSession(req, res);
 
-  const codeChallenge = crypto
-    .createHash("sha256")
-    .update(codeVerifier)
-    .digest("base64url");
+    /*
+     * OAuth state
+     */
 
-  /*
-   * Request only the permissions LR AI needs.
-   *
-   * design:content:write = create designs
-   * design:content:read  = read design content
-   * design:meta:read     = read design metadata
-   * profile:read         = identify/read the connected Canva account
-   */
-  const scope = [
-    "design:content:read",
-    "design:content:write",
-    "design:meta:read",
-    "profile:read",
-  ].join(" ");
+    const state =
+      crypto.randomBytes(32).toString(
+        "base64url"
+      );
 
-  session.pendingCanva = {
-    state,
-    codeVerifier,
-    createdAt: Date.now(),
-  };
+    /*
+     * PKCE verifier
+     */
 
-  const authorizationUrl =
-    new URL(
-      "https://www.canva.com/api/oauth/authorize"
+    const codeVerifier =
+      crypto.randomBytes(64).toString(
+        "base64url"
+      );
+
+    /*
+     * PKCE challenge
+     */
+
+    const codeChallenge =
+      crypto
+        .createHash("sha256")
+        .update(codeVerifier)
+        .digest("base64url");
+
+    /*
+     * Canva permissions.
+     *
+     * design:content:read
+     * Read design contents.
+     *
+     * design:content:write
+     * Create designs on behalf of the user.
+     *
+     * design:meta:read
+     * Read design metadata.
+     *
+     * profile:read
+     * Read Canva profile/account information.
+     */
+
+    const scope = [
+      "design:content:read",
+      "design:content:write",
+      "design:meta:read",
+      "profile:read",
+    ].join(" ");
+
+    session.pendingCanva = {
+      state,
+      codeVerifier,
+      createdAt: Date.now(),
+    };
+
+    /*
+     * Canva authorization URL
+     */
+
+    const authorizationUrl =
+      new URL(
+        "https://www.canva.com/api/oauth/authorize"
+      );
+
+    authorizationUrl.searchParams.set(
+      "code_challenge",
+      codeChallenge
     );
 
-  authorizationUrl.searchParams.set(
-    "code_challenge",
-    codeChallenge
-  );
+    authorizationUrl.searchParams.set(
+      "code_challenge_method",
+      "s256"
+    );
 
-  authorizationUrl.searchParams.set(
-    "code_challenge_method",
-    "s256"
-  );
+    authorizationUrl.searchParams.set(
+      "scope",
+      scope
+    );
 
-  authorizationUrl.searchParams.set(
-    "scope",
-    scope
-  );
+    authorizationUrl.searchParams.set(
+      "response_type",
+      "code"
+    );
 
-  authorizationUrl.searchParams.set(
-    "response_type",
-    "code"
-  );
+    authorizationUrl.searchParams.set(
+      "client_id",
+      clientId
+    );
 
-  authorizationUrl.searchParams.set(
-    "client_id",
-    clientId
-  );
+    authorizationUrl.searchParams.set(
+      "state",
+      state
+    );
 
-  authorizationUrl.searchParams.set(
-    "state",
-    state
-  );
+    authorizationUrl.searchParams.set(
+      "redirect_uri",
+      redirectUri
+    );
 
-  authorizationUrl.searchParams.set(
-    "redirect_uri",
-    redirectUri
-  );
+    console.log(
+      "Starting Canva OAuth..."
+    );
 
-  res.redirect(
-    authorizationUrl.toString()
-  );
-});
+    res.redirect(
+      authorizationUrl.toString()
+    );
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
 | GET /api/apps/canva/callback
 |--------------------------------------------------------------------------
 |
-| Canva sends the user back here after authorization.
+| Canva redirects the user here after authorization.
 |
 */
 
-router.get("/canva/callback", async (req, res) => {
-  const frontendUrl =
-    process.env.FRONTEND_URL ||
-    "https://lragrosense.in";
+router.get(
+  "/canva/callback",
+  async (req, res) => {
+    const frontendUrl =
+      process.env.FRONTEND_APP_URL ||
+      "https://lragrosense.in/lr-ai.html";
 
-  const code = req.query.code;
-  const state = req.query.state;
-  const error = req.query.error;
+    const code = req.query.code;
+    const state = req.query.state;
+    const error = req.query.error;
 
-  const sessionId = getCookie(
-    req,
-    "lr_ai_session"
-  );
+    const sessionId =
+      getCookie(
+        req,
+        "lr_ai_session"
+      );
 
-  const session = sessionId
-    ? sessions.get(sessionId)
-    : null;
+    const session =
+      sessionId
+        ? sessions.get(sessionId)
+        : null;
 
-  if (error) {
-    console.error(
-      "Canva authorization error:",
-      error
-    );
+    /*
+     * User denied authorization.
+     */
 
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
-  }
+    if (error) {
+      console.error(
+        "Canva authorization error:",
+        error
+      );
 
-  if (!code || !state) {
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
-  }
+      return res.redirect(
+        `${frontendUrl}?canva=error`
+      );
+    }
 
-  if (!session || !session.pendingCanva) {
-    console.error(
-      "Canva OAuth session not found."
-    );
+    /*
+     * Missing OAuth parameters.
+     */
 
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
-  }
+    if (!code || !state) {
+      console.error(
+        "Canva callback missing code or state."
+      );
 
-  /*
-   * Verify OAuth state.
-   */
+      return res.redirect(
+        `${frontendUrl}?canva=error`
+      );
+    }
 
-  if (
-    state !==
-    session.pendingCanva.state
-  ) {
-    console.error(
-      "Canva OAuth state mismatch."
-    );
-
-    session.pendingCanva = null;
-
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
-  }
-
-  /*
-   * Prevent very old OAuth requests.
-   */
-
-  const requestAge =
-    Date.now() -
-    session.pendingCanva.createdAt;
-
-  if (requestAge > 10 * 60 * 1000) {
-    console.error(
-      "Canva OAuth request expired."
-    );
-
-    session.pendingCanva = null;
-
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
-  }
-
-  const codeVerifier =
-    session.pendingCanva.codeVerifier;
-
-  session.pendingCanva = null;
-
-  try {
-    const clientId =
-      process.env.CANVA_CLIENT_ID;
-
-    const clientSecret =
-      process.env.CANVA_CLIENT_SECRET;
-
-    const redirectUri =
-      process.env.CANVA_REDIRECT_URI;
+    /*
+     * Session must exist.
+     */
 
     if (
-      !clientId ||
-      !clientSecret ||
-      !redirectUri
+      !session ||
+      !session.pendingCanva
     ) {
-      throw new Error(
-        "Canva credentials are missing from environment variables."
-      );
-    }
-
-    /*
-     * Canva requires backend authentication
-     * using Client ID + Client Secret.
-     */
-
-    const basicCredentials =
-      Buffer.from(
-        `${clientId}:${clientSecret}`
-      ).toString("base64");
-
-    const body =
-      new URLSearchParams();
-
-    body.set(
-      "grant_type",
-      "authorization_code"
-    );
-
-    body.set(
-      "code_verifier",
-      codeVerifier
-    );
-
-    body.set(
-      "code",
-      code
-    );
-
-    body.set(
-      "redirect_uri",
-      redirectUri
-    );
-
-    const tokenResponse =
-      await fetch(
-        "https://api.canva.com/rest/v1/oauth/token",
-        {
-          method: "POST",
-          headers: {
-            Authorization:
-              `Basic ${basicCredentials}`,
-            "Content-Type":
-              "application/x-www-form-urlencoded",
-          },
-          body,
-        }
-      );
-
-    const tokenData =
-      await tokenResponse.json();
-
-    if (!tokenResponse.ok) {
       console.error(
-        "Canva token exchange failed:",
-        tokenData
+        "Canva OAuth session not found."
       );
 
-      throw new Error(
-        "Canva token exchange failed."
+      return res.redirect(
+        `${frontendUrl}?canva=error`
       );
     }
 
     /*
-     * Store the token only on the backend.
-     * Never send Client Secret or refresh token
-     * to the browser.
+     * Verify OAuth state.
      */
 
-    session.canva = {
-      accessToken:
-        tokenData.access_token,
+    if (
+      state !==
+      session.pendingCanva.state
+    ) {
+      console.error(
+        "Canva OAuth state mismatch."
+      );
 
-      refreshToken:
-        tokenData.refresh_token || null,
+      session.pendingCanva = null;
 
-      expiresIn:
-        tokenData.expires_in || null,
+      return res.redirect(
+        `${frontendUrl}?canva=error`
+      );
+    }
 
-      expiresAt:
-        tokenData.expires_in
-          ? Date.now() +
-            tokenData.expires_in * 1000
-          : null,
+    /*
+     * OAuth request expires after 10 minutes.
+     */
 
-      scope:
-        tokenData.scope || null,
+    const requestAge =
+      Date.now() -
+      session.pendingCanva.createdAt;
 
-      connectedAt:
-        new Date().toISOString(),
-    };
+    if (
+      requestAge >
+      10 * 60 * 1000
+    ) {
+      console.error(
+        "Canva OAuth request expired."
+      );
 
-    console.log(
-      "Canva connected successfully."
-    );
+      session.pendingCanva = null;
 
-    return res.redirect(
-      `${frontendUrl}/?canva=connected`
-    );
-  } catch (error) {
-    console.error(
-      "Canva OAuth callback error:",
-      error
-    );
+      return res.redirect(
+        `${frontendUrl}?canva=error`
+      );
+    }
 
-    return res.redirect(
-      `${frontendUrl}/?canva=error`
-    );
+    const codeVerifier =
+      session.pendingCanva.codeVerifier;
+
+    /*
+     * OAuth state is one-time use.
+     */
+
+    session.pendingCanva = null;
+
+    try {
+      const clientId =
+        process.env.CANVA_CLIENT_ID;
+
+      const clientSecret =
+        process.env.CANVA_CLIENT_SECRET;
+
+      const redirectUri =
+        process.env.CANVA_REDIRECT_URI;
+
+      if (
+        !clientId ||
+        !clientSecret ||
+        !redirectUri
+      ) {
+        throw new Error(
+          "Canva credentials are missing."
+        );
+      }
+
+      /*
+       * Client authentication.
+       *
+       * Client ID + Client Secret stay on backend.
+       */
+
+      const basicCredentials =
+        Buffer.from(
+          `${clientId}:${clientSecret}`
+        ).toString("base64");
+
+      /*
+       * Token request body.
+       */
+
+      const body =
+        new URLSearchParams();
+
+      body.set(
+        "grant_type",
+        "authorization_code"
+      );
+
+      body.set(
+        "code_verifier",
+        codeVerifier
+      );
+
+      body.set(
+        "code",
+        code
+      );
+
+      body.set(
+        "redirect_uri",
+        redirectUri
+      );
+
+      /*
+       * Exchange authorization code
+       * for access + refresh tokens.
+       */
+
+      const tokenResponse =
+        await fetch(
+          "https://api.canva.com/rest/v1/oauth/token",
+          {
+            method: "POST",
+            headers: {
+              Authorization:
+                `Basic ${basicCredentials}`,
+
+              "Content-Type":
+                "application/x-www-form-urlencoded",
+            },
+            body,
+          }
+        );
+
+      const tokenData =
+        await tokenResponse.json();
+
+      if (!tokenResponse.ok) {
+        console.error(
+          "Canva token exchange failed:",
+          tokenData
+        );
+
+        throw new Error(
+          "Canva token exchange failed."
+        );
+      }
+
+      /*
+       * Store tokens on backend only.
+       */
+
+      session.canva = {
+        accessToken:
+          tokenData.access_token,
+
+        refreshToken:
+          tokenData.refresh_token ||
+          null,
+
+        tokenType:
+          tokenData.token_type ||
+          "Bearer",
+
+        expiresIn:
+          tokenData.expires_in ||
+          null,
+
+        expiresAt:
+          tokenData.expires_in
+            ? Date.now() +
+              tokenData.expires_in *
+                1000
+            : null,
+
+        scope:
+          tokenData.scope ||
+          null,
+
+        connectedAt:
+          new Date().toISOString(),
+      };
+
+      console.log(
+        "Canva connected successfully."
+      );
+
+      return res.redirect(
+        `${frontendUrl}?canva=connected`
+      );
+    } catch (error) {
+      console.error(
+        "Canva OAuth callback error:",
+        error
+      );
+
+      return res.redirect(
+        `${frontendUrl}?canva=error`
+      );
+    }
   }
-});
+);
+
+/*
+|--------------------------------------------------------------------------
+| GET /api/apps/canva/status
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/canva/status",
+  (req, res) => {
+    const { session } =
+      getOrCreateSession(req, res);
+
+    res.status(200).json({
+      success: true,
+      id: "canva",
+      name: "Canva",
+      connected: Boolean(
+        session.canva
+      ),
+      status: "available",
+    });
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -583,6 +666,101 @@ router.post(
       success: true,
       message:
         "Canva disconnected.",
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| GET /api/apps/:id/status
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/:id/status",
+  (req, res) => {
+    const app = apps.find(
+      (item) =>
+        item.id === req.params.id
+    );
+
+    if (!app) {
+      return res.status(404).json({
+        success: false,
+        message: "App not found",
+      });
+    }
+
+    if (req.params.id === "canva") {
+      const { session } =
+        getOrCreateSession(
+          req,
+          res
+        );
+
+      return res.status(200).json({
+        success: true,
+        id: "canva",
+        name: "Canva",
+        connected: Boolean(
+          session.canva
+        ),
+        status: "available",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      id: app.id,
+      name: app.name,
+      connected: app.connected,
+      status: app.status,
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| GET /api/apps/:id
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/:id",
+  (req, res) => {
+    const app = apps.find(
+      (item) =>
+        item.id === req.params.id
+    );
+
+    if (!app) {
+      return res.status(404).json({
+        success: false,
+        message: "App not found",
+      });
+    }
+
+    if (app.id === "canva") {
+      const { session } =
+        getOrCreateSession(
+          req,
+          res
+        );
+
+      return res.status(200).json({
+        success: true,
+        app: {
+          ...app,
+          connected: Boolean(
+            session.canva
+          ),
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      app,
     });
   }
 );
