@@ -1,1423 +1,1191 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
-  <title>Explore | LR AgroSense</title>
-
-  <meta
-    name="description"
-    content="Explore applications and intelligent platforms from LR AgroSense."
-  />
-
-  <style>
-
-    :root {
-      --green-950: #0d2f22;
-      --green-900: #123b2a;
-      --green-800: #174b35;
-      --green-700: #1f6245;
-      --green-600: #287a54;
-      --green-500: #399467;
-
-      --green-100: #e9f5ee;
-      --green-50: #f3faf6;
-
-      --text: #183229;
-      --text-soft: #64756d;
-      --muted: #89968f;
-
-      --border: #dfe9e3;
-      --surface: #ffffff;
-      --page: #f7faf8;
-
-      --shadow-sm: 0 8px 24px rgba(18, 59, 42, 0.06);
-      --shadow-md: 0 18px 50px rgba(18, 59, 42, 0.09);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      color: var(--text);
-      background: var(--page);
-
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    /* =========================
-       HEADER
-    ========================== */
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-
-      height: 70px;
-
-      background: rgba(255, 255, 255, 0.92);
-
-      border-bottom: 1px solid rgba(223, 233, 227, 0.9);
-
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    .header-inner {
-      width: min(1180px, calc(100% - 40px));
-
-      height: 100%;
-      margin: auto;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-
-      gap: 11px;
-
-      text-decoration: none;
-    }
-
-    .brand img {
-      width: 38px;
-      height: 38px;
-
-      object-fit: contain;
-
-      border-radius: 8px;
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-text strong {
-      color: var(--green-950);
-
-      font-size: 14px;
-      line-height: 1.1;
-
-      font-weight: 800;
-
-      letter-spacing: -0.02em;
-    }
-
-    .brand-text span {
-      margin-top: 4px;
-
-      color: var(--muted);
-
-      font-size: 8px;
-      line-height: 1;
-
-      font-weight: 800;
-
-      letter-spacing: 0.1em;
-
-      text-transform: uppercase;
-    }
-
-    .home-link {
-      display: inline-flex;
-      align-items: center;
-
-      gap: 7px;
-
-      padding: 9px 13px;
-
-      color: var(--green-800);
-
-      background: #ffffff;
-
-      border: 1px solid var(--border);
-
-      border-radius: 9px;
-
-      text-decoration: none;
-
-      font-size: 11px;
-      font-weight: 800;
-
-      transition: 0.2s ease;
-    }
-
-    .home-link:hover {
-      border-color: #c8ddd0;
-
-      background: var(--green-50);
-
-      transform: translateY(-1px);
-    }
-
-    /* =========================
-       PAGE
-    ========================== */
-
-    .page {
-      width: min(1180px, calc(100% - 40px));
-
-      margin: auto;
-    }
-
-    /* =========================
-       HERO
-    ========================== */
-
-    .hero {
-      padding: 62px 0 34px;
-    }
-
-    .hero-grid {
-      display: grid;
-
-      grid-template-columns:
-        minmax(0, 1.45fr)
-        minmax(300px, 0.75fr);
-
-      gap: 42px;
-
-      align-items: end;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-
-      gap: 8px;
-
-      padding: 7px 10px;
-
-      color: var(--green-700);
-
-      background: var(--green-50);
-
-      border: 1px solid #dcece2;
-
-      border-radius: 999px;
-
-      font-size: 9px;
-      font-weight: 900;
-
-      letter-spacing: 0.1em;
-
-      text-transform: uppercase;
-    }
-
-    .eyebrow-dot {
-      width: 6px;
-      height: 6px;
-
-      border-radius: 50%;
-
-      background: var(--green-500);
-
-      box-shadow:
-        0 0 0 4px rgba(57, 148, 103, 0.1);
-    }
-
-    .hero h1 {
-      max-width: 760px;
-
-      margin: 18px 0 12px;
-
-      color: var(--green-950);
-
-      font-size: clamp(42px, 5.2vw, 66px);
-
-      line-height: 0.98;
-
-      letter-spacing: -0.065em;
-    }
-
-    .hero-copy {
-      max-width: 670px;
-
-      margin: 0;
-
-      color: var(--text-soft);
-
-      font-size: 15px;
-
-      line-height: 1.7;
-    }
-
-    .hero-note {
-      padding: 20px 21px;
-
-      background: #ffffff;
-
-      border: 1px solid var(--border);
-
-      border-radius: 16px;
-
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hero-note-label {
-      color: var(--green-600);
-
-      font-size: 9px;
-      font-weight: 900;
-
-      letter-spacing: 0.1em;
-
-      text-transform: uppercase;
-    }
-
-    .hero-note strong {
-      display: block;
-
-      margin-top: 9px;
-
-      color: var(--green-900);
-
-      font-size: 17px;
-
-      line-height: 1.35;
-
-      letter-spacing: -0.02em;
-    }
-
-    .hero-note p {
-      margin: 8px 0 0;
-
-      color: var(--text-soft);
-
-      font-size: 11px;
-
-      line-height: 1.6;
-    }
-
-    /* =========================
-       TOOLS
-    ========================== */
-
-    .tools {
-      padding-bottom: 32px;
-    }
-
-    .search {
-      height: 56px;
-
-      display: flex;
-      align-items: center;
-
-      gap: 12px;
-
-      padding: 0 17px;
-
-      background: #ffffff;
-
-      border: 1px solid var(--border);
-
-      border-radius: 13px;
-
-      box-shadow: var(--shadow-sm);
-    }
-
-    .search svg {
-      flex: 0 0 auto;
-
-      color: #899890;
-    }
-
-    .search input {
-      width: 100%;
-
-      border: 0;
-      outline: 0;
-
-      background: transparent;
-
-      color: var(--text);
-
-      font-size: 13px;
-    }
-
-    .search input::placeholder {
-      color: #9aa7a0;
-    }
-
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-
-      gap: 7px;
-
-      margin-top: 14px;
-    }
-
-    .category {
-      padding: 8px 12px;
-
-      color: var(--text-soft);
-
-      background: transparent;
-
-      border: 1px solid transparent;
-
-      border-radius: 8px;
-
-      cursor: pointer;
-
-      font-size: 10px;
-      font-weight: 800;
-
-      transition: 0.18s ease;
-    }
-
-    .category:hover {
-      color: var(--green-800);
-
-      background: var(--green-50);
-    }
-
-    .category.active {
-      color: var(--green-800);
-
-      background: var(--green-100);
-
-      border-color: #d1e6d9;
-    }
-
-    /* =========================
-       APPLICATION SECTION
-    ========================== */
-
-    .apps-section {
-      padding: 6px 0 86px;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-
-      margin-bottom: 18px;
-    }
-
-    .section-head h2 {
-      margin: 0;
-
-      color: var(--green-950);
-
-      font-size: 24px;
-
-      letter-spacing: -0.04em;
-    }
-
-    .section-head p {
-      margin: 5px 0 0;
-
-      color: var(--text-soft);
-
-      font-size: 11px;
-    }
-
-    .section-count {
-      color: var(--muted);
-
-      font-size: 10px;
-
-      font-weight: 700;
-    }
-
-    /* =========================
-       APPLICATION GRID
-    ========================== */
-
-    .apps-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-      gap: 16px;
-    }
-
-    .app-card {
-      min-height: 220px;
-
-      display: flex;
-      flex-direction: column;
-
-      padding: 22px;
-
-      background: var(--surface);
-
-      border: 1px solid var(--border);
-
-      border-radius: 17px;
-
-      text-decoration: none;
-
-      box-shadow:
-        0 5px 22px rgba(18, 59, 42, 0.035);
-
-      transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease,
-        border-color 0.22s ease;
-    }
-
-    .app-card:hover {
-      transform: translateY(-4px);
-
-      border-color: #c7ddd0;
-
-      box-shadow: var(--shadow-md);
-    }
-
-    .app-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-
-      gap: 16px;
-    }
-
-    /* =========================
-       APPLICATION ICON
-    ========================== */
-
-    .app-icon {
-      width: 56px;
-      height: 56px;
-
-      flex: 0 0 56px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      overflow: hidden;
-
-      color: #ffffff;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--green-700),
-          var(--green-500)
-        );
-
-      border-radius: 14px;
-
-      font-size: 22px;
-    }
-
-    .app-icon img {
-      width: 100%;
-      height: 100%;
-
-      display: block;
-
-      object-fit: contain;
-
-      border-radius: 14px;
-    }
-
-    /* =========================
-       STATUS
-    ========================== */
-
-    .status {
-      padding: 6px 9px;
-
-      color: var(--green-700);
-
-      background: var(--green-50);
-
-      border: 1px solid #d7ebdf;
-
-      border-radius: 999px;
-
-      font-size: 8px;
-
-      line-height: 1;
-
-      font-weight: 900;
-
-      letter-spacing: 0.07em;
-
-      text-transform: uppercase;
-
-      white-space: nowrap;
-    }
-
-    /* =========================
-       CARD CONTENT
-    ========================== */
-
-    .app-card h3 {
-      margin: 20px 0 7px;
-
-      color: var(--green-950);
-
-      font-size: 18px;
-
-      line-height: 1.2;
-
-      letter-spacing: -0.025em;
-    }
-
-    .app-card p {
-      max-width: 600px;
-
-      margin: 0;
-
-      color: var(--text-soft);
-
-      font-size: 12px;
-
-      line-height: 1.65;
-    }
-
-    .app-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 15px;
-
-      margin-top: auto;
-
-      padding-top: 20px;
-
-      color: var(--green-600);
-
-      font-size: 9px;
-
-      font-weight: 900;
-
-      letter-spacing: 0.06em;
-
-      text-transform: uppercase;
-    }
-
-    .app-bottom span:last-child {
-      transition: transform 0.18s ease;
-    }
-
-    .app-card:hover
-    .app-bottom
-    span:last-child {
-      transform: translateX(3px);
-    }
-
-    /* =========================
-       COMING SOON
-    ========================== */
-
-    .coming-soon {
-      min-height: 220px;
-
-      padding: 22px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #fbfdfc,
-          #f3f8f5
-        );
-
-      border: 1px dashed #cddbd3;
-
-      border-radius: 17px;
-    }
-
-    .coming-icon {
-      width: 56px;
-      height: 56px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      color: var(--green-700);
-
-      background: #ffffff;
-
-      border: 1px solid var(--border);
-
-      border-radius: 14px;
-
-      font-size: 20px;
-    }
-
-    .coming-soon h3 {
-      margin: 20px 0 7px;
-
-      color: var(--green-950);
-
-      font-size: 18px;
-
-      letter-spacing: -0.02em;
-    }
-
-    .coming-soon p {
-      max-width: 500px;
-
-      margin: 0;
-
-      color: var(--text-soft);
-
-      font-size: 12px;
-
-      line-height: 1.65;
-    }
-
-    /* =========================
-       FOOTER
-    ========================== */
-
-    footer {
-      border-top: 1px solid var(--border);
-
-      background: #ffffff;
-
-      color: var(--muted);
-
-      font-size: 10px;
-    }
-
-    .footer-inner {
-      width: min(1180px, calc(100% - 40px));
-
-      min-height: 70px;
-
-      margin: auto;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 20px;
-    }
-
-    /* =========================
-       TABLET
-    ========================== */
-
-    @media (max-width: 820px) {
-
-      .hero-grid {
-        grid-template-columns: 1fr;
-
-        gap: 22px;
-      }
-
-      .hero-note {
-        max-width: 560px;
-      }
-
-    }
-
-    /* =========================
-       MOBILE
-    ========================== */
-
-    @media (max-width: 700px) {
-
-      .header-inner,
-      .page,
-      .footer-inner {
-        width: calc(100% - 28px);
-      }
-
-      .hero {
-        padding: 44px 0 28px;
-      }
-
-      .hero h1 {
-        font-size: 43px;
-      }
-
-      .hero-copy {
-        font-size: 14px;
-      }
-
-      .apps-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .section-head {
-        display: block;
-      }
-
-      .section-count {
-        display: block;
-
-        margin-top: 8px;
-      }
-
-      .brand-text span {
-        display: none;
-      }
-
-      .home-link {
-        padding: 8px 10px;
-      }
-
-      .footer-inner {
-        min-height: auto;
-
-        padding: 22px 0;
-
-        display: block;
-      }
-
-      .footer-inner span {
-        display: block;
-      }
-
-      .footer-inner span + span {
-        margin-top: 7px;
-      }
-
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Explore applications and intelligent tools from LR AgroSense.">
+<title>Explore | LR AgroSense</title>
+
+<style>
+:root{
+  --bg:#0b0d0c;
+  --sidebar:#090b0a;
+  --panel:#111412;
+  --panel2:#161a17;
+  --line:#282e2a;
+  --text:#f3f5f3;
+  --soft:#aeb7b1;
+  --muted:#77817b;
+  --green:#56c58a;
+  --green2:#2f8b60;
+}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{text-decoration:none;color:inherit}
+button,input{font:inherit}
+
+/* SIDEBAR */
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:72px;
+  z-index:30;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:18px 0;
+  background:var(--sidebar);
+  border-right:1px solid #1f2421;
+}
+
+.side-brand{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border-radius:11px;
+  background:#fff;
+}
+
+.side-brand img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.side-nav{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:30px;
+}
+
+.side-link{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#818b84;
+  cursor:pointer;
+  transition:.18s ease;
+}
+
+.side-link:hover,
+.side-link.active{
+  color:#fff;
+  background:#191d1a;
+}
+
+.side-link svg{
+  width:20px;
+  height:20px;
+}
+
+.side-profile{
+  margin-top:auto;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#1c211e;
+  border:1px solid #2b322d;
+  color:#dce3de;
+  font-size:10px;
+  font-weight:800;
+}
+
+/* MAIN */
+
+.main{
+  width:calc(100% - 72px);
+  margin-left:72px;
+  min-height:100vh;
+}
+
+.topbar{
+  height:70px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 34px;
+  background:rgba(11,13,12,.91);
+  border-bottom:1px solid rgba(40,46,42,.85);
+  backdrop-filter:blur(18px);
+}
+
+.top-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.top-brand img{
+  width:31px;
+  height:31px;
+  object-fit:contain;
+  border-radius:7px;
+  background:#fff;
+}
+
+.top-brand strong{
+  font-size:14px;
+  letter-spacing:-.02em;
+}
+
+.top-brand span{
+  margin-left:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.home-btn{
+  padding:9px 13px;
+  border:1px solid #303731;
+  border-radius:10px;
+  background:#141815;
+  color:#dce2de;
+  font-size:11px;
+  font-weight:700;
+  transition:.18s ease;
+}
+
+.home-btn:hover{
+  background:#1d231f;
+  border-color:#475049;
+}
+
+/* CONTENT */
+
+.content{
+  width:min(1040px,calc(100% - 64px));
+  margin:auto;
+  padding:48px 0 80px;
+}
+
+/* HERO */
+
+.hero{
+  text-align:center;
+  padding:15px 0 0;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 10px;
+  border:1px solid #2d4437;
+  border-radius:999px;
+  background:rgba(50,120,82,.11);
+  color:#8dcea9;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.badge-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+}
+
+.hero h1{
+  margin:20px 0 10px;
+  font-size:clamp(40px,5vw,58px);
+  line-height:1;
+  letter-spacing:-.06em;
+}
+
+.hero p{
+  max-width:620px;
+  margin:0 auto;
+  color:var(--soft);
+  font-size:14px;
+  line-height:1.65;
+}
+
+/* SEARCH */
+
+.search-wrap{
+  max-width:720px;
+  margin:25px auto 0;
+}
+
+.search{
+  height:55px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 17px;
+  background:#151815;
+  border:1px solid #2c332e;
+  border-radius:12px;
+  transition:.2s ease;
+}
+
+.search:focus-within{
+  border-color:#4b6956;
+  box-shadow:0 0 0 3px rgba(86,197,138,.07);
+}
+
+.search svg{
+  width:18px;
+  height:18px;
+  flex:none;
+  color:#87918b;
+}
+
+.search input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#f3f5f3;
+  font-size:13px;
+}
+
+.search input::placeholder{
+  color:#747e78;
+}
+
+/* CATEGORIES */
+
+.categories{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:5px;
+  margin:16px 0 55px;
+}
+
+.category{
+  padding:8px 13px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#8b958e;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:700;
+  transition:.18s ease;
+}
+
+.category:hover{
+  color:#fff;
+  background:#171b18;
+}
+
+.category.active{
+  color:#fff;
+  background:#252c27;
+}
+
+/* SECTIONS */
+
+.section{
+  margin-top:40px;
+}
+
+.section-head{
+  margin-bottom:18px;
+}
+
+.section-head h2{
+  margin:0;
+  font-size:23px;
+  letter-spacing:-.035em;
+}
+
+.section-head p{
+  margin:5px 0 0;
+  color:#858f89;
+  font-size:12px;
+}
+
+/* FEATURED */
+
+.featured-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px 38px;
+}
+
+.featured-item{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:11px;
+  border-radius:12px;
+  transition:.18s ease;
+}
+
+.featured-item:hover{
+  background:#141815;
+}
+
+.featured-icon{
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #303831;
+  border-radius:14px;
+  background:#1b221e;
+  font-size:21px;
+}
+
+.featured-icon img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  border-radius:14px;
+}
+
+.featured-info{
+  min-width:0;
+}
+
+.featured-info h3{
+  margin:0;
+  overflow:hidden;
+  color:#f0f3f0;
+  font-size:15px;
+  font-weight:750;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.featured-info p{
+  margin:4px 0 0;
+  overflow:hidden;
+  color:#9da69f;
+  font-size:11px;
+  line-height:1.4;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.featured-info span{
+  display:block;
+  margin-top:4px;
+  color:#6f7972;
+  font-size:9px;
+}
+
+/* TRENDING */
+
+.trending-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:3px 30px;
+}
+
+.trending-item{
+  min-width:0;
+  min-height:72px;
+  display:grid;
+  grid-template-columns:25px 43px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  padding:8px 4px;
+  border-radius:11px;
+  transition:.18s ease;
+}
+
+.trending-item:hover{
+  background:#141815;
+}
+
+.rank{
+  color:#737d76;
+  font-size:11px;
+  text-align:center;
+}
+
+.trend-icon{
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #303831;
+  border-radius:12px;
+  background:#1b221e;
+  font-size:18px;
+}
+
+.trend-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.trend-info{
+  min-width:0;
+}
+
+.trend-info h3{
+  margin:0;
+  overflow:hidden;
+  color:#eef2ef;
+  font-size:13px;
+  font-weight:750;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.trend-info p{
+  margin:3px 0 0;
+  overflow:hidden;
+  color:#9aa39d;
+  font-size:10px;
+  line-height:1.4;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.trend-info span{
+  display:block;
+  margin-top:3px;
+  color:#707a73;
+  font-size:9px;
+}
+
+/* MORE */
+
+.more-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:18px;
+  border:1px dashed #333b36;
+  border-radius:14px;
+  background:#101311;
+}
+
+.more-icon{
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  display:grid;
+  place-items:center;
+  border:1px solid #303831;
+  border-radius:13px;
+  color:#8d9991;
+  font-size:20px;
+}
+
+.more-card h3{
+  margin:0;
+  font-size:13px;
+}
+
+.more-card p{
+  margin:4px 0 0;
+  color:#7f8982;
+  font-size:10px;
+  line-height:1.5;
+}
+
+/* FOOTER */
+
+footer{
+  padding:27px 0;
+  border-top:1px solid #1d221f;
+  color:#68716c;
+  font-size:10px;
+}
+
+.footer-inner{
+  width:min(1040px,calc(100% - 64px));
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+  .sidebar{
+    width:58px;
+  }
+
+  .main{
+    width:calc(100% - 58px);
+    margin-left:58px;
+  }
+
+  .topbar{
+    padding:0 18px;
+  }
+
+  .top-brand span{
+    display:none;
+  }
+
+  .content{
+    width:calc(100% - 32px);
+    padding-top:35px;
+  }
+
+  .featured-grid,
+  .trending-grid{
+    grid-template-columns:1fr;
+  }
+
+  .footer-inner{
+    width:calc(100% - 32px);
+  }
+}
+
+@media(max-width:520px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .main{
+    width:100%;
+    margin-left:0;
+  }
+
+  .topbar{
+    height:64px;
+  }
+
+  .content{
+    width:calc(100% - 28px);
+  }
+
+  .hero h1{
+    font-size:40px;
+  }
+
+  .hero p{
+    font-size:13px;
+  }
+
+  .categories{
+    justify-content:flex-start;
+  }
+
+  .footer-inner{
+    width:calc(100% - 28px);
+    display:block;
+  }
+
+  .footer-inner span{
+    display:block;
+  }
+
+  .footer-inner span+span{
+    margin-top:7px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <!-- =========================
-       HEADER
-  ========================== -->
+<div class="app-shell">
 
-  <header class="header">
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
 
-    <div class="header-inner">
+    <a href="/" class="side-brand" title="LR AgroSense">
+      <img src="/company_logo.jpg" alt="LR AgroSense">
+    </a>
 
-      <a
-        href="/"
-        class="brand"
-      >
+    <nav class="side-nav">
 
-        <img
-          src="/company_logo.jpg"
-          alt="LR AgroSense"
-        />
-
-        <div class="brand-text">
-
-          <strong>
-            LR AgroSense
-          </strong>
-
-          <span>
-            Smart Farming • IoT
-          </span>
-
-        </div>
-
+      <a href="/" class="side-link" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="m3 10 9-7 9 7"></path>
+          <path d="M5 9v11h14V9"></path>
+          <path d="M9 20v-6h6v6"></path>
+        </svg>
       </a>
 
-      <a
-        href="/"
-        class="home-link"
-      >
-        ← LR AgroSense
+      <a href="/lr-ai.html" class="side-link active" title="LR AI">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 3v3"></path>
+          <path d="M12 18v3"></path>
+          <path d="M3 12h3"></path>
+          <path d="M18 12h3"></path>
+          <path d="m5.6 5.6 2.1 2.1"></path>
+          <path d="m16.3 16.3 2.1 2.1"></path>
+          <path d="m18.4 5.6-2.1 2.1"></path>
+          <path d="m7.7 16.3-2.1 2.1"></path>
+          <circle cx="12" cy="12" r="3.5"></circle>
+        </svg>
       </a>
 
-    </div>
+      <button class="side-link" type="button" title="Search" onclick="focusSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+      </button>
 
-  </header>
+      <a href="#featured" class="side-link" title="Featured">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+          <path d="M8 9h8"></path>
+          <path d="M8 13h5"></path>
+        </svg>
+      </a>
 
+      <a href="#trending" class="side-link" title="Trending">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M5 20V10"></path>
+          <path d="M12 20V4"></path>
+          <path d="M19 20v-7"></path>
+        </svg>
+      </a>
 
-  <!-- =========================
-       MAIN
-  ========================== -->
+    </nav>
 
-  <main>
+    <div class="side-profile">LR</div>
 
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-      <div class="page">
-
-        <div class="hero-grid">
-
-
-          <div>
-
-            <div class="eyebrow">
-
-              <span class="eyebrow-dot"></span>
-
-              LR AgroSense Explore
-
-            </div>
+  </aside>
 
 
-            <h1>
-              Explore what we are building.
-            </h1>
+  <!-- MAIN -->
+  <div class="main">
+
+    <header class="topbar">
+
+      <a href="/" class="top-brand">
+        <img src="/company_logo.jpg" alt="LR AgroSense">
+        <strong>LR AgroSense</strong>
+        <span>Explore</span>
+      </a>
+
+      <a href="/" class="home-btn">
+        ← Back to LR AgroSense
+      </a>
+
+    </header>
 
 
-            <p class="hero-copy">
-              Discover the applications,
-              intelligent tools and agricultural
-              technologies being developed by
-              LR AgroSense — from practical farm
-              technology to AI-powered solutions.
-            </p>
+    <main class="content">
 
-          </div>
+      <!-- HERO -->
 
+      <section class="hero">
 
-          <div class="hero-note">
-
-            <div class="hero-note-label">
-              Our digital ecosystem
-            </div>
-
-            <strong>
-              Technology designed around
-              real agricultural needs.
-            </strong>
-
-            <p>
-              Explore current products and
-              research projects as they move
-              from ideas into practical solutions.
-            </p>
-
-          </div>
-
-
+        <div class="badge">
+          <span class="badge-dot"></span>
+          LR AgroSense Ecosystem
         </div>
 
-      </div>
+        <h1>Explore</h1>
 
-    </section>
+        <p>
+          Discover intelligent applications, agricultural tools and
+          technologies built by LR AgroSense.
+        </p>
 
+        <div class="search-wrap">
 
-    <!-- SEARCH AND FILTERS -->
+          <div class="search">
 
-    <section class="tools">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
 
-      <div class="page">
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search applications"
+              autocomplete="off"
+            >
 
-
-        <div class="search">
-
-          <svg
-            width="19"
-            height="19"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            ></circle>
-
-            <path
-              d="m20 20-3.5-3.5"
-            ></path>
-
-          </svg>
-
-
-          <input
-            id="searchInput"
-            type="search"
-            placeholder="Search applications"
-            autocomplete="off"
-          />
+          </div>
 
         </div>
 
 
         <div class="categories">
 
-
-          <button
-            class="category active"
-            data-category="all"
-          >
+          <button class="category active" data-category="all">
             All
           </button>
 
-
-          <button
-            class="category"
-            data-category="ai"
-          >
+          <button class="category" data-category="ai">
             AI
           </button>
 
-
-          <button
-            class="category"
-            data-category="agriculture"
-          >
+          <button class="category" data-category="agriculture">
             Agriculture
           </button>
 
-
-          <button
-            class="category"
-            data-category="research"
-          >
+          <button class="category" data-category="research">
             Research
           </button>
 
-
         </div>
 
-
-      </div>
-
-    </section>
+      </section>
 
 
-    <!-- APPLICATIONS -->
+      <!-- FEATURED -->
 
-    <section class="apps-section">
-
-      <div class="page">
-
+      <section class="section" id="featured">
 
         <div class="section-head">
 
+          <h2>Featured</h2>
 
-          <div>
-
-            <h2>
-              Featured applications
-            </h2>
-
-            <p>
-              Explore applications from the
-              LR AgroSense ecosystem.
-            </p>
-
-          </div>
-
-
-          <span class="section-count">
-            Built for agriculture • Updated as we grow
-          </span>
-
+          <p>
+            Our latest applications and platforms
+          </p>
 
         </div>
 
 
-        <div
-          class="apps-grid"
-          id="appsGrid"
-        >
+        <div class="featured-grid">
 
 
-          <!-- =========================
-               LR AI
-          ========================== -->
+          <!-- LR AI -->
 
           <a
             href="/lr-ai.html"
-            class="app-card"
+            class="featured-item app-item"
             data-category="ai agriculture"
-            data-name="lr ai agricultural artificial intelligence"
+            data-name="lr ai agricultural ai assistant"
           >
 
+            <div class="featured-icon">
 
-            <div class="app-top">
-
-
-              <div class="app-icon">
-
-                <img
-                  src="/lr-ai-logo.png"
-                  alt="LR AI"
-                />
-
-              </div>
-
-
-              <span class="status">
-                Available
-              </span>
-
+              <img
+                src="/lr-ai-logo.png"
+                alt="LR AI"
+              >
 
             </div>
 
+            <div class="featured-info">
 
-            <h3>
-              LR AI
-            </h3>
+              <h3>LR AI</h3>
 
-
-            <p>
-              An intelligent agricultural
-              assistant designed to help users
-              explore crop, plant, farming and
-              agricultural questions.
-            </p>
-
-
-            <div class="app-bottom">
+              <p>
+                Intelligent agricultural assistant for crop,
+                plant and farming questions.
+              </p>
 
               <span>
-                Agricultural AI
-              </span>
-
-              <span>
-                Open →
+                By LR AgroSense
               </span>
 
             </div>
-
 
           </a>
 
 
-          <!-- =========================
-               SMART FARM MONITOR
-          ========================== -->
+          <!-- SMART FARM MONITOR -->
 
           <div
-            class="app-card"
+            class="featured-item app-item"
             data-category="agriculture"
             data-name="smart farm monitor"
           >
 
-
-            <div class="app-top">
-
-
-              <div class="app-icon">
-                🌱
-              </div>
-
-
-              <span class="status">
-                In Development
-              </span>
-
-
+            <div class="featured-icon">
+              🌱
             </div>
 
+            <div class="featured-info">
 
-            <h3>
-              Smart Farm Monitor
-            </h3>
+              <h3>Smart Farm Monitor</h3>
 
-
-            <p>
-              Affordable IoT-based farm
-              monitoring technology designed
-              to collect useful information
-              from the field.
-            </p>
-
-
-            <div class="app-bottom">
+              <p>
+                Affordable IoT technology for monitoring
+                important farm conditions.
+              </p>
 
               <span>
-                IoT • Agriculture
-              </span>
-
-              <span>
-                Coming Soon
+                Coming soon • LR AgroSense
               </span>
 
             </div>
-
 
           </div>
 
 
-          <!-- =========================
-               SMART FARM STATION
-          ========================== -->
+          <!-- SMART FARM STATION -->
 
           <div
-            class="app-card"
+            class="featured-item app-item"
             data-category="agriculture research"
             data-name="smart farm station"
           >
 
-
-            <div class="app-top">
-
-
-              <div class="app-icon">
-                ☁
-              </div>
-
-
-              <span class="status">
-                Research
-              </span>
-
-
+            <div class="featured-icon">
+              ☁️
             </div>
 
+            <div class="featured-info">
 
-            <h3>
-              Smart Farm Station
-            </h3>
+              <h3>Smart Farm Station</h3>
 
-
-            <p>
-              A future integrated agricultural
-              station combining soil, weather
-              and environmental information.
-            </p>
-
-
-            <div class="app-bottom">
+              <p>
+                Integrated soil, weather and environmental
+                monitoring technology.
+              </p>
 
               <span>
-                Smart Farming
-              </span>
-
-              <span>
-                Research
+                Research • LR AgroSense
               </span>
 
             </div>
-
 
           </div>
 
 
-          <!-- =========================
-               FUTURE APPLICATIONS
-          ========================== -->
+          <!-- AGRIMIND -->
 
           <div
-            class="coming-soon"
-            data-category="research"
-            data-name="future applications"
+            class="featured-item app-item"
+            data-category="ai agriculture research"
+            data-name="agrimind agriculture doctor crop health ai"
           >
 
-
-            <div class="coming-icon">
-              +
+            <div class="featured-icon">
+              🌿
             </div>
 
+            <div class="featured-info">
 
-            <h3>
-              More applications coming
-            </h3>
+              <h3>AgriMind</h3>
+
+              <p>
+                Future AI-powered agricultural guidance
+                and crop-health intelligence.
+              </p>
+
+              <span>
+                In development • LR AgroSense
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
 
 
-            <p>
-              New LR AgroSense applications
-              and platforms will be added here
-              as they move from research and
-              development toward practical use.
-            </p>
+      <!-- TRENDING -->
 
+      <section class="section" id="trending">
+
+        <div class="section-head">
+
+          <h2>Trending</h2>
+
+          <p>
+            Applications and ideas growing within the LR AgroSense ecosystem
+          </p>
+
+        </div>
+
+
+        <div class="trending-grid">
+
+
+          <div
+            class="trending-item app-item"
+            data-category="ai agriculture"
+            data-name="lr ai"
+          >
+
+            <div class="rank">1</div>
+
+            <div class="trend-icon">
+
+              <img
+                src="/lr-ai-logo.png"
+                alt="LR AI"
+              >
+
+            </div>
+
+            <div class="trend-info">
+
+              <h3>LR AI</h3>
+
+              <p>Agricultural AI assistant</p>
+
+              <span>Available now</span>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="trending-item app-item"
+            data-category="agriculture"
+            data-name="smart farm monitor"
+          >
+
+            <div class="rank">2</div>
+
+            <div class="trend-icon">
+              🌱
+            </div>
+
+            <div class="trend-info">
+
+              <h3>Smart Farm Monitor</h3>
+
+              <p>IoT-based farm monitoring</p>
+
+              <span>In development</span>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="trending-item app-item"
+            data-category="research"
+            data-name="smart farm station"
+          >
+
+            <div class="rank">3</div>
+
+            <div class="trend-icon">
+              ☁️
+            </div>
+
+            <div class="trend-info">
+
+              <h3>Smart Farm Station</h3>
+
+              <p>Soil and weather intelligence</p>
+
+              <span>Research</span>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="trending-item app-item"
+            data-category="ai research"
+            data-name="agrimind"
+          >
+
+            <div class="rank">4</div>
+
+            <div class="trend-icon">
+              🧠
+            </div>
+
+            <div class="trend-info">
+
+              <h3>AgriMind</h3>
+
+              <p>Future agriculture intelligence</p>
+
+              <span>Coming soon</span>
+
+            </div>
 
           </div>
 
 
         </div>
 
+      </section>
+
+
+      <!-- MORE -->
+
+      <section class="section">
+
+        <div class="more-card">
+
+          <div class="more-icon">
+            +
+          </div>
+
+          <div>
+
+            <h3>
+              More applications are coming
+            </h3>
+
+            <p>
+              New LR AgroSense products, AI tools and research
+              platforms will appear here as they move into practical use.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <footer>
+
+      <div class="footer-inner">
+
+        <span>
+          © 2026 LR AgroSense. All rights reserved.
+        </span>
+
+        <span>
+          Explore • Build • Innovate
+        </span>
 
       </div>
 
-    </section>
+    </footer>
+
+  </div>
+
+</div>
 
 
-  </main>
+<script>
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const items =
+  document.querySelectorAll(".app-item");
+
+const categoryButtons =
+  document.querySelectorAll(".category");
+
+let selectedCategory = "all";
 
 
-  <!-- =========================
-       FOOTER
-  ========================== -->
+function focusSearch(){
 
-  <footer>
+  searchInput.focus();
 
-    <div class="footer-inner">
+  searchInput.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
 
-
-      <span>
-        © 2026 LR AgroSense. All rights reserved.
-      </span>
+}
 
 
-      <span>
-        Explore • Build • Innovate
-      </span>
+function filterItems(){
+
+  const query =
+    searchInput.value
+      .toLowerCase()
+      .trim();
 
 
-    </div>
+  items.forEach(item => {
 
-  </footer>
+    const name =
+      (item.dataset.name || "")
+        .toLowerCase();
 
-
-  <!-- =========================
-       SEARCH + FILTER
-  ========================== -->
-
-  <script>
-
-    const searchInput =
-      document.getElementById(
-        "searchInput"
-      );
+    const category =
+      (item.dataset.category || "")
+        .toLowerCase();
 
 
-    const cards =
-      document.querySelectorAll(
-        "[data-name]"
-      );
+    const matchesSearch =
+      !query ||
+      name.includes(query);
 
 
-    const categoryButtons =
-      document.querySelectorAll(
-        ".category"
-      );
+    const matchesCategory =
+      selectedCategory === "all" ||
+      category.includes(selectedCategory);
 
 
-    let selectedCategory = "all";
+    item.style.display =
+      matchesSearch && matchesCategory
+        ? ""
+        : "none";
+
+  });
+
+}
 
 
-    function filterCards() {
-
-      const query =
-        searchInput.value
-          .toLowerCase()
-          .trim();
+searchInput.addEventListener(
+  "input",
+  filterItems
+);
 
 
-      cards.forEach((card) => {
+categoryButtons.forEach(button => {
 
+  button.addEventListener(
+    "click",
+    () => {
 
-        const name =
-          card.dataset.name
-            .toLowerCase();
+      categoryButtons.forEach(item => {
 
-
-        const category =
-          card.dataset.category
-            .toLowerCase();
-
-
-        const matchesSearch =
-          !query ||
-          name.includes(query);
-
-
-        const matchesCategory =
-          selectedCategory === "all" ||
-          category.includes(
-            selectedCategory
-          );
-
-
-        card.style.display =
-          matchesSearch &&
-          matchesCategory
-            ? ""
-            : "none";
-
+        item.classList.remove("active");
 
       });
 
+
+      button.classList.add("active");
+
+
+      selectedCategory =
+        button.dataset.category;
+
+
+      filterItems();
+
     }
+  );
 
+});
 
-    searchInput.addEventListener(
-      "input",
-      filterCards
-    );
-
-
-    categoryButtons.forEach(
-      (button) => {
-
-
-        button.addEventListener(
-          "click",
-          () => {
-
-
-            categoryButtons.forEach(
-              (item) => {
-
-                item.classList.remove(
-                  "active"
-                );
-
-              }
-            );
-
-
-            button.classList.add(
-              "active"
-            );
-
-
-            selectedCategory =
-              button.dataset.category;
-
-
-            filterCards();
-
-
-          }
-        );
-
-
-      }
-    );
-
-  </script>
-
+</script>
 
 </body>
-
 </html>
