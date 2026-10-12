@@ -28,6 +28,8 @@ import {
   Tractor,
   CircleDollarSign,
   ShieldAlert,
+  GraduationCap,
+  Code2,
 } from "lucide-react";
 import Internships from "./Internships";
 import { CONTACT_EMAIL } from "./config";
@@ -42,6 +44,7 @@ const LINKEDIN = "https://www.linkedin.com/company/lr-agrosense/";
 const navLinks = [
   { id: "product", label: "Product" },
   { id: "how", label: "How it works" },
+  { id: "apps", label: "Apps" },
   { id: "roadmap", label: "Roadmap" },
   { id: "about", label: "About" },
   { href: "/internships.html", label: "Internships" },
@@ -114,6 +117,25 @@ const platform = [
     title: "Farmer app & voice alerts",
     status: "Planned",
     text: "A simple app with spoken alerts in Telugu, Hindi, English, Tamil and Kannada, designed for farmers first.",
+  },
+];
+
+const apps = [
+  {
+    icon: GraduationCap,
+    name: "LR AgriPrep",
+    url: "https://lragriprep.in",
+    domain: "lragriprep.in",
+    tag: "Education",
+    text: "AI tutor for agriculture students preparing for ICAR, ASRB, IBPS AFO, NABARD, AEO and B.Sc. Agriculture exams. Doubt solving, crop photo doctor, practice quizzes and progress tracking in English, Hindi and Telugu.",
+  },
+  {
+    icon: Code2,
+    name: "Datta AI",
+    url: "https://datta-ai.com",
+    domain: "datta-ai.com",
+    tag: "AI assistant",
+    text: "A free AI assistant that's strong at coding. Describe an app and Datta AI writes the code and runs it right away.",
   },
 ];
 
@@ -448,6 +470,37 @@ function App() {
                   <h3>{title}</h3>
                   <p>{text}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* APPS */}
+        <section id="apps" className="section section-tint">
+          <div className="container">
+            <div className="section-head">
+              <span className="eyebrow">Our apps</span>
+              <h2>Products by LR AgroSense, already live.</h2>
+              <p>
+                Alongside our farm technology, we build AI apps that people use
+                every day.
+              </p>
+            </div>
+            <div className="apps-grid">
+              {apps.map(({ icon: Icon, name, url, domain, tag, text }) => (
+                <a key={name} className="card app-tile" href={url} target="_blank" rel="noopener">
+                  <div className="card-top">
+                    <span className="icon-chip">
+                      <Icon size={20} />
+                    </span>
+                    <span className="badge">Live · {tag}</span>
+                  </div>
+                  <h3>{name}</h3>
+                  <p>{text}</p>
+                  <span className="app-link">
+                    {domain} <ArrowUpRight size={16} />
+                  </span>
+                </a>
               ))}
             </div>
           </div>
