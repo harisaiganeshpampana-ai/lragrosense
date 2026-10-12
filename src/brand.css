@@ -54,3 +54,41 @@
     grid-template-columns: 2fr 1fr 1.3fr 1fr;
   }
 }
+
+/* "Our apps" section */
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-tile p {
+  flex: 1;
+}
+
+.app-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #2f8f46;
+}
+
+.app-tile:hover .app-link {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .apps-grid {
+    grid-template-columns: 1fr;
+  }
+}
