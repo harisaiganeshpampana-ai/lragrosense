@@ -145,7 +145,8 @@ export default function InternshipsPage() {
             <span className="msme-badge">MSME Registered · UDYAM-AP-19-0077611</span>
           </span>
           <span>
-            Questions? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+            Questions? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ·{" "}
+            <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
           </span>
         </div>
       </footer>
