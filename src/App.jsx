@@ -23,19 +23,20 @@ import {
   Linkedin,
   MapPin,
   ChevronDown,
-  GraduationCap,
   Handshake,
   Building2,
   Tractor,
   CircleDollarSign,
   ShieldAlert,
 } from "lucide-react";
+import Internships from "./Internships";
+import { CONTACT_EMAIL } from "./config";
 
 /* -----------------------------------------------------------
    CONTENT — edit the text here to update the website
 ----------------------------------------------------------- */
 
-const EMAIL = "info@lragrosense.in";
+const EMAIL = CONTACT_EMAIL;
 const LINKEDIN = "https://www.linkedin.com/company/lr-agrosense/";
 
 const navLinks = [
@@ -561,33 +562,8 @@ function App() {
           </div>
         </section>
 
-        {/* CAREERS */}
-        <section id="careers" className="section section-tint">
-          <div className="container careers">
-            <div className="careers-icon">
-              <GraduationCap size={30} />
-            </div>
-            <div className="careers-copy">
-              <span className="eyebrow">Internships</span>
-              <h2>Learn. Build. Contribute.</h2>
-              <p>
-                We welcome students who want hands-on startup experience in
-                agriculture, technology, research, business and content.
-              </p>
-              <div className="pills">
-                <span>Remote</span>
-                <span>Agriculture-focused</span>
-                <span>Real projects</span>
-              </div>
-            </div>
-            <a
-              className="btn"
-              href={`mailto:${EMAIL}?subject=Internship%20Interest%20-%20LR%20AgroSense`}
-            >
-              Apply for an internship <ArrowRight size={18} />
-            </a>
-          </div>
-        </section>
+        {/* CAREERS — internships load live from the admin portal */}
+        <Internships />
 
         {/* FAQ */}
         <section className="section">
