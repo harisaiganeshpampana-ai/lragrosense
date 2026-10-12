@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import Admin from "./Admin";
 
 import "./admin.css";
+import "./brand.css";
 
 ReactDOM.createRoot(document.getElementById("admin-root")).render(
   <React.StrictMode>
