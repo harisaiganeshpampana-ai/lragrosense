@@ -680,8 +680,13 @@ function App() {
               <Linkedin size={15} /> LinkedIn
             </a>
             <span>
-              <MapPin size={15} /> India
+              <MapPin size={15} /> Eluru, Andhra Pradesh
             </span>
+          </div>
+          <div className="footer-col">
+            <h4>Legal</h4>
+            <a href="/privacy.html">Privacy Policy</a>
+            <a href="/terms.html">Terms &amp; Conditions</a>
           </div>
         </div>
         <div className="container footer-bottom">
