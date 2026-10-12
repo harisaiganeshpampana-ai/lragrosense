@@ -140,7 +140,10 @@ export default function InternshipsPage() {
 
       <footer className="ipage-foot">
         <div className="container">
-          <span>© {new Date().getFullYear()} LR AgroSense</span>
+          <span>
+            © {new Date().getFullYear()} LR AgroSense ·{" "}
+            <span className="msme-badge">MSME Registered · UDYAM-AP-19-0077611</span>
+          </span>
           <span>
             Questions? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           </span>
