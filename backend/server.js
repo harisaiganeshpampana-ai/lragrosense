@@ -2,13 +2,18 @@
 |--------------------------------------------------------------------------
 | LR AgroSense — Backend API
 |--------------------------------------------------------------------------
-| Stores internships in MongoDB.
-|   Public:  GET  /api/internships           -> open internships for the website
-|   Admin:   POST /api/admin/login           -> returns a login token
-|            GET  /api/admin/internships     -> all internships (open + closed)
-|            POST /api/admin/internships     -> add an internship
-|            PUT  /api/admin/internships/:id -> edit an internship
-|            DELETE /api/admin/internships/:id -> delete an internship
+| Stores internships and internship applications in MongoDB.
+|   Public:  GET  /api/internships              -> open internships for the website
+|            GET  /api/internships/:id          -> one open internship
+|            POST /api/applications             -> submit an application
+|   Admin:   POST /api/admin/login              -> returns a login token
+|            GET  /api/admin/internships        -> all internships (open + closed)
+|            POST /api/admin/internships        -> add an internship
+|            PUT  /api/admin/internships/:id    -> edit an internship
+|            DELETE /api/admin/internships/:id  -> delete an internship
+|            GET  /api/admin/applications       -> all applications
+|            PUT  /api/admin/applications/:id   -> change application status
+|            DELETE /api/admin/applications/:id -> delete an application
 |
 | Settings come from environment variables (set them in Render):
 |   MONGODB_URI     your MongoDB connection string
@@ -86,6 +91,38 @@ const internshipSchema = new mongoose.Schema(
 );
 
 const Internship = mongoose.model("Internship", internshipSchema);
+
+const applicationSchema = new mongoose.Schema(
+  {
+    internship: { type: mongoose.Schema.Types.ObjectId, ref: "Internship", required: true },
+    internshipTitle: { type: String, trim: true, maxlength: 120, default: "" },
+    name: { type: String, required: true, trim: true, maxlength: 100 },
+    email: { type: String, required: true, trim: true, lowercase: true, maxlength: 120 },
+    phone: { type: String, required: true, trim: true, maxlength: 20 },
+    college: { type: String, required: true, trim: true, maxlength: 150 },
+    course: { type: String, trim: true, maxlength: 100, default: "" },
+    year: { type: String, trim: true, maxlength: 30, default: "" },
+    city: { type: String, trim: true, maxlength: 80, default: "" },
+    resumeLink: { type: String, trim: true, maxlength: 500, default: "" },
+    linkedin: { type: String, trim: true, maxlength: 300, default: "" },
+    message: { type: String, trim: true, maxlength: 2000, default: "" },
+    status: {
+      type: String,
+      enum: ["new", "shortlisted", "rejected", "selected"],
+      default: "new",
+    },
+  },
+  { timestamps: true }
+);
+
+const Application = mongoose.model("Application", applicationSchema);
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function safeLink(value) {
+  const link = String(value || "").trim();
+  return /^https?:\/\//i.test(link) ? link : "";
+}
 
 const EDITABLE_FIELDS = [
   "title",
@@ -181,20 +218,29 @@ function passwordMatches(input) {
   return crypto.timingSafeEqual(a, b);
 }
 
-/* Simple protection against password guessing: 10 tries per 15 minutes per IP */
-const loginAttempts = new Map();
-
-function tooManyAttempts(ip) {
-  const now = Date.now();
-  const entry = loginAttempts.get(ip) || { count: 0, start: now };
-  if (now - entry.start > 15 * 60 * 1000) {
-    entry.count = 0;
-    entry.start = now;
-  }
-  entry.count += 1;
-  loginAttempts.set(ip, entry);
-  return entry.count > 10;
+/* Simple limits against spam and password guessing */
+function makeLimiter(max, windowMs) {
+  const hits = new Map();
+  return {
+    tooMany(ip) {
+      const now = Date.now();
+      const entry = hits.get(ip) || { count: 0, start: now };
+      if (now - entry.start > windowMs) {
+        entry.count = 0;
+        entry.start = now;
+      }
+      entry.count += 1;
+      hits.set(ip, entry);
+      return entry.count > max;
+    },
+    reset(ip) {
+      hits.delete(ip);
+    },
+  };
 }
+
+const loginLimiter = makeLimiter(10, 15 * 60 * 1000); // 10 tries / 15 min
+const applyLimiter = makeLimiter(8, 60 * 60 * 1000); // 8 applications / hour
 
 /* ---------------- Routes ---------------- */
 
@@ -221,9 +267,98 @@ app.get("/api/internships", async (req, res, next) => {
   }
 });
 
+// Public: one open internship
+app.get("/api/internships/:id", async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ error: "Internship not found." });
+    }
+    const item = await Internship.findOne({ _id: req.params.id, isOpen: true }).lean();
+    if (!item) return res.status(404).json({ error: "This internship is no longer open." });
+    res.json(item);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Public: submit an application
+app.post("/api/applications", async (req, res, next) => {
+  try {
+    const body = req.body || {};
+
+    // Hidden "website" field: real people leave it empty, spam bots fill it in
+    if (body.website) return res.status(201).json({ ok: true });
+
+    if (applyLimiter.tooMany(req.ip)) {
+      return res
+        .status(429)
+        .json({ error: "Too many applications from your connection. Please try again later." });
+    }
+
+    const internshipId = String(body.internshipId || "");
+    if (!mongoose.isValidObjectId(internshipId)) {
+      return res.status(400).json({ error: "Please choose an internship." });
+    }
+    const internship = await Internship.findOne({ _id: internshipId, isOpen: true }).lean();
+    if (!internship) {
+      return res.status(404).json({ error: "This internship is no longer open." });
+    }
+    if (internship.deadline) {
+      const lastDay = new Date(internship.deadline);
+      lastDay.setUTCHours(23, 59, 59, 999);
+      if (lastDay < new Date()) {
+        return res.status(400).json({ error: "The deadline for this internship has passed." });
+      }
+    }
+
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim().toLowerCase();
+    const phone = String(body.phone || "").replace(/[^\d+]/g, "");
+    const college = String(body.college || "").trim();
+
+    if (!name || !email || !phone || !college) {
+      return res
+        .status(400)
+        .json({ error: "Please fill in your name, email, phone and college." });
+    }
+    if (!EMAIL_PATTERN.test(email)) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+    if (phone.replace(/\D/g, "").length < 10) {
+      return res.status(400).json({ error: "Please enter a valid phone number." });
+    }
+
+    const already = await Application.findOne({ internship: internship._id, email }).lean();
+    if (already) {
+      return res
+        .status(409)
+        .json({ error: "You have already applied for this internship with this email." });
+    }
+
+    await Application.create({
+      internship: internship._id,
+      internshipTitle: internship.title,
+      name,
+      email,
+      phone,
+      college,
+      course: String(body.course || ""),
+      year: String(body.year || ""),
+      city: String(body.city || ""),
+      resumeLink: safeLink(body.resumeLink),
+      linkedin: safeLink(body.linkedin),
+      message: String(body.message || ""),
+    });
+
+    res.status(201).json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Admin login
 app.post("/api/admin/login", (req, res) => {
-  if (tooManyAttempts(req.ip)) {
+  if (loginLimiter.tooMany(req.ip)) {
     return res
       .status(429)
       .json({ error: "Too many attempts. Please wait 15 minutes and try again." });
@@ -231,15 +366,69 @@ app.post("/api/admin/login", (req, res) => {
   if (!passwordMatches(req.body?.password)) {
     return res.status(401).json({ error: "Wrong password." });
   }
-  loginAttempts.delete(req.ip);
+  loginLimiter.reset(req.ip);
   res.json({ token: createToken() });
 });
 
-// Admin: list all
+// Admin: list all (with number of applications for each)
 app.get("/api/admin/internships", requireAdmin, async (req, res, next) => {
   try {
     const items = await Internship.find().sort({ createdAt: -1 }).lean();
+    const counts = await Application.aggregate([
+      { $group: { _id: "$internship", count: { $sum: 1 } } },
+    ]);
+    const countMap = new Map(counts.map((c) => [String(c._id), c.count]));
+    res.json(items.map((i) => ({ ...i, applicationCount: countMap.get(String(i._id)) || 0 })));
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: list applications (optionally for one internship)
+app.get("/api/admin/applications", requireAdmin, async (req, res, next) => {
+  try {
+    const filter = {};
+    if (req.query.internship && mongoose.isValidObjectId(String(req.query.internship))) {
+      filter.internship = String(req.query.internship);
+    }
+    const items = await Application.find(filter).sort({ createdAt: -1 }).limit(1000).lean();
     res.json(items);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: change application status
+app.put("/api/admin/applications/:id", requireAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ error: "Application not found." });
+    }
+    const status = String(req.body?.status || "");
+    if (!["new", "shortlisted", "rejected", "selected"].includes(status)) {
+      return res.status(400).json({ error: "Unknown status." });
+    }
+    const item = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).lean();
+    if (!item) return res.status(404).json({ error: "Application not found." });
+    res.json(item);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: delete application
+app.delete("/api/admin/applications/:id", requireAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ error: "Application not found." });
+    }
+    const item = await Application.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ error: "Application not found." });
+    res.json({ deleted: true });
   } catch (error) {
     next(error);
   }
@@ -294,7 +483,7 @@ app.use((req, res) => {
 
 app.use((error, req, res, next) => {
   if (error.name === "ValidationError") {
-    return res.status(400).json({ error: "Please fill in the required fields (title)." });
+    return res.status(400).json({ error: "Please fill in all the required fields." });
   }
   if (error.message === "Not allowed by CORS") {
     return res.status(403).json({ error: "This website is not allowed." });
