@@ -1,998 +1,714 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowRight,
+  ArrowUpRight,
   Menu,
   X,
-  Sprout,
-  Cpu,
-  Cloud,
-  ShieldCheck,
-  Smartphone,
-  Satellite,
-  FlaskConical,
-  Users,
-  Target,
-  Lightbulb,
-  Mail,
-  MapPin,
-  Linkedin,
-  ExternalLink,
-  ChevronDown,
   Droplets,
+  FlaskConical,
+  Thermometer,
+  Wind,
   Leaf,
-  Database,
-  Wifi,
+  Radio,
+  Cloud,
+  Smartphone,
+  Sprout,
+  Satellite,
+  Languages,
+  Search,
+  ClipboardCheck,
+  Wrench,
+  RefreshCw,
+  Mail,
+  Linkedin,
+  MapPin,
+  ChevronDown,
+  GraduationCap,
+  Handshake,
+  Building2,
+  Tractor,
+  CircleDollarSign,
+  ShieldAlert,
 } from "lucide-react";
 
-const products = [
+/* -----------------------------------------------------------
+   CONTENT — edit the text here to update the website
+----------------------------------------------------------- */
+
+const EMAIL = "info@lragrosense.in";
+const LINKEDIN = "https://www.linkedin.com/company/lr-agrosense/";
+
+const navLinks = [
+  { id: "product", label: "Product" },
+  { id: "how", label: "How it works" },
+  { id: "roadmap", label: "Roadmap" },
+  { id: "about", label: "About" },
+  { id: "careers", label: "Careers" },
+];
+
+const measures = [
+  { icon: Droplets, label: "Soil moisture" },
+  { icon: FlaskConical, label: "Soil pH" },
+  { icon: Leaf, label: "NPK nutrients" },
+  { icon: Thermometer, label: "Temperature" },
+  { icon: Wind, label: "Humidity" },
+];
+
+const problems = [
+  {
+    icon: Droplets,
+    title: "Water is used by guesswork",
+    text: "Without knowing what the soil actually holds, fields get watered too much or too little, wasting water and power while stressing the crop.",
+  },
+  {
+    icon: CircleDollarSign,
+    title: "Fertilizer costs keep rising",
+    text: "Nutrients are often applied by habit, not by need. That costs money, harms soil health and doesn't always improve yield.",
+  },
+  {
+    icon: ShieldAlert,
+    title: "Problems are spotted too late",
+    text: "By the time stress shows on the plant, the damage is done. Early signals from the soil and weather could warn farmers sooner.",
+  },
+];
+
+const steps = [
+  {
+    icon: Radio,
+    title: "Sense",
+    text: "A low-cost sensor unit in the field measures soil and weather conditions through the day.",
+  },
+  {
+    icon: Cloud,
+    title: "Send",
+    text: "Readings travel over the network to a secure cloud, building a history of the field.",
+  },
   {
     icon: Sprout,
+    title: "Understand",
+    text: "Data is combined with agricultural knowledge to turn raw numbers into clear advice.",
+  },
+  {
+    icon: Smartphone,
+    title: "Act",
+    text: "Farmers get simple alerts in their own language: when to irrigate, what to watch for.",
+  },
+];
+
+const platform = [
+  {
+    icon: Radio,
     title: "Smart Farm Monitor",
-    text: "Affordable IoT-based monitoring for important soil and farm conditions, designed to help farmers make better irrigation and crop-management decisions.",
-    status: "In Development",
+    status: "In development",
+    text: "Our first product. An affordable IoT unit that tracks the soil and farm conditions that matter most for irrigation and crop decisions.",
   },
   {
     icon: Satellite,
     title: "Smart Farm Station",
-    text: "A future integrated station combining soil, weather and environmental information to provide a broader picture of field conditions.",
     status: "Research",
+    text: "An integrated station combining soil, weather and environmental data for a fuller picture of field conditions.",
   },
   {
-    icon: FlaskConical,
-    title: "Agricultural Research",
-    text: "Research-driven agricultural technologies developed through field observation, testing, expert knowledge and practical validation.",
-    status: "Research",
+    icon: Languages,
+    title: "Farmer app & voice alerts",
+    status: "Planned",
+    text: "A simple app with spoken alerts in Telugu, Hindi, English, Tamil and Kannada, designed for farmers first.",
   },
 ];
 
-const technology = [
+const process = [
   {
-    icon: Cpu,
-    title: "IoT Sensors",
-    text: "Connected sensors designed to collect useful soil and environmental measurements directly from the field.",
+    icon: Search,
+    title: "Understand the problem",
+    text: "We talk with farmers and agricultural professionals to find the recurring challenges worth solving.",
   },
   {
-    icon: Wifi,
-    title: "Connectivity",
-    text: "Communication technologies can connect field devices with digital systems for monitoring and data transfer.",
+    icon: ClipboardCheck,
+    title: "Collect real evidence",
+    text: "We compare field observations with soil, crop, weather and expert information.",
   },
   {
-    icon: Cloud,
-    title: "Cloud Data",
-    text: "Farm information can be organized securely to support monitoring, analysis and future intelligent systems.",
+    icon: Wrench,
+    title: "Build and test",
+    text: "We build prototypes and test them under real field conditions, not just in the lab.",
   },
   {
-    icon: Smartphone,
-    title: "Farmer-Friendly Apps",
-    text: "Simple interfaces designed around the way farmers need to receive and understand information.",
+    icon: RefreshCw,
+    title: "Improve continuously",
+    text: "Field feedback drives every change to accuracy, cost and ease of use.",
   },
 ];
 
 const roadmap = [
   {
-    number: "01",
+    phase: "Now",
     title: "Smart Farm Monitor",
-    text: "Build and validate an affordable IoT monitoring system for important farm parameters.",
+    text: "Building and validating an affordable IoT monitoring system for key farm parameters.",
   },
   {
-    number: "02",
-    title: "Field Validation",
-    text: "Work with farmers and agricultural experts to test technology under real agricultural conditions.",
+    phase: "Next",
+    title: "Field validation",
+    text: "Pilots with farmers and agricultural experts to test the technology in real conditions.",
   },
   {
-    number: "03",
-    title: "Agricultural Intelligence",
-    text: "Develop intelligent systems that can combine farm information with agricultural knowledge.",
+    phase: "Later",
+    title: "Agricultural intelligence",
+    text: "Systems that combine farm data with agricultural knowledge to give useful advice.",
   },
   {
-    number: "04",
-    title: "Smart Farming Ecosystem",
-    text: "Connect soil, crop, weather and environmental information into a broader farming technology platform.",
+    phase: "Vision",
+    title: "Smart farming ecosystem",
+    text: "Soil, crop, weather and environmental data connected in one farming platform.",
+  },
+];
+
+const audiences = [
+  {
+    icon: Tractor,
+    title: "Farmers & FPOs",
+    text: "Interested in piloting our technology on your fields? We'd love to learn from you.",
+  },
+  {
+    icon: Handshake,
+    title: "Investors & partners",
+    text: "Talk to us about supporting an early-stage AgriTech company built from the field up.",
+  },
+  {
+    icon: Building2,
+    title: "Institutions",
+    text: "Universities, KVKs and research groups: let's collaborate on field validation.",
   },
 ];
 
 const faqs = [
   {
-    question: "What is LR AgroSense?",
-    answer:
-      "LR AgroSense is an early-stage AgriTech startup focused on developing affordable, practical and technology-driven solutions for agriculture.",
+    q: "What is LR AgroSense?",
+    a: "LR AgroSense is an early-stage AgriTech startup from India building affordable, practical technology that helps farmers make better decisions using real field data.",
   },
   {
-    question: "What is the first product?",
-    answer:
-      "The first major product is the LR AgroSense Smart Farm Monitor, an IoT-based system being developed to monitor useful farm parameters.",
+    q: "What is your first product?",
+    a: "The Smart Farm Monitor, an IoT-based system that measures soil moisture, pH, NPK nutrients, temperature and humidity. It is currently in development and testing.",
   },
   {
-    question: "Who is LR AgroSense building for?",
-    answer:
-      "The long-term focus is on practical agricultural technology that can benefit farmers, agricultural professionals and other people working with farm data.",
+    q: "Can I buy the Smart Farm Monitor today?",
+    a: "Not yet. We are still building and validating it. If you'd like to pilot it on your farm or be notified at launch, email us.",
   },
   {
-    question: "Can students join LR AgroSense?",
-    answer:
-      "Yes. LR AgroSense can provide opportunities for students who want practical experience in agriculture, technology, research, content, business and related areas.",
+    q: "Who are you building for?",
+    a: "Indian farmers first, especially small and medium farms, along with FPOs, agricultural professionals and researchers who work with farm data.",
+  },
+  {
+    q: "Can students join LR AgroSense?",
+    a: "Yes. We offer remote internships for students interested in agriculture, technology, research, content and business.",
   },
 ];
 
+/* -----------------------------------------------------------
+   PAGE
+----------------------------------------------------------- */
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
 
-  const closeMenu = () => {
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+  }, [menuOpen]);
+
+  const go = (id) => {
     setMenuOpen(false);
-  };
-
-  const scrollToSection = (id) => {
-    closeMenu();
-
-    const element = document.getElementById(id);
-
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div className="site">
-
-      {/* =========================
-          HEADER
-      ========================== */}
-
-      <header className="navbar">
-        <div className="nav-container">
-
-          <a href="#top" className="brand" onClick={closeMenu}>
-            <img
-              src="/company_logo.jpg"
-              alt="LR AgroSense"
-              className="brand-logo"
-            />
-
-            <div className="brand-text">
-              <strong>LR AgroSense</strong>
-              <span>Smart Farming • IoT</span>
-            </div>
+    <div id="top">
+      {/* NAVBAR */}
+      <header className={`nav ${scrolled ? "nav-scrolled" : ""}`}>
+        <div className="container nav-inner">
+          <a href="#top" className="brand" onClick={() => setMenuOpen(false)}>
+            <span className="brand-mark">
+              <Sprout size={18} strokeWidth={2.4} />
+            </span>
+            <span className="brand-name">
+              LR <b>AgroSense</b>
+            </span>
           </a>
 
-          <nav className="main-navigation">
-            <button onClick={() => scrollToSection("about")}>
-              About
-            </button>
-
-            <button onClick={() => scrollToSection("products")}>
-              Products
-            </button>
-
-            <button onClick={() => scrollToSection("technology")}>
-              Technology
-            </button>
-
-            <button onClick={() => scrollToSection("research")}>
-              Research
-            </button>
-
-            <button onClick={() => scrollToSection("roadmap")}>
-              Roadmap
-            </button>
-
-            <button onClick={() => scrollToSection("internships")}>
-              Internships
-            </button>
-
-            <button onClick={() => scrollToSection("contact")}>
-              Contact
-            </button>
+          <nav className="nav-links">
+            {navLinks.map((l) => (
+              <button key={l.id} onClick={() => go(l.id)}>
+                {l.label}
+              </button>
+            ))}
           </nav>
 
-          <button
-            className="main-menu-button"
-            onClick={() => setMenuOpen((value) => !value)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-          >
-            {menuOpen ? <X size={25} /> : <Menu size={27} />}
+          <button className="btn btn-small nav-cta" onClick={() => go("contact")}>
+            Contact us
           </button>
 
+          <button
+            className="nav-toggle"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+
+        <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
+          {navLinks.map((l) => (
+            <button key={l.id} onClick={() => go(l.id)}>
+              {l.label}
+              <ArrowRight size={18} />
+            </button>
+          ))}
+          <button className="btn" onClick={() => go("contact")}>
+            Contact us
+          </button>
         </div>
       </header>
 
-      {/* =========================
-          OVERLAY
-      ========================== */}
-
-      <div
-        className={`menu-overlay ${menuOpen ? "menu-overlay-visible" : ""}`}
-        onClick={closeMenu}
-      />
-
-      {/* =========================
-          EXPLORE SIDEBAR
-      ========================== */}
-
-      <aside className={`side-menu ${menuOpen ? "side-menu-open" : ""}`}>
-
-        <div className="side-menu-header">
-          <div>
-            <span className="side-menu-small">
-              LR AgroSense
-            </span>
-
-            <h2>Explore</h2>
-          </div>
-
-          <button
-            className="side-menu-close"
-            onClick={closeMenu}
-            aria-label="Close Explore menu"
-          >
-            <X size={22} />
-          </button>
-        </div>
-
-        <div className="side-menu-content">
-
-          <span className="side-menu-label">
-            APPLICATIONS
-          </span>
-
-          <a
-            href="/explore.html"
-            className="explore-sidebar-card"
-            onClick={closeMenu}
-          >
-            <div className="explore-sidebar-icon">
-              <Sprout size={22} />
-            </div>
-
-            <div className="explore-sidebar-text">
-              <strong>Explore LR AgroSense</strong>
-
-              <span>
-                Discover our applications and
-                agricultural technology platforms.
-              </span>
-            </div>
-
-            <ArrowRight size={18} />
-          </a>
-
-          <div className="side-menu-note">
-            More LR AgroSense applications will be
-            added here as they become available.
-          </div>
-
-        </div>
-
-      </aside>
-
-      {/* =========================
-          MAIN
-      ========================== */}
-
-      <main id="top">
-
+      <main>
         {/* HERO */}
-
         <section className="hero">
-
-          <div className="hero-overlay" />
-
-          <div className="hero-container">
-
-            <div className="hero-content">
-
-              <div className="eyebrow">
-                <span className="eyebrow-dot" />
-                Building the future of agriculture
-              </div>
-
+          <div className="container hero-grid">
+            <div className="hero-copy">
+              <span className="eyebrow eyebrow-light">
+                <span className="dot" /> Early-stage AgriTech · India
+              </span>
               <h1>
-                Smarter technology.
+                Know your soil.
                 <br />
-                <span>Better farming.</span>
+                <em>Grow with confidence.</em>
               </h1>
-
-              <p>
-                LR AgroSense is building affordable
-                agricultural technologies that combine
-                IoT, field data and intelligent systems
-                to help solve real farming challenges.
+              <p className="hero-lead">
+                LR AgroSense builds affordable IoT and AI tools that turn field
+                data into simple, timely advice, so farmers can save water,
+                use fertilizer wisely and protect their crops.
               </p>
-
               <div className="hero-actions">
-
-                <button
-                  className="primary-button"
-                  onClick={() => scrollToSection("products")}
-                >
-                  Explore our technology
-                  <ArrowRight size={17} />
+                <button className="btn btn-accent" onClick={() => go("product")}>
+                  See our product <ArrowRight size={18} />
                 </button>
-
-                <button
-                  className="secondary-button"
-                  onClick={() => scrollToSection("about")}
-                >
-                  Learn about us
+                <button className="btn btn-ghost" onClick={() => go("contact")}>
+                  Partner with us
                 </button>
-
               </div>
-
-              <div className="hero-note">
-                Practical • Affordable • Sustainable
-              </div>
-
             </div>
 
+            <div className="hero-visual">
+              <div className="hero-photo">
+                <img src="/assets/agri_hero_bg.jpg" alt="Green crop fields at sunrise" />
+              </div>
+              <div className="reading-card">
+                <div className="reading-head">
+                  <span>Field 01 · Paddy</span>
+                  <span className="live">
+                    <span className="dot" /> Prototype preview
+                  </span>
+                </div>
+                <div className="reading-grid">
+                  <Reading label="Moisture" value="38" unit="%" fill={38} />
+                  <Reading label="Soil pH" value="6.8" unit="" fill={68} />
+                  <Reading label="Temp" value="29" unit="°C" fill={58} />
+                  <Reading label="Humidity" value="71" unit="%" fill={71} />
+                </div>
+                <div className="reading-alert">
+                  <Droplets size={16} />
+                  Soil is drying. Irrigate within 24 hours.
+                </div>
+              </div>
+            </div>
           </div>
 
-        </section>
-
-        {/* INTRO */}
-
-        <section className="intro-strip">
-
-          <div className="section-container">
-
-            <div className="intro-grid">
-
-              <div>
-                <span className="section-label">
-                  OUR FOCUS
+          <div className="container measures">
+            <span className="measures-label">What we measure</span>
+            <div className="measures-list">
+              {measures.map(({ icon: Icon, label }) => (
+                <span key={label} className="measure">
+                  <Icon size={16} /> {label}
                 </span>
-
-                <h2>
-                  Technology should solve
-                  real agricultural problems.
-                </h2>
-              </div>
-
-              <p>
-                Farmers face challenges involving water,
-                soil health, crop diseases, pests, weather
-                and access to useful information. LR AgroSense
-                is working toward practical technology that
-                can turn farm data into understandable
-                information and better decisions.
-              </p>
-
+              ))}
             </div>
-
           </div>
-
         </section>
 
-        {/* ABOUT */}
-
-        <section id="about" className="section about-section">
-
-          <div className="section-container">
-
-            <div className="section-heading">
-
-              <span className="section-label">
-                ABOUT LR AGROSENSE
-              </span>
-
-              <h2>
-                Building technology
-                around farmers.
-              </h2>
-
+        {/* PROBLEM */}
+        <section className="section">
+          <div className="container">
+            <div className="section-head">
+              <span className="eyebrow">The problem</span>
+              <h2>Too many farm decisions are still made by guesswork.</h2>
               <p>
-                LR AgroSense is an early-stage AgriTech
-                startup focused on developing affordable,
-                technology-driven solutions for agriculture.
+                Farmers deal with water stress, rising input costs, pests and
+                unpredictable weather, often without the information they need
+                at the moment they need it.
               </p>
-
             </div>
-
-            <div className="about-grid">
-
-              <div className="about-card">
-                <div className="card-icon">
-                  <Target size={21} />
-                </div>
-
-                <h3>Our Mission</h3>
-
-                <p>
-                  Develop affordable smart agricultural
-                  technologies that help farmers improve
-                  productivity, reduce losses and use
-                  resources more efficiently.
-                </p>
-              </div>
-
-              <div className="about-card">
-                <div className="card-icon">
-                  <Lightbulb size={21} />
-                </div>
-
-                <h3>Our Vision</h3>
-
-                <p>
-                  Become a leading AgriTech company by
-                  helping farmers adopt smarter, more
-                  sustainable and data-driven farming
-                  practices.
-                </p>
-              </div>
-
-              <div className="about-card">
-                <div className="card-icon">
-                  <ShieldCheck size={21} />
-                </div>
-
-                <h3>Our Approach</h3>
-
-                <p>
-                  We focus on research, field validation
-                  and practical engineering instead of
-                  making technology claims before they
-                  are properly tested.
-                </p>
-              </div>
-
+            <div className="cards-3">
+              {problems.map(({ icon: Icon, title, text }) => (
+                <article key={title} className="card">
+                  <span className="icon-chip">
+                    <Icon size={20} />
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
             </div>
-
           </div>
-
         </section>
 
-        {/* PRODUCTS */}
-
-        <section id="products" className="section products-section">
-
-          <div className="section-container">
-
-            <div className="section-heading centered">
-
-              <span className="section-label">
-                PRODUCTS & PLATFORMS
-              </span>
-
-              <h2>
-                From sensors to
-                agricultural intelligence.
-              </h2>
-
-              <p>
-                Our roadmap connects field sensing,
-                agricultural data and intelligent
-                technology into a long-term farming
-                ecosystem.
+        {/* PRODUCT */}
+        <section id="product" className="section section-tint">
+          <div className="container product-grid">
+            <div>
+              <span className="eyebrow">Our first product</span>
+              <h2>Smart Farm Monitor</h2>
+              <p className="lead">
+                A rugged, low-cost sensor unit that sits in the field and
+                watches the conditions that drive crop health, around the
+                clock.
               </p>
-
+              <ul className="checks">
+                <li>Measures soil moisture, pH, NPK, temperature and humidity</li>
+                <li>Designed to be affordable for small and medium farms</li>
+                <li>Sends readings to the cloud for history and analysis</li>
+                <li>Plain-language alerts instead of complicated charts</li>
+              </ul>
+              <div className="status-row">
+                <span className="badge">In development</span>
+                <span className="muted">Currently in prototyping and field testing</span>
+              </div>
             </div>
 
-            <div className="products-grid">
-
-              {products.map((product) => {
-                const Icon = product.icon;
-
-                return (
-                  <article
-                    className="product-card"
-                    key={product.title}
-                  >
-
-                    <div className="product-top">
-
-                      <div className="product-icon">
-                        <Icon size={22} />
-                      </div>
-
-                      <span className="product-status">
-                        {product.status}
-                      </span>
-
+            <div className="device-wrap">
+              <div className="device">
+                <div className="device-antenna" />
+                <div className="device-body">
+                  <div className="device-screen">
+                    <span className="device-brand">LR AgroSense</span>
+                    <span className="device-model">Smart Farm Monitor</span>
+                    <div className="device-lights">
+                      <i /> <i /> <i />
                     </div>
-
-                    <h3>{product.title}</h3>
-
-                    <p>{product.text}</p>
-
-                    <div className="product-bottom">
-                      <span>LR AgroSense</span>
-                      <ArrowRight size={16} />
-                    </div>
-
-                  </article>
-                );
-              })}
-
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* TECHNOLOGY */}
-
-        <section id="technology" className="section technology-section">
-
-          <div className="section-container">
-
-            <div className="technology-grid">
-
-              <div className="technology-intro">
-
-                <span className="section-label">
-                  TECHNOLOGY
+                  </div>
+                </div>
+                <div className="device-probe" />
+              </div>
+              <div className="device-ground" />
+              {measures.map(({ icon: Icon, label }, i) => (
+                <span key={label} className={`float-tag tag-${i}`}>
+                  <Icon size={14} /> {label}
                 </span>
-
-                <h2>
-                  Connecting the field
-                  to useful intelligence.
-                </h2>
-
-                <p>
-                  Our long-term technology architecture
-                  combines sensors, connectivity, cloud
-                  systems, agricultural knowledge and
-                  intelligent software.
-                </p>
-
-                <div className="technology-flow">
-
-                  <div>
-                    <Sprout size={18} />
-                    Field
-                  </div>
-
-                  <ArrowRight size={16} />
-
-                  <div>
-                    <Cpu size={18} />
-                    Sensors
-                  </div>
-
-                  <ArrowRight size={16} />
-
-                  <div>
-                    <Database size={18} />
-                    Data
-                  </div>
-
-                  <ArrowRight size={16} />
-
-                  <div>
-                    <Cloud size={18} />
-                    Cloud
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div className="technology-cards">
-
-                {technology.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <div
-                      className="technology-card"
-                      key={item.title}
-                    >
-
-                      <div className="card-icon">
-                        <Icon size={19} />
-                      </div>
-
-                      <div>
-                        <h3>{item.title}</h3>
-                        <p>{item.text}</p>
-                      </div>
-
-                    </div>
-                  );
-                })}
-
-              </div>
-
+              ))}
             </div>
-
           </div>
-
         </section>
 
-        {/* RESEARCH */}
-
-        <section id="research" className="section research-section">
-
-          <div className="section-container">
-
-            <div className="research-grid">
-
-              <div>
-
-                <span className="section-label">
-                  RESEARCH & DEVELOPMENT
-                </span>
-
-                <h2>
-                  We start with the problem,
-                  not the product.
-                </h2>
-
-                <p>
-                  LR AgroSense is researching real farmer
-                  problems before committing to large-scale
-                  hardware and software development.
-                </p>
-
-              </div>
-
-              <div className="research-points">
-
-                <div className="research-point">
-                  <span>01</span>
-
-                  <div>
-                    <h3>Understand the problem</h3>
-
-                    <p>
-                      Talk with farmers and agricultural
-                      professionals to understand recurring
-                      challenges.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="research-point">
-                  <span>02</span>
-
-                  <div>
-                    <h3>Collect real evidence</h3>
-
-                    <p>
-                      Compare field observations with
-                      soil, crop, weather and expert
-                      information.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="research-point">
-                  <span>03</span>
-
-                  <div>
-                    <h3>Build and test</h3>
-
-                    <p>
-                      Develop prototypes and evaluate
-                      their performance under real
-                      agricultural conditions.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="research-point">
-                  <span>04</span>
-
-                  <div>
-                    <h3>Improve continuously</h3>
-
-                    <p>
-                      Use field feedback to improve
-                      accuracy, affordability and usability.
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
+        {/* HOW IT WORKS */}
+        <section id="how" className="section">
+          <div className="container">
+            <div className="section-head center">
+              <span className="eyebrow">How it works</span>
+              <h2>From the field to a clear decision.</h2>
             </div>
-
+            <div className="steps">
+              {steps.map(({ icon: Icon, title, text }, i) => (
+                <div key={title} className="step">
+                  <div className="step-top">
+                    <span className="step-icon">
+                      <Icon size={22} />
+                    </span>
+                    <span className="step-num">0{i + 1}</span>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
 
+        {/* PLATFORM */}
+        <section className="section section-dark">
+          <div className="container">
+            <div className="section-head">
+              <span className="eyebrow eyebrow-light">The platform</span>
+              <h2>One sensor today. A farming platform tomorrow.</h2>
+              <p>
+                Our roadmap connects field sensing, agricultural data and
+                intelligent software into one long-term ecosystem for farmers.
+              </p>
+            </div>
+            <div className="cards-3">
+              {platform.map(({ icon: Icon, title, status, text }) => (
+                <article key={title} className="card card-dark">
+                  <div className="card-top">
+                    <span className="icon-chip icon-chip-dark">
+                      <Icon size={20} />
+                    </span>
+                    <span className="badge badge-dark">{status}</span>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* HOW WE BUILD */}
+        <section className="section">
+          <div className="container split">
+            <div className="split-head">
+              <span className="eyebrow">How we build</span>
+              <h2>We start with the problem, not the product.</h2>
+              <p>
+                We research real farmer problems and validate in the field
+                before making claims about what our technology can do.
+              </p>
+            </div>
+            <div className="process">
+              {process.map(({ icon: Icon, title, text }, i) => (
+                <div key={title} className="process-item">
+                  <span className="process-num">{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>
+                      <Icon size={18} /> {title}
+                    </h3>
+                    <p>{text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* ROADMAP */}
-
-        <section id="roadmap" className="section roadmap-section">
-
-          <div className="section-container">
-
-            <div className="section-heading centered">
-
-              <span className="section-label">
-                ROADMAP
-              </span>
-
-              <h2>
-                Building step by step.
-              </h2>
-
-              <p>
-                LR AgroSense is taking a long-term approach
-                to building agricultural technology.
-              </p>
-
+        <section id="roadmap" className="section section-tint">
+          <div className="container">
+            <div className="section-head center">
+              <span className="eyebrow">Roadmap</span>
+              <h2>Building step by step.</h2>
             </div>
-
             <div className="roadmap">
-
-              {roadmap.map((item, index) => (
-
-                <div
-                  className="roadmap-item"
-                  key={item.number}
-                >
-
-                  <div className="roadmap-number">
-                    {item.number}
-                  </div>
-
-                  <div className="roadmap-line">
-                    {index !== roadmap.length - 1 && (
-                      <span />
-                    )}
-                  </div>
-
-                  <div className="roadmap-content">
-
-                    <h3>{item.title}</h3>
-
-                    <p>{item.text}</p>
-
-                  </div>
-
+              {roadmap.map((r, i) => (
+                <div key={r.title} className={`road ${i === 0 ? "road-active" : ""}`}>
+                  <span className="road-dot" />
+                  <span className="road-phase">{r.phase}</span>
+                  <h3>{r.title}</h3>
+                  <p>{r.text}</p>
                 </div>
-
               ))}
-
             </div>
-
           </div>
-
         </section>
 
-        {/* INTERNSHIPS */}
-
-        <section id="internships" className="section internship-section">
-
-          <div className="section-container">
-
-            <div className="internship-card">
-
-              <div className="internship-icon">
-                <Users size={27} />
-              </div>
-
-              <div className="internship-content">
-
-                <span className="section-label">
-                  INTERNSHIPS
-                </span>
-
-                <h2>
-                  Learn. Build. Contribute.
-                </h2>
-
-                <p>
-                  We welcome students who want practical
-                  experience while working on agriculture,
-                  technology, research, business, content
-                  and other startup activities.
-                </p>
-
-                <div className="internship-points">
-
-                  <span>
-                    <ShieldCheck size={15} />
-                    Practical experience
-                  </span>
-
-                  <span>
-                    <Leaf size={15} />
-                    Agriculture-focused work
-                  </span>
-
-                  <span>
-                    <Users size={15} />
-                    Remote opportunities
-                  </span>
-
+        {/* ABOUT */}
+        <section id="about" className="section">
+          <div className="container about-grid">
+            <div>
+              <span className="eyebrow">About us</span>
+              <h2>Built by agriculture people, for farmers.</h2>
+              <p className="lead">
+                LR AgroSense is an early-stage AgriTech startup on a mission to
+                make smart farming affordable and practical for Indian farmers.
+              </p>
+              <div className="mv">
+                <div>
+                  <h3>Mission</h3>
+                  <p>
+                    Develop affordable smart agriculture technology that helps
+                    farmers improve productivity, reduce losses and use
+                    resources efficiently.
+                  </p>
                 </div>
-
-                <a
-                  href="mailto:info@lragrosense.in?subject=Internship%20Interest%20-%20LR%20AgroSense"
-                  className="primary-button"
-                >
-                  Contact about internships
-                  <ArrowRight size={17} />
-                </a>
-
+                <div>
+                  <h3>Vision</h3>
+                  <p>
+                    Help farmers adopt smarter, more sustainable and data-driven
+                    practices, and become a leading AgriTech company along the way.
+                  </p>
+                </div>
               </div>
-
             </div>
 
+            <div className="founder">
+              <div className="founder-avatar">HS</div>
+              <div>
+                <span className="founder-role">Founder</span>
+                <h3>Pampana Hari Sai Ganesh</h3>
+                <p>
+                  B.Sc. Agriculture student who started LR AgroSense to bring
+                  practical, affordable technology to the farmers he studies
+                  and works alongside.
+                </p>
+                <a href={LINKEDIN} target="_blank" rel="noreferrer" className="link">
+                  <Linkedin size={16} /> Follow on LinkedIn <ArrowUpRight size={14} />
+                </a>
+              </div>
+            </div>
           </div>
+        </section>
 
+        {/* CAREERS */}
+        <section id="careers" className="section section-tint">
+          <div className="container careers">
+            <div className="careers-icon">
+              <GraduationCap size={30} />
+            </div>
+            <div className="careers-copy">
+              <span className="eyebrow">Internships</span>
+              <h2>Learn. Build. Contribute.</h2>
+              <p>
+                We welcome students who want hands-on startup experience in
+                agriculture, technology, research, business and content.
+              </p>
+              <div className="pills">
+                <span>Remote</span>
+                <span>Agriculture-focused</span>
+                <span>Real projects</span>
+              </div>
+            </div>
+            <a
+              className="btn"
+              href={`mailto:${EMAIL}?subject=Internship%20Interest%20-%20LR%20AgroSense`}
+            >
+              Apply for an internship <ArrowRight size={18} />
+            </a>
+          </div>
         </section>
 
         {/* FAQ */}
-
-        <section className="section faq-section">
-
-          <div className="section-container">
-
-            <div className="section-heading centered">
-
-              <span className="section-label">
-                FAQ
-              </span>
-
-              <h2>
-                Frequently asked questions.
-              </h2>
-
+        <section className="section">
+          <div className="container split">
+            <div className="split-head">
+              <span className="eyebrow">FAQ</span>
+              <h2>Questions, answered.</h2>
+              <p>
+                Can't find what you're looking for? Write to us at{" "}
+                <a href={`mailto:${EMAIL}`} className="inline-link">
+                  {EMAIL}
+                </a>
+                .
+              </p>
             </div>
-
-            <div className="faq-list">
-
-              {faqs.map((faq, index) => {
-
-                const isOpen = openFaq === index;
-
+            <div className="faq">
+              {faqs.map((f, i) => {
+                const open = openFaq === i;
                 return (
-                  <div
-                    className={`faq-item ${
-                      isOpen ? "faq-open" : ""
-                    }`}
-                    key={faq.question}
-                  >
-
-                    <button
-                      className="faq-question"
-                      onClick={() =>
-                        setOpenFaq(isOpen ? null : index)
-                      }
-                    >
-
-                      <span>{faq.question}</span>
-
-                      <ChevronDown
-                        size={19}
-                        className="faq-chevron"
-                      />
-
+                  <div key={f.q} className={`faq-item ${open ? "open" : ""}`}>
+                    <button onClick={() => setOpenFaq(open ? null : i)}>
+                      <span>{f.q}</span>
+                      <ChevronDown size={20} />
                     </button>
-
                     <div className="faq-answer">
-                      <p>{faq.answer}</p>
+                      <p>{f.a}</p>
                     </div>
-
                   </div>
                 );
               })}
-
             </div>
-
           </div>
-
         </section>
 
         {/* CONTACT */}
-
-        <section id="contact" className="section contact-section">
-
-          <div className="section-container">
-
-            <div className="contact-grid">
-
-              <div>
-
-                <span className="section-label">
-                  CONTACT
-                </span>
-
-                <h2>
-                  Let's build the future
-                  of agriculture.
-                </h2>
-
-                <p>
-                  Interested in LR AgroSense, our technology,
-                  research or collaboration opportunities?
-                  Get in touch with us.
-                </p>
-
-              </div>
-
-              <div className="contact-details">
-
-                <a
-                  href="mailto:info@lragrosense.in"
-                  className="contact-item"
-                >
-                  <Mail size={19} />
-                  <span>
-                    info@lragrosense.in
-                  </span>
-                </a>
-
-                <div className="contact-item">
-                  <MapPin size={19} />
-                  <span>
-                    India
-                  </span>
-                </div>
-
-                <a
-                  href="https://www.linkedin.com/company/lr-agrosense/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="contact-item"
-                >
-                  <Linkedin size={19} />
-                  <span>
-                    LR AgroSense on LinkedIn
-                  </span>
-                  <ExternalLink size={14} />
-                </a>
-
-              </div>
-
+        <section id="contact" className="section section-dark contact">
+          <div className="container">
+            <div className="section-head center">
+              <span className="eyebrow eyebrow-light">Work with us</span>
+              <h2>Let's build the future of farming together.</h2>
             </div>
-
+            <div className="cards-3">
+              {audiences.map(({ icon: Icon, title, text }) => (
+                <article key={title} className="card card-dark">
+                  <span className="icon-chip icon-chip-dark">
+                    <Icon size={20} />
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
+            <div className="contact-actions">
+              <a className="btn btn-accent" href={`mailto:${EMAIL}`}>
+                <Mail size={18} /> {EMAIL}
+              </a>
+              <a className="btn btn-ghost" href={LINKEDIN} target="_blank" rel="noreferrer">
+                <Linkedin size={18} /> LinkedIn
+              </a>
+            </div>
           </div>
-
         </section>
-
       </main>
 
       {/* FOOTER */}
-
       <footer className="footer">
-
-        <div className="section-container">
-
-          <div className="footer-top">
-
-            <a href="#top" className="footer-brand">
-
-              <img
-                src="/company_logo.jpg"
-                alt="LR AgroSense"
-              />
-
-              <div>
-                <strong>LR AgroSense</strong>
-                <span>Smart Farming • IoT</span>
-              </div>
-
+        <div className="container footer-grid">
+          <div>
+            <a href="#top" className="brand">
+              <span className="brand-mark">
+                <Sprout size={18} strokeWidth={2.4} />
+              </span>
+              <span className="brand-name">
+                LR <b>AgroSense</b>
+              </span>
             </a>
-
-            <p>
-              Affordable technology for smarter,
-              more sustainable agriculture.
+            <p className="footer-tag">
+              Affordable technology for smarter, more sustainable agriculture.
             </p>
-
           </div>
-
-          <div className="footer-bottom">
-
-            <span>
-              © 2026 LR AgroSense. All rights reserved.
-            </span>
-
-            <span>
-              Built for agriculture.
-            </span>
-
+          <div className="footer-col">
+            <h4>Company</h4>
+            {navLinks.map((l) => (
+              <button key={l.id} onClick={() => go(l.id)}>
+                {l.label}
+              </button>
+            ))}
           </div>
-
+          <div className="footer-col">
+            <h4>Contact</h4>
+            <a href={`mailto:${EMAIL}`}>
+              <Mail size={15} /> {EMAIL}
+            </a>
+            <a href={LINKEDIN} target="_blank" rel="noreferrer">
+              <Linkedin size={15} /> LinkedIn
+            </a>
+            <span>
+              <MapPin size={15} /> India
+            </span>
+          </div>
         </div>
-
+        <div className="container footer-bottom">
+          <span>© {new Date().getFullYear()} LR AgroSense. All rights reserved.</span>
+          <span>Smart Farming · IoT</span>
+        </div>
       </footer>
+    </div>
+  );
+}
 
+function Reading({ label, value, unit, fill }) {
+  return (
+    <div className="reading">
+      <span className="reading-label">{label}</span>
+      <span className="reading-value">
+        {value}
+        <small>{unit}</small>
+      </span>
+      <span className="reading-bar">
+        <span style={{ width: `${fill}%` }} />
+      </span>
     </div>
   );
 }
