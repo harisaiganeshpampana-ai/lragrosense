@@ -1,0 +1,21 @@
+{
+  "name": "lr-agrosense-backend",
+  "version": "2.0.0",
+  "description": "Backend API for the LR AgroSense website and admin portal",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  }
+}
