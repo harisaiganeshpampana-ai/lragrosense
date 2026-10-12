@@ -480,6 +480,43 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
     }
   };
 
+  // Resume files need the admin login, so download them with the token and open them
+  const openResume = async (app) => {
+    const tab = window.open("", "_blank");
+    setBusyId(app._id);
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/applications/${app._id}/resume`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 401) {
+        if (tab) tab.close();
+        onAuthError();
+        return;
+      }
+      if (!response.ok) throw new Error("Could not open the resume file.");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const isPdf = blob.type === "application/pdf";
+      if (isPdf && tab) {
+        tab.location.href = url;
+      } else {
+        if (tab) tab.close();
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = app.resumeFileName || "resume";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      if (tab) tab.close();
+      setError(err.message);
+    } finally {
+      setBusyId("");
+    }
+  };
+
   const remove = async (app) => {
     if (!window.confirm(`Delete the application from ${app.name}? This cannot be undone.`)) return;
     setBusyId(app._id);
@@ -618,9 +655,18 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
                       >
                         WhatsApp
                       </a>
+                      {app.resumeFileName && (
+                        <button
+                          className="btn btn-light"
+                          onClick={() => openResume(app)}
+                          disabled={busyId === app._id}
+                        >
+                          <FileText size={16} /> Open resume
+                        </button>
+                      )}
                       {app.resumeLink && (
                         <a href={app.resumeLink} target="_blank" rel="noreferrer" className="btn btn-light">
-                          <FileText size={16} /> Resume
+                          <FileText size={16} /> Resume link
                         </a>
                       )}
                       {app.linkedin && (
