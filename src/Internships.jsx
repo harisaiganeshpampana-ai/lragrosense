@@ -14,7 +14,9 @@ import {
 import { API_BASE, CONTACT_EMAIL } from "./config";
 import "./internships.css";
 
-function formatDate(value) {
+/* ---------------- Shared helpers ---------------- */
+
+export function formatDate(value) {
   if (!value) return "";
   return new Date(value).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -23,13 +25,8 @@ function formatDate(value) {
   });
 }
 
-function applyHref(item) {
-  if (item.applyLink) return item.applyLink;
-  const subject = encodeURIComponent(`Internship Application - ${item.title}`);
-  return `mailto:${CONTACT_EMAIL}?subject=${subject}`;
-}
-
-export default function Internships() {
+// Loads open internships from the server
+export function useInternships() {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
 
@@ -57,68 +54,47 @@ export default function Internships() {
     };
   }, []);
 
+  return { items, status };
+}
+
+export function InternshipsLoading() {
   return (
-    <section id="careers" className="section section-tint">
-      <div className="container">
-        <div className="intern-head">
-          <div>
-            <span className="eyebrow">Internships</span>
-            <h2>Learn. Build. Contribute.</h2>
-            <p>
-              Hands-on startup experience in agriculture, technology, research,
-              business and content. Open roles are listed below.
-            </p>
-          </div>
-          <div className="pills">
-            <span>Remote-friendly</span>
-            <span>Agriculture-focused</span>
-            <span>Real projects</span>
-          </div>
-        </div>
-
-        {status === "loading" && (
-          <div className="intern-empty">
-            <Loader2 size={26} className="intern-spin" />
-            <p>Loading open internships…</p>
-          </div>
-        )}
-
-        {status !== "loading" && items.length === 0 && (
-          <div className="intern-empty">
-            <span className="intern-empty-icon">
-              <GraduationCap size={26} />
-            </span>
-            <h3>
-              {status === "error"
-                ? "Internships couldn't load right now"
-                : "No open internships right now"}
-            </h3>
-            <p>
-              We post new roles regularly. You can still send us your interest
-              and we'll reach out when something fits.
-            </p>
-            <a
-              className="btn"
-              href={`mailto:${CONTACT_EMAIL}?subject=Internship%20Interest%20-%20LR%20AgroSense`}
-            >
-              Send your interest <ArrowRight size={18} />
-            </a>
-          </div>
-        )}
-
-        {items.length > 0 && (
-          <div className="intern-grid">
-            {items.map((item) => (
-              <InternshipCard key={item._id} item={item} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+    <div className="intern-empty">
+      <Loader2 size={26} className="intern-spin" />
+      <p>Loading open internships…</p>
+    </div>
   );
 }
 
-function InternshipCard({ item }) {
+export function InternshipsEmpty({ status }) {
+  return (
+    <div className="intern-empty">
+      <span className="intern-empty-icon">
+        <GraduationCap size={26} />
+      </span>
+      <h3>
+        {status === "error"
+          ? "Internships couldn't load right now"
+          : "No open internships right now"}
+      </h3>
+      <p>
+        We post new roles regularly. You can still send us your interest and
+        we'll reach out when something fits.
+      </p>
+      <a
+        className="btn"
+        href={`mailto:${CONTACT_EMAIL}?subject=Internship%20Interest%20-%20LR%20AgroSense`}
+      >
+        Send your interest <ArrowRight size={18} />
+      </a>
+    </div>
+  );
+}
+
+/* ---------------- Card ---------------- */
+
+// onApply(item) opens the form; if not given, Apply links to the internships page
+export function InternshipCard({ item, onApply }) {
   const [expanded, setExpanded] = useState(false);
   const longText = (item.description || "").length > 220;
 
@@ -131,6 +107,27 @@ function InternshipCard({ item }) {
       text: item.openings ? `${item.openings} opening${item.openings > 1 ? "s" : ""}` : "",
     },
   ].filter((m) => m.text);
+
+  let applyButton;
+  if (item.applyLink) {
+    applyButton = (
+      <a className="btn btn-small" href={item.applyLink} target="_blank" rel="noreferrer">
+        Apply <ArrowUpRight size={16} />
+      </a>
+    );
+  } else if (onApply) {
+    applyButton = (
+      <button className="btn btn-small" onClick={() => onApply(item)}>
+        Apply now <ArrowRight size={16} />
+      </button>
+    );
+  } else {
+    applyButton = (
+      <a className="btn btn-small" href={`/internships.html?apply=${item._id}`}>
+        Apply now <ArrowRight size={16} />
+      </a>
+    );
+  }
 
   return (
     <article className="intern-card">
@@ -176,15 +173,55 @@ function InternshipCard({ item }) {
         ) : (
           <span className="intern-deadline">Rolling applications</span>
         )}
-        <a
-          className="btn btn-small"
-          href={applyHref(item)}
-          target={item.applyLink ? "_blank" : undefined}
-          rel="noreferrer"
-        >
-          Apply <ArrowUpRight size={16} />
-        </a>
+        {applyButton}
       </div>
     </article>
+  );
+}
+
+/* ---------------- Homepage section (shows up to 3) ---------------- */
+
+export default function Internships() {
+  const { items, status } = useInternships();
+  const preview = items.slice(0, 3);
+
+  return (
+    <section id="careers" className="section section-tint">
+      <div className="container">
+        <div className="intern-head">
+          <div>
+            <span className="eyebrow">Internships</span>
+            <h2>Learn. Build. Contribute.</h2>
+            <p>
+              Hands-on startup experience in agriculture, technology, research,
+              business and content.
+            </p>
+          </div>
+          <a className="btn" href="/internships.html">
+            View all internships <ArrowRight size={18} />
+          </a>
+        </div>
+
+        {status === "loading" && <InternshipsLoading />}
+        {status !== "loading" && items.length === 0 && <InternshipsEmpty status={status} />}
+
+        {preview.length > 0 && (
+          <div className="intern-grid">
+            {preview.map((item) => (
+              <InternshipCard key={item._id} item={item} />
+            ))}
+          </div>
+        )}
+
+        {items.length > 3 && (
+          <div className="intern-more-row">
+            <a className="btn btn-outline" href="/internships.html">
+              See {items.length - 3} more internship{items.length - 3 > 1 ? "s" : ""}{" "}
+              <ArrowRight size={18} />
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
