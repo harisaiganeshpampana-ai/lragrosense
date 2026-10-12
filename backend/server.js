@@ -13,6 +13,7 @@
 |            DELETE /api/admin/internships/:id  -> delete an internship
 |            GET  /api/admin/applications       -> all applications
 |            PUT  /api/admin/applications/:id   -> change application status
+|            GET  /api/admin/applications/:id/resume -> download uploaded resume
 |            DELETE /api/admin/applications/:id -> delete an application
 |
 | Settings come from environment variables (set them in Render):
@@ -68,7 +69,8 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "100kb" }));
+// 4mb allows a 2 MB resume file (files are sent as text, which makes them bigger)
+app.use(express.json({ limit: "4mb" }));
 
 /* ---------------- Database model ---------------- */
 
@@ -104,6 +106,7 @@ const applicationSchema = new mongoose.Schema(
     year: { type: String, trim: true, maxlength: 30, default: "" },
     city: { type: String, trim: true, maxlength: 80, default: "" },
     resumeLink: { type: String, trim: true, maxlength: 500, default: "" },
+    resumeFileName: { type: String, trim: true, maxlength: 200, default: "" },
     linkedin: { type: String, trim: true, maxlength: 300, default: "" },
     message: { type: String, trim: true, maxlength: 2000, default: "" },
     status: {
@@ -116,6 +119,57 @@ const applicationSchema = new mongoose.Schema(
 );
 
 const Application = mongoose.model("Application", applicationSchema);
+
+// Uploaded resume files are stored separately so the applications list stays fast
+const resumeSchema = new mongoose.Schema(
+  {
+    application: { type: mongoose.Schema.Types.ObjectId, ref: "Application", required: true },
+    fileName: { type: String, required: true, maxlength: 200 },
+    contentType: { type: String, required: true },
+    size: { type: Number, required: true },
+    data: { type: Buffer, required: true },
+  },
+  { timestamps: true }
+);
+
+const Resume = mongoose.model("Resume", resumeSchema);
+
+const MAX_RESUME_BYTES = 2 * 1024 * 1024; // 2 MB
+
+const RESUME_TYPES = {
+  pdf: "application/pdf",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+};
+
+// Checks the uploaded file really is a PDF or Word file (not just named like one)
+function readResumeFile(file) {
+  if (!file || typeof file !== "object" || !file.data) return { file: null };
+  const name = String(file.name || "resume").replace(/[^\w.\- ]/g, "_").slice(0, 150);
+  const ext = name.split(".").pop().toLowerCase();
+  if (!RESUME_TYPES[ext]) {
+    return { error: "Resume must be a PDF or Word file (.pdf, .doc or .docx)." };
+  }
+  let buffer;
+  try {
+    buffer = Buffer.from(String(file.data), "base64");
+  } catch {
+    return { error: "Could not read the resume file. Please try again." };
+  }
+  if (!buffer.length) return { error: "The resume file is empty." };
+  if (buffer.length > MAX_RESUME_BYTES) {
+    return { error: "Resume file is too big. Please upload a file under 2 MB." };
+  }
+  const head = buffer.subarray(0, 4).toString("hex");
+  const looksRight =
+    (ext === "pdf" && buffer.subarray(0, 4).toString() === "%PDF") ||
+    (ext === "docx" && head === "504b0304") ||
+    (ext === "doc" && head === "d0cf11e0");
+  if (!looksRight) {
+    return { error: "That file doesn't look like a real PDF or Word document." };
+  }
+  return { file: { fileName: name, contentType: RESUME_TYPES[ext], size: buffer.length, data: buffer } };
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -328,6 +382,9 @@ app.post("/api/applications", async (req, res, next) => {
       return res.status(400).json({ error: "Please enter a valid phone number." });
     }
 
+    const resume = readResumeFile(body.resumeFile);
+    if (resume.error) return res.status(400).json({ error: resume.error });
+
     const already = await Application.findOne({ internship: internship._id, email }).lean();
     if (already) {
       return res
@@ -335,7 +392,7 @@ app.post("/api/applications", async (req, res, next) => {
         .json({ error: "You have already applied for this internship with this email." });
     }
 
-    await Application.create({
+    const application = await Application.create({
       internship: internship._id,
       internshipTitle: internship.title,
       name,
@@ -346,9 +403,19 @@ app.post("/api/applications", async (req, res, next) => {
       year: String(body.year || ""),
       city: String(body.city || ""),
       resumeLink: safeLink(body.resumeLink),
+      resumeFileName: resume.file ? resume.file.fileName : "",
       linkedin: safeLink(body.linkedin),
       message: String(body.message || ""),
     });
+
+    if (resume.file) {
+      try {
+        await Resume.create({ application: application._id, ...resume.file });
+      } catch (error) {
+        await Application.findByIdAndDelete(application._id);
+        throw error;
+      }
+    }
 
     res.status(201).json({ ok: true });
   } catch (error) {
@@ -420,7 +487,28 @@ app.put("/api/admin/applications/:id", requireAdmin, async (req, res, next) => {
   }
 });
 
-// Admin: delete application
+// Admin: download an uploaded resume
+app.get("/api/admin/applications/:id/resume", requireAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ error: "Resume not found." });
+    }
+    const file = await Resume.findOne({ application: req.params.id });
+    if (!file) return res.status(404).json({ error: "Resume not found." });
+    res.setHeader("Content-Type", file.contentType);
+    res.setHeader("Content-Length", file.size);
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${file.fileName.replace(/"/g, "")}"`
+    );
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.end(file.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin: delete application (and its resume file)
 app.delete("/api/admin/applications/:id", requireAdmin, async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -428,6 +516,7 @@ app.delete("/api/admin/applications/:id", requireAdmin, async (req, res, next) =
     }
     const item = await Application.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ error: "Application not found." });
+    await Resume.deleteMany({ application: item._id });
     res.json({ deleted: true });
   } catch (error) {
     next(error);
@@ -487,6 +576,9 @@ app.use((error, req, res, next) => {
   }
   if (error.message === "Not allowed by CORS") {
     return res.status(403).json({ error: "This website is not allowed." });
+  }
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ error: "Resume file is too big. Please upload a file under 2 MB." });
   }
   console.error(error);
   res.status(500).json({ error: "Something went wrong on the server." });
