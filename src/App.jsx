@@ -686,7 +686,9 @@ function App() {
         </div>
         <div className="container footer-bottom">
           <span>© {new Date().getFullYear()} LR AgroSense. All rights reserved.</span>
-          <span>Smart Farming · IoT</span>
+          <span className="msme-badge" title="Registered under the Ministry of MSME, Government of India">
+            MSME Registered · UDYAM-AP-19-0077611
+          </span>
         </div>
       </footer>
     </div>
