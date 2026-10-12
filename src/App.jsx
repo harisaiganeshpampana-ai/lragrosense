@@ -44,7 +44,7 @@ const navLinks = [
   { id: "how", label: "How it works" },
   { id: "roadmap", label: "Roadmap" },
   { id: "about", label: "About" },
-  { id: "careers", label: "Careers" },
+  { href: "/internships.html", label: "Internships" },
 ];
 
 const measures = [
@@ -245,11 +245,17 @@ function App() {
           </a>
 
           <nav className="nav-links">
-            {navLinks.map((l) => (
-              <button key={l.id} onClick={() => go(l.id)}>
-                {l.label}
-              </button>
-            ))}
+            {navLinks.map((l) =>
+              l.href ? (
+                <a key={l.label} href={l.href}>
+                  {l.label}
+                </a>
+              ) : (
+                <button key={l.id} onClick={() => go(l.id)}>
+                  {l.label}
+                </button>
+              )
+            )}
           </nav>
 
           <button className="btn btn-small nav-cta" onClick={() => go("contact")}>
@@ -266,12 +272,19 @@ function App() {
         </div>
 
         <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
-          {navLinks.map((l) => (
-            <button key={l.id} onClick={() => go(l.id)}>
-              {l.label}
-              <ArrowRight size={18} />
-            </button>
-          ))}
+          {navLinks.map((l) =>
+            l.href ? (
+              <a key={l.label} href={l.href} className="mobile-link">
+                {l.label}
+                <ArrowRight size={18} />
+              </a>
+            ) : (
+              <button key={l.id} onClick={() => go(l.id)}>
+                {l.label}
+                <ArrowRight size={18} />
+              </button>
+            )
+          )}
           <button className="btn" onClick={() => go("contact")}>
             Contact us
           </button>
@@ -646,11 +659,17 @@ function App() {
           </div>
           <div className="footer-col">
             <h4>Company</h4>
-            {navLinks.map((l) => (
-              <button key={l.id} onClick={() => go(l.id)}>
-                {l.label}
-              </button>
-            ))}
+            {navLinks.map((l) =>
+              l.href ? (
+                <a key={l.label} href={l.href}>
+                  {l.label}
+                </a>
+              ) : (
+                <button key={l.id} onClick={() => go(l.id)}>
+                  {l.label}
+                </button>
+              )
+            )}
           </div>
           <div className="footer-col">
             <h4>Contact</h4>
