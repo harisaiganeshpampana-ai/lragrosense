@@ -34,3 +34,23 @@
   border-radius: 50%;
   background: #7cc04b;
 }
+
+/* Consent note under the application form */
+
+.apply-consent {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #5a6660;
+}
+
+.apply-consent a {
+  color: #2f8f46;
+  font-weight: 600;
+}
+
+/* Footer has 4 columns now (brand, company, contact, legal) */
+@media (min-width: 681px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1.3fr 1fr;
+  }
+}
