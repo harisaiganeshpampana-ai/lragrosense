@@ -11,6 +11,12 @@ import {
   Loader2,
   ExternalLink,
   Briefcase,
+  Users,
+  Mail,
+  Phone,
+  FileText,
+  Linkedin,
+  ChevronDown,
 } from "lucide-react";
 import { API_BASE } from "./config";
 
@@ -181,6 +187,13 @@ function Dashboard({ token, onLogout }) {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(null); // null | "new" | item
   const [busyId, setBusyId] = useState("");
+  const [tab, setTab] = useState("internships"); // internships | applications
+  const [appFilter, setAppFilter] = useState("");
+
+  const showApplications = (internshipId = "") => {
+    setAppFilter(internshipId);
+    setTab("applications");
+  };
 
   const handleError = (err) => {
     if (err.status === 401) onLogout();
@@ -212,7 +225,11 @@ function Dashboard({ token, onLogout }) {
         method: "PUT",
         body: { isOpen: !item.isOpen },
       });
-      setItems((list) => list.map((i) => (i._id === item._id ? updated : i)));
+      setItems((list) =>
+        list.map((i) =>
+          i._id === item._id ? { ...updated, applicationCount: i.applicationCount } : i
+        )
+      );
     } catch (err) {
       handleError(err);
     } finally {
@@ -236,7 +253,11 @@ function Dashboard({ token, onLogout }) {
   const onSaved = (saved) => {
     setItems((list) => {
       const exists = list.some((i) => i._id === saved._id);
-      return exists ? list.map((i) => (i._id === saved._id ? saved : i)) : [saved, ...list];
+      return exists
+        ? list.map((i) =>
+            i._id === saved._id ? { ...saved, applicationCount: i.applicationCount } : i
+          )
+        : [{ ...saved, applicationCount: 0 }, ...list];
     });
     setEditing(null);
   };
@@ -268,94 +289,125 @@ function Dashboard({ token, onLogout }) {
       </header>
 
       <main className="dash-main">
-        <div className="dash-head">
-          <div>
-            <h1>Internships</h1>
-            <p>
-              {items.length} total · {openCount} showing on the website
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={() => setEditing("new")}>
-            <Plus size={18} /> Add internship
+        <div className="tabs">
+          <button
+            className={tab === "internships" ? "active" : ""}
+            onClick={() => setTab("internships")}
+          >
+            <Briefcase size={16} /> Internships
+          </button>
+          <button
+            className={tab === "applications" ? "active" : ""}
+            onClick={() => showApplications("")}
+          >
+            <Users size={16} /> Applications
           </button>
         </div>
 
-        {error && (
-          <div className="error-box">
-            <p>{error}</p>
-            <button className="btn btn-light" onClick={load}>
-              Try again
-            </button>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="empty">
-            <Loader2 size={28} className="spin" />
-            <p>Loading internships… (the server may take up to a minute to wake up)</p>
-          </div>
-        ) : items.length === 0 && !error ? (
-          <div className="empty">
-            <Briefcase size={32} />
-            <h3>No internships yet</h3>
-            <p>Add your first internship and it will appear on the website.</p>
-            <button className="btn btn-primary" onClick={() => setEditing("new")}>
-              <Plus size={18} /> Add internship
-            </button>
-          </div>
+        {tab === "applications" ? (
+          <Applications
+            token={token}
+            internships={items}
+            filter={appFilter}
+            setFilter={setAppFilter}
+            onAuthError={onLogout}
+          />
         ) : (
-          <div className="list">
-            {items.map((item) => (
-              <article key={item._id} className={`row ${item.isOpen ? "" : "row-closed"}`}>
-                <div className="row-main">
-                  <div className="row-title">
-                    <h3>{item.title}</h3>
-                    <span className={`status ${item.isOpen ? "status-open" : "status-closed"}`}>
-                      {item.isOpen ? "Live on website" : "Hidden"}
-                    </span>
-                  </div>
-                  <p className="row-meta">
-                    {[
-                      item.category,
-                      item.mode,
-                      item.location,
-                      item.duration,
-                      item.stipend,
-                      item.deadline ? `Apply by ${formatDate(item.deadline)}` : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-                <div className="row-actions">
-                  <button
-                    className="icon-btn"
-                    title={item.isOpen ? "Hide from website" : "Show on website"}
-                    onClick={() => toggleOpen(item)}
-                    disabled={busyId === item._id}
-                  >
-                    {item.isOpen ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                  <button
-                    className="icon-btn"
-                    title="Edit"
-                    onClick={() => setEditing(item)}
-                    disabled={busyId === item._id}
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  <button
-                    className="icon-btn icon-danger"
-                    title="Delete"
-                    onClick={() => remove(item)}
-                    disabled={busyId === item._id}
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
+          <>
+            <div className="dash-head">
+              <div>
+                <h1>Internships</h1>
+                <p>
+                  {items.length} total · {openCount} showing on the website
+                </p>
+              </div>
+              <button className="btn btn-primary" onClick={() => setEditing("new")}>
+                <Plus size={18} /> Add internship
+              </button>
+            </div>
+
+            {error && (
+              <div className="error-box">
+                <p>{error}</p>
+                <button className="btn btn-light" onClick={load}>
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {loading ? (
+              <div className="empty">
+                <Loader2 size={28} className="spin" />
+                <p>Loading internships… (the server may take up to a minute to wake up)</p>
+              </div>
+            ) : items.length === 0 && !error ? (
+              <div className="empty">
+                <Briefcase size={32} />
+                <h3>No internships yet</h3>
+                <p>Add your first internship and it will appear on the website.</p>
+                <button className="btn btn-primary" onClick={() => setEditing("new")}>
+                  <Plus size={18} /> Add internship
+                </button>
+              </div>
+            ) : (
+              <div className="list">
+                {items.map((item) => (
+                  <article key={item._id} className={`row ${item.isOpen ? "" : "row-closed"}`}>
+                    <div className="row-main">
+                      <div className="row-title">
+                        <h3>{item.title}</h3>
+                        <span className={`status ${item.isOpen ? "status-open" : "status-closed"}`}>
+                          {item.isOpen ? "Live on website" : "Hidden"}
+                        </span>
+                      </div>
+                      <p className="row-meta">
+                        {[
+                          item.category,
+                          item.mode,
+                          item.location,
+                          item.duration,
+                          item.stipend,
+                          item.deadline ? `Apply by ${formatDate(item.deadline)}` : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                      <button className="count-link" onClick={() => showApplications(item._id)}>
+                        <Users size={14} /> {item.applicationCount || 0} application
+                        {item.applicationCount === 1 ? "" : "s"}
+                      </button>
+                    </div>
+                    <div className="row-actions">
+                      <button
+                        className="icon-btn"
+                        title={item.isOpen ? "Hide from website" : "Show on website"}
+                        onClick={() => toggleOpen(item)}
+                        disabled={busyId === item._id}
+                      >
+                        {item.isOpen ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                      <button
+                        className="icon-btn"
+                        title="Edit"
+                        onClick={() => setEditing(item)}
+                        disabled={busyId === item._id}
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        className="icon-btn icon-danger"
+                        title="Delete"
+                        onClick={() => remove(item)}
+                        disabled={busyId === item._id}
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </main>
 
@@ -369,6 +421,246 @@ function Dashboard({ token, onLogout }) {
         />
       )}
     </div>
+  );
+}
+
+/* ---------------- Applications ---------------- */
+
+const STATUSES = [
+  { value: "new", label: "New" },
+  { value: "shortlisted", label: "Shortlisted" },
+  { value: "selected", label: "Selected" },
+  { value: "rejected", label: "Rejected" },
+];
+
+function Applications({ token, internships, filter, setFilter, onAuthError }) {
+  const [apps, setApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [openId, setOpenId] = useState("");
+  const [busyId, setBusyId] = useState("");
+
+  const handleError = (err) => {
+    if (err.status === 401) onAuthError();
+    else setError(err.message);
+  };
+
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const query = filter ? `?internship=${filter}` : "";
+      setApps(await api(`/api/admin/applications${query}`, { token }));
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  const changeStatus = async (app, status) => {
+    setBusyId(app._id);
+    try {
+      const updated = await api(`/api/admin/applications/${app._id}`, {
+        token,
+        method: "PUT",
+        body: { status },
+      });
+      setApps((list) => list.map((a) => (a._id === app._id ? updated : a)));
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setBusyId("");
+    }
+  };
+
+  const remove = async (app) => {
+    if (!window.confirm(`Delete the application from ${app.name}? This cannot be undone.`)) return;
+    setBusyId(app._id);
+    try {
+      await api(`/api/admin/applications/${app._id}`, { token, method: "DELETE" });
+      setApps((list) => list.filter((a) => a._id !== app._id));
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setBusyId("");
+    }
+  };
+
+  const counts = STATUSES.reduce(
+    (acc, s) => ({ ...acc, [s.value]: apps.filter((a) => a.status === s.value).length }),
+    {}
+  );
+  const shown = statusFilter === "all" ? apps : apps.filter((a) => a.status === statusFilter);
+
+  return (
+    <>
+      <div className="dash-head">
+        <div>
+          <h1>Applications</h1>
+          <p>
+            {apps.length} total · {counts.new || 0} new
+          </p>
+        </div>
+        <select
+          className="filter-select"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="">All internships</option>
+          {internships.map((i) => (
+            <option key={i._id} value={i._id}>
+              {i.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="chips">
+        <button
+          className={statusFilter === "all" ? "active" : ""}
+          onClick={() => setStatusFilter("all")}
+        >
+          All ({apps.length})
+        </button>
+        {STATUSES.map((s) => (
+          <button
+            key={s.value}
+            className={statusFilter === s.value ? "active" : ""}
+            onClick={() => setStatusFilter(s.value)}
+          >
+            {s.label} ({counts[s.value] || 0})
+          </button>
+        ))}
+      </div>
+
+      {error && (
+        <div className="error-box">
+          <p>{error}</p>
+          <button className="btn btn-light" onClick={load}>
+            Try again
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="empty">
+          <Loader2 size={28} className="spin" />
+          <p>Loading applications…</p>
+        </div>
+      ) : shown.length === 0 && !error ? (
+        <div className="empty">
+          <Users size={32} />
+          <h3>No applications here yet</h3>
+          <p>When students apply on the Internships page, they'll show up here.</p>
+        </div>
+      ) : (
+        <div className="list">
+          {shown.map((app) => {
+            const open = openId === app._id;
+            return (
+              <article key={app._id} className="app-card">
+                <div className="app-top">
+                  <button className="app-summary" onClick={() => setOpenId(open ? "" : app._id)}>
+                    <span className="app-avatar">{(app.name || "?").charAt(0).toUpperCase()}</span>
+                    <span className="app-who">
+                      <strong>{app.name}</strong>
+                      <span>
+                        {app.internshipTitle} · {formatDate(app.createdAt)}
+                      </span>
+                    </span>
+                    <ChevronDown size={18} className={`app-chevron ${open ? "open" : ""}`} />
+                  </button>
+                  <div className="app-controls">
+                    <select
+                      className={`status-select status-${app.status}`}
+                      value={app.status}
+                      onChange={(e) => changeStatus(app, e.target.value)}
+                      disabled={busyId === app._id}
+                    >
+                      {STATUSES.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className="icon-btn icon-danger"
+                      title="Delete"
+                      onClick={() => remove(app)}
+                      disabled={busyId === app._id}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {open && (
+                  <div className="app-details">
+                    <div className="app-links">
+                      <a href={`mailto:${app.email}`} className="btn btn-light">
+                        <Mail size={16} /> {app.email}
+                      </a>
+                      <a href={`tel:${app.phone}`} className="btn btn-light">
+                        <Phone size={16} /> {app.phone}
+                      </a>
+                      <a
+                        href={`https://wa.me/${app.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-light"
+                      >
+                        WhatsApp
+                      </a>
+                      {app.resumeLink && (
+                        <a href={app.resumeLink} target="_blank" rel="noreferrer" className="btn btn-light">
+                          <FileText size={16} /> Resume
+                        </a>
+                      )}
+                      {app.linkedin && (
+                        <a href={app.linkedin} target="_blank" rel="noreferrer" className="btn btn-light">
+                          <Linkedin size={16} /> LinkedIn
+                        </a>
+                      )}
+                    </div>
+                    <dl className="app-info">
+                      <div>
+                        <dt>College</dt>
+                        <dd>{app.college || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Course</dt>
+                        <dd>{app.course || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Year</dt>
+                        <dd>{app.year || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>City</dt>
+                        <dd>{app.city || "—"}</dd>
+                      </div>
+                    </dl>
+                    {app.message && (
+                      <div className="app-message">
+                        <dt>Why they want to join</dt>
+                        <p>{app.message}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -404,6 +696,7 @@ function InternshipForm({ token, item, onClose, onSaved, onAuthError }) {
       delete body.createdAt;
       delete body.updatedAt;
       delete body.__v;
+      delete body.applicationCount;
       const saved = item
         ? await api(`/api/admin/internships/${item._id}`, { token, method: "PUT", body })
         : await api("/api/admin/internships", { token, method: "POST", body });
@@ -511,11 +804,11 @@ function InternshipForm({ token, item, onClose, onSaved, onAuthError }) {
           </label>
 
           <label className="field">
-            <span>Application link (optional)</span>
+            <span>External application link (optional)</span>
             <input
               value={form.applyLink}
               onChange={set("applyLink")}
-              placeholder="e.g. a Google Form link. Leave empty to apply by email."
+              placeholder="Leave empty to use the built-in application form"
             />
           </label>
 
