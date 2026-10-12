@@ -1,0 +1,89 @@
+/* Resume upload box in the application form */
+
+.upload-box {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 22px 16px;
+  border: 1.5px dashed #b9c6ad;
+  border-radius: 14px;
+  background: var(--tint);
+  color: var(--green);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.upload-box:hover,
+.upload-box:focus-within {
+  border-color: var(--green);
+  background: #e6eedd;
+}
+
+.upload-box input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-box strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.upload-box small {
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.upload-chosen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #c7e0b4;
+  border-radius: 14px;
+  background: #f1f8ec;
+  color: var(--green);
+}
+
+.upload-chosen div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.upload-chosen strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-chosen small {
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.upload-chosen button {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--text);
+}
+
+.upload-chosen button:hover {
+  background: #fff;
+  color: #c0392b;
+}
+
+.upload-error {
+  color: #c0392b;
+  font-size: 0.82rem;
+}
