@@ -459,6 +459,240 @@ a {
   overflow-y: auto;
 }
 
+/* ---------- Tabs ---------- */
+
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 28px;
+  background: #e7eae3;
+  border-radius: 12px;
+}
+
+.tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.count-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.count-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Applications ---------- */
+
+.filter-select,
+.status-select {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select {
+  min-width: 220px;
+  max-width: 100%;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.chips button {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chips button.active {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+}
+
+.app-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.app-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.app-summary {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e1efd5;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.app-who {
+  min-width: 0;
+  display: grid;
+}
+
+.app-who strong {
+  font-size: 1rem;
+}
+
+.app-who span {
+  font-size: 0.85rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--text);
+  transition: transform 0.2s;
+}
+
+.app-chevron.open {
+  transform: rotate(180deg);
+}
+
+.app-controls {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.status-new {
+  color: #1d5fa8;
+  background: #eaf2fc;
+  border-color: #cfe0f5;
+}
+
+.status-shortlisted {
+  color: #8a6100;
+  background: #fdf4dc;
+  border-color: #f2e0ad;
+}
+
+.status-selected {
+  color: var(--green);
+  background: #e1efd5;
+  border-color: #c7e0b4;
+}
+
+.status-rejected {
+  color: var(--red);
+  background: #fdecea;
+  border-color: #f4cbc5;
+}
+
+.app-details {
+  padding: 4px 16px 18px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 16px;
+}
+
+.app-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.app-links .btn {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.app-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.app-info dt,
+.app-message dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.app-info dd {
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.app-message p {
+  margin-top: 4px;
+  white-space: pre-line;
+}
+
 /* ---------- Phone ---------- */
 
 @media (max-width: 640px) {
@@ -480,7 +714,30 @@ a {
     padding: 24px;
   }
 
-  .dash-head .btn {
+  .dash-head .btn,
+  .filter-select {
     width: 100%;
+  }
+
+  .app-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app-controls .status-select {
+    flex: 1;
+  }
+
+  .app-info {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tabs {
+    display: flex;
+  }
+
+  .tabs button {
+    flex: 1;
+    justify-content: center;
   }
 }
