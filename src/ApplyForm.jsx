@@ -271,6 +271,18 @@ export default function ApplyForm({ internship, onClose }) {
                 aria-hidden="true"
               />
 
+              <p className="apply-consent">
+                By submitting, you confirm you are 18 or older and agree to our{" "}
+                <a href="/privacy.html" target="_blank" rel="noreferrer">
+                  Privacy Policy
+                </a>{" "}
+                and{" "}
+                <a href="/terms.html" target="_blank" rel="noreferrer">
+                  Terms &amp; Conditions
+                </a>
+                . We never charge any fee for internships.
+              </p>
+
               {error && <p className="apply-error">{error}</p>}
             </div>
 
