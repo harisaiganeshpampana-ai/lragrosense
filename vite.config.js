@@ -19,6 +19,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         internships: resolve(__dirname, "internships.html"),
         admin: resolve(__dirname, "admin.html"),
+        interview: resolve(__dirname, "interview.html"),
       },
     },
   },
