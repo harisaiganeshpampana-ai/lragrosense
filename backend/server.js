@@ -33,7 +33,7 @@
 |   GEMINI_API_KEY  Google Gemini API key (for the AI interviewer)
 |   GEMINI_MODEL    optional, default gemini-2.5-flash
 |   GEMINI_TTS_MODEL optional, default gemini-3.8-flash-tts (natural voice)
-|   GEMINI_TTS_VOICE optional, default Puck (male). Other male voices: Charon, Orus, Fenrir
+|   GEMINI_TTS_VOICE optional, default Charon (calm male). Other male voices: Puck, Orus, Iapetus
 |   INTERVIEWER_NAME optional, default Arjun
 */
 
@@ -50,7 +50,7 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
-const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Puck";
+const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Charon";
 const INTERVIEWER_NAME = process.env.INTERVIEWER_NAME || "Arjun";
 
 if (!MONGODB_URI || !ADMIN_PASSWORD || !TOKEN_SECRET) {
@@ -389,7 +389,7 @@ const voiceLimiter = makeLimiter(150, 60 * 60 * 1000); // 150 voice clips / hour
 
 /* ---------------- AI interviewer (Google Gemini) ---------------- */
 
-async function askGemini({ system, contents, json = false, maxTokens = 600 }) {
+async function askGemini({ system, contents, json = false, maxTokens = 300 }) {
   if (!GEMINI_API_KEY) {
     const error = new Error("AI is not set up yet. Add GEMINI_API_KEY in Render.");
     error.status = 503;
@@ -475,7 +475,7 @@ function pcmToWav(pcm, sampleRate = 24000) {
 }
 
 const VOICE_STYLE =
-  "warm, friendly and relaxed, like a kind Indian interviewer chatting with a student on a call, natural pace";
+  "calm, confident, polished and articulate, like a smart and friendly AI assistant, warm but professional, natural pace";
 
 // Finds the base64 sound inside Google's reply (the reply shape differs between models)
 function findAudio(node, found = []) {
@@ -507,74 +507,75 @@ async function postJson(url, body) {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(15000),
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data?.error?.message || `error ${response.status}`);
   return data;
 }
 
+// Explains why a reply had no sound (helps with the voice-check page)
+function noAudioReason(data) {
+  const c = data?.candidates?.[0];
+  const text = (c?.content?.parts || []).map((p) => p.text || "").join(" ").slice(0, 80);
+  return `no audio (finish: ${c?.finishReason || data?.promptFeedback?.blockReason || "?"}${
+    text ? `, text: ${text}` : ""
+  })`;
+}
+
+function audioFrom(data) {
+  const found = findAudio(data);
+  if (!found.length) throw new Error(noAudioReason(data));
+  return toWav(found);
+}
+
 // Different ways to ask Google for a voice; the first one that works is remembered
+const generateVoice = (model) => ({
+  name: `${model} (generateContent)`,
+  run: async (text) =>
+    audioFrom(
+      await postJson(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+          model
+        )}:generateContent`,
+        {
+          contents: [{ parts: [{ text: `Say this in a ${VOICE_STYLE} voice: ${text}` }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } },
+          },
+        }
+      )
+    ),
+});
+
 const VOICE_METHODS = [
   {
     name: `${TTS_MODEL} (interactions)`,
     run: async (text) =>
-      toWav(
-        findAudio(
-          await postJson("https://generativelanguage.googleapis.com/v1beta/interactions", {
-            model: TTS_MODEL,
-            input: [
-              {
-                type: "user_input",
-                content: [
-                  {
-                    type: "text",
-                    text,
-                    annotations: [{ type: "speech_metadata", style: VOICE_STYLE }],
-                  },
-                ],
-              },
-            ],
-            response_format: { type: "audio" },
-            generation_config: { speech_config: [{ voice: TTS_VOICE }] },
-          })
-        )
-      ),
-  },
-  {
-    name: `${TTS_MODEL} (interactions, plain)`,
-    run: async (text) =>
-      toWav(
-        findAudio(
-          await postJson("https://generativelanguage.googleapis.com/v1beta/interactions", {
-            model: TTS_MODEL,
-            input: [{ type: "user_input", content: [{ type: "text", text }] }],
-            response_format: { type: "audio" },
-            generation_config: { speech_config: [{ voice: TTS_VOICE }] },
-          })
-        )
-      ),
-  },
-  ...[TTS_MODEL, "gemini-2.5-flash-preview-tts"].map((model) => ({
-    name: `${model} (generateContent)`,
-    run: async (text) =>
-      toWav(
-        findAudio(
-          await postJson(
-            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-              model
-            )}:generateContent`,
+      audioFrom(
+        await postJson("https://generativelanguage.googleapis.com/v1beta/interactions", {
+          model: TTS_MODEL,
+          input: [
             {
-              contents: [{ parts: [{ text: `Say this in a ${VOICE_STYLE}: ${text}` }] }],
-              generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } },
-              },
-            }
-          )
-        )
+              type: "user_input",
+              content: [
+                {
+                  type: "text",
+                  text,
+                  annotations: [{ type: "speech_metadata", style: VOICE_STYLE }],
+                },
+              ],
+            },
+          ],
+          response_format: { type: "audio" },
+          generation_config: { speech_config: [{ voice: TTS_VOICE }] },
+        })
       ),
-  })),
+  },
+  generateVoice(TTS_MODEL),
+  generateVoice("gemini-3.1-flash-tts-preview"),
+  generateVoice("gemini-2.5-flash-preview-tts"),
 ];
 
 let workingMethod = -1;
@@ -605,6 +606,27 @@ const voiceCache = new Map();
 function cacheVoice(key, audio) {
   voiceCache.set(key, audio);
   while (voiceCache.size > 150) voiceCache.delete(voiceCache.keys().next().value);
+}
+
+// Starts making the voice as soon as the AI has written its reply (saves waiting time)
+const voiceJobs = new Map();
+function warmVoice(interview) {
+  const index = interview.messages.length - 1;
+  const message = interview.messages[index];
+  if (!message || message.role !== "ai" || !GEMINI_API_KEY) return;
+  const key = `${interview.token}:${index}`;
+  if (voiceCache.has(key) || voiceJobs.has(key)) return;
+  const job = synthesize(message.text)
+    .then(({ audio }) => {
+      cacheVoice(key, audio);
+      return audio;
+    })
+    .catch((error) => {
+      console.error("Voice failed:", error.message);
+      return null;
+    })
+    .finally(() => setTimeout(() => voiceJobs.delete(key), 60000));
+  voiceJobs.set(key, job);
 }
 
 async function interviewContext(interview) {
@@ -655,7 +677,7 @@ function interviewerPrompt(interview, { application, internship }, answered) {
             : ""
         }`;
 
-  return `You are ${INTERVIEWER_NAME}, the interviewer for LR AgroSense, an early-stage AgriTech startup in Eluru, Andhra Pradesh, India, founded by Pampana Hari Sai Ganesh. You are interviewing a student for an internship on a voice call. Everything you write is spoken aloud by a natural male voice.
+  return `You are ${INTERVIEWER_NAME}, the AI interviewer for LR AgroSense, an early-stage AgriTech startup in Eluru, Andhra Pradesh, India, founded by Pampana Hari Sai Ganesh. You are interviewing a student for an internship in a live, hands-free voice conversation. Everything you write is spoken aloud by a calm, confident male voice.
 
 INTERNSHIP
 ${roleInfo}
@@ -667,12 +689,12 @@ THE FOUNDER'S INSTRUCTIONS FOR THIS INTERVIEW (follow these carefully; they deci
 ${interview.instructions || "Check their interest in agriculture, communication skills, how they would talk to farmers, their availability, and their honesty and commitment."}
 
 HOW TO TALK
-- Sound like a friendly, real human interviewer on a phone call: warm, relaxed, curious and encouraging. Not like a robot or a form.
+- Personality: calm, confident, sharp and polished, like a brilliant personal AI assistant, with a touch of light, kind humour. Warm and encouraging, never cold, never robotic, never like a form.
 - Use short, simple sentences and everyday English with contractions (I'm, that's, you'll). Many students are nervous and not fluent in English, so keep it easy.
 - React naturally and vary your reactions: "Oh nice", "Got it", "Hmm, interesting", "Okay, that makes sense", "Ah, I see". Don't repeat the same phrase twice in a row.
 - Never use robotic lines like "Thank you for your response", "Great answer", "Next question", "Question number three", "Moving on", or "As an AI language model".
 - Never number your questions. Use the student's first name only now and then, not every time.
-- Ask exactly ONE question per turn. Keep each turn under 50 words.
+- Ask exactly ONE question per turn. Keep each turn short and crisp: under 40 words.
 - If an answer is vague, very short or interesting, ask a natural follow-up ("Oh, why's that?", "Can you give me an example?"). Follow-ups count toward the ${total} questions.
 - If they seem nervous or stuck, reassure them kindly ("No worries, take your time").
 - Plain spoken words only: no lists, symbols, markdown, brackets or emojis.
@@ -1138,6 +1160,7 @@ app.post("/api/interview/:token/start", async (req, res, next) => {
       interview.startedAt = new Date();
       await interview.save();
     }
+    warmVoice(interview);
     res.json(publicInterview(interview));
   } catch (error) {
     next(error);
@@ -1187,6 +1210,7 @@ app.post("/api/interview/:token/answer", async (req, res, next) => {
       interview.completedAt = new Date();
     }
     await interview.save();
+    warmVoice(interview);
     res.json(publicInterview(interview));
 
     // Make the report for the admin after replying, so the student doesn't wait
@@ -1237,14 +1261,10 @@ app.get("/api/interview/:token/voice", async (req, res, next) => {
     const key = `${interview.token}:${index}`;
     let audio = voiceCache.get(key);
     if (!audio) {
-      try {
-        audio = (await synthesize(message.text)).audio;
-      } catch (error) {
-        console.error("Voice failed:", error.message);
-        return res.status(503).json({ error: "Voice not available." });
-      }
-      cacheVoice(key, audio);
+      if (!voiceJobs.has(key)) warmVoice({ token: interview.token, messages: interview.messages.slice(0, index + 1) });
+      audio = await voiceJobs.get(key);
     }
+    if (!audio) return res.status(503).json({ error: "Voice not available." });
     res.setHeader("Content-Type", "audio/wav");
     res.setHeader("Content-Length", audio.length);
     res.setHeader("Cache-Control", "private, max-age=3600");
