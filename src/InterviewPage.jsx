@@ -48,59 +48,91 @@ function unlockAudio() {
 }
 
 // Backup voice (built into the browser) — picks a male English voice if there is one
-const MALE = /(male|ravi|rishi|hemant|prabhat|madhur|daniel|david|mark|guy|george|james|fred|aaron|arthur)/i;
-const FEMALE = /(female|heera|kalpana|veena|neerja|swara|zira|susan|samantha|karen|moira|tessa|victoria|serena|fiona)/i;
+const MALE = /\b(male|ravi|rishi|hemant|prabhat|madhur|daniel|david|mark|guy|george|james|fred|aaron|arthur)\b/i;
+const FEMALE = /\b(female|heera|kalpana|veena|neerja|swara|zira|susan|samantha|karen|moira|tessa|victoria|serena|fiona)\b/i;
 
 function pickVoice() {
   if (!canSpeak) return null;
-  const voices = window.speechSynthesis.getVoices();
-  const english = voices.filter((v) => /^en/i.test(v.lang));
-  const indian = english.filter((v) => /en[-_]IN/i.test(v.lang));
-  return (
-    indian.find((v) => MALE.test(v.name)) ||
-    english.find((v) => MALE.test(v.name)) ||
-    indian.find((v) => !FEMALE.test(v.name)) ||
-    english.find((v) => !FEMALE.test(v.name)) ||
-    english[0] ||
-    null
-  );
+  const all = window.speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+  // Voices stored on the device work more reliably than online ones
+  const local = all.filter((v) => v.localService);
+  for (const list of [local, all]) {
+    const indian = list.filter((v) => /en[-_]IN/i.test(v.lang));
+    const pick =
+      indian.find((v) => MALE.test(v.name)) ||
+      list.find((v) => MALE.test(v.name)) ||
+      indian.find((v) => !FEMALE.test(v.name)) ||
+      list.find((v) => !FEMALE.test(v.name));
+    if (pick) return pick;
+  }
+  return all[0] || null;
 }
 
-function browserSpeak(text, id, { onStart, onEnd } = {}) {
+function browserSpeak(text, id, handlers = {}, firstTry = true) {
+  const { onStart, onEnd, onBlocked } = handlers;
   if (!canSpeak || !text) {
     onEnd?.();
     return;
   }
   const synth = window.speechSynthesis;
   synth.cancel();
-  // Long text is split into sentences so Chrome doesn't cut it off
-  const parts = text.match(/[^.!?]+[.!?]*/g)?.map((p) => p.trim()).filter(Boolean) || [text];
-  const voice = pickVoice();
-  let finished = false;
-  const done = () => {
-    if (finished || id !== playId) return;
-    finished = true;
-    onEnd?.();
-  };
-  parts.forEach((part, index) => {
-    const u = new SpeechSynthesisUtterance(part);
-    if (voice) u.voice = voice;
-    u.lang = voice?.lang || "en-IN";
-    u.rate = 0.95;
-    u.pitch = 0.9;
-    if (index === 0) u.onstart = () => id === playId && onStart?.();
-    if (index === parts.length - 1) {
-      u.onend = done;
-      u.onerror = done;
-    }
-    synth.speak(u);
-  });
-  // Safety: some phones never fire "end"
-  setTimeout(done, Math.max(4000, text.length * 110));
+  // Chrome sometimes ignores speech that starts right after "cancel", so wait a moment
+  setTimeout(() => {
+    if (id !== playId) return;
+    const parts = text.match(/[^.!?]+[.!?]*/g)?.map((p) => p.trim()).filter(Boolean) || [text];
+    const voice = firstTry ? pickVoice() : null;
+    let started = false;
+    let finished = false;
+    const done = () => {
+      if (finished || id !== playId) return;
+      finished = true;
+      onEnd?.();
+    };
+    const retry = () => {
+      if (finished || id !== playId) return;
+      finished = true;
+      synth.cancel();
+      if (firstTry) browserSpeak(text, id, handlers, false); // try again with the default voice
+      else onEnd?.();
+    };
+    parts.forEach((part, index) => {
+      const u = new SpeechSynthesisUtterance(part);
+      if (voice) u.voice = voice;
+      u.lang = voice?.lang || "en-IN";
+      u.rate = 0.95;
+      u.pitch = 0.9;
+      u.onstart = () => {
+        if (started) return;
+        started = true;
+        if (id === playId) onStart?.();
+      };
+      u.onerror = (event) => {
+        if (started) {
+          if (index === parts.length - 1) done();
+          return;
+        }
+        if (event.error === "not-allowed" && onBlocked) {
+          finished = true;
+          onBlocked();
+        } else retry();
+      };
+      if (index === parts.length - 1) u.onend = done;
+      synth.speak(u);
+    });
+    // If the voice hasn't started after 3 seconds, try the default voice
+    setTimeout(() => {
+      if (!started) retry();
+    }, 3000);
+    // Safety: some phones never say when speech ends
+    setTimeout(() => {
+      if (started) done();
+    }, Math.max(6000, text.length * 120));
+  }, 150);
 }
 
 // Plays the natural voice from our server; falls back to the browser voice if needed
-async function speak(token, index, text, { onStart, onEnd } = {}) {
+async function speak(token, index, text, handlers = {}) {
+  const { onStart, onEnd, onBlocked } = handlers;
   const id = ++playId;
   stopSound();
   if (!text) {
@@ -108,38 +140,50 @@ async function speak(token, index, text, { onStart, onEnd } = {}) {
     return;
   }
   const fallback = () => {
-    if (id === playId) browserSpeak(text, id, { onStart, onEnd });
+    if (id === playId) browserSpeak(text, id, handlers);
   };
   if (!player || index < 0) return fallback();
+  let url = voiceUrls.get(index);
   try {
-    let url = voiceUrls.get(index);
     if (!url) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 20000);
       const response = await fetch(
-        `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`
+        `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`,
+        { signal: controller.signal }
       );
+      clearTimeout(timer);
       if (!response.ok) throw new Error("no voice");
       url = URL.createObjectURL(await response.blob());
       voiceUrls.set(index, url);
     }
-    if (id !== playId) return;
-    let finished = false;
-    const done = () => {
-      if (finished || id !== playId) return;
-      finished = true;
-      onEnd?.();
-    };
-    player.onplaying = () => id === playId && onStart?.();
-    player.onended = done;
-    player.onerror = () => {
-      if (!finished) {
-        finished = true;
-        fallback();
-      }
-    };
-    player.src = url;
-    await player.play();
   } catch {
-    fallback();
+    return fallback();
+  }
+  if (id !== playId) return;
+  let finished = false;
+  const done = () => {
+    if (finished || id !== playId) return;
+    finished = true;
+    onEnd?.();
+  };
+  player.onplaying = () => id === playId && onStart?.();
+  player.onended = done;
+  player.onerror = () => {
+    if (!finished) {
+      finished = true;
+      fallback();
+    }
+  };
+  player.src = url;
+  try {
+    await player.play();
+  } catch (error) {
+    if (finished || id !== playId) return;
+    finished = true;
+    // The browser blocked sound until the person taps the page
+    if (error?.name === "NotAllowedError" && onBlocked) onBlocked();
+    else fallback();
   }
 }
 
@@ -358,6 +402,7 @@ function Interview({ token, info, setInfo, onDone }) {
   const lastAi = aiIndex >= 0 ? info.messages[aiIndex].text : "";
   const name = info.interviewerName || "Arjun";
   const [preparing, setPreparing] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
   const questionNo = Math.min(info.answered + 1, info.questionCount);
 
   const updateAnswer = (text) => {
@@ -438,8 +483,14 @@ function Interview({ token, info, setInfo, onDone }) {
   const playQuestion = useCallback(
     (autoListen = true) => {
       stopListening();
+      setNeedsTap(false);
       setPreparing(true);
       speak(token, aiIndex, lastAi, {
+        onBlocked: () => {
+          setPreparing(false);
+          setSpeaking(false);
+          setNeedsTap(true);
+        },
         onStart: () => {
           setPreparing(false);
           setSpeaking(true);
@@ -532,7 +583,12 @@ function Interview({ token, info, setInfo, onDone }) {
             : "LR AgroSense · AI interviewer"}
         </p>
         <p className="iv-question">{lastAi}</p>
-        {canSpeak && (
+        {needsTap && (
+          <button className="iv-btn iv-tap" onClick={() => playQuestion(true)}>
+            <Volume2 size={18} /> Tap to hear {name}
+          </button>
+        )}
+        {!needsTap && (
           <button
             className="iv-link"
             onClick={() => playQuestion(false)}
