@@ -1,0 +1,479 @@
+/* AI Interview page for students */
+
+:root {
+  --iv-forest: #0d2a1e;
+  --iv-forest-2: #143826;
+  --iv-green: #2f8f46;
+  --iv-leaf: #7cc04b;
+  --iv-cream: #f7f4ec;
+  --iv-ink: #15201a;
+  --iv-text: #4b574f;
+  --iv-line: #dfe3d8;
+  --iv-red: #d64545;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--iv-forest);
+  color: var(--iv-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--iv-green);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.iv-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(124, 192, 75, 0.18), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(47, 143, 70, 0.22), transparent 45%),
+    var(--iv-forest);
+  display: flex;
+  flex-direction: column;
+}
+
+.iv-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.iv-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.iv-brand b {
+  font-weight: 750;
+}
+
+.iv-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--iv-leaf);
+  border: 1px solid rgba(124, 192, 75, 0.4);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.iv-main {
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 16px 40px;
+}
+
+.iv-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.iv-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 48px 28px;
+}
+
+.iv-card h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 4.5vw, 2.1rem);
+  line-height: 1.2;
+  color: var(--iv-forest);
+}
+
+.iv-kicker {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--iv-green);
+  margin-bottom: 8px;
+}
+
+.iv-lead {
+  color: var(--iv-text);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin-top: 12px;
+}
+
+.iv-small {
+  color: var(--iv-text);
+  font-size: 0.9rem;
+}
+
+.iv-tips {
+  margin: 20px 0;
+  padding: 18px 18px 18px 38px;
+  background: var(--iv-cream);
+  border-radius: 14px;
+  color: var(--iv-text);
+  line-height: 1.6;
+}
+
+.iv-tips li + li {
+  margin-top: 6px;
+}
+
+.iv-note {
+  background: #fff6e0;
+  border: 1px solid #f0d58c;
+  color: #6b5210;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.93rem;
+  margin-bottom: 16px;
+}
+
+.iv-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.93rem;
+  color: var(--iv-text);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.iv-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex: none;
+  accent-color: var(--iv-green);
+}
+
+.iv-error {
+  margin-top: 14px;
+  color: #b42318;
+  background: #fdecea;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.93rem;
+}
+
+.iv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--iv-forest);
+  color: #fff;
+  font-weight: 650;
+  padding: 13px 20px;
+  text-decoration: none;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.iv-btn:hover:not(:disabled) {
+  background: var(--iv-green);
+}
+
+.iv-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.iv-btn-big {
+  width: 100%;
+  margin-top: 22px;
+  padding: 16px;
+  font-size: 1.05rem;
+}
+
+.iv-btn-light {
+  background: var(--iv-cream);
+  color: var(--iv-forest);
+  margin-top: 8px;
+}
+
+.iv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  color: var(--iv-green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+}
+
+.iv-link:disabled {
+  opacity: 0.5;
+}
+
+.iv-spin {
+  animation: iv-spin 0.9s linear infinite;
+}
+
+.iv-warn {
+  color: #c27c0e;
+}
+
+.iv-ok {
+  color: var(--iv-green);
+}
+
+@keyframes iv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Live interview */
+
+.iv-live {
+  padding: 24px;
+}
+
+.iv-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--iv-text);
+}
+
+.iv-progress span {
+  flex: none;
+}
+
+.iv-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--iv-cream);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.iv-progress-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--iv-green), var(--iv-leaf));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.iv-ai {
+  text-align: center;
+  padding: 26px 8px 18px;
+}
+
+.iv-orb {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: radial-gradient(circle at 35% 30%, var(--iv-leaf), var(--iv-green) 55%, var(--iv-forest));
+  box-shadow: 0 10px 30px rgba(47, 143, 70, 0.35);
+}
+
+.iv-orb svg {
+  position: relative;
+  z-index: 1;
+}
+
+.iv-orb span {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 3px solid rgba(124, 192, 75, 0.5);
+  opacity: 0;
+}
+
+.iv-orb.is-speaking span {
+  animation: iv-pulse 1.3s ease-out infinite;
+}
+
+.iv-orb.is-thinking {
+  animation: iv-breathe 1.2s ease-in-out infinite;
+}
+
+@keyframes iv-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes iv-breathe {
+  50% {
+    transform: scale(0.92);
+    opacity: 0.75;
+  }
+}
+
+.iv-ai-status {
+  margin-top: 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--iv-green);
+}
+
+.iv-question {
+  margin: 10px auto 8px;
+  max-width: 560px;
+  font-size: clamp(1.1rem, 3.6vw, 1.3rem);
+  line-height: 1.55;
+  color: var(--iv-ink);
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+.iv-answer {
+  background: var(--iv-cream);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.iv-answer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--iv-text);
+}
+
+.iv-answer textarea {
+  width: 100%;
+  border: 1px solid var(--iv-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.55;
+  resize: vertical;
+  background: #fff;
+  color: var(--iv-ink);
+}
+
+.iv-answer textarea:focus {
+  outline: 2px solid rgba(47, 143, 70, 0.35);
+  border-color: var(--iv-green);
+}
+
+.iv-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.iv-mic {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border-radius: 50%;
+  border: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--iv-green);
+  box-shadow: 0 8px 20px rgba(47, 143, 70, 0.35);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.iv-mic:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.iv-mic.is-on {
+  background: var(--iv-red);
+  box-shadow: 0 0 0 0 rgba(214, 69, 69, 0.5);
+  animation: iv-ring 1.4s ease-out infinite;
+}
+
+.iv-mic:disabled {
+  opacity: 0.5;
+}
+
+@keyframes iv-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(214, 69, 69, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 18px rgba(214, 69, 69, 0);
+  }
+}
+
+.iv-mic-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--iv-text);
+  line-height: 1.4;
+}
+
+.iv-live-dot {
+  color: var(--iv-red);
+}
+
+@media (max-width: 560px) {
+  .iv-card {
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .iv-live {
+    padding: 18px 14px;
+  }
+
+  .iv-controls {
+    flex-wrap: wrap;
+  }
+
+  .iv-controls .iv-btn {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .iv-tag {
+    display: none;
+  }
+}
