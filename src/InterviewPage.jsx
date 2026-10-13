@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
+  Keyboard,
   Loader2,
   Mic,
-  RotateCcw,
+  MicOff,
   Send,
-  Square,
   Sprout,
   Volume2,
 } from "lucide-react";
@@ -15,6 +15,11 @@ import { API_BASE, CONTACT_EMAIL } from "./config";
 const SpeechRecognition =
   typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
 const canSpeak = typeof window !== "undefined" && "speechSynthesis" in window;
+
+// How long the student must stay quiet before the answer is sent automatically
+const AUTO_SEND_MS = 2600;
+// How long to wait for the natural voice before using the backup voice
+const VOICE_WAIT_MS = 9000;
 
 async function call(path, body) {
   let response;
@@ -40,6 +45,7 @@ const SILENT_WAV =
 const player = typeof Audio !== "undefined" ? new Audio() : null;
 const voiceUrls = new Map(); // message number -> downloaded voice clip
 let playId = 0;
+let naturalFailures = 0; // after 2 failures we use the backup voice straight away
 
 function unlockAudio() {
   if (!player) return;
@@ -47,21 +53,19 @@ function unlockAudio() {
   player.play().catch(() => {});
 }
 
-// Backup voice (built into the browser) — picks a male English voice if there is one
-const MALE = /\b(male|ravi|rishi|hemant|prabhat|madhur|daniel|david|mark|guy|george|james|fred|aaron|arthur)\b/i;
-const FEMALE = /\b(female|heera|kalpana|veena|neerja|swara|zira|susan|samantha|karen|moira|tessa|victoria|serena|fiona)\b/i;
+// Backup voice (built into the browser): a clear male English voice
+const MALE = /\b(male|ryan|george|daniel|thomas|guy|ravi|rishi|hemant|prabhat|madhur|david|mark|james|fred|aaron|arthur)\b/i;
+const FEMALE = /\b(female|heera|kalpana|veena|neerja|swara|zira|susan|samantha|karen|moira|tessa|victoria|serena|fiona|libby|sonia|hazel)\b/i;
 
 function pickVoice() {
   if (!canSpeak) return null;
   const all = window.speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
-  // Voices stored on the device work more reliably than online ones
   const local = all.filter((v) => v.localService);
   for (const list of [local, all]) {
-    const indian = list.filter((v) => /en[-_]IN/i.test(v.lang));
     const pick =
-      indian.find((v) => MALE.test(v.name)) ||
+      list.find((v) => /en[-_]GB/i.test(v.lang) && MALE.test(v.name)) ||
+      list.find((v) => /en[-_]IN/i.test(v.lang) && MALE.test(v.name)) ||
       list.find((v) => MALE.test(v.name)) ||
-      indian.find((v) => !FEMALE.test(v.name)) ||
       list.find((v) => !FEMALE.test(v.name));
     if (pick) return pick;
   }
@@ -99,8 +103,8 @@ function browserSpeak(text, id, handlers = {}, firstTry = true) {
       const u = new SpeechSynthesisUtterance(part);
       if (voice) u.voice = voice;
       u.lang = voice?.lang || "en-IN";
-      u.rate = 0.95;
-      u.pitch = 0.9;
+      u.rate = 1;
+      u.pitch = 0.85;
       u.onstart = () => {
         if (started) return;
         started = true;
@@ -130,7 +134,7 @@ function browserSpeak(text, id, handlers = {}, firstTry = true) {
   }, 150);
 }
 
-// Plays the natural voice from our server; falls back to the browser voice if needed
+// Plays the natural voice from our server; uses the backup voice if it is slow or fails
 async function speak(token, index, text, handlers = {}) {
   const { onStart, onEnd, onBlocked } = handlers;
   const id = ++playId;
@@ -142,12 +146,12 @@ async function speak(token, index, text, handlers = {}) {
   const fallback = () => {
     if (id === playId) browserSpeak(text, id, handlers);
   };
-  if (!player || index < 0) return fallback();
   let url = voiceUrls.get(index);
+  if (!player || index < 0 || (!url && naturalFailures >= 2)) return fallback();
   try {
     if (!url) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 20000);
+      const timer = setTimeout(() => controller.abort(), VOICE_WAIT_MS);
       const response = await fetch(
         `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`,
         { signal: controller.signal }
@@ -156,8 +160,10 @@ async function speak(token, index, text, handlers = {}) {
       if (!response.ok) throw new Error("no voice");
       url = URL.createObjectURL(await response.blob());
       voiceUrls.set(index, url);
+      naturalFailures = 0;
     }
   } catch {
+    naturalFailures += 1;
     return fallback();
   }
   if (id !== playId) return;
@@ -206,6 +212,83 @@ function lastAiIndex(messages = []) {
   return -1;
 }
 
+function wordCount(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+/* ---------- Animated core ---------- */
+
+function Core({ state, letter, onClick }) {
+  return (
+    <button
+      type="button"
+      className={`hud hud-${state}`}
+      onClick={onClick}
+      aria-label={state === "speaking" ? "Skip and answer now" : "Interviewer"}
+    >
+      <svg viewBox="0 0 220 220" aria-hidden="true">
+        <defs>
+          <radialGradient id="hudGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#bfffee" stopOpacity="0.95" />
+            <stop offset="45%" stopColor="#3be8c8" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#0a3b3a" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle className="hud-halo" cx="110" cy="110" r="104" fill="url(#hudGlow)" />
+        <circle className="hud-ring hud-r1" cx="110" cy="110" r="100" />
+        <circle className="hud-ring hud-r2" cx="110" cy="110" r="88" />
+        <circle className="hud-ring hud-r3" cx="110" cy="110" r="76" />
+        <circle className="hud-arc hud-a1" cx="110" cy="110" r="94" />
+        <circle className="hud-arc hud-a2" cx="110" cy="110" r="82" />
+        <g className="hud-ticks">
+          {Array.from({ length: 36 }, (_, i) => (
+            <line
+              key={i}
+              x1="110"
+              y1="4"
+              x2="110"
+              y2={i % 3 === 0 ? "14" : "9"}
+              transform={`rotate(${i * 10} 110 110)`}
+            />
+          ))}
+        </g>
+      </svg>
+      <span className="hud-core">
+        <b>{letter}</b>
+      </span>
+      <span className="hud-bars" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+      </span>
+    </button>
+  );
+}
+
+/* Shows the interviewer's words like subtitles, typing them out */
+function Typewriter({ text }) {
+  const [shown, setShown] = useState("");
+  useEffect(() => {
+    setShown("");
+    if (!text) return undefined;
+    let i = 0;
+    const timer = setInterval(() => {
+      i += 2;
+      setShown(text.slice(0, i));
+      if (i >= text.length) clearInterval(timer);
+    }, 28);
+    return () => clearInterval(timer);
+  }, [text]);
+  return (
+    <p className="hud-subtitle" aria-live="polite">
+      {shown}
+      {shown.length < text.length && <span className="hud-caret" />}
+    </p>
+  );
+}
+
 /* ---------- Page ---------- */
 
 export default function InterviewPage() {
@@ -242,6 +325,7 @@ export default function InterviewPage() {
 
   return (
     <div className="iv-page">
+      <div className="iv-grid" aria-hidden="true" />
       <header className="iv-bar">
         <a href="/" className="iv-brand">
           <span className="brand-mark">
@@ -251,14 +335,16 @@ export default function InterviewPage() {
             LR <b>AgroSense</b>
           </span>
         </a>
-        <span className="iv-tag">AI Interview</span>
+        <span className="iv-tag">
+          <i /> AI Interview
+        </span>
       </header>
 
       <main className="iv-main">
         {stage === "loading" && (
           <div className="iv-card iv-center">
             <Loader2 size={34} className="iv-spin" />
-            <p>Loading your interview… (this can take up to a minute the first time)</p>
+            <p>Connecting… (this can take up to a minute the first time)</p>
           </div>
         )}
 
@@ -274,19 +360,18 @@ export default function InterviewPage() {
         )}
 
         {stage === "intro" && info && (
-          <Intro info={info} token={token} onStarted={(data) => {
-            setInfo(data);
-            setStage(data.status === "completed" ? "done" : "interview");
-          }} />
+          <Intro
+            info={info}
+            token={token}
+            onStarted={(data) => {
+              setInfo(data);
+              setStage(data.status === "completed" ? "done" : "interview");
+            }}
+          />
         )}
 
         {stage === "interview" && info && (
-          <Interview
-            token={token}
-            info={info}
-            setInfo={setInfo}
-            onDone={() => setStage("done")}
-          />
+          <Interview token={token} info={info} setInfo={setInfo} onDone={() => setStage("done")} />
         )}
 
         {stage === "done" && info && <Done info={info} token={token} />}
@@ -302,6 +387,7 @@ function Intro({ info, token, onStarted }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const resuming = info.status === "in_progress" && info.messages.length > 0;
+  const name = info.interviewerName || "Arjun";
 
   const start = async () => {
     setError("");
@@ -334,23 +420,29 @@ function Intro({ info, token, onStarted }) {
   };
 
   return (
-    <div className="iv-card">
+    <div className="iv-card iv-intro">
+      <div className="iv-intro-core">
+        <Core state="idle" letter={name.charAt(0)} />
+      </div>
       <span className="iv-kicker">{info.internshipTitle}</span>
       <h1>
-        Hi {info.candidateFirstName || "there"}, welcome to your interview{resuming ? " (continue)" : ""}
+        Hi {info.candidateFirstName || "there"}, I'm {name}.
       </h1>
       <p className="iv-lead">
-        Your interviewer today is <b>{info.interviewerName || "Arjun"}</b>, LR AgroSense's AI
-        interviewer. It's a friendly voice chat of about <b>{info.questionCount} questions</b>.{" "}
-        {info.interviewerName || "Arjun"} speaks each question, and you answer by speaking —
-        just like a normal call.
+        LR AgroSense's AI interviewer. We'll have a short, hands-free voice conversation of about{" "}
+        <b>{info.questionCount} questions</b>
+        {resuming ? " — let's continue where we stopped" : ""}.
       </p>
 
       <ul className="iv-tips">
-        <li>Takes about 10–15 minutes. Sit in a quiet place.</li>
-        <li>Use <b>Google Chrome</b> on your phone or laptop for the best voice support.</li>
-        <li>Tap the microphone, speak your answer, check the text, then tap <b>Send answer</b>.</li>
-        <li>You can also type or correct your answer before sending.</li>
+        <li>
+          <b>Just talk.</b> After I finish speaking, the mic turns on by itself. When you pause for
+          a moment, your answer is sent automatically.
+        </li>
+        <li>
+          Sit in a quiet place and use <b>Google Chrome</b> with sound on. Takes 10–15 minutes.
+        </li>
+        <li>You can also type, or tap the circle to skip my voice and answer straight away.</li>
         <li>Answer honestly in your own words. Simple English is perfectly fine.</li>
       </ul>
 
@@ -378,7 +470,7 @@ function Intro({ info, token, onStarted }) {
 
       <button className="iv-btn iv-btn-big" disabled={!agree || busy} onClick={start}>
         {busy ? <Loader2 size={20} className="iv-spin" /> : <Mic size={20} />}
-        {busy ? "Starting…" : resuming ? "Continue interview" : "Start interview"}
+        {busy ? "Connecting…" : resuming ? "Continue interview" : "Start interview"}
       </button>
     </div>
   );
@@ -391,24 +483,52 @@ function Interview({ token, info, setInfo, onDone }) {
   const [interim, setInterim] = useState("");
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [sending, setSending] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
+  const [typing, setTyping] = useState(!SpeechRecognition);
+  const [countdown, setCountdown] = useState(0); // changes each time the auto-send timer restarts
   const [error, setError] = useState("");
 
   const recRef = useRef(null);
   const wantListen = useRef(false);
   const answerRef = useRef("");
+  const interimRef = useRef("");
+  const silenceTimer = useRef(null);
+  const sendRef = useRef(() => {});
+  const typingRef = useRef(typing);
+  typingRef.current = typing;
 
   const aiIndex = lastAiIndex(info.messages);
   const lastAi = aiIndex >= 0 ? info.messages[aiIndex].text : "";
   const name = info.interviewerName || "Arjun";
-  const [preparing, setPreparing] = useState(false);
-  const [needsTap, setNeedsTap] = useState(false);
   const questionNo = Math.min(info.answered + 1, info.questionCount);
 
   const updateAnswer = (text) => {
     answerRef.current = text;
     setAnswer(text);
   };
+  const updateInterim = (text) => {
+    interimRef.current = text;
+    setInterim(text);
+  };
+
+  const clearSilence = () => {
+    clearTimeout(silenceTimer.current);
+    setCountdown(0);
+  };
+
+  // Every time the student says something, restart the "send when quiet" timer
+  const armSilence = useCallback(() => {
+    clearTimeout(silenceTimer.current);
+    if (typingRef.current || !wantListen.current) return;
+    setCountdown((c) => c + 1);
+    silenceTimer.current = setTimeout(() => {
+      const text = `${answerRef.current} ${interimRef.current}`.trim();
+      if (wantListen.current && !typingRef.current && wordCount(text) >= 2) sendRef.current();
+      else setCountdown(0);
+    }, AUTO_SEND_MS);
+  }, []);
 
   /* Listening (student speaking) */
   const startRecognition = useCallback(() => {
@@ -430,23 +550,25 @@ function Interview({ token, info, setInfo, onDone }) {
       if (finalText.trim()) {
         const base = answerRef.current.trim();
         updateAnswer(base ? `${base} ${finalText.trim()}` : finalText.trim());
-        setInterim("");
+        updateInterim("");
       } else {
-        setInterim(interimText);
+        updateInterim(interimText);
       }
+      armSilence();
     };
     rec.onerror = (event) => {
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         wantListen.current = false;
+        setTyping(true);
         setError("Microphone is blocked. Please allow it in your browser, or type your answer.");
       }
     };
     rec.onend = () => {
-      setInterim("");
+      updateInterim("");
       if (wantListen.current) {
         setTimeout(() => {
           if (wantListen.current) startRecognition();
-        }, 150);
+        }, 120);
       } else {
         setListening(false);
       }
@@ -457,12 +579,14 @@ function Interview({ token, info, setInfo, onDone }) {
     } catch {
       /* already started */
     }
-  }, []);
+  }, [armSilence]);
 
   const startListening = useCallback(() => {
     if (!SpeechRecognition) return;
     stopSpeaking();
     setSpeaking(false);
+    setPreparing(false);
+    setNeedsTap(false);
     setError("");
     wantListen.current = true;
     setListening(true);
@@ -471,6 +595,7 @@ function Interview({ token, info, setInfo, onDone }) {
 
   const stopListening = useCallback(() => {
     wantListen.current = false;
+    clearSilence();
     setListening(false);
     try {
       recRef.current?.stop();
@@ -498,7 +623,7 @@ function Interview({ token, info, setInfo, onDone }) {
         onEnd: () => {
           setPreparing(false);
           setSpeaking(false);
-          if (autoListen && SpeechRecognition) startListening();
+          if (autoListen && SpeechRecognition && !typingRef.current) startListening();
         },
       });
     },
@@ -513,6 +638,7 @@ function Interview({ token, info, setInfo, onDone }) {
   useEffect(
     () => () => {
       wantListen.current = false;
+      clearTimeout(silenceTimer.current);
       try {
         recRef.current?.abort();
       } catch {
@@ -524,7 +650,7 @@ function Interview({ token, info, setInfo, onDone }) {
   );
 
   const send = async () => {
-    const text = `${answerRef.current} ${interim}`.trim();
+    const text = `${answerRef.current} ${interimRef.current}`.trim();
     if (text.length < 2) {
       setError("Please say or type your answer first.");
       return;
@@ -538,7 +664,7 @@ function Interview({ token, info, setInfo, onDone }) {
     try {
       const data = await call(`/api/interview/${encodeURIComponent(token)}/answer`, { text });
       updateAnswer("");
-      setInterim("");
+      updateInterim("");
       if (data.status === "completed") {
         setInfo({ ...data, justFinished: true });
         onDone();
@@ -546,111 +672,153 @@ function Interview({ token, info, setInfo, onDone }) {
         setInfo(data);
       }
     } catch (err) {
+      // Keep the answer so they can try again
+      updateAnswer(text);
       setError(err.message);
     } finally {
       setSending(false);
     }
   };
+  sendRef.current = send;
 
+  // Tapping the core: skip the voice and answer now, or start the mic
+  const onCore = () => {
+    if (sending) return;
+    if (needsTap) {
+      playQuestion(true);
+      return;
+    }
+    if (speaking || preparing) {
+      stopSpeaking();
+      setSpeaking(false);
+      setPreparing(false);
+      if (SpeechRecognition && !typing) startListening();
+      return;
+    }
+    if (!listening && SpeechRecognition && !typing) startListening();
+  };
+
+  const toggleTyping = () => {
+    if (typing) {
+      setTyping(false);
+      if (SpeechRecognition) startListening();
+    } else {
+      stopListening();
+      setTyping(true);
+    }
+  };
+
+  const state = sending || preparing ? "thinking" : speaking ? "speaking" : listening ? "listening" : "idle";
+  const statusText = {
+    thinking: `${name} is thinking`,
+    speaking: `${name} is speaking`,
+    listening: "Listening",
+    idle: typing ? "Type your answer" : "Tap the circle to talk",
+  }[state];
   const progress = Math.round((info.answered / info.questionCount) * 100);
+  const liveText = `${answer}${interim ? `${answer ? " " : ""}${interim}` : ""}`;
 
   return (
-    <div className="iv-card iv-live">
+    <div className="iv-live">
       <div className="iv-progress">
         <span>
-          Question {questionNo} of {info.questionCount}
+          {String(questionNo).padStart(2, "0")} / {String(info.questionCount).padStart(2, "0")}
         </span>
         <div className="iv-progress-bar">
           <i style={{ width: `${progress}%` }} />
         </div>
+        <span className="iv-progress-name">{name.toUpperCase()}</span>
       </div>
 
-      <div className="iv-ai">
-        <div
-          className={`iv-orb ${speaking ? "is-speaking" : ""} ${
-            sending || preparing ? "is-thinking" : ""
-          }`}
-        >
-          <span />
-          <b className="iv-initial">{name.charAt(0)}</b>
-        </div>
-        <p className="iv-ai-name">{name}</p>
-        <p className="iv-ai-status">
-          {sending || preparing
-            ? `${name} is thinking…`
-            : speaking
-            ? `${name} is speaking…`
-            : "LR AgroSense · AI interviewer"}
+      <div className="iv-stage">
+        <Core state={state} letter={name.charAt(0)} onClick={onCore} />
+        <p className={`hud-status hud-status-${state}`}>
+          <i />
+          {statusText}
+          {state === "thinking" && <span className="hud-dots" />}
         </p>
-        <p className="iv-question">{lastAi}</p>
-        {needsTap && (
-          <button className="iv-btn iv-tap" onClick={() => playQuestion(true)}>
-            <Volume2 size={18} /> Tap to hear {name}
-          </button>
-        )}
-        {!needsTap && (
-          <button
-            className="iv-link"
-            onClick={() => playQuestion(false)}
-            disabled={sending || preparing}
-          >
-            <Volume2 size={16} /> Repeat question
-          </button>
-        )}
-      </div>
-
-      <div className="iv-answer">
-        <div className="iv-answer-head">
-          <span>Your answer</span>
-          {answer && !listening && (
-            <button className="iv-link" onClick={() => updateAnswer("")} disabled={sending}>
-              <RotateCcw size={14} /> Clear
+        <Typewriter text={lastAi} />
+        <div className="hud-actions">
+          {needsTap ? (
+            <button className="iv-btn iv-tap" onClick={() => playQuestion(true)}>
+              <Volume2 size={18} /> Tap to hear {name}
+            </button>
+          ) : (
+            <button
+              className="iv-link"
+              onClick={() => playQuestion(false)}
+              disabled={sending || preparing}
+            >
+              <Volume2 size={15} /> Repeat
             </button>
           )}
         </div>
-        <textarea
-          value={answer + (interim ? `${answer ? " " : ""}${interim}` : "")}
-          onChange={(e) => {
-            setInterim("");
-            updateAnswer(e.target.value);
-          }}
-          placeholder={
-            SpeechRecognition
-              ? "Tap the microphone and speak. Your words will appear here."
-              : "Type your answer here."
-          }
-          rows={5}
-          maxLength={3000}
-          disabled={sending}
-        />
+      </div>
+
+      <div className={`iv-answer ${listening ? "is-live" : ""}`}>
+        <div className="iv-answer-head">
+          <span>You</span>
+          {SpeechRecognition && (
+            <button className="iv-link" onClick={toggleTyping} disabled={sending}>
+              {typing ? <Mic size={14} /> : <Keyboard size={14} />}
+              {typing ? "Speak instead" : "Type instead"}
+            </button>
+          )}
+        </div>
+
+        {typing ? (
+          <textarea
+            value={answer}
+            onChange={(e) => updateAnswer(e.target.value)}
+            placeholder="Type your answer here."
+            rows={4}
+            maxLength={3000}
+            disabled={sending}
+            autoFocus
+          />
+        ) : (
+          <p className={`iv-transcript ${liveText ? "" : "is-empty"}`}>
+            {liveText ||
+              (listening
+                ? "Go ahead, I'm listening…"
+                : sending
+                ? "Sending…"
+                : "Your words will appear here.")}
+          </p>
+        )}
+
+        {!typing && listening && countdown > 0 && (
+          <div className="iv-autosend" key={countdown}>
+            <i style={{ animationDuration: `${AUTO_SEND_MS}ms` }} />
+            <span>Sending when you pause…</span>
+          </div>
+        )}
 
         {error && <p className="iv-error">{error}</p>}
 
         <div className="iv-controls">
-          {SpeechRecognition && (
+          {SpeechRecognition && !typing && (
             <button
               className={`iv-mic ${listening ? "is-on" : ""}`}
               onClick={listening ? stopListening : startListening}
               disabled={sending}
-              aria-label={listening ? "Stop listening" : "Start speaking"}
+              aria-label={listening ? "Pause microphone" : "Start speaking"}
             >
-              {listening ? <Square size={22} /> : <Mic size={26} />}
+              {listening ? <MicOff size={20} /> : <Mic size={20} />}
             </button>
           )}
-          <div className="iv-mic-label">
-            {listening ? (
-              <>
-                <b className="iv-live-dot">Listening…</b> tap ■ when you finish
-              </>
-            ) : SpeechRecognition ? (
-              "Tap the mic to speak"
-            ) : (
-              "Type your answer"
-            )}
-          </div>
-          <button className="iv-btn" onClick={send} disabled={sending || !(answer || interim).trim()}>
+          {(answer || interim) && !sending && (
+            <button className="iv-link" onClick={() => updateAnswer("")}>
+              Clear
+            </button>
+          )}
+          <button
+            className="iv-btn iv-send"
+            onClick={send}
+            disabled={sending || !(answer || interim).trim()}
+          >
             {sending ? <Loader2 size={18} className="iv-spin" /> : <Send size={18} />}
-            {sending ? "Sending…" : "Send answer"}
+            {sending ? "Sending…" : "Send now"}
           </button>
         </div>
       </div>
@@ -663,18 +831,27 @@ function Interview({ token, info, setInfo, onDone }) {
 function Done({ info, token }) {
   const closingIndex = lastAiIndex(info.messages);
   const closing = closingIndex >= 0 ? info.messages[closingIndex].text : "";
+  const name = info.interviewerName || "Arjun";
+  const [talking, setTalking] = useState(false);
 
   // Say the goodbye message aloud right after the last answer
   useEffect(() => {
-    if (info.justFinished && closing) speak(token, closingIndex, closing);
+    if (info.justFinished && closing) {
+      speak(token, closingIndex, closing, {
+        onStart: () => setTalking(true),
+        onEnd: () => setTalking(false),
+      });
+    }
     return () => stopSpeaking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="iv-card iv-center">
-      <CheckCircle2 size={56} className="iv-ok" />
-      <h1>Interview completed</h1>
+    <div className="iv-card iv-center iv-done">
+      <Core state={talking ? "speaking" : "idle"} letter={name.charAt(0)} />
+      <h1>
+        <CheckCircle2 size={26} className="iv-ok" /> Interview completed
+      </h1>
       <p className="iv-lead">
         {closing ||
           "Thank you for taking the interview. The LR AgroSense team will review it and contact you by email."}
