@@ -32,22 +32,41 @@ async function call(path, body) {
   return data;
 }
 
-/* ---------- Computer voice (AI speaking) ---------- */
+/* ---------- Voice (interviewer speaking) ---------- */
+
+// Tiny silent sound, played on the first tap so phones allow audio later
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+const player = typeof Audio !== "undefined" ? new Audio() : null;
+const voiceUrls = new Map(); // message number -> downloaded voice clip
+let playId = 0;
+
+function unlockAudio() {
+  if (!player) return;
+  player.src = SILENT_WAV;
+  player.play().catch(() => {});
+}
+
+// Backup voice (built into the browser) — picks a male English voice if there is one
+const MALE = /(male|ravi|rishi|hemant|prabhat|madhur|daniel|david|mark|guy|george|james|fred|aaron|arthur)/i;
+const FEMALE = /(female|heera|kalpana|veena|neerja|swara|zira|susan|samantha|karen|moira|tessa|victoria|serena|fiona)/i;
 
 function pickVoice() {
   if (!canSpeak) return null;
   const voices = window.speechSynthesis.getVoices();
   const english = voices.filter((v) => /^en/i.test(v.lang));
+  const indian = english.filter((v) => /en[-_]IN/i.test(v.lang));
   return (
-    english.find((v) => /en[-_]IN/i.test(v.lang) && /google/i.test(v.name)) ||
-    english.find((v) => /en[-_]IN/i.test(v.lang)) ||
-    english.find((v) => /google/i.test(v.name)) ||
+    indian.find((v) => MALE.test(v.name)) ||
+    english.find((v) => MALE.test(v.name)) ||
+    indian.find((v) => !FEMALE.test(v.name)) ||
+    english.find((v) => !FEMALE.test(v.name)) ||
     english[0] ||
     null
   );
 }
 
-function speak(text, { onStart, onEnd } = {}) {
+function browserSpeak(text, id, { onStart, onEnd } = {}) {
   if (!canSpeak || !text) {
     onEnd?.();
     return;
@@ -59,7 +78,7 @@ function speak(text, { onStart, onEnd } = {}) {
   const voice = pickVoice();
   let finished = false;
   const done = () => {
-    if (finished) return;
+    if (finished || id !== playId) return;
     finished = true;
     onEnd?.();
   };
@@ -68,7 +87,8 @@ function speak(text, { onStart, onEnd } = {}) {
     if (voice) u.voice = voice;
     u.lang = voice?.lang || "en-IN";
     u.rate = 0.95;
-    if (index === 0) u.onstart = () => onStart?.();
+    u.pitch = 0.9;
+    if (index === 0) u.onstart = () => id === playId && onStart?.();
     if (index === parts.length - 1) {
       u.onend = done;
       u.onerror = done;
@@ -79,8 +99,67 @@ function speak(text, { onStart, onEnd } = {}) {
   setTimeout(done, Math.max(4000, text.length * 110));
 }
 
-function stopSpeaking() {
+// Plays the natural voice from our server; falls back to the browser voice if needed
+async function speak(token, index, text, { onStart, onEnd } = {}) {
+  const id = ++playId;
+  stopSound();
+  if (!text) {
+    onEnd?.();
+    return;
+  }
+  const fallback = () => {
+    if (id === playId) browserSpeak(text, id, { onStart, onEnd });
+  };
+  if (!player || index < 0) return fallback();
+  try {
+    let url = voiceUrls.get(index);
+    if (!url) {
+      const response = await fetch(
+        `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`
+      );
+      if (!response.ok) throw new Error("no voice");
+      url = URL.createObjectURL(await response.blob());
+      voiceUrls.set(index, url);
+    }
+    if (id !== playId) return;
+    let finished = false;
+    const done = () => {
+      if (finished || id !== playId) return;
+      finished = true;
+      onEnd?.();
+    };
+    player.onplaying = () => id === playId && onStart?.();
+    player.onended = done;
+    player.onerror = () => {
+      if (!finished) {
+        finished = true;
+        fallback();
+      }
+    };
+    player.src = url;
+    await player.play();
+  } catch {
+    fallback();
+  }
+}
+
+function stopSound() {
+  if (player) {
+    player.onended = null;
+    player.onerror = null;
+    player.pause();
+  }
   if (canSpeak) window.speechSynthesis.cancel();
+}
+
+function stopSpeaking() {
+  playId += 1;
+  stopSound();
+}
+
+function lastAiIndex(messages = []) {
+  for (let i = messages.length - 1; i >= 0; i -= 1) if (messages[i].role === "ai") return i;
+  return -1;
 }
 
 /* ---------- Page ---------- */
@@ -166,7 +245,7 @@ export default function InterviewPage() {
           />
         )}
 
-        {stage === "done" && info && <Done info={info} />}
+        {stage === "done" && info && <Done info={info} token={token} />}
       </main>
     </div>
   );
@@ -195,7 +274,8 @@ function Intro({ info, token, onStarted }) {
           );
         }
       }
-      // Unlock the computer voice on phones (must happen right after a tap)
+      // Unlock sound on phones (must happen right after a tap)
+      unlockAudio();
       if (canSpeak) {
         const u = new SpeechSynthesisUtterance(" ");
         u.volume = 0;
@@ -216,9 +296,10 @@ function Intro({ info, token, onStarted }) {
         Hi {info.candidateFirstName || "there"}, welcome to your interview{resuming ? " (continue)" : ""}
       </h1>
       <p className="iv-lead">
-        This is a short voice interview taken by our AI interviewer. It will ask you about{" "}
-        <b>{info.questionCount} questions</b>, one at a time. It speaks each question aloud,
-        and you answer by speaking.
+        Your interviewer today is <b>{info.interviewerName || "Arjun"}</b>, LR AgroSense's AI
+        interviewer. It's a friendly voice chat of about <b>{info.questionCount} questions</b>.{" "}
+        {info.interviewerName || "Arjun"} speaks each question, and you answer by speaking —
+        just like a normal call.
       </p>
 
       <ul className="iv-tips">
@@ -273,7 +354,10 @@ function Interview({ token, info, setInfo, onDone }) {
   const wantListen = useRef(false);
   const answerRef = useRef("");
 
-  const lastAi = [...info.messages].reverse().find((m) => m.role === "ai")?.text || "";
+  const aiIndex = lastAiIndex(info.messages);
+  const lastAi = aiIndex >= 0 ? info.messages[aiIndex].text : "";
+  const name = info.interviewerName || "Arjun";
+  const [preparing, setPreparing] = useState(false);
   const questionNo = Math.min(info.answered + 1, info.questionCount);
 
   const updateAnswer = (text) => {
@@ -352,23 +436,28 @@ function Interview({ token, info, setInfo, onDone }) {
 
   /* Speak each new question, then start listening automatically */
   const playQuestion = useCallback(
-    (text, autoListen = true) => {
+    (autoListen = true) => {
       stopListening();
-      speak(text, {
-        onStart: () => setSpeaking(true),
+      setPreparing(true);
+      speak(token, aiIndex, lastAi, {
+        onStart: () => {
+          setPreparing(false);
+          setSpeaking(true);
+        },
         onEnd: () => {
+          setPreparing(false);
           setSpeaking(false);
           if (autoListen && SpeechRecognition) startListening();
         },
       });
     },
-    [startListening, stopListening]
+    [token, aiIndex, lastAi, startListening, stopListening]
   );
 
   useEffect(() => {
-    if (lastAi) playQuestion(lastAi);
+    if (lastAi) playQuestion();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastAi]);
+  }, [aiIndex]);
 
   useEffect(
     () => () => {
@@ -391,6 +480,8 @@ function Interview({ token, info, setInfo, onDone }) {
     }
     stopListening();
     stopSpeaking();
+    setSpeaking(false);
+    setPreparing(false);
     setError("");
     setSending(true);
     try {
@@ -424,19 +515,28 @@ function Interview({ token, info, setInfo, onDone }) {
       </div>
 
       <div className="iv-ai">
-        <div className={`iv-orb ${speaking ? "is-speaking" : ""} ${sending ? "is-thinking" : ""}`}>
+        <div
+          className={`iv-orb ${speaking ? "is-speaking" : ""} ${
+            sending || preparing ? "is-thinking" : ""
+          }`}
+        >
           <span />
-          <Sprout size={30} />
+          <b className="iv-initial">{name.charAt(0)}</b>
         </div>
+        <p className="iv-ai-name">{name}</p>
         <p className="iv-ai-status">
-          {sending ? "Thinking…" : speaking ? "Interviewer is speaking…" : "Interviewer"}
+          {sending || preparing
+            ? `${name} is thinking…`
+            : speaking
+            ? `${name} is speaking…`
+            : "LR AgroSense · AI interviewer"}
         </p>
         <p className="iv-question">{lastAi}</p>
         {canSpeak && (
           <button
             className="iv-link"
-            onClick={() => playQuestion(lastAi, false)}
-            disabled={sending}
+            onClick={() => playQuestion(false)}
+            disabled={sending || preparing}
           >
             <Volume2 size={16} /> Repeat question
           </button>
@@ -504,12 +604,13 @@ function Interview({ token, info, setInfo, onDone }) {
 
 /* ---------- Finished ---------- */
 
-function Done({ info }) {
-  const closing = [...(info.messages || [])].reverse().find((m) => m.role === "ai")?.text;
+function Done({ info, token }) {
+  const closingIndex = lastAiIndex(info.messages);
+  const closing = closingIndex >= 0 ? info.messages[closingIndex].text : "";
 
-  // Read the goodbye message aloud right after the last answer
+  // Say the goodbye message aloud right after the last answer
   useEffect(() => {
-    if (info.justFinished && closing) speak(closing);
+    if (info.justFinished && closing) speak(token, closingIndex, closing);
     return () => stopSpeaking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
