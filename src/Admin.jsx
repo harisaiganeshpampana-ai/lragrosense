@@ -17,8 +17,10 @@ import {
   FileText,
   Linkedin,
   ChevronDown,
+  Bot,
 } from "lucide-react";
 import { API_BASE } from "./config";
+import { DEFAULT_INSTRUCTIONS, InterviewBadge, InterviewPanel } from "./AdminInterview";
 
 const TOKEN_KEY = "lr_admin_token";
 
@@ -35,6 +37,8 @@ const emptyForm = {
   skills: "",
   applyLink: "",
   isOpen: true,
+  interviewInstructions: "",
+  interviewQuestions: 6,
 };
 
 function readToken() {
@@ -440,6 +444,7 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [openId, setOpenId] = useState("");
   const [busyId, setBusyId] = useState("");
+  const [interviews, setInterviews] = useState([]);
 
   const handleError = (err) => {
     if (err.status === 401) onAuthError();
@@ -451,7 +456,12 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
     setError("");
     try {
       const query = filter ? `?internship=${filter}` : "";
-      setApps(await api(`/api/admin/applications${query}`, { token }));
+      const [appList, interviewList] = await Promise.all([
+        api(`/api/admin/applications${query}`, { token }),
+        api("/api/admin/interviews", { token }).catch(() => []),
+      ]);
+      setApps(appList);
+      setInterviews(interviewList);
     } catch (err) {
       handleError(err);
     } finally {
@@ -528,6 +538,21 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
     } finally {
       setBusyId("");
     }
+  };
+
+  // Newest AI interview for each application
+  const interviewFor = (appId) => interviews.find((iv) => iv.application === appId) || null;
+
+  const onInterviewChange = (updated, removedId) => {
+    setInterviews((list) => {
+      if (!updated) return list.filter((iv) => iv._id !== removedId);
+      const others = list.filter(
+        (iv) =>
+          iv._id !== updated._id &&
+          !(iv.application === updated.application && iv.status !== "completed")
+      );
+      return [updated, ...others];
+    });
   };
 
   const counts = STATUSES.reduce(
@@ -607,7 +632,10 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
                   <button className="app-summary" onClick={() => setOpenId(open ? "" : app._id)}>
                     <span className="app-avatar">{(app.name || "?").charAt(0).toUpperCase()}</span>
                     <span className="app-who">
-                      <strong>{app.name}</strong>
+                      <strong>
+                        {app.name}
+                        <InterviewBadge interview={interviewFor(app._id)} />
+                      </strong>
                       <span>
                         {app.internshipTitle} · {formatDate(app.createdAt)}
                       </span>
@@ -699,6 +727,16 @@ function Applications({ token, internships, filter, setFilter, onAuthError }) {
                         <p>{app.message}</p>
                       </div>
                     )}
+                    <InterviewPanel
+                      key={interviewFor(app._id)?._id || "none"}
+                      app={app}
+                      interview={interviewFor(app._id)}
+                      internship={internships.find((i) => i._id === app.internship)}
+                      token={token}
+                      api={api}
+                      onChange={onInterviewChange}
+                      onAuthError={onAuthError}
+                    />
                   </div>
                 )}
               </article>
@@ -855,6 +893,36 @@ function InternshipForm({ token, item, onClose, onSaved, onAuthError }) {
               value={form.applyLink}
               onChange={set("applyLink")}
               placeholder="Leave empty to use the built-in application form"
+            />
+          </label>
+
+          <div className="form-section">
+            <Bot size={18} /> AI voice interview
+          </div>
+
+          <label className="field">
+            <span>Your instructions for the AI interviewer</span>
+            <textarea
+              rows={6}
+              value={form.interviewInstructions}
+              onChange={set("interviewInstructions")}
+              placeholder={DEFAULT_INSTRUCTIONS}
+              maxLength={4000}
+            />
+            <small className="field-hint">
+              Tell the AI what to ask and what to check. Used when you create an AI interview for a
+              shortlisted student (you can still change it for each student).
+            </small>
+          </label>
+
+          <label className="field" style={{ maxWidth: 220 }}>
+            <span>Number of AI questions</span>
+            <input
+              type="number"
+              min="3"
+              max="15"
+              value={form.interviewQuestions}
+              onChange={set("interviewQuestions")}
             />
           </label>
 
