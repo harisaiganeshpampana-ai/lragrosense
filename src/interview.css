@@ -382,6 +382,11 @@ button {
   white-space: pre-line;
 }
 
+.iv-tap {
+  margin: 6px auto 10px;
+  background: var(--iv-green);
+}
+
 .iv-answer {
   background: var(--iv-cream);
   border-radius: 16px;
