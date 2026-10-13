@@ -32,7 +32,7 @@
 |   FRONTEND_URL    https://lragrosense.in
 |   GEMINI_API_KEY  Google Gemini API key (for the AI interviewer)
 |   GEMINI_MODEL    optional, default gemini-2.5-flash
-|   GEMINI_TTS_MODEL optional, default gemini-2.5-flash-preview-tts (natural voice)
+|   GEMINI_TTS_MODEL optional, default gemini-3.8-flash-tts (natural voice)
 |   GEMINI_TTS_VOICE optional, default Puck (male). Other male voices: Charon, Orus, Fenrir
 |   INTERVIEWER_NAME optional, default Arjun
 */
@@ -49,7 +49,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-2.5-flash-preview-tts";
+const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
 const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Puck";
 const INTERVIEWER_NAME = process.env.INTERVIEWER_NAME || "Arjun";
 
@@ -474,40 +474,130 @@ function pcmToWav(pcm, sampleRate = 24000) {
   return Buffer.concat([header, pcm]);
 }
 
-async function synthesize(text) {
-  if (!GEMINI_API_KEY) throw new Error("No GEMINI_API_KEY");
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-    TTS_MODEL
-  )}:generateContent`;
+const VOICE_STYLE =
+  "warm, friendly and relaxed, like a kind Indian interviewer chatting with a student on a call, natural pace";
+
+// Finds the base64 sound inside Google's reply (the reply shape differs between models)
+function findAudio(node, found = []) {
+  if (Array.isArray(node)) {
+    node.forEach((n) => findAudio(n, found));
+  } else if (node && typeof node === "object") {
+    const mime = String(node.mime_type || node.mimeType || "");
+    if (typeof node.data === "string" && node.data.length > 200 && (/audio/i.test(mime) || node.type === "audio")) {
+      found.push({ data: node.data, mime });
+    }
+    Object.values(node).forEach((v) => {
+      if (v && typeof v === "object") findAudio(v, found);
+    });
+  }
+  return found;
+}
+
+function toWav(found) {
+  const last = found[found.length - 1];
+  if (!last) throw new Error("no audio in reply");
+  const audio = Buffer.from(last.data, "base64");
+  if (audio.subarray(0, 4).toString() === "RIFF") return audio;
+  const rate = parseInt((last.mime.match(/rate=(\d+)/) || [])[1], 10) || 24000;
+  return pcmToWav(audio, rate);
+}
+
+async function postJson(url, body) {
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: `Say this like a warm, friendly, relaxed Indian interviewer chatting with a student on a call, at a natural pace: ${text}`,
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        responseModalities: ["AUDIO"],
-        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } },
-      },
-    }),
-    signal: AbortSignal.timeout(30000),
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(25000),
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data?.error?.message || `TTS error ${response.status}`);
-  const part = (data?.candidates?.[0]?.content?.parts || []).find((p) => p.inlineData?.data);
-  if (!part) throw new Error("TTS gave no audio");
-  const audio = Buffer.from(part.inlineData.data, "base64");
-  const mime = String(part.inlineData.mimeType || "");
-  if (/wav/i.test(mime) || audio.subarray(0, 4).toString() === "RIFF") return audio;
-  const rate = parseInt((mime.match(/rate=(\d+)/) || [])[1], 10) || 24000;
-  return pcmToWav(audio, rate);
+  if (!response.ok) throw new Error(data?.error?.message || `error ${response.status}`);
+  return data;
+}
+
+// Different ways to ask Google for a voice; the first one that works is remembered
+const VOICE_METHODS = [
+  {
+    name: `${TTS_MODEL} (interactions)`,
+    run: async (text) =>
+      toWav(
+        findAudio(
+          await postJson("https://generativelanguage.googleapis.com/v1beta/interactions", {
+            model: TTS_MODEL,
+            input: [
+              {
+                type: "user_input",
+                content: [
+                  {
+                    type: "text",
+                    text,
+                    annotations: [{ type: "speech_metadata", style: VOICE_STYLE }],
+                  },
+                ],
+              },
+            ],
+            response_format: { type: "audio" },
+            generation_config: { speech_config: [{ voice: TTS_VOICE }] },
+          })
+        )
+      ),
+  },
+  {
+    name: `${TTS_MODEL} (interactions, plain)`,
+    run: async (text) =>
+      toWav(
+        findAudio(
+          await postJson("https://generativelanguage.googleapis.com/v1beta/interactions", {
+            model: TTS_MODEL,
+            input: [{ type: "user_input", content: [{ type: "text", text }] }],
+            response_format: { type: "audio" },
+            generation_config: { speech_config: [{ voice: TTS_VOICE }] },
+          })
+        )
+      ),
+  },
+  ...[TTS_MODEL, "gemini-2.5-flash-preview-tts"].map((model) => ({
+    name: `${model} (generateContent)`,
+    run: async (text) =>
+      toWav(
+        findAudio(
+          await postJson(
+            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+              model
+            )}:generateContent`,
+            {
+              contents: [{ parts: [{ text: `Say this in a ${VOICE_STYLE}: ${text}` }] }],
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } },
+              },
+            }
+          )
+        )
+      ),
+  })),
+];
+
+let workingMethod = -1;
+
+async function synthesize(text) {
+  if (!GEMINI_API_KEY) throw new Error("No GEMINI_API_KEY");
+  const errors = [];
+  const order =
+    workingMethod >= 0
+      ? [workingMethod, ...VOICE_METHODS.keys()].filter((v, i, a) => a.indexOf(v) === i)
+      : [...VOICE_METHODS.keys()];
+  for (const index of order) {
+    try {
+      const audio = await VOICE_METHODS[index].run(text);
+      workingMethod = index;
+      return { audio, method: VOICE_METHODS[index].name, errors };
+    } catch (error) {
+      errors.push(`${VOICE_METHODS[index].name}: ${error.message}`);
+    }
+  }
+  const error = new Error(errors.join(" | "));
+  error.details = errors;
+  throw error;
 }
 
 // Keeps recent voice clips so "Repeat question" doesn't make a new one
@@ -1112,6 +1202,25 @@ app.post("/api/interview/:token/answer", async (req, res, next) => {
   }
 });
 
+// Health check for the natural voice: open /api/voice-check in a browser
+let lastVoiceCheck = null;
+app.get("/api/voice-check", async (req, res) => {
+  if (lastVoiceCheck && Date.now() - lastVoiceCheck.at < 5 * 60 * 1000) {
+    return res.json(lastVoiceCheck.result);
+  }
+  if (voiceLimiter.tooMany(req.ip)) return res.status(429).json({ error: "Too many requests." });
+  const started = Date.now();
+  let result;
+  try {
+    const { audio, method, errors } = await synthesize("Hello! This is a quick voice test.");
+    result = { ok: true, method, voice: TTS_VOICE, bytes: audio.length, ms: Date.now() - started, skipped: errors };
+  } catch (error) {
+    result = { ok: false, voice: TTS_VOICE, keySet: Boolean(GEMINI_API_KEY), errors: error.details || [error.message] };
+  }
+  lastVoiceCheck = { at: Date.now(), result };
+  res.json(result);
+});
+
 // Student: natural voice for one interviewer message (?i = message number)
 app.get("/api/interview/:token/voice", async (req, res, next) => {
   try {
@@ -1129,7 +1238,7 @@ app.get("/api/interview/:token/voice", async (req, res, next) => {
     let audio = voiceCache.get(key);
     if (!audio) {
       try {
-        audio = await synthesize(message.text);
+        audio = (await synthesize(message.text)).audio;
       } catch (error) {
         console.error("Voice failed:", error.message);
         return res.status(503).json({ error: "Voice not available." });
