@@ -1,0 +1,20 @@
+name: Daily co-founder summary
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up the server and send the summary
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 30 https://lragrosense.onrender.com/api/health; then break; fi
+            sleep 20
+          done
+          curl -fsS --max-time 120 -X POST \
+            -H "x-cron-key: $CRON_SECRET" \
+            https://lragrosense.onrender.com/api/cron/daily-summary
