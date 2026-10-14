@@ -18,8 +18,9 @@ const canSpeak = typeof window !== "undefined" && "speechSynthesis" in window;
 
 // How long the student must stay quiet before the answer is sent automatically
 const AUTO_SEND_MS = 2600;
-// How long to wait for the natural voice before using the backup voice
-const VOICE_WAIT_MS = 9000;
+// How long to wait for the natural voice: first question decides which voice is used
+const FIRST_VOICE_WAIT_MS = 12000;
+const NEXT_VOICE_WAIT_MS = 20000;
 
 async function call(path, body) {
   let response;
@@ -45,7 +46,10 @@ const SILENT_WAV =
 const player = typeof Audio !== "undefined" ? new Audio() : null;
 const voiceUrls = new Map(); // message number -> downloaded voice clip
 let playId = 0;
-let naturalFailures = 0; // after 2 failures we use the backup voice straight away
+// One voice for the whole interview: "natural" (Google) or "browser" (backup), decided once
+let voiceMode = null;
+// The backup voice is chosen once and then kept, so it never changes mid-interview
+let lockedVoice; // undefined = not chosen yet, null = browser default voice
 
 function unlockAudio() {
   if (!player) return;
@@ -72,6 +76,19 @@ function pickVoice() {
   return all[0] || null;
 }
 
+// The browser loads its voice list a moment after the page opens; wait for it (max 1.5 s)
+function voicesReady() {
+  if (!canSpeak || window.speechSynthesis.getVoices().length) return Promise.resolve();
+  return new Promise((resolve) => {
+    const finish = () => {
+      window.speechSynthesis.removeEventListener?.("voiceschanged", finish);
+      resolve();
+    };
+    window.speechSynthesis.addEventListener?.("voiceschanged", finish);
+    setTimeout(finish, 1500);
+  });
+}
+
 function browserSpeak(text, id, handlers = {}, firstTry = true) {
   const { onStart, onEnd, onBlocked } = handlers;
   if (!canSpeak || !text) {
@@ -81,10 +98,13 @@ function browserSpeak(text, id, handlers = {}, firstTry = true) {
   const synth = window.speechSynthesis;
   synth.cancel();
   // Chrome sometimes ignores speech that starts right after "cancel", so wait a moment
-  setTimeout(() => {
+  setTimeout(async () => {
+    await voicesReady();
     if (id !== playId) return;
     const parts = text.match(/[^.!?]+[.!?]*/g)?.map((p) => p.trim()).filter(Boolean) || [text];
-    const voice = firstTry ? pickVoice() : null;
+    if (lockedVoice === undefined) lockedVoice = pickVoice();
+    if (!firstTry) lockedVoice = null; // the chosen voice failed; use the default from now on
+    const voice = lockedVoice;
     let started = false;
     let finished = false;
     const done = () => {
@@ -96,7 +116,7 @@ function browserSpeak(text, id, handlers = {}, firstTry = true) {
       if (finished || id !== playId) return;
       finished = true;
       synth.cancel();
-      if (firstTry) browserSpeak(text, id, handlers, false); // try again with the default voice
+      if (firstTry && lockedVoice) browserSpeak(text, id, handlers, false); // try the default voice
       else onEnd?.();
     };
     parts.forEach((part, index) => {
@@ -147,24 +167,32 @@ async function speak(token, index, text, handlers = {}) {
     if (id === playId) browserSpeak(text, id, handlers);
   };
   let url = voiceUrls.get(index);
-  if (!player || index < 0 || (!url && naturalFailures >= 2)) return fallback();
-  try {
-    if (!url) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), VOICE_WAIT_MS);
-      const response = await fetch(
-        `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`,
-        { signal: controller.signal }
-      );
-      clearTimeout(timer);
-      if (!response.ok) throw new Error("no voice");
-      url = URL.createObjectURL(await response.blob());
-      voiceUrls.set(index, url);
-      naturalFailures = 0;
+  if (!player || index < 0 || (!url && voiceMode === "browser")) return fallback();
+  if (!url) {
+    // Once the natural voice has worked, wait longer and retry so the voice stays the same
+    const tries = voiceMode === "natural" ? 2 : 1;
+    const wait = voiceMode === "natural" ? NEXT_VOICE_WAIT_MS : FIRST_VOICE_WAIT_MS;
+    for (let attempt = 0; attempt < tries && !url; attempt += 1) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), wait);
+        const response = await fetch(
+          `${API_BASE}/api/interview/${encodeURIComponent(token)}/voice?i=${index}`,
+          { signal: controller.signal }
+        );
+        clearTimeout(timer);
+        if (response.ok) url = URL.createObjectURL(await response.blob());
+      } catch {
+        /* try again or use the backup voice */
+      }
+      if (id !== playId) return;
     }
-  } catch {
-    naturalFailures += 1;
-    return fallback();
+    if (!url) {
+      if (voiceMode === null) voiceMode = "browser"; // natural voice not available: keep backup voice
+      return fallback();
+    }
+    voiceMode = "natural";
+    voiceUrls.set(index, url);
   }
   if (id !== playId) return;
   let finished = false;
