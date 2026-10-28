@@ -1350,14 +1350,22 @@ app.post("/api/applications", async (req, res, next) => {
       }
     }
 
+    // AI co-founder: write the thank-you email draft before replying, because some servers
+    // (like Google Cloud Run) pause background work once the reply is sent
+    try {
+      await queueEmail("ack", application, TEMPLATES.ack(application));
+    } catch (error) {
+      console.error("Thank-you email draft failed:", error.message);
+    }
+
     res.status(201).json({ ok: true });
 
-    // AI co-founder: thank-you email draft + screening, after replying to the student
+    // AI screening runs after replying. If the server pauses it, the daily summary
+    // or the "Screen with AI" button in the admin portal will finish it later.
     runInBackground(async () => {
-      await queueEmail("ack", application, TEMPLATES.ack(application));
       const settings = await getSettings();
       if (settings.autoScreen && GEMINI_API_KEY) await screenApplication(application._id);
-    }, "New application tasks");
+    }, "New application screening");
   } catch (error) {
     next(error);
   }
