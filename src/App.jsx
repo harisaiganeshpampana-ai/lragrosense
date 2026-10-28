@@ -5,15 +5,14 @@ import {
   Menu,
   X,
   Droplets,
-  FlaskConical,
-  Thermometer,
-  Wind,
-  Leaf,
   Radio,
-  Cloud,
-  Smartphone,
+  Power,
+  Zap,
+  BellRing,
+  MessageSquare,
+  Phone,
+  Moon,
   Sprout,
-  Satellite,
   Languages,
   Search,
   ClipboardCheck,
@@ -26,7 +25,6 @@ import {
   Handshake,
   Building2,
   Tractor,
-  CircleDollarSign,
   ShieldAlert,
   GraduationCap,
   Code2,
@@ -51,66 +49,73 @@ const navLinks = [
 ];
 
 const measures = [
-  { icon: Droplets, label: "Soil moisture" },
-  { icon: FlaskConical, label: "Soil pH" },
-  { icon: Leaf, label: "NPK nutrients" },
-  { icon: Thermometer, label: "Temperature" },
-  { icon: Wind, label: "Humidity" },
+  { icon: MessageSquare, label: "Motor on/off by SMS" },
+  { icon: Droplets, label: "Auto-stop when soil is wet" },
+  { icon: Zap, label: "Power on/off alerts" },
+  { icon: Phone, label: "Works on any basic phone" },
+];
+
+// Short SMS conversation shown in the hero (prototype preview)
+const smsChat = [
+  { from: "farmer", text: "MOTOR ON" },
+  { from: "device", text: "Motor is ON. Soil moisture 31%." },
+  { from: "device", text: "Field is wet enough (62%). Motor stopped automatically." },
+  { from: "device", text: "Power cut at 2:14 PM. Motor is OFF." },
 ];
 
 const problems = [
+  {
+    icon: Moon,
+    title: "Trips to the pump at all hours",
+    text: "Farm power often comes at odd hours, even late at night. Farmers walk to the field just to switch the motor on or off.",
+  },
   {
     icon: Droplets,
     title: "Water is used by guesswork",
     text: "Without knowing what the soil actually holds, fields get watered too much or too little, wasting water and power while stressing the crop.",
   },
   {
-    icon: CircleDollarSign,
-    title: "Fertilizer costs keep rising",
-    text: "Nutrients are often applied by habit, not by need. That costs money, harms soil health and doesn't always improve yield.",
-  },
-  {
     icon: ShieldAlert,
-    title: "Problems are spotted too late",
-    text: "By the time stress shows on the plant, the damage is done. Early signals from the soil and weather could warn farmers sooner.",
+    title: "Power cuts go unnoticed",
+    text: "When power goes off or comes back, nobody knows. Irrigation stops halfway, or the motor runs longer than it should.",
   },
 ];
 
 const steps = [
   {
-    icon: Radio,
-    title: "Sense",
-    text: "A low-cost sensor unit in the field measures soil and weather conditions through the day.",
+    icon: MessageSquare,
+    title: "Send an SMS",
+    text: "The farmer texts MOTOR ON or MOTOR OFF from any phone, even a basic keypad phone. No internet or app needed.",
   },
   {
-    icon: Cloud,
-    title: "Send",
-    text: "Readings travel over the network to a secure cloud, building a history of the field.",
+    icon: Power,
+    title: "Pump switches",
+    text: "The controller at the pump receives the message over the mobile network and switches the motor safely.",
   },
   {
-    icon: Sprout,
-    title: "Understand",
-    text: "Data is combined with agricultural knowledge to turn raw numbers into clear advice.",
+    icon: Droplets,
+    title: "Soil is watched",
+    text: "A soil moisture sensor checks the field. When the soil is wet enough, the pump stops by itself.",
   },
   {
-    icon: Smartphone,
-    title: "Act",
-    text: "Farmers get simple alerts in their own language: when to irrigate, what to watch for.",
+    icon: BellRing,
+    title: "Farmer is told",
+    text: "The farmer gets an SMS when the motor starts or stops and when power goes off or comes back.",
   },
 ];
 
 const platform = [
   {
-    icon: Radio,
-    title: "Smart Farm Monitor",
+    icon: Power,
+    title: "SMS Pump Controller",
     status: "In development",
-    text: "Our first product. An affordable IoT unit that tracks the soil and farm conditions that matter most for irrigation and crop decisions.",
+    text: "Our first product. Switch the farm pump on or off by SMS, stop it automatically when the soil is wet, and get power alerts.",
   },
   {
-    icon: Satellite,
-    title: "Smart Farm Station",
+    icon: Radio,
+    title: "Smart Farm Monitor",
     status: "Research",
-    text: "An integrated station combining soil, weather and environmental data for a fuller picture of field conditions.",
+    text: "A field unit that tracks soil moisture, temperature and humidity over time for better irrigation decisions.",
   },
   {
     icon: Languages,
@@ -165,18 +170,18 @@ const process = [
 const roadmap = [
   {
     phase: "Now",
-    title: "Smart Farm Monitor",
-    text: "Building and validating an affordable IoT monitoring system for key farm parameters.",
+    title: "SMS Pump Controller",
+    text: "Building and testing the prototype step by step, first with a small test pump on the bench.",
   },
   {
     phase: "Next",
-    title: "Field validation",
-    text: "Pilots with farmers and agricultural experts to test the technology in real conditions.",
+    title: "Field pilots",
+    text: "Pilots on real farms, with every farm motor connected by a licensed electrician.",
   },
   {
     phase: "Later",
-    title: "Agricultural intelligence",
-    text: "Systems that combine farm data with agricultural knowledge to give useful advice.",
+    title: "Smart Farm Monitor",
+    text: "Field monitoring of soil moisture, temperature and humidity, connected with the pump controller.",
   },
   {
     phase: "Vision",
@@ -210,11 +215,19 @@ const faqs = [
   },
   {
     q: "What is your first product?",
-    a: "The Smart Farm Monitor, an IoT-based system that measures soil moisture, pH, NPK nutrients, temperature and humidity. It is currently in development and testing.",
+    a: "The SMS Pump Controller. Farmers can switch their motor on or off from any phone by SMS, the pump stops automatically when the field is wet enough, and they get alerts when power goes off or comes back. It is currently in development.",
   },
   {
-    q: "Can I buy the Smart Farm Monitor today?",
-    a: "Not yet. We are still building and validating it. If you'd like to pilot it on your farm or be notified at launch, email us.",
+    q: "Do farmers need a smartphone or internet?",
+    a: "No. It works with simple SMS messages, so any basic keypad phone with a SIM is enough.",
+  },
+  {
+    q: "Can I buy the SMS Pump Controller today?",
+    a: "Not yet. We are still building and testing the prototype. If you'd like to pilot it on your farm or be notified at launch, email us.",
+  },
+  {
+    q: "Is it safe to connect to my farm motor?",
+    a: "Safety comes first. During pilots, the controller will be connected to real farm motors only by a licensed electrician.",
   },
   {
     q: "Who are you building for?",
@@ -322,14 +335,15 @@ function App() {
                 <span className="dot" /> Early-stage AgriTech · India
               </span>
               <h1>
-                Know your soil.
+                Run your farm pump
                 <br />
-                <em>Grow with confidence.</em>
+                <em>from any phone.</em>
               </h1>
               <p className="hero-lead">
-                LR AgroSense builds affordable IoT and AI tools that turn field
-                data into simple, timely advice, so farmers can save water,
-                use fertilizer wisely and protect their crops.
+                Our SMS Pump Controller lets farmers switch their motor on or
+                off with a simple text message, stops the pump when the field
+                is wet enough, and sends power alerts. No smartphone or
+                internet needed.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-accent" onClick={() => go("product")}>
@@ -345,29 +359,28 @@ function App() {
               <div className="hero-photo">
                 <img src="/assets/agri_hero_bg.jpg" alt="Green crop fields at sunrise" />
               </div>
-              <div className="reading-card">
+              <div className="reading-card sms-card">
                 <div className="reading-head">
-                  <span>Field 01 · Paddy</span>
+                  <span>
+                    <MessageSquare size={14} /> Pump · Field 01
+                  </span>
                   <span className="live">
                     <span className="dot" /> Prototype preview
                   </span>
                 </div>
-                <div className="reading-grid">
-                  <Reading label="Moisture" value="38" unit="%" fill={38} />
-                  <Reading label="Soil pH" value="6.8" unit="" fill={68} />
-                  <Reading label="Temp" value="29" unit="°C" fill={58} />
-                  <Reading label="Humidity" value="71" unit="%" fill={71} />
-                </div>
-                <div className="reading-alert">
-                  <Droplets size={16} />
-                  Soil is drying. Irrigate within 24 hours.
+                <div className="sms-thread">
+                  {smsChat.map((m, i) => (
+                    <p key={i} className={`sms sms-${m.from}`}>
+                      {m.text}
+                    </p>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
           <div className="container measures">
-            <span className="measures-label">What we measure</span>
+            <span className="measures-label">What it does</span>
             <div className="measures-list">
               {measures.map(({ icon: Icon, label }) => (
                 <span key={label} className="measure">
@@ -409,21 +422,24 @@ function App() {
           <div className="container product-grid">
             <div>
               <span className="eyebrow">Our first product</span>
-              <h2>Smart Farm Monitor</h2>
+              <h2>SMS Pump Controller</h2>
               <p className="lead">
-                A rugged, low-cost sensor unit that sits in the field and
-                watches the conditions that drive crop health, around the
-                clock.
+                A low-cost controller that sits next to the farm pump, so
+                farmers don't have to walk to the field just to switch the
+                motor on or off.
               </p>
               <ul className="checks">
-                <li>Measures soil moisture, pH, NPK, temperature and humidity</li>
+                <li>Switch the motor on or off by SMS from any phone</li>
+                <li>Pump stops automatically when the field is wet enough</li>
+                <li>SMS alerts when power goes off or comes back</li>
+                <li>No smartphone, internet or app needed</li>
                 <li>Designed to be affordable for small and medium farms</li>
-                <li>Sends readings to the cloud for history and analysis</li>
-                <li>Plain-language alerts instead of complicated charts</li>
               </ul>
               <div className="status-row">
                 <span className="badge">In development</span>
-                <span className="muted">Currently in prototyping and field testing</span>
+                <span className="muted">
+                  Prototype stage. Farm motors are connected only by a licensed electrician.
+                </span>
               </div>
             </div>
 
@@ -433,7 +449,7 @@ function App() {
                 <div className="device-body">
                   <div className="device-screen">
                     <span className="device-brand">LR AgroSense</span>
-                    <span className="device-model">Smart Farm Monitor</span>
+                    <span className="device-model">SMS Pump Controller</span>
                     <div className="device-lights">
                       <i /> <i /> <i />
                     </div>
@@ -511,10 +527,10 @@ function App() {
           <div className="container">
             <div className="section-head">
               <span className="eyebrow eyebrow-light">The platform</span>
-              <h2>One sensor today. A farming platform tomorrow.</h2>
+              <h2>One pump controller today. A farming platform tomorrow.</h2>
               <p>
-                Our roadmap connects field sensing, agricultural data and
-                intelligent software into one long-term ecosystem for farmers.
+                Our roadmap connects pump control, field sensing and simple
+                software into one long-term ecosystem for farmers.
               </p>
             </div>
             <div className="cards-3">
@@ -749,21 +765,6 @@ function App() {
           </span>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function Reading({ label, value, unit, fill }) {
-  return (
-    <div className="reading">
-      <span className="reading-label">{label}</span>
-      <span className="reading-value">
-        {value}
-        <small>{unit}</small>
-      </span>
-      <span className="reading-bar">
-        <span style={{ width: `${fill}%` }} />
-      </span>
     </div>
   );
 }
