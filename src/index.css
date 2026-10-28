@@ -435,6 +435,50 @@ p {
   font-weight: 600;
 }
 
+/* SMS conversation card (hero) */
+
+.sms-card .reading-head > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sms-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sms {
+  max-width: 86%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.sms-farmer {
+  align-self: flex-end;
+  background: var(--forest);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sms-device {
+  align-self: flex-start;
+  background: var(--tint);
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+}
+
+.sms-device:last-child {
+  background: #fdf4dc;
+  color: #7a5a06;
+}
+
 .measures {
   margin-top: 64px;
   padding: 28px 24px;
@@ -1343,11 +1387,16 @@ p {
     padding: 6px 10px;
   }
 
+  .tag-0 { top: 6%; left: 4%; }
+  .tag-1 { top: 17%; right: 4%; }
+
   .tag-2,
   .tag-3 {
     top: auto;
-    bottom: 140px;
   }
+
+  .tag-2 { bottom: 150px; left: 4%; }
+  .tag-3 { bottom: 98px; right: 4%; z-index: 4; }
 
   .careers {
     padding: 28px 20px;
