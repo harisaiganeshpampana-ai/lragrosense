@@ -12,9 +12,9 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 30 https://lragrosense.onrender.com/api/health; then break; fi
+            if curl -fsS --max-time 30 https://lragrosense-693170332600.asia-south1.run.app/api/health; then break; fi
             sleep 20
           done
           curl -fsS --max-time 120 -X POST \
             -H "x-cron-key: $CRON_SECRET" \
-            https://lragrosense.onrender.com/api/cron/daily-summary
+            https://lragrosense-693170332600.asia-south1.run.app/api/cron/daily-summary
