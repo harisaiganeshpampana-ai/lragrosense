@@ -1,70 +1,94 @@
 import React, { useEffect, useState } from "react";
-import { CalendarCheck, ClipboardList, ListTodo, LogOut, MessageSquare, Sprout, Users } from "lucide-react";
+import { FolderOpen, LogOut, MessageCircle, MessageSquare, ShieldCheck, Sprout } from "lucide-react";
 import PortalLogin from "./PortalLogin";
-import TeamPeople from "./TeamPeople";
-import FieldReports from "./AdminFieldReports";
-import TeamDailyUpdates from "./TeamDailyUpdates";
+import InviteSetup from "./InviteSetup";
 import TeamChat from "./TeamChat";
-import TeamTasks from "./TeamTasks";
+import TeamMessages from "./TeamMessages";
+import TeamFiles from "./TeamFiles";
 import { portalApi, readSession, saveSession } from "./portalApi";
 
 const SESSION_KEY = "lr_team_session";
 
-// Team portal: team chat + tasks for the core team. Managers (e.g. Sandeep)
-// also get the intern tabs.
+function readInvite() {
+  try {
+    return new URLSearchParams(window.location.search).get("invite") || "";
+  } catch {
+    return "";
+  }
+}
+
+function clearInviteFromUrl() {
+  try {
+    window.history.replaceState(null, "", window.location.pathname);
+  } catch {
+    /* ignore */
+  }
+}
+
+// Team portal for the core team: group chat, direct messages, calls and file sharing
 export default function TeamPortal() {
   const [session, setSession] = useState(() => readSession(SESSION_KEY));
-  const [tab, setTab] = useState("chat"); // chat | tasks | interns | reports | updates
+  const [invite, setInvite] = useState(readInvite);
+  const [tab, setTab] = useState("group"); // group | messages | files
 
   const logout = () => {
     saveSession(SESSION_KEY, null);
     setSession(null);
   };
 
+  const login = (s) => {
+    saveSession(SESSION_KEY, s);
+    setSession(s);
+  };
+
   useEffect(() => {
-    if (!session) return;
+    if (!session || invite) return;
     portalApi("/api/portal/me", { token: session.token })
-      .then((user) => {
-        const next = { ...session, user };
-        saveSession(SESSION_KEY, next);
-        setSession(next);
-      })
+      .then((user) => login({ ...session, user }))
       .catch((err) => {
         if (err.status === 401) logout();
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!session) {
+  if (invite) {
     return (
       <div className="fr-page">
-        <PortalLogin
-          title="Team portal"
-          subtitle="For the LR AgroSense core team: team chat, calls and tasks."
-          allowedRoles={["manager", "member"]}
-          onLogin={(s) => {
-            saveSession(SESSION_KEY, s);
-            setSession(s);
+        <InviteSetup
+          token={invite}
+          onDone={(s) => {
+            clearInviteFromUrl();
+            setInvite("");
+            login(s);
+          }}
+          onCancel={() => {
+            clearInviteFromUrl();
+            setInvite("");
           }}
         />
       </div>
     );
   }
 
-  const { token, user } = session;
-  const isManager = user.role === "manager";
-  const props = { token, api: portalApi, onAuthError: logout };
+  if (!session) {
+    return (
+      <div className="fr-page">
+        <PortalLogin
+          title="Team portal"
+          subtitle="For the LR AgroSense core team: group chat, messages, calls and file sharing."
+          allowedRoles={["manager", "member"]}
+          onLogin={login}
+        />
+      </div>
+    );
+  }
 
+  const { token, user } = session;
+  const props = { token, api: portalApi, onAuthError: logout };
   const tabs = [
-    ["chat", "Team chat", MessageSquare],
-    ["tasks", "Tasks", ListTodo],
-    ...(isManager
-      ? [
-          ["interns", "Interns", Users],
-          ["reports", "Field reports", ClipboardList],
-          ["updates", "Daily updates", CalendarCheck],
-        ]
-      : []),
+    ["group", "Group chat", MessageSquare],
+    ["messages", "Messages", MessageCircle],
+    ["files", "Files", FolderOpen],
   ];
 
   return (
@@ -81,6 +105,11 @@ export default function TeamPortal() {
             </div>
           </div>
           <div className="topbar-actions">
+            {user.role === "manager" && (
+              <a className="btn btn-light" href="/manager.html">
+                <ShieldCheck size={16} /> <span className="hide-sm">Manager portal</span>
+              </a>
+            )}
             <button className="btn btn-light" onClick={logout}>
               <LogOut size={16} /> <span className="hide-sm">Log out</span>
             </button>
@@ -96,12 +125,9 @@ export default function TeamPortal() {
             </button>
           ))}
         </div>
-
-        {tab === "chat" && <TeamChat {...props} />}
-        {tab === "tasks" && <TeamTasks {...props} />}
-        {isManager && tab === "interns" && <TeamPeople role="intern" {...props} />}
-        {isManager && tab === "reports" && <FieldReports {...props} />}
-        {isManager && tab === "updates" && <TeamDailyUpdates {...props} />}
+        {tab === "group" && <TeamChat {...props} />}
+        {tab === "messages" && <TeamMessages {...props} />}
+        {tab === "files" && <TeamFiles {...props} />}
       </main>
     </div>
   );

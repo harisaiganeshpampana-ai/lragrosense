@@ -44,20 +44,21 @@
 |            DELETE /api/team/field-reports/:id  -> delete a report
 |            GET  /api/team/daily-updates        -> all daily updates
 |            PUT  /api/team/daily-updates/:id    -> add a review note / mark seen
-|   Admin only:
-|            GET/POST /api/admin/managers        -> list / add manager logins (e.g. Sandeep)
-|            PUT/DELETE /api/admin/managers/:id  -> edit, reset password, remove
-|            GET/POST /api/admin/members         -> list / add core team member logins
-|            PUT/DELETE /api/admin/members/:id   -> edit, reset password, remove
+|   Admin only (team logins by invite; each person sets their own password):
+|            GET/POST /api/admin/team-members    -> list / invite a Gmail (role: member or manager)
+|            PUT/DELETE /api/admin/team-members/:id -> change role, turn off, new invite link, remove
+|   Invite (public, one-time link):
+|            GET/POST /api/portal/invite/:token  -> check the link / set your own password
 |
-|   Team workspace (core team: managers, members and the admin), inside team.html / admin.html:
+|   Team workspace (team.html): group chat, direct messages, Google Meet calls, PDF/image sharing
 |            GET  /api/workspace/people          -> everyone in the core team
-|            GET  /api/workspace/messages        -> team chat (?after=ISO date for new ones)
-|            POST /api/workspace/messages        -> send a message (@Name emails that person)
-|            POST /api/workspace/calls           -> share a Google Meet link (emails the team)
+|            GET  /api/workspace/messages        -> ?with=<personId> for a direct chat, &after=ISO
+|            POST /api/workspace/messages        -> send text and/or a PDF/image (max 5 MB)
+|            POST /api/workspace/calls           -> share a Google Meet link (emails people)
 |            DELETE /api/workspace/messages/:id  -> delete your own message
-|            GET/POST /api/workspace/tasks       -> tasks board
-|            PUT/DELETE /api/workspace/tasks/:id -> edit, move or delete a task
+|            GET  /api/workspace/files           -> files shared with you
+|            GET  /api/workspace/files/:id       -> download a file
+|            GET  /api/workspace/dm-summary      -> latest message time per direct chat
 |
 | Settings come from environment variables (set them in Render):
 |   MONGODB_URI     your MongoDB connection string
@@ -136,7 +137,7 @@ app.use(
 );
 
 // 4mb allows a 2 MB resume file (files are sent as text, which makes them bigger)
-app.use(express.json({ limit: "4mb" }));
+app.use(express.json({ limit: "8mb" }));
 
 /* ---------------- Database model ---------------- */
 
@@ -390,7 +391,9 @@ const portalUserSchema = new mongoose.Schema(
     phone: { type: String, trim: true, maxlength: 20, default: "" },
     college: { type: String, trim: true, maxlength: 150, default: "" },
     batch: { type: String, trim: true, maxlength: 60, default: "" },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, default: "" }, // empty until they set it from the invite link
+    inviteTokenHash: { type: String, default: "" },
+    inviteExpiresAt: { type: Date, default: null },
     active: { type: Boolean, default: true },
     sessionVersion: { type: Number, default: 1 }, // goes up when the password is reset
     lastLoginAt: { type: Date, default: null },
@@ -422,32 +425,38 @@ const DailyUpdate = mongoose.model("DailyUpdate", dailyUpdateSchema);
 
 const teamMessageSchema = new mongoose.Schema(
   {
+    channel: { type: String, default: "team", index: true }, // "team" or "dm:<idA>:<idB>"
     authorId: { type: String, required: true }, // PortalUser id, or "admin"
     authorName: { type: String, trim: true, required: true, maxlength: 100 },
-    kind: { type: String, enum: ["text", "call"], default: "text" },
+    kind: { type: String, enum: ["text", "call", "file"], default: "text" },
     text: { type: String, trim: true, maxlength: 2000, default: "" },
     meetUrl: { type: String, trim: true, maxlength: 300, default: "" },
+    file: {
+      id: { type: String, default: "" },
+      name: { type: String, default: "" },
+      type: { type: String, default: "" },
+      size: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 );
-teamMessageSchema.index({ createdAt: -1 });
+teamMessageSchema.index({ channel: 1, createdAt: -1 });
 const TeamMessage = mongoose.model("TeamMessage", teamMessageSchema);
 
-const teamTaskSchema = new mongoose.Schema(
+// Shared PDFs and images (kept separately so chat stays fast)
+const teamFileSchema = new mongoose.Schema(
   {
-    title: { type: String, trim: true, required: true, maxlength: 200 },
-    notes: { type: String, trim: true, maxlength: 3000, default: "" },
-    status: { type: String, enum: ["todo", "doing", "done"], default: "todo" },
-    assigneeId: { type: String, default: "" }, // PortalUser id, "admin", or "" for nobody
-    assigneeName: { type: String, trim: true, maxlength: 100, default: "" },
-    dueDate: { type: Date, default: null },
-    createdById: { type: String, default: "" },
-    createdByName: { type: String, trim: true, maxlength: 100, default: "" },
-    doneAt: { type: Date, default: null },
+    channel: { type: String, required: true, index: true },
+    name: { type: String, required: true, maxlength: 200 },
+    contentType: { type: String, required: true },
+    size: { type: Number, required: true },
+    data: { type: Buffer, required: true },
+    uploadedById: { type: String, required: true },
+    uploadedByName: { type: String, default: "" },
   },
   { timestamps: true }
 );
-const TeamTask = mongoose.model("TeamTask", teamTaskSchema);
+const TeamFile = mongoose.model("TeamFile", teamFileSchema);
 
 // Passwords are stored only as a salted hash (scrypt), never as plain text
 function hashPassword(password) {
@@ -2301,6 +2310,9 @@ app.post("/api/portal/login", async (req, res, next) => {
     const email = cleanText(req.body?.email, 200).toLowerCase();
     const password = String(req.body?.password || "");
     const user = email ? await PortalUser.findOne({ email }) : null;
+    if (user && !user.passwordHash) {
+      return res.status(403).json({ error: "Please set your password first using the invite link you received." });
+    }
     if (!user || !checkPassword(password, user.passwordHash)) {
       return res.status(401).json({ error: "Wrong email or password." });
     }
@@ -2618,85 +2630,144 @@ app.put("/api/team/daily-updates/:id", requireTeam, async (req, res, next) => {
   }
 });
 
-/* ----- Admin only: manager logins (e.g. Sandeep) ----- */
+/* ----- Admin only: core team logins by invite ----- */
 
-app.get("/api/admin/managers", requireAdmin, async (req, res, next) => {
+const INVITE_DAYS = 7;
+const ADMIN_DISPLAY_NAME = "Hari (Founder)";
+const WORKSPACE_URL = `${SITE_URL}/team.html`;
+
+function teamMemberView(u) {
+  return {
+    ...publicUser(u),
+    status: u.passwordHash ? "joined" : "invited",
+    inviteExpiresAt: u.passwordHash ? null : u.inviteExpiresAt,
+  };
+}
+
+function newInvite(user) {
+  const token = crypto.randomBytes(24).toString("base64url");
+  user.inviteTokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  user.inviteExpiresAt = new Date(Date.now() + INVITE_DAYS * 86400000);
+  return `${WORKSPACE_URL}?invite=${token}`;
+}
+
+async function emailInvite(user, inviteUrl) {
+  if (!emailConfigured()) return false;
   try {
-    const users = await PortalUser.find({ role: "manager" }).sort({ createdAt: -1 }).lean();
-    res.json(users.map(publicUser));
+    await deliverEmail({
+      to: user.email,
+      toName: user.name,
+      subject: "You're invited to the LR AgroSense team 🌱",
+      body: `Hi ${user.name.split(" ")[0]},\n\nYou've been added to the LR AgroSense core team.\n\nOpen this link to set your own password (valid for ${INVITE_DAYS} days):\n${inviteUrl}\n\nAfter that, log in any time at ${WORKSPACE_URL} with ${user.email} and your password.`,
+    });
+    return true;
+  } catch (err) {
+    console.error("Invite email failed:", err.message);
+    return false;
+  }
+}
+
+app.get("/api/admin/team-members", requireAdmin, async (req, res, next) => {
+  try {
+    const users = await PortalUser.find({ role: { $in: ["member", "manager"] } }).sort({ createdAt: -1 }).lean();
+    res.json(users.map(teamMemberView));
   } catch (error) {
     next(error);
   }
 });
 
-app.post("/api/admin/managers", requireAdmin, async (req, res, next) => {
+app.post("/api/admin/team-members", requireAdmin, async (req, res, next) => {
   try {
-    const result = await createPortalUser("manager", req.body || {});
-    if (result.error) return res.status(400).json({ error: result.error });
-    res.status(201).json({ user: publicUser(result.user), password: result.password });
+    const email = cleanText(req.body?.email, 200).toLowerCase();
+    const role = req.body?.role === "manager" ? "manager" : "member";
+    if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Please enter a valid Gmail / email address." });
+    if (await PortalUser.findOne({ email })) return res.status(400).json({ error: "This email is already added." });
+    const name = cleanText(req.body?.name, 100) || email.split("@")[0];
+    const user = new PortalUser({ role, name, email, phone: cleanText(req.body?.phone, 20), passwordHash: "" });
+    const inviteUrl = newInvite(user);
+    await user.save();
+    const emailed = await emailInvite(user, inviteUrl);
+    res.status(201).json({ user: teamMemberView(user), inviteUrl, emailed });
   } catch (error) {
     next(error);
   }
 });
 
-app.put("/api/admin/managers/:id", requireAdmin, async (req, res, next) => {
+app.put("/api/admin/team-members/:id", requireAdmin, async (req, res, next) => {
   try {
-    const result = await updatePortalUser("manager", req.params.id, req.body || {});
-    if (result.error) return res.status(result.status || 400).json({ error: result.error });
-    res.json({ user: publicUser(result.user), password: result.password || undefined });
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Member not found." });
+    const user = await PortalUser.findOne({ _id: req.params.id, role: { $in: ["member", "manager"] } });
+    if (!user) return res.status(404).json({ error: "Member not found." });
+    const body = req.body || {};
+    if (["member", "manager"].includes(body.role)) user.role = body.role;
+    if (typeof body.name === "string" && cleanText(body.name, 100)) user.name = cleanText(body.name, 100);
+    if (typeof body.phone === "string") user.phone = cleanText(body.phone, 20);
+    if (typeof body.active === "boolean") user.active = body.active;
+    let inviteUrl = "";
+    let emailed = false;
+    if (body.newInvite) {
+      // New link; if they had a password, it is cleared so they set a new one
+      user.passwordHash = "";
+      user.sessionVersion += 1;
+      inviteUrl = newInvite(user);
+    }
+    await user.save();
+    if (inviteUrl) emailed = await emailInvite(user, inviteUrl);
+    res.json({ user: teamMemberView(user), inviteUrl: inviteUrl || undefined, emailed });
   } catch (error) {
     next(error);
   }
 });
 
-app.delete("/api/admin/managers/:id", requireAdmin, async (req, res, next) => {
+app.delete("/api/admin/team-members/:id", requireAdmin, async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
-    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "manager" });
-    if (!user) return res.status(404).json({ error: "Login not found." });
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Member not found." });
+    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: { $in: ["member", "manager"] } });
+    if (!user) return res.status(404).json({ error: "Member not found." });
     res.json({ ok: true });
   } catch (error) {
     next(error);
   }
 });
 
-/* ----- Admin only: core team member logins ----- */
+/* ----- Invite links (public) ----- */
 
-app.get("/api/admin/members", requireAdmin, async (req, res, next) => {
+async function findInvite(token) {
+  if (!token || typeof token !== "string" || token.length > 100) return null;
+  const hash = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await PortalUser.findOne({ inviteTokenHash: hash });
+  if (!user || !user.inviteExpiresAt || user.inviteExpiresAt.getTime() < Date.now() || !user.active) return null;
+  return user;
+}
+
+app.get("/api/portal/invite/:token", async (req, res, next) => {
   try {
-    const users = await PortalUser.find({ role: "member" }).sort({ createdAt: -1 }).lean();
-    res.json(users.map(publicUser));
+    const user = await findInvite(req.params.token);
+    if (!user) return res.status(404).json({ error: "This invite link has expired or was already used. Ask Hari for a new one." });
+    res.json({ email: user.email, name: user.name });
   } catch (error) {
     next(error);
   }
 });
 
-app.post("/api/admin/members", requireAdmin, async (req, res, next) => {
+app.post("/api/portal/invite/:token", async (req, res, next) => {
   try {
-    const result = await createPortalUser("member", req.body || {});
-    if (result.error) return res.status(400).json({ error: result.error });
-    res.status(201).json({ user: publicUser(result.user), password: result.password });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.put("/api/admin/members/:id", requireAdmin, async (req, res, next) => {
-  try {
-    const result = await updatePortalUser("member", req.params.id, req.body || {});
-    if (result.error) return res.status(result.status || 400).json({ error: result.error });
-    res.json({ user: publicUser(result.user), password: result.password || undefined });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.delete("/api/admin/members/:id", requireAdmin, async (req, res, next) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
-    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "member" });
-    if (!user) return res.status(404).json({ error: "Login not found." });
-    res.json({ ok: true });
+    if (portalLoginLimiter.tooMany(req.ip)) {
+      return res.status(429).json({ error: "Too many attempts. Please wait 15 minutes and try again." });
+    }
+    const user = await findInvite(req.params.token);
+    if (!user) return res.status(404).json({ error: "This invite link has expired or was already used. Ask Hari for a new one." });
+    const password = String(req.body?.password || "");
+    if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters." });
+    const name = cleanText(req.body?.name, 100);
+    if (name) user.name = name;
+    user.passwordHash = hashPassword(password);
+    user.inviteTokenHash = "";
+    user.inviteExpiresAt = null;
+    user.sessionVersion += 1;
+    user.lastLoginAt = new Date();
+    await user.save();
+    res.json({ token: createPortalToken(user), user: publicUser(user) });
   } catch (error) {
     next(error);
   }
@@ -2704,17 +2775,26 @@ app.delete("/api/admin/members/:id", requireAdmin, async (req, res, next) => {
 
 /* ---------------- Team workspace ---------------- */
 
-const ADMIN_DISPLAY_NAME = "Hari (Founder)";
-const WORKSPACE_URL = `${SITE_URL}/team.html`;
+const MAX_TEAM_FILE = 5 * 1024 * 1024; // 5 MB per file
+const MAX_TEAM_STORAGE = 250 * 1024 * 1024; // stop new uploads above 250 MB total (free database limit)
+const ALLOWED_FILE_TYPES = {
+  "application/pdf": [0x25, 0x50, 0x44, 0x46], // %PDF
+  "image/jpeg": [0xff, 0xd8, 0xff],
+  "image/png": [0x89, 0x50, 0x4e, 0x47],
+  "image/webp": null, // checked below (RIFF....WEBP)
+};
 
 function whoAmI(req) {
   if (req.who.role === "admin") return { id: "admin", name: ADMIN_DISPLAY_NAME };
   return { id: String(req.who.user._id), name: req.who.user.name };
 }
 
-// Everyone in the core team (active managers + members, and the founder)
 async function workspacePeople() {
-  const users = await PortalUser.find({ role: { $in: ["manager", "member"] }, active: true })
+  const users = await PortalUser.find({
+    role: { $in: ["manager", "member"] },
+    active: true,
+    passwordHash: { $ne: "" },
+  })
     .sort({ name: 1 })
     .lean();
   return [
@@ -2723,7 +2803,23 @@ async function workspacePeople() {
   ];
 }
 
-// Email alerts are optional: they only go out when email (Brevo/Resend) is set up
+// "team" for the group chat, or a direct-chat key for two people
+async function resolveChannel(req, withId) {
+  if (!withId) return { channel: "team" };
+  const me = whoAmI(req);
+  if (String(withId) === me.id) return { error: "You can't message yourself." };
+  const people = await workspacePeople();
+  const other = people.find((p) => p.id === String(withId));
+  if (!other) return { error: "That team member was not found." };
+  return { channel: `dm:${[me.id, other.id].sort().join(":")}`, other };
+}
+
+function canSeeChannel(req, channel) {
+  if (channel === "team") return true;
+  const me = whoAmI(req);
+  return channel.startsWith("dm:") && channel.slice(3).split(":").includes(me.id);
+}
+
 const lastAlertAt = new Map();
 async function alertPeople(people, subject, body, { throttleKey = "" } = {}) {
   if (!emailConfigured()) return;
@@ -2732,7 +2828,7 @@ async function alertPeople(people, subject, body, { throttleKey = "" } = {}) {
     if (throttleKey) {
       const key = `${throttleKey}:${person.id}`;
       const last = lastAlertAt.get(key) || 0;
-      if (Date.now() - last < 10 * 60 * 1000) continue; // at most one per 10 minutes
+      if (Date.now() - last < 10 * 60 * 1000) continue;
       lastAlertAt.set(key, Date.now());
     }
     deliverEmail({ to: person.email, toName: person.name, subject, body }).catch((err) =>
@@ -2750,6 +2846,27 @@ function findMentions(text, people) {
   });
 }
 
+function readTeamFile(file) {
+  if (!file || typeof file !== "object") return { error: "Could not read the file." };
+  const type = String(file.type || "");
+  if (!(type in ALLOWED_FILE_TYPES)) return { error: "Only PDF, JPG, PNG or WEBP files can be shared." };
+  let buffer;
+  try {
+    buffer = Buffer.from(String(file.data || ""), "base64");
+  } catch {
+    return { error: "Could not read the file." };
+  }
+  if (!buffer.length) return { error: "The file is empty." };
+  if (buffer.length > MAX_TEAM_FILE) return { error: "File is too big. Please share files under 5 MB." };
+  const magic = ALLOWED_FILE_TYPES[type];
+  const okMagic = magic
+    ? magic.every((b, i) => buffer[i] === b)
+    : buffer.subarray(0, 4).toString() === "RIFF" && buffer.subarray(8, 12).toString() === "WEBP";
+  if (!okMagic) return { error: "This file doesn't look like a real PDF or image." };
+  const name = cleanText(file.name, 200).replace(/[\\/:*?"<>|]+/g, "_") || "file";
+  return { name, contentType: type, size: buffer.length, data: buffer };
+}
+
 app.get("/api/workspace/people", requireWorkspace, async (req, res, next) => {
   try {
     const people = await workspacePeople();
@@ -2761,12 +2878,15 @@ app.get("/api/workspace/people", requireWorkspace, async (req, res, next) => {
 
 app.get("/api/workspace/messages", requireWorkspace, async (req, res, next) => {
   try {
+    const target = await resolveChannel(req, req.query.with);
+    if (target.error) return res.status(400).json({ error: target.error });
+    const filter = { channel: target.channel };
     const after = req.query.after ? new Date(req.query.after) : null;
     if (after && !Number.isNaN(after.getTime())) {
-      const items = await TeamMessage.find({ createdAt: { $gt: after } }).sort({ createdAt: 1 }).limit(200).lean();
-      return res.json(items);
+      filter.createdAt = { $gt: after };
+      return res.json(await TeamMessage.find(filter).sort({ createdAt: 1 }).limit(200).lean());
     }
-    const items = await TeamMessage.find().sort({ createdAt: -1 }).limit(200).lean();
+    const items = await TeamMessage.find(filter).sort({ createdAt: -1 }).limit(200).lean();
     res.json(items.reverse());
   } catch (error) {
     next(error);
@@ -2775,20 +2895,59 @@ app.get("/api/workspace/messages", requireWorkspace, async (req, res, next) => {
 
 app.post("/api/workspace/messages", requireWorkspace, async (req, res, next) => {
   try {
+    const target = await resolveChannel(req, req.body?.with);
+    if (target.error) return res.status(400).json({ error: target.error });
     const text = cleanText(req.body?.text, 2000);
-    if (!text) return res.status(400).json({ error: "Message is empty." });
     const me = whoAmI(req);
-    const message = await TeamMessage.create({ authorId: me.id, authorName: me.name, kind: "text", text });
+    let fileInfo = null;
+
+    if (req.body?.file) {
+      const file = readTeamFile(req.body.file);
+      if (file.error) return res.status(400).json({ error: file.error });
+      const [{ total = 0 } = {}] = await TeamFile.aggregate([{ $group: { _id: null, total: { $sum: "$size" } } }]);
+      if (total + file.size > MAX_TEAM_STORAGE) {
+        return res.status(507).json({ error: "Team file storage is full. Please delete old files or share large files by Google Drive link." });
+      }
+      const saved = await TeamFile.create({
+        channel: target.channel,
+        ...file,
+        uploadedById: me.id,
+        uploadedByName: me.name,
+      });
+      fileInfo = { id: String(saved._id), name: saved.name, type: saved.contentType, size: saved.size };
+    }
+    if (!text && !fileInfo) return res.status(400).json({ error: "Message is empty." });
+
+    const message = await TeamMessage.create({
+      channel: target.channel,
+      authorId: me.id,
+      authorName: me.name,
+      kind: fileInfo ? "file" : "text",
+      text,
+      ...(fileInfo ? { file: fileInfo } : {}),
+    });
 
     const people = await workspacePeople();
-    const mentioned = findMentions(text, people).filter((p) => p.id !== me.id);
-    if (mentioned.length) {
-      alertPeople(
-        mentioned,
-        `${me.name} mentioned you in LR AgroSense team chat`,
-        `${me.name} wrote:\n\n"${text}"\n\nOpen the team chat: ${WORKSPACE_URL}`,
-        { throttleKey: "mention" }
-      );
+    if (target.other) {
+      const other = people.find((p) => p.id === target.other.id);
+      if (other) {
+        alertPeople(
+          [other],
+          `New message from ${me.name} (LR AgroSense)`,
+          `${me.name} sent you a message:\n\n"${text || `Shared a file: ${fileInfo.name}`}"\n\nOpen it: ${WORKSPACE_URL}`,
+          { throttleKey: `dm-${me.id}` }
+        );
+      }
+    } else if (text) {
+      const mentioned = findMentions(text, people).filter((p) => p.id !== me.id);
+      if (mentioned.length) {
+        alertPeople(
+          mentioned,
+          `${me.name} mentioned you in LR AgroSense group chat`,
+          `${me.name} wrote:\n\n"${text}"\n\nOpen the group chat: ${WORKSPACE_URL}`,
+          { throttleKey: "mention" }
+        );
+      }
     }
     res.status(201).json(message);
   } catch (error) {
@@ -2798,6 +2957,8 @@ app.post("/api/workspace/messages", requireWorkspace, async (req, res, next) => 
 
 app.post("/api/workspace/calls", requireWorkspace, async (req, res, next) => {
   try {
+    const target = await resolveChannel(req, req.body?.with);
+    if (target.error) return res.status(400).json({ error: target.error });
     const meetUrl = cleanText(req.body?.meetUrl, 300);
     const topic = cleanText(req.body?.topic, 200);
     let url;
@@ -2811,17 +2972,19 @@ app.post("/api/workspace/calls", requireWorkspace, async (req, res, next) => {
     }
     const me = whoAmI(req);
     const message = await TeamMessage.create({
+      channel: target.channel,
       authorId: me.id,
       authorName: me.name,
       kind: "call",
-      text: topic || "Team call",
+      text: topic || (target.other ? "Call" : "Team call"),
       meetUrl: url.toString(),
     });
-    const people = (await workspacePeople()).filter((p) => p.id !== me.id);
+    const people = await workspacePeople();
+    const notify = target.other ? people.filter((p) => p.id === target.other.id) : people.filter((p) => p.id !== me.id);
     alertPeople(
-      people,
-      `📞 ${me.name} started a call: ${topic || "Team call"}`,
-      `${me.name} started a team call${topic ? ` about "${topic}"` : ""}.\n\nJoin on Google Meet: ${url.toString()}\n\nTeam chat: ${WORKSPACE_URL}`
+      notify,
+      `📞 ${me.name} started a call${topic ? `: ${topic}` : ""}`,
+      `${me.name} started a call${topic ? ` about "${topic}"` : ""}.\n\nJoin on Google Meet: ${url.toString()}\n\nTeam portal: ${WORKSPACE_URL}`
     );
     res.status(201).json(message);
   } catch (error) {
@@ -2833,11 +2996,12 @@ app.delete("/api/workspace/messages/:id", requireWorkspace, async (req, res, nex
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Message not found." });
     const message = await TeamMessage.findById(req.params.id);
-    if (!message) return res.status(404).json({ error: "Message not found." });
+    if (!message || !canSeeChannel(req, message.channel)) return res.status(404).json({ error: "Message not found." });
     const me = whoAmI(req);
     if (message.authorId !== me.id && me.id !== "admin") {
       return res.status(403).json({ error: "You can only delete your own messages." });
     }
+    if (message.file?.id && mongoose.isValidObjectId(message.file.id)) await TeamFile.deleteOne({ _id: message.file.id });
     await message.deleteOne();
     res.json({ ok: true });
   } catch (error) {
@@ -2845,106 +3009,53 @@ app.delete("/api/workspace/messages/:id", requireWorkspace, async (req, res, nex
   }
 });
 
-app.get("/api/workspace/tasks", requireWorkspace, async (req, res, next) => {
+app.get("/api/workspace/files", requireWorkspace, async (req, res, next) => {
   try {
-    res.json(await TeamTask.find().sort({ dueDate: 1, createdAt: -1 }).limit(1000).lean());
-  } catch (error) {
-    next(error);
-  }
-});
-
-async function resolveAssignee(id) {
-  if (!id) return { assigneeId: "", assigneeName: "", person: null };
-  const people = await workspacePeople();
-  const person = people.find((p) => p.id === String(id));
-  if (!person) return { error: "That team member was not found." };
-  return { assigneeId: person.id, assigneeName: person.name, person };
-}
-
-function taskEmail(task, byName) {
-  const due = task.dueDate ? `\nDue: ${new Date(task.dueDate).toLocaleDateString("en-IN")}` : "";
-  return {
-    subject: `New task for you: ${task.title}`,
-    body: `${byName} assigned you a task in LR AgroSense.\n\nTask: ${task.title}${due}${task.notes ? `\n\nNotes: ${task.notes}` : ""}\n\nOpen the tasks board: ${WORKSPACE_URL}`,
-  };
-}
-
-app.post("/api/workspace/tasks", requireWorkspace, async (req, res, next) => {
-  try {
-    const title = cleanText(req.body?.title, 200);
-    if (!title) return res.status(400).json({ error: "Please enter the task." });
-    const assignee = await resolveAssignee(req.body?.assigneeId);
-    if (assignee.error) return res.status(400).json({ error: assignee.error });
-    const due = req.body?.dueDate ? new Date(req.body.dueDate) : null;
     const me = whoAmI(req);
-    const status = ["todo", "doing", "done"].includes(req.body?.status) ? req.body.status : "todo";
-    const task = await TeamTask.create({
-      title,
-      notes: cleanText(req.body?.notes, 3000),
-      status,
-      assigneeId: assignee.assigneeId,
-      assigneeName: assignee.assigneeName,
-      dueDate: due && !Number.isNaN(due.getTime()) ? due : null,
-      createdById: me.id,
-      createdByName: me.name,
-      doneAt: status === "done" ? new Date() : null,
-    });
-    if (assignee.person && assignee.person.id !== me.id) {
-      const mail = taskEmail(task, me.name);
-      alertPeople([assignee.person], mail.subject, mail.body);
-    }
-    res.status(201).json(task);
+    const files = await TeamFile.find({ $or: [{ channel: "team" }, { channel: { $regex: `^dm:(.*:)?${me.id}(:.*)?$` } }] })
+      .select("-data")
+      .sort({ createdAt: -1 })
+      .limit(500)
+      .lean();
+    res.json(files.filter((f) => canSeeChannel(req, f.channel)));
   } catch (error) {
     next(error);
   }
 });
 
-app.put("/api/workspace/tasks/:id", requireWorkspace, async (req, res, next) => {
+app.get("/api/workspace/files/:id", requireWorkspace, async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Task not found." });
-    const task = await TeamTask.findById(req.params.id);
-    if (!task) return res.status(404).json({ error: "Task not found." });
-    const body = req.body || {};
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "File not found." });
+    const file = await TeamFile.findById(req.params.id);
+    if (!file || !canSeeChannel(req, file.channel)) return res.status(404).json({ error: "File not found." });
+    res.set("Content-Type", file.contentType);
+    res.set("Content-Disposition", `inline; filename="${encodeURIComponent(file.name)}"`);
+    res.set("X-Content-Type-Options", "nosniff");
+    res.set("Cache-Control", "private, max-age=3600");
+    res.send(file.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Latest message per direct chat, so the page can show which chats have something new
+app.get("/api/workspace/dm-summary", requireWorkspace, async (req, res, next) => {
+  try {
     const me = whoAmI(req);
-    if (typeof body.title === "string") {
-      const title = cleanText(body.title, 200);
-      if (!title) return res.status(400).json({ error: "Please enter the task." });
-      task.title = title;
+    const rows = await TeamMessage.aggregate([
+      { $match: { channel: { $regex: "^dm:" } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$channel", last: { $first: "$createdAt" }, by: { $first: "$authorId" } } },
+    ]);
+    const out = {};
+    for (const r of rows) {
+      const ids = r._id.slice(3).split(":");
+      if (!ids.includes(me.id)) continue;
+      const other = ids.find((x) => x !== me.id);
+      out[other] = { last: r.last, fromMe: r.by === me.id };
     }
-    if (typeof body.notes === "string") task.notes = cleanText(body.notes, 3000);
-    if (["todo", "doing", "done"].includes(body.status) && body.status !== task.status) {
-      task.status = body.status;
-      task.doneAt = body.status === "done" ? new Date() : null;
-    }
-    if ("dueDate" in body) {
-      const due = body.dueDate ? new Date(body.dueDate) : null;
-      task.dueDate = due && !Number.isNaN(due.getTime()) ? due : null;
-    }
-    let newPerson = null;
-    if ("assigneeId" in body && String(body.assigneeId || "") !== task.assigneeId) {
-      const assignee = await resolveAssignee(body.assigneeId);
-      if (assignee.error) return res.status(400).json({ error: assignee.error });
-      task.assigneeId = assignee.assigneeId;
-      task.assigneeName = assignee.assigneeName;
-      newPerson = assignee.person;
-    }
-    await task.save();
-    if (newPerson && newPerson.id !== me.id) {
-      const mail = taskEmail(task, me.name);
-      alertPeople([newPerson], mail.subject, mail.body);
-    }
-    res.json(task);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.delete("/api/workspace/tasks/:id", requireWorkspace, async (req, res, next) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Task not found." });
-    const task = await TeamTask.findByIdAndDelete(req.params.id);
-    if (!task) return res.status(404).json({ error: "Task not found." });
-    res.json({ ok: true });
+    const team = await TeamMessage.findOne({ channel: "team" }).sort({ createdAt: -1 }).select("createdAt authorId").lean();
+    res.json({ dms: out, team: team ? { last: team.createdAt, fromMe: team.authorId === me.id } : null });
   } catch (error) {
     next(error);
   }

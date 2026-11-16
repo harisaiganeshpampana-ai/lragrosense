@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Loader2, Phone, Send, Trash2, Video, X } from "lucide-react";
+import { FileText, Loader2, Paperclip, Phone, Send, Trash2, Video, X } from "lucide-react";
+import { fileSizeLabel, portalFileUrl, readFileBase64 } from "./portalApi";
 
-function timeLabel(value) {
+export function timeLabel(value) {
   const d = new Date(value);
   const today = new Date();
   const sameDay = d.toDateString() === today.toDateString();
@@ -9,7 +10,7 @@ function timeLabel(value) {
   return sameDay ? time : `${d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}, ${time}`;
 }
 
-function initials(name) {
+export function initials(name) {
   return (name || "?")
     .split(/\s+/)
     .filter(Boolean)
@@ -17,6 +18,10 @@ function initials(name) {
     .map((w) => w[0].toUpperCase())
     .join("");
 }
+
+const ACCEPT = "application/pdf,image/jpeg,image/png,image/webp";
+const MAX_BYTES = 5 * 1024 * 1024;
+const POLL_MS = 8000;
 
 // Turns links into clickable links and highlights @mentions
 function MessageText({ text }) {
@@ -40,29 +45,72 @@ function MessageText({ text }) {
   });
 }
 
-const POLL_MS = 8000;
+// A shared PDF or image inside a message
+export function SharedFile({ file, token, onAuthError }) {
+  const isImage = file.type?.startsWith("image/");
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
 
-export default function TeamChat({ token, api, onAuthError }) {
+  useEffect(() => {
+    if (!isImage) return;
+    portalFileUrl(file.id, token)
+      .then(setUrl)
+      .catch((err) => (err.status === 401 ? onAuthError() : setError(err.message)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file.id]);
+
+  const open = async () => {
+    try {
+      const link = url || (await portalFileUrl(file.id, token));
+      window.open(link, "_blank", "noopener");
+    } catch (err) {
+      if (err.status === 401) onAuthError();
+      else setError(err.message);
+    }
+  };
+
+  return (
+    <div className="tc-file">
+      {isImage && url ? (
+        <button type="button" className="tc-img" onClick={open} title="Open full size">
+          <img src={url} alt={file.name} />
+        </button>
+      ) : isImage && !error ? (
+        <div className="tc-img tc-img-loading">
+          <Loader2 className="spin" size={18} />
+        </div>
+      ) : null}
+      <button type="button" className="tc-file-row" onClick={open}>
+        <FileText size={16} />
+        <span>{file.name}</span>
+        <em>{fileSizeLabel(file.size)}</em>
+      </button>
+      {error && <small className="tc-file-err">{error}</small>}
+    </div>
+  );
+}
+
+// One conversation: the group chat (withId empty) or a direct chat with one person
+export default function TeamChat({ token, api, onAuthError, withId = "", withName = "", people: givenPeople }) {
   const [me, setMe] = useState(null);
-  const [people, setPeople] = useState([]);
+  const [people, setPeople] = useState(givenPeople || []);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
+  const [file, setFile] = useState(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [callOpen, setCallOpen] = useState(false);
   const listRef = useRef(null);
   const lastRef = useRef(null);
   const stickRef = useRef(true);
+  const fileRef = useRef(null);
+  const isDm = Boolean(withId);
+  const query = isDm ? `with=${encodeURIComponent(withId)}` : "";
 
   const handleError = (err) => {
     if (err.status === 401) onAuthError();
     else setError(err.message);
-  };
-
-  const scrollDown = () => {
-    const el = listRef.current;
-    if (el && stickRef.current) el.scrollTop = el.scrollHeight;
   };
 
   const addMessages = (items) => {
@@ -75,9 +123,14 @@ export default function TeamChat({ token, api, onAuthError }) {
     });
   };
 
-  // First load
+  // Load this conversation (again when switching person)
   useEffect(() => {
-    Promise.all([api("/api/workspace/people", { token }), api("/api/workspace/messages", { token })])
+    setLoading(true);
+    setMessages([]);
+    setError("");
+    lastRef.current = null;
+    stickRef.current = true;
+    Promise.all([api("/api/workspace/people", { token }), api(`/api/workspace/messages${query ? `?${query}` : ""}`, { token })])
       .then(([p, items]) => {
         setMe(p.me);
         setPeople(p.people);
@@ -87,15 +140,15 @@ export default function TeamChat({ token, api, onAuthError }) {
       .catch(handleError)
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [withId]);
 
   // Check for new messages every few seconds while the page is open
   useEffect(() => {
     const tick = () => {
       if (document.hidden) return;
-      const after = lastRef.current ? `?after=${encodeURIComponent(lastRef.current)}` : "";
-      api(`/api/workspace/messages${after}`, { token })
-        .then((items) => addMessages(items))
+      const params = [query, lastRef.current ? `after=${encodeURIComponent(lastRef.current)}` : ""].filter(Boolean).join("&");
+      api(`/api/workspace/messages${params ? `?${params}` : ""}`, { token })
+        .then(addMessages)
         .catch((err) => {
           if (err.status === 401) onAuthError();
         });
@@ -103,24 +156,40 @@ export default function TeamChat({ token, api, onAuthError }) {
     const id = setInterval(tick, POLL_MS);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [withId]);
 
-  useEffect(scrollDown, [messages]);
+  useEffect(() => {
+    const el = listRef.current;
+    if (el && stickRef.current) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   const onScroll = () => {
     const el = listRef.current;
     if (el) stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
   };
 
+  const pickFile = (e) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    if (!ACCEPT.split(",").includes(f.type)) return setError("Only PDF, JPG, PNG or WEBP files can be shared.");
+    if (f.size > MAX_BYTES) return setError("File is too big. Please share files under 5 MB (or share a Google Drive link).");
+    setError("");
+    setFile(f);
+  };
+
   const send = async (e) => {
     e?.preventDefault();
     const value = text.trim();
-    if (!value || sending) return;
+    if ((!value && !file) || sending) return;
     setSending(true);
     setError("");
     try {
-      const message = await api("/api/workspace/messages", { token, method: "POST", body: { text: value } });
+      const body = { text: value, ...(isDm ? { with: withId } : {}) };
+      if (file) body.file = { name: file.name, type: file.type, data: await readFileBase64(file) };
+      const message = await api("/api/workspace/messages", { token, method: "POST", body });
       setText("");
+      setFile(null);
       stickRef.current = true;
       addMessages([message]);
     } catch (err) {
@@ -131,7 +200,7 @@ export default function TeamChat({ token, api, onAuthError }) {
   };
 
   const remove = async (m) => {
-    if (!window.confirm("Delete this message?")) return;
+    if (!window.confirm(m.kind === "file" ? "Delete this message and its file?" : "Delete this message?")) return;
     try {
       await api(`/api/workspace/messages/${m._id}`, { token, method: "DELETE" });
       setMessages((list) => list.filter((x) => x._id !== m._id));
@@ -154,13 +223,19 @@ export default function TeamChat({ token, api, onAuthError }) {
     <div className="tc">
       <div className="dash-head">
         <div>
-          <h1>Team chat</h1>
+          <h1>{isDm ? withName : "Group chat"}</h1>
           <p>
-            {people.length} people · type <b>@name</b> to email someone, <b>@all</b> for everyone
+            {isDm ? (
+              "Only you two can see this chat"
+            ) : (
+              <>
+                {people.length} people · type <b>@name</b> to email someone, <b>@all</b> for everyone
+              </>
+            )}
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => setCallOpen(true)}>
-          <Video size={16} /> Start call
+          <Video size={16} /> {isDm ? "Call" : "Start call"}
         </button>
       </div>
 
@@ -185,7 +260,7 @@ export default function TeamChat({ token, api, onAuthError }) {
               <Loader2 className="spin" /> Loading chat…
             </div>
           ) : messages.length === 0 ? (
-            <div className="empty">No messages yet. Say hello to your team 👋</div>
+            <div className="empty">{isDm ? `No messages with ${withName} yet. Say hi 👋` : "No messages yet. Say hello to your team 👋"}</div>
           ) : (
             messages.map((m) => {
               const mine = me && m.authorId === me.id;
@@ -210,9 +285,14 @@ export default function TeamChat({ token, api, onAuthError }) {
                         </a>
                       </div>
                     ) : (
-                      <p>
-                        <MessageText text={m.text} />
-                      </p>
+                      <>
+                        {m.kind === "file" && m.file?.id && <SharedFile file={m.file} token={token} onAuthError={onAuthError} />}
+                        {m.text && (
+                          <p>
+                            <MessageText text={m.text} />
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -221,7 +301,7 @@ export default function TeamChat({ token, api, onAuthError }) {
           )}
         </div>
 
-        {people.length > 1 && (
+        {!isDm && people.length > 1 && (
           <div className="tc-people">
             {people
               .filter((p) => !me || p.id !== me.id)
@@ -236,12 +316,27 @@ export default function TeamChat({ token, api, onAuthError }) {
           </div>
         )}
 
+        {file && (
+          <div className="tc-picked">
+            <FileText size={16} />
+            <span>{file.name}</span>
+            <em>{fileSizeLabel(file.size)}</em>
+            <button type="button" className="icon-btn" onClick={() => setFile(null)} aria-label="Remove file">
+              <X size={15} />
+            </button>
+          </div>
+        )}
+
         <form className="tc-input" onSubmit={send}>
+          <input ref={fileRef} type="file" accept={ACCEPT} hidden onChange={pickFile} />
+          <button type="button" className="btn btn-light tc-attach" onClick={() => fileRef.current?.click()} title="Share a PDF or image" aria-label="Attach file">
+            <Paperclip size={16} />
+          </button>
           <textarea
             rows={1}
             value={text}
             maxLength={2000}
-            placeholder="Write a message…"
+            placeholder={file ? "Add a note (optional)…" : "Write a message…"}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -250,7 +345,7 @@ export default function TeamChat({ token, api, onAuthError }) {
               }
             }}
           />
-          <button className="btn btn-primary" disabled={sending || !text.trim()} aria-label="Send">
+          <button className="btn btn-primary" disabled={sending || (!text.trim() && !file)} aria-label="Send">
             {sending ? <Loader2 size={16} className="spin" /> : <Send size={16} />}
           </button>
         </form>
@@ -260,6 +355,8 @@ export default function TeamChat({ token, api, onAuthError }) {
         <StartCall
           token={token}
           api={api}
+          withId={withId}
+          withName={withName}
           onClose={() => setCallOpen(false)}
           onAuthError={onAuthError}
           onStarted={(m) => {
@@ -273,7 +370,7 @@ export default function TeamChat({ token, api, onAuthError }) {
   );
 }
 
-function StartCall({ token, api, onClose, onStarted, onAuthError }) {
+function StartCall({ token, api, withId, withName, onClose, onStarted, onAuthError }) {
   const [meetUrl, setMeetUrl] = useState("");
   const [topic, setTopic] = useState("");
   const [busy, setBusy] = useState(false);
@@ -284,7 +381,8 @@ function StartCall({ token, api, onClose, onStarted, onAuthError }) {
     setBusy(true);
     setError("");
     try {
-      onStarted(await api("/api/workspace/calls", { token, method: "POST", body: { meetUrl: meetUrl.trim(), topic } }));
+      const body = { meetUrl: meetUrl.trim(), topic, ...(withId ? { with: withId } : {}) };
+      onStarted(await api("/api/workspace/calls", { token, method: "POST", body }));
     } catch (err) {
       if (err.status === 401) onAuthError();
       else setError(err.message);
@@ -297,7 +395,7 @@ function StartCall({ token, api, onClose, onStarted, onAuthError }) {
     <div className="modal-backdrop" onClick={onClose}>
       <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="modal-head">
-          <h2>Start a team call</h2>
+          <h2>{withId ? `Call ${withName}` : "Start a team call"}</h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
             <X size={18} />
           </button>
@@ -312,16 +410,11 @@ function StartCall({ token, api, onClose, onStarted, onAuthError }) {
               (it creates a new meeting).
             </li>
             <li>Copy the meeting link and paste it below.</li>
-            <li>Everyone in the team gets an email with the link, and a "Join" button appears in the chat.</li>
+            <li>{withId ? `${withName} gets an email` : "Everyone in the team gets an email"} with the link, and a "Join" button appears in the chat.</li>
           </ol>
           <label className="field">
             Google Meet link *
-            <input
-              required
-              value={meetUrl}
-              onChange={(e) => setMeetUrl(e.target.value)}
-              placeholder="https://meet.google.com/abc-defg-hij"
-            />
+            <input required value={meetUrl} onChange={(e) => setMeetUrl(e.target.value)} placeholder="https://meet.google.com/abc-defg-hij" />
           </label>
           <label className="field">
             Topic

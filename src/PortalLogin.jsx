@@ -3,7 +3,7 @@ import { Eye, EyeOff, Loader2, Sprout } from "lucide-react";
 import { portalApi } from "./portalApi";
 
 // Email + password login used by both the intern portal and the team portal
-export default function PortalLogin({ title, subtitle, allowedRoles, onLogin }) {
+export default function PortalLogin({ title, subtitle, allowedRoles, onLogin, wrongRoleMessage }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -21,9 +21,10 @@ export default function PortalLogin({ title, subtitle, allowedRoles, onLogin }) 
       });
       if (!allowedRoles.includes(data.user.role)) {
         throw new Error(
-          allowedRoles.includes("intern")
+          wrongRoleMessage ||
+          (allowedRoles.includes("intern")
             ? "This login is for the team portal. Please use lragrosense.in/team.html."
-            : "This login is for interns. Please use lragrosense.in/intern.html."
+            : "This login is for interns. Please use lragrosense.in/intern.html.")
         );
       }
       onLogin({ token: data.token, user: data.user });
@@ -68,7 +69,7 @@ export default function PortalLogin({ title, subtitle, allowedRoles, onLogin }) 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password from LR AgroSense"
+              placeholder="Your password"
             />
             <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Hide password" : "Show password"}>
               {show ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -81,7 +82,7 @@ export default function PortalLogin({ title, subtitle, allowedRoles, onLogin }) 
         <button className="fr-btn fr-btn-primary fr-submit" disabled={busy}>
           {busy ? <Loader2 size={18} className="spin" /> : null} Log in
         </button>
-        <p className="fr-foot">Forgot your password? Ask your team lead to reset it.</p>
+        <p className="fr-foot">Forgot your password? Ask Hari for a new link.</p>
       </form>
     </div>
   );

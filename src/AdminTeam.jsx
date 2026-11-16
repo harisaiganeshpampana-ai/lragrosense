@@ -1,38 +1,31 @@
 import React, { useState } from "react";
-import TeamPeople from "./TeamPeople";
-import FieldReports from "./AdminFieldReports";
-import TeamDailyUpdates from "./TeamDailyUpdates";
 import TeamChat from "./TeamChat";
-import TeamTasks from "./TeamTasks";
+import TeamMessages from "./TeamMessages";
+import TeamFiles from "./TeamFiles";
+import TeamMembers from "./TeamMembers";
 
-// Admin view of the team: chat, tasks, team logins and the intern program
+// Admin view of the team workspace: same chat as the team, plus adding members
 export default function AdminTeam({ token, api, onAuthError }) {
-  const [sub, setSub] = useState("chat");
+  const [sub, setSub] = useState("group");
   const props = { token, api, onAuthError };
   return (
     <>
       <div className="pt-subtabs">
         {[
-          ["chat", "Team chat"],
-          ["tasks", "Tasks"],
-          ["members", "Core team"],
-          ["managers", "Managers"],
-          ["interns", "Interns"],
-          ["reports", "Field reports"],
-          ["updates", "Daily updates"],
+          ["group", "Group chat"],
+          ["messages", "Messages"],
+          ["files", "Files"],
+          ["members", "Members"],
         ].map(([key, label]) => (
           <button key={key} className={sub === key ? "on" : ""} onClick={() => setSub(key)}>
             {label}
           </button>
         ))}
       </div>
-      {sub === "chat" && <TeamChat {...props} />}
-      {sub === "tasks" && <TeamTasks {...props} />}
-      {sub === "members" && <TeamPeople role="member" {...props} />}
-      {sub === "managers" && <TeamPeople role="manager" {...props} />}
-      {sub === "interns" && <TeamPeople role="intern" {...props} />}
-      {sub === "reports" && <FieldReports {...props} />}
-      {sub === "updates" && <TeamDailyUpdates {...props} />}
+      {sub === "group" && <TeamChat {...props} />}
+      {sub === "messages" && <TeamMessages {...props} />}
+      {sub === "files" && <TeamFiles {...props} />}
+      {sub === "members" && <TeamMembers {...props} />}
     </>
   );
 }

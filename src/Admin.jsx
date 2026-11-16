@@ -26,6 +26,7 @@ import { API_BASE } from "./config";
 import { DEFAULT_INSTRUCTIONS, InterviewBadge, InterviewPanel } from "./AdminInterview";
 import { Cofounder, Outbox, ScreenBadge, ScreenPanel } from "./AdminCofounder";
 import AdminTeam from "./AdminTeam";
+import AdminInterns from "./AdminInterns";
 
 const TOKEN_KEY = "lr_admin_token";
 
@@ -327,7 +328,10 @@ function Dashboard({ token, onLogout }) {
             className={tab === "team" ? "active" : ""}
             onClick={() => setTab("team")}
           >
-            <ClipboardList size={16} /> Team
+            <Users size={16} /> Team
+          </button>
+          <button className={tab === "interns" ? "active" : ""} onClick={() => setTab("interns")}>
+            <ClipboardList size={16} /> Interns
           </button>
           <button className={tab === "outbox" ? "active" : ""} onClick={() => setTab("outbox")}>
             <Inbox size={16} /> Outbox
@@ -340,6 +344,8 @@ function Dashboard({ token, onLogout }) {
 
         {tab === "team" ? (
           <AdminTeam token={token} api={api} onAuthError={onLogout} />
+        ) : tab === "interns" ? (
+          <AdminInterns token={token} api={api} onAuthError={onLogout} />
         ) : tab === "outbox" ? (
           <Outbox token={token} api={api} onAuthError={onLogout} onCount={setDraftCount} />
         ) : tab === "cofounder" ? (

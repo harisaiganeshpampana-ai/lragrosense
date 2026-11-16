@@ -22,6 +22,7 @@ export default defineConfig({
         interview: resolve(__dirname, "interview.html"),
         intern: resolve(__dirname, "intern.html"),
         team: resolve(__dirname, "team.html"),
+        manager: resolve(__dirname, "manager.html"),
       },
     },
   },
