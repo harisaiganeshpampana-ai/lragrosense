@@ -6,19 +6,37 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
-function inviteText(user, url) {
+const PORTALS = {
+  team: {
+    path: "/api/admin/team-members",
+    title: "Team portal members",
+    label: "team portal",
+    site: "lragrosense.in/team.html",
+    intro: "People here can use the team portal (lragrosense.in/team.html): group chat, messages, calls and file sharing. They can't see interns or field reports.",
+  },
+  manager: {
+    path: "/api/admin/manager-members",
+    title: "Manager portal logins",
+    label: "manager portal",
+    site: "lragrosense.in/manager.html",
+    intro: "People here can open the manager portal (lragrosense.in/manager.html): interns, field reports and daily updates. This is a separate login from the team portal; add the same Gmail in Team → Members too if they should also chat with the team.",
+  },
+};
+
+function inviteText(user, url, c) {
   return [
-    `Hi ${user.name.split(" ")[0]}, you're added to the LR AgroSense team portal 🌱`,
+    `Hi ${user.name.split(" ")[0]}, you're added to the LR AgroSense ${c.label} 🌱`,
     "",
     "Open this link and set your own password (valid 7 days):",
     url,
     "",
-    `After that, log in any time at lragrosense.in/team.html with ${user.email}.`,
+    `After that, log in any time at ${c.site} with ${user.email}.`,
   ].join("\n");
 }
 
 // Admin: add core team Gmails. Each person gets a one-time link to set their own password.
-export default function TeamMembers({ token, api, onAuthError }) {
+export default function TeamMembers({ portal = "team", token, api, onAuthError }) {
+  const c = PORTALS[portal];
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,19 +51,19 @@ export default function TeamMembers({ token, api, onAuthError }) {
   };
 
   useEffect(() => {
-    api("/api/admin/team-members", { token })
+    api(c.path, { token })
       .then(setItems)
       .catch(handleError)
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [portal]);
 
   const update = async (u, body, confirmText) => {
     if (confirmText && !window.confirm(confirmText)) return;
     setBusyId(u._id);
     setError("");
     try {
-      const data = await api(`/api/admin/team-members/${u._id}`, { token, method: "PUT", body });
+      const data = await api(`${c.path}/${u._id}`, { token, method: "PUT", body });
       setItems((list) => list.map((x) => (x._id === u._id ? data.user : x)));
       if (data.inviteUrl) setInvite(data);
     } catch (err) {
@@ -56,10 +74,10 @@ export default function TeamMembers({ token, api, onAuthError }) {
   };
 
   const remove = async (u) => {
-    if (!window.confirm(`Remove ${u.name} from the team portal? Their old messages stay.`)) return;
+    if (!window.confirm(`Remove ${u.name} from the ${c.label}? Their other logins are not affected.`)) return;
     setBusyId(u._id);
     try {
-      await api(`/api/admin/team-members/${u._id}`, { token, method: "DELETE" });
+      await api(`${c.path}/${u._id}`, { token, method: "DELETE" });
       setItems((list) => list.filter((x) => x._id !== u._id));
     } catch (err) {
       handleError(err);
@@ -74,7 +92,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
     <>
       <div className="dash-head">
         <div>
-          <h1>Team members</h1>
+          <h1>{c.title}</h1>
           <p>
             {items.length} added · {joined} joined · {items.length - joined} waiting
           </p>
@@ -84,9 +102,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
         </button>
       </div>
       <p className="pt-intro">
-        Add a team member's Gmail. They get a one-time link to set <b>their own password</b>, then they can use the team portal
-        at lragrosense.in/team.html. <b>Title</b> is what the team sees (e.g. Head of Operations). <b>Access</b> decides if they
-        can also open the manager portal (interns and field reports). Use ✏️ to change these any time.
+        {c.intro} Each person gets a one-time link to set <b>their own password</b>. <b>Title</b> is shown next to their name.
       </p>
 
       {error && <div className="error-box">{error}</div>}
@@ -121,8 +137,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
                   </span>
                 </div>
                 <div className="app-controls">
-                  <span className={`tmb-access ${u.role}`}>{u.role === "manager" ? "Manager access" : "Team access"}</span>
-                  <button className="icon-btn" title="Edit name, title, access" disabled={busyId === u._id} onClick={() => setEditing(u)}>
+                  <button className="icon-btn" title="Edit name, title, phone" disabled={busyId === u._id} onClick={() => setEditing(u)}>
                     <Pencil size={16} />
                   </button>
                   <button
@@ -161,6 +176,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
 
       {adding && (
         <AddMember
+          c={c}
           token={token}
           api={api}
           onAuthError={onAuthError}
@@ -174,6 +190,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
       )}
       {editing && (
         <AddMember
+          c={c}
           existing={editing}
           token={token}
           api={api}
@@ -185,18 +202,17 @@ export default function TeamMembers({ token, api, onAuthError }) {
           }}
         />
       )}
-      {invite && <InviteReady data={invite} onClose={() => setInvite(null)} />}
+      {invite && <InviteReady c={c} data={invite} onClose={() => setInvite(null)} />}
     </>
   );
 }
 
-function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
+function AddMember({ c, existing, token, api, onClose, onCreated, onAuthError }) {
   const [form, setForm] = useState({
     name: existing?.name || "",
     email: existing?.email || "",
     phone: existing?.phone || "",
     title: existing?.title || "",
-    role: existing?.role || "member",
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -209,9 +225,9 @@ function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
     try {
       if (existing) {
         const { email, ...changes } = form;
-        onCreated(await api(`/api/admin/team-members/${existing._id}`, { token, method: "PUT", body: changes }));
+        onCreated(await api(`${c.path}/${existing._id}`, { token, method: "PUT", body: changes }));
       } else {
-        onCreated(await api("/api/admin/team-members", { token, method: "POST", body: form }));
+        onCreated(await api(c.path, { token, method: "POST", body: form }));
       }
     } catch (err) {
       if (err.status === 401) onAuthError();
@@ -225,7 +241,7 @@ function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
     <div className="modal-backdrop" onClick={onClose}>
       <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="modal-head">
-          <h2>{existing ? `Edit ${existing.name}` : "Add team member"}</h2>
+          <h2>{existing ? `Edit ${existing.name}` : `Add to ${c.label}`}</h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
             <X size={18} />
           </button>
@@ -258,19 +274,10 @@ function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
               <option value="Advisor" />
             </datalist>
           </label>
-          <div className="grid-2">
-            <label className="field">
-              Phone (for WhatsApp)
-              <input value={form.phone} onChange={set("phone")} maxLength={20} />
-            </label>
-            <label className="field">
-              Access
-              <select value={form.role} onChange={set("role")}>
-                <option value="member">Team portal only</option>
-                <option value="manager">Team + Manager portal (interns)</option>
-              </select>
-            </label>
-          </div>
+          <label className="field">
+            Phone (for WhatsApp)
+            <input value={form.phone} onChange={set("phone")} maxLength={20} />
+          </label>
           {error && <div className="error-box">{error}</div>}
         </div>
         <div className="modal-foot">
@@ -287,10 +294,10 @@ function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
   );
 }
 
-function InviteReady({ data, onClose }) {
+function InviteReady({ c, data, onClose }) {
   const [copied, setCopied] = useState(false);
   const { user, inviteUrl, emailed } = data;
-  const text = inviteText(user, inviteUrl);
+  const text = inviteText(user, inviteUrl, c);
   const phone = (user.phone || "").replace(/\D/g, "");
   const waNumber = phone.length === 10 ? `91${phone}` : phone;
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;

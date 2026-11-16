@@ -25,7 +25,7 @@ export default function AdminTeam({ token, api, onAuthError }) {
       {sub === "group" && <TeamChat {...props} />}
       {sub === "messages" && <TeamMessages {...props} />}
       {sub === "files" && <TeamFiles {...props} />}
-      {sub === "members" && <TeamMembers {...props} />}
+      {sub === "members" && <TeamMembers portal="team" {...props} />}
     </>
   );
 }

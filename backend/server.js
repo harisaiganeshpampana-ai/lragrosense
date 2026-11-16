@@ -45,8 +45,10 @@
 |            GET  /api/team/daily-updates        -> all daily updates
 |            PUT  /api/team/daily-updates/:id    -> add a review note / mark seen
 |   Admin only (team logins by invite; each person sets their own password):
-|            GET/POST /api/admin/team-members    -> list / invite a Gmail (role: member or manager)
-|            PUT/DELETE /api/admin/team-members/:id -> change role, turn off, new invite link, remove
+|            GET/POST /api/admin/team-members    -> team portal logins: list / invite a Gmail
+|            GET/POST /api/admin/manager-members -> manager portal logins: list / invite a Gmail
+|            PUT/DELETE .../:id                  -> edit name/title, turn off, new invite link, remove
+|            (the same Gmail can be in both lists; each login has its own password)
 |   Invite (public, one-time link):
 |            GET/POST /api/portal/invite/:token  -> check the link / set your own password
 |
@@ -387,7 +389,7 @@ const portalUserSchema = new mongoose.Schema(
   {
     role: { type: String, enum: ["intern", "manager", "member"], required: true },
     name: { type: String, trim: true, required: true, maxlength: 100 },
-    email: { type: String, trim: true, lowercase: true, required: true, unique: true, maxlength: 200 },
+    email: { type: String, trim: true, lowercase: true, required: true, maxlength: 200 },
     phone: { type: String, trim: true, maxlength: 20, default: "" },
     college: { type: String, trim: true, maxlength: 150, default: "" },
     title: { type: String, trim: true, maxlength: 80, default: "" }, // shown to the team, e.g. "Head of Operations"
@@ -402,6 +404,8 @@ const portalUserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// The same Gmail can have one login per portal (team portal, manager portal, intern portal)
+portalUserSchema.index({ email: 1, role: 1 }, { unique: true });
 const PortalUser = mongoose.model("PortalUser", portalUserSchema);
 
 const dailyUpdateSchema = new mongoose.Schema(
@@ -734,7 +738,7 @@ function requireRole(...roles) {
 }
 
 const requireIntern = requireRole("intern");
-const requireWorkspace = requireRole("manager", "member", "admin");
+const requireWorkspace = requireRole("member", "admin"); // team portal only (managers have a separate login)
 const requireTeam = requireRole("manager", "admin");
 
 function passwordMatches(input) {
@@ -2311,11 +2315,18 @@ app.post("/api/portal/login", async (req, res, next) => {
     }
     const email = cleanText(req.body?.email, 200).toLowerCase();
     const password = String(req.body?.password || "");
-    const user = email ? await PortalUser.findOne({ email }) : null;
-    if (user && !user.passwordHash) {
+    const PORTAL_ROLES = { team: ["member"], manager: ["manager"], intern: ["intern"] };
+    const roles = PORTAL_ROLES[req.body?.portal] || ["member", "manager", "intern"];
+    const accounts = email ? await PortalUser.find({ email, role: { $in: roles } }) : [];
+    if (!accounts.length && email && req.body?.portal && (await PortalUser.exists({ email }))) {
+      const where = { team: "team portal", manager: "manager portal", intern: "intern portal" }[req.body.portal];
+      return res.status(403).json({ error: `This Gmail is not added to the ${where} yet. Ask Hari to add it.` });
+    }
+    const user = accounts.find((a) => a.passwordHash && checkPassword(password, a.passwordHash));
+    if (!user && accounts.length && accounts.every((a) => !a.passwordHash)) {
       return res.status(403).json({ error: "Please set your password first using the invite link you received." });
     }
-    if (!user || !checkPassword(password, user.passwordHash)) {
+    if (!user) {
       return res.status(401).json({ error: "Wrong email or password." });
     }
     if (!user.active) {
@@ -2485,7 +2496,7 @@ async function createPortalUser(role, body) {
   const name = cleanText(body.name, 100);
   if (!name) return { error: "Please enter the name." };
   if (!EMAIL_RE.test(email)) return { error: "Please enter a valid email address." };
-  if (await PortalUser.findOne({ email })) return { error: "This email already has a login." };
+  if (await PortalUser.findOne({ email, role })) return { error: "This email already has a login here." };
   const password = cleanText(body.password, 60) || makePassword();
   if (password.length < 8) return { error: "Password must be at least 8 characters." };
   const user = await PortalUser.create({
@@ -2647,11 +2658,15 @@ function teamMemberView(u) {
   };
 }
 
+function portalUrlFor(user) {
+  return user.role === "manager" ? `${SITE_URL}/manager.html` : WORKSPACE_URL;
+}
+
 function newInvite(user) {
   const token = crypto.randomBytes(24).toString("base64url");
   user.inviteTokenHash = crypto.createHash("sha256").update(token).digest("hex");
   user.inviteExpiresAt = new Date(Date.now() + INVITE_DAYS * 86400000);
-  return `${WORKSPACE_URL}?invite=${token}`;
+  return `${portalUrlFor(user)}?invite=${token}`;
 }
 
 async function emailInvite(user, inviteUrl) {
@@ -2660,8 +2675,8 @@ async function emailInvite(user, inviteUrl) {
     await deliverEmail({
       to: user.email,
       toName: user.name,
-      subject: "You're invited to the LR AgroSense team 🌱",
-      body: `Hi ${user.name.split(" ")[0]},\n\nYou've been added to the LR AgroSense core team.\n\nOpen this link to set your own password (valid for ${INVITE_DAYS} days):\n${inviteUrl}\n\nAfter that, log in any time at ${WORKSPACE_URL} with ${user.email} and your password.`,
+      subject: user.role === "manager" ? "Your LR AgroSense manager portal invite 🌱" : "You're invited to the LR AgroSense team 🌱",
+      body: `Hi ${user.name.split(" ")[0]},\n\nYou've been added to the LR AgroSense ${user.role === "manager" ? "manager portal" : "team portal"}.\n\nOpen this link to set your own password (valid for ${INVITE_DAYS} days):\n${inviteUrl}\n\nAfter that, log in any time at ${portalUrlFor(user)} with ${user.email} and your password.`,
     });
     return true;
   } catch (err) {
@@ -2670,76 +2685,81 @@ async function emailInvite(user, inviteUrl) {
   }
 }
 
-app.get("/api/admin/team-members", requireAdmin, async (req, res, next) => {
-  try {
-    const users = await PortalUser.find({ role: { $in: ["member", "manager"] } }).sort({ createdAt: -1 }).lean();
-    res.json(users.map(teamMemberView));
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.post("/api/admin/team-members", requireAdmin, async (req, res, next) => {
-  try {
-    const email = cleanText(req.body?.email, 200).toLowerCase();
-    const role = req.body?.role === "manager" ? "manager" : "member";
-    if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Please enter a valid Gmail / email address." });
-    if (await PortalUser.findOne({ email })) return res.status(400).json({ error: "This email is already added." });
-    const name = cleanText(req.body?.name, 100) || email.split("@")[0];
-    const user = new PortalUser({
-      role,
-      name,
-      email,
-      phone: cleanText(req.body?.phone, 20),
-      title: cleanText(req.body?.title, 80),
-      passwordHash: "",
-    });
-    const inviteUrl = newInvite(user);
-    await user.save();
-    const emailed = await emailInvite(user, inviteUrl);
-    res.status(201).json({ user: teamMemberView(user), inviteUrl, emailed });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.put("/api/admin/team-members/:id", requireAdmin, async (req, res, next) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Member not found." });
-    const user = await PortalUser.findOne({ _id: req.params.id, role: { $in: ["member", "manager"] } });
-    if (!user) return res.status(404).json({ error: "Member not found." });
-    const body = req.body || {};
-    if (["member", "manager"].includes(body.role)) user.role = body.role;
-    if (typeof body.name === "string" && cleanText(body.name, 100)) user.name = cleanText(body.name, 100);
-    if (typeof body.phone === "string") user.phone = cleanText(body.phone, 20);
-    if (typeof body.title === "string") user.title = cleanText(body.title, 80);
-    if (typeof body.active === "boolean") user.active = body.active;
-    let inviteUrl = "";
-    let emailed = false;
-    if (body.newInvite) {
-      // New link; if they had a password, it is cleared so they set a new one
-      user.passwordHash = "";
-      user.sessionVersion += 1;
-      inviteUrl = newInvite(user);
+// Two separate lists: team portal logins (role "member") and manager portal logins (role "manager")
+for (const [path, role] of [
+  ["/api/admin/team-members", "member"],
+  ["/api/admin/manager-members", "manager"],
+]) {
+  app.get(path, requireAdmin, async (req, res, next) => {
+    try {
+      const users = await PortalUser.find({ role }).sort({ createdAt: -1 }).lean();
+      res.json(users.map(teamMemberView));
+    } catch (error) {
+      next(error);
     }
-    await user.save();
-    if (inviteUrl) emailed = await emailInvite(user, inviteUrl);
-    res.json({ user: teamMemberView(user), inviteUrl: inviteUrl || undefined, emailed });
-  } catch (error) {
-    next(error);
-  }
-});
+  });
 
-app.delete("/api/admin/team-members/:id", requireAdmin, async (req, res, next) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Member not found." });
-    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: { $in: ["member", "manager"] } });
-    if (!user) return res.status(404).json({ error: "Member not found." });
-    res.json({ ok: true });
-  } catch (error) {
-    next(error);
-  }
-});
+  app.post(path, requireAdmin, async (req, res, next) => {
+    try {
+      const email = cleanText(req.body?.email, 200).toLowerCase();
+      if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Please enter a valid Gmail / email address." });
+      if (await PortalUser.findOne({ email, role })) {
+        return res.status(400).json({ error: `This Gmail is already in the ${role === "manager" ? "manager" : "team"} portal list below. Use ✏️ or 🔗 on it instead.` });
+      }
+      const name = cleanText(req.body?.name, 100) || email.split("@")[0];
+      const user = new PortalUser({
+        role,
+        name,
+        email,
+        phone: cleanText(req.body?.phone, 20),
+        title: cleanText(req.body?.title, 80),
+        passwordHash: "",
+      });
+      const inviteUrl = newInvite(user);
+      await user.save();
+      const emailed = await emailInvite(user, inviteUrl);
+      res.status(201).json({ user: teamMemberView(user), inviteUrl, emailed });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put(`${path}/:id`, requireAdmin, async (req, res, next) => {
+    try {
+      if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
+      const user = await PortalUser.findOne({ _id: req.params.id, role });
+      if (!user) return res.status(404).json({ error: "Login not found." });
+      const body = req.body || {};
+      if (typeof body.name === "string" && cleanText(body.name, 100)) user.name = cleanText(body.name, 100);
+      if (typeof body.phone === "string") user.phone = cleanText(body.phone, 20);
+      if (typeof body.title === "string") user.title = cleanText(body.title, 80);
+      if (typeof body.active === "boolean") user.active = body.active;
+      let inviteUrl = "";
+      let emailed = false;
+      if (body.newInvite) {
+        user.passwordHash = "";
+        user.sessionVersion += 1;
+        inviteUrl = newInvite(user);
+      }
+      await user.save();
+      if (inviteUrl) emailed = await emailInvite(user, inviteUrl);
+      res.json({ user: teamMemberView(user), inviteUrl: inviteUrl || undefined, emailed });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete(`${path}/:id`, requireAdmin, async (req, res, next) => {
+    try {
+      if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
+      const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role });
+      if (!user) return res.status(404).json({ error: "Login not found." });
+      res.json({ ok: true });
+    } catch (error) {
+      next(error);
+    }
+  });
+}
 
 /* ----- Invite links (public) ----- */
 
@@ -2755,7 +2775,7 @@ app.get("/api/portal/invite/:token", async (req, res, next) => {
   try {
     const user = await findInvite(req.params.token);
     if (!user) return res.status(404).json({ error: "This invite link has expired or was already used. Ask Hari for a new one." });
-    res.json({ email: user.email, name: user.name });
+    res.json({ email: user.email, name: user.name, role: user.role });
   } catch (error) {
     next(error);
   }
@@ -2802,7 +2822,7 @@ function whoAmI(req) {
 
 async function workspacePeople() {
   const users = await PortalUser.find({
-    role: { $in: ["manager", "member"] },
+    role: "member",
     active: true,
     passwordHash: { $ne: "" },
   })
@@ -3101,6 +3121,12 @@ mongoose
   .connect(MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB");
+    // Old versions made email unique across all portals; switch to one login per portal
+    PortalUser.collection
+      .dropIndex("email_1")
+      .catch(() => {})
+      .then(() => PortalUser.syncIndexes())
+      .catch((err) => console.error("PortalUser index update failed:", err.message));
     app.listen(PORT, () => console.log(`LR AgroSense API running on port ${PORT}`));
   })
   .catch((error) => {

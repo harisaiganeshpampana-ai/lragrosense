@@ -3,7 +3,8 @@ import { Eye, EyeOff, Loader2, Sprout } from "lucide-react";
 import { portalApi } from "./portalApi";
 
 // Email + password login used by both the intern portal and the team portal
-export default function PortalLogin({ title, subtitle, allowedRoles, onLogin, wrongRoleMessage }) {
+export default function PortalLogin({ title, subtitle, allowedRoles, onLogin, wrongRoleMessage, portal }) {
+  const portalName = portal || (allowedRoles.includes("intern") ? "intern" : allowedRoles.includes("manager") && !allowedRoles.includes("member") ? "manager" : "team");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -17,7 +18,7 @@ export default function PortalLogin({ title, subtitle, allowedRoles, onLogin, wr
     try {
       const data = await portalApi("/api/portal/login", {
         method: "POST",
-        body: { email: email.trim(), password },
+        body: { email: email.trim(), password, portal: portalName },
       });
       if (!allowedRoles.includes(data.user.role)) {
         throw new Error(

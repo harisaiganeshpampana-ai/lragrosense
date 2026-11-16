@@ -14,7 +14,6 @@ import {
   Phone,
   Search,
   SendHorizontal,
-  ShieldCheck,
   Trash2,
   Video,
   X,
@@ -182,8 +181,8 @@ function LoginPage({ onLogin }) {
     setBusy(true);
     setError("");
     try {
-      const data = await portalApi("/api/portal/login", { method: "POST", body: { email: email.trim(), password } });
-      if (!["member", "manager"].includes(data.user.role)) throw new Error("This sign-in is for the core team. Interns use lragrosense.in/intern.html.");
+      const data = await portalApi("/api/portal/login", { method: "POST", body: { email: email.trim(), password, portal: "team" } });
+      if (data.user.role !== "member") throw new Error("This sign-in is for the core team. Interns use lragrosense.in/intern.html.");
       onLogin({ token: data.token, user: data.user });
     } catch (err) {
       setError(err.message);
@@ -227,6 +226,10 @@ function InvitePage({ token, onDone, onCancel }) {
   useEffect(() => {
     portalApi(`/api/portal/invite/${encodeURIComponent(token)}`)
       .then((d) => {
+        if (d.role && d.role !== "member") {
+          setBad("This invite is for the manager portal. Please open the link at lragrosense.in/manager.html.");
+          return;
+        }
         setInfo(d);
         setName(d.name || "");
       })
@@ -244,6 +247,7 @@ function InvitePage({ token, onDone, onCancel }) {
         method: "POST",
         body: { password, name: name.trim() },
       });
+      if (data.user.role !== "member") throw new Error("This invite is for the manager portal. Please open it at lragrosense.in/manager.html.");
       onDone({ token: data.token, user: data.user });
     } catch (err) {
       setError(err.message);
@@ -403,19 +407,13 @@ function Workspace({ session, onLogout }) {
             <FolderOpen size={16} />
             <span>Files</span>
           </button>
-          {user.role === "manager" && (
-            <a className="ws-nav-item" href="/manager.html">
-              <ShieldCheck size={16} />
-              <span>Manager portal</span>
-            </a>
-          )}
         </nav>
 
         <div className="ws-me">
           <Avatar id={me?.id || user._id} name={user.name} size={34} />
           <div className="ws-me-text">
             <strong>{user.name}</strong>
-            <span>{myTitle || (user.role === "manager" ? "Manager" : "Team member")}</span>
+            <span>{myTitle || "Team member"}</span>
           </div>
           <button className="ws-icon" onClick={onLogout} title="Sign out" aria-label="Sign out">
             <LogOut size={17} />
