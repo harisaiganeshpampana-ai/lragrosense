@@ -639,3 +639,6 @@
 .tmb-status.joined { color: #1f7a45; }
 .tmb-status.invited { color: #b26b00; }
 .tmb-role { padding: 6px 8px; font-size: 13px; }
+.tmb-title { font-weight: 500; color: #4b5563; }
+.tmb-access { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 999px; background: #eef2ef; color: #374151; white-space: nowrap; }
+.tmb-access.manager { background: #e7f0ff; color: #1d4ed8; }

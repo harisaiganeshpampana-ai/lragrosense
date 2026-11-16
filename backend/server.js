@@ -390,6 +390,7 @@ const portalUserSchema = new mongoose.Schema(
     email: { type: String, trim: true, lowercase: true, required: true, unique: true, maxlength: 200 },
     phone: { type: String, trim: true, maxlength: 20, default: "" },
     college: { type: String, trim: true, maxlength: 150, default: "" },
+    title: { type: String, trim: true, maxlength: 80, default: "" }, // shown to the team, e.g. "Head of Operations"
     batch: { type: String, trim: true, maxlength: 60, default: "" },
     passwordHash: { type: String, default: "" }, // empty until they set it from the invite link
     inviteTokenHash: { type: String, default: "" },
@@ -491,6 +492,7 @@ function publicUser(u) {
     phone: u.phone,
     college: u.college,
     batch: u.batch,
+    title: u.title || "",
     active: u.active,
     lastLoginAt: u.lastLoginAt,
     createdAt: u.createdAt,
@@ -2633,7 +2635,8 @@ app.put("/api/team/daily-updates/:id", requireTeam, async (req, res, next) => {
 /* ----- Admin only: core team logins by invite ----- */
 
 const INVITE_DAYS = 7;
-const ADMIN_DISPLAY_NAME = "Hari (Founder)";
+const ADMIN_DISPLAY_NAME = "Hari";
+const ADMIN_TITLE = "Founder & CEO";
 const WORKSPACE_URL = `${SITE_URL}/team.html`;
 
 function teamMemberView(u) {
@@ -2683,7 +2686,14 @@ app.post("/api/admin/team-members", requireAdmin, async (req, res, next) => {
     if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Please enter a valid Gmail / email address." });
     if (await PortalUser.findOne({ email })) return res.status(400).json({ error: "This email is already added." });
     const name = cleanText(req.body?.name, 100) || email.split("@")[0];
-    const user = new PortalUser({ role, name, email, phone: cleanText(req.body?.phone, 20), passwordHash: "" });
+    const user = new PortalUser({
+      role,
+      name,
+      email,
+      phone: cleanText(req.body?.phone, 20),
+      title: cleanText(req.body?.title, 80),
+      passwordHash: "",
+    });
     const inviteUrl = newInvite(user);
     await user.save();
     const emailed = await emailInvite(user, inviteUrl);
@@ -2702,6 +2712,7 @@ app.put("/api/admin/team-members/:id", requireAdmin, async (req, res, next) => {
     if (["member", "manager"].includes(body.role)) user.role = body.role;
     if (typeof body.name === "string" && cleanText(body.name, 100)) user.name = cleanText(body.name, 100);
     if (typeof body.phone === "string") user.phone = cleanText(body.phone, 20);
+    if (typeof body.title === "string") user.title = cleanText(body.title, 80);
     if (typeof body.active === "boolean") user.active = body.active;
     let inviteUrl = "";
     let emailed = false;
@@ -2785,8 +2796,8 @@ const ALLOWED_FILE_TYPES = {
 };
 
 function whoAmI(req) {
-  if (req.who.role === "admin") return { id: "admin", name: ADMIN_DISPLAY_NAME };
-  return { id: String(req.who.user._id), name: req.who.user.name };
+  if (req.who.role === "admin") return { id: "admin", name: ADMIN_DISPLAY_NAME, title: ADMIN_TITLE };
+  return { id: String(req.who.user._id), name: req.who.user.name, title: req.who.user.title || "" };
 }
 
 async function workspacePeople() {
@@ -2798,8 +2809,8 @@ async function workspacePeople() {
     .sort({ name: 1 })
     .lean();
   return [
-    { id: "admin", name: ADMIN_DISPLAY_NAME, role: "founder", email: ADMIN_EMAIL },
-    ...users.map((u) => ({ id: String(u._id), name: u.name, role: u.role, email: u.email })),
+    { id: "admin", name: ADMIN_DISPLAY_NAME, title: ADMIN_TITLE, role: "founder", email: ADMIN_EMAIL },
+    ...users.map((u) => ({ id: String(u._id), name: u.name, title: u.title || "", role: u.role, email: u.email })),
   ];
 }
 

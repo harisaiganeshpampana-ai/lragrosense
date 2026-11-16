@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Copy, Link2, Loader2, MessageCircle, Plus, Power, Trash2, X } from "lucide-react";
+import { Copy, Link2, Loader2, MessageCircle, Pencil, Plus, Power, Trash2, X } from "lucide-react";
 
 function formatDate(value) {
   if (!value) return "—";
@@ -23,6 +23,7 @@ export default function TeamMembers({ token, api, onAuthError }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState(null);
   const [busyId, setBusyId] = useState("");
   const [invite, setInvite] = useState(null); // { user, inviteUrl, emailed }
 
@@ -83,9 +84,9 @@ export default function TeamMembers({ token, api, onAuthError }) {
         </button>
       </div>
       <p className="pt-intro">
-        Add a team member's Gmail. They get a one-time link to set <b>their own password</b>, then they can use group chat,
-        messages, calls and file sharing at lragrosense.in/team.html. Pick <b>Manager</b> for someone who should also open the
-        manager portal (interns and field reports).
+        Add a team member's Gmail. They get a one-time link to set <b>their own password</b>, then they can use the team portal
+        at lragrosense.in/team.html. <b>Title</b> is what the team sees (e.g. Head of Operations). <b>Access</b> decides if they
+        can also open the manager portal (interns and field reports). Use ✏️ to change these any time.
       </p>
 
       {error && <div className="error-box">{error}</div>}
@@ -105,7 +106,9 @@ export default function TeamMembers({ token, api, onAuthError }) {
                   <span className="app-avatar">{(u.name || "?").charAt(0).toUpperCase()}</span>
                   <span className="app-who">
                     <strong>
-                      {u.name} {!u.active && <em className="pt-off">(turned off)</em>}
+                      {u.name}
+                      {u.title ? <span className="tmb-title"> · {u.title}</span> : null}{" "}
+                      {!u.active && <em className="pt-off">(turned off)</em>}
                     </strong>
                     <span>
                       {u.email}
@@ -118,16 +121,10 @@ export default function TeamMembers({ token, api, onAuthError }) {
                   </span>
                 </div>
                 <div className="app-controls">
-                  <select
-                    className="filter-select tmb-role"
-                    value={u.role}
-                    disabled={busyId === u._id}
-                    onChange={(e) => update(u, { role: e.target.value })}
-                    title="Role"
-                  >
-                    <option value="member">Core team</option>
-                    <option value="manager">Manager</option>
-                  </select>
+                  <span className={`tmb-access ${u.role}`}>{u.role === "manager" ? "Manager access" : "Team access"}</span>
+                  <button className="icon-btn" title="Edit name, title, access" disabled={busyId === u._id} onClick={() => setEditing(u)}>
+                    <Pencil size={16} />
+                  </button>
                   <button
                     className="icon-btn"
                     title={u.status === "joined" ? "Send a new link (they set a new password)" : "Get a new invite link"}
@@ -175,13 +172,32 @@ export default function TeamMembers({ token, api, onAuthError }) {
           }}
         />
       )}
+      {editing && (
+        <AddMember
+          existing={editing}
+          token={token}
+          api={api}
+          onAuthError={onAuthError}
+          onClose={() => setEditing(null)}
+          onCreated={(data) => {
+            setItems((list) => list.map((x) => (x._id === data.user._id ? data.user : x)));
+            setEditing(null);
+          }}
+        />
+      )}
       {invite && <InviteReady data={invite} onClose={() => setInvite(null)} />}
     </>
   );
 }
 
-function AddMember({ token, api, onClose, onCreated, onAuthError }) {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", role: "member" });
+function AddMember({ existing, token, api, onClose, onCreated, onAuthError }) {
+  const [form, setForm] = useState({
+    name: existing?.name || "",
+    email: existing?.email || "",
+    phone: existing?.phone || "",
+    title: existing?.title || "",
+    role: existing?.role || "member",
+  });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -191,7 +207,12 @@ function AddMember({ token, api, onClose, onCreated, onAuthError }) {
     setBusy(true);
     setError("");
     try {
-      onCreated(await api("/api/admin/team-members", { token, method: "POST", body: form }));
+      if (existing) {
+        const { email, ...changes } = form;
+        onCreated(await api(`/api/admin/team-members/${existing._id}`, { token, method: "PUT", body: changes }));
+      } else {
+        onCreated(await api("/api/admin/team-members", { token, method: "POST", body: form }));
+      }
     } catch (err) {
       if (err.status === 401) onAuthError();
       else setError(err.message);
@@ -204,7 +225,7 @@ function AddMember({ token, api, onClose, onCreated, onAuthError }) {
     <div className="modal-backdrop" onClick={onClose}>
       <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="modal-head">
-          <h2>Add team member</h2>
+          <h2>{existing ? `Edit ${existing.name}` : "Add team member"}</h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
             <X size={18} />
           </button>
@@ -212,11 +233,30 @@ function AddMember({ token, api, onClose, onCreated, onAuthError }) {
         <div className="modal-body">
           <label className="field">
             Gmail *
-            <input required type="email" value={form.email} onChange={set("email")} maxLength={200} placeholder="name@gmail.com" />
+            <input
+              required
+              type="email"
+              value={form.email}
+              onChange={set("email")}
+              maxLength={200}
+              placeholder="name@gmail.com"
+              disabled={Boolean(existing)}
+            />
           </label>
           <label className="field">
             Name
             <input value={form.name} onChange={set("name")} maxLength={100} placeholder="They can change it when they join" />
+          </label>
+          <label className="field">
+            Title (shown next to their name)
+            <input value={form.title} onChange={set("title")} maxLength={80} placeholder="e.g. Head of Operations" list="lr-titles" />
+            <datalist id="lr-titles">
+              <option value="Head of Operations" />
+              <option value="Head of Agronomy" />
+              <option value="Head of Research & Protected Cultivation" />
+              <option value="Co-founder" />
+              <option value="Advisor" />
+            </datalist>
           </label>
           <div className="grid-2">
             <label className="field">
@@ -224,10 +264,10 @@ function AddMember({ token, api, onClose, onCreated, onAuthError }) {
               <input value={form.phone} onChange={set("phone")} maxLength={20} />
             </label>
             <label className="field">
-              Role
+              Access
               <select value={form.role} onChange={set("role")}>
-                <option value="member">Core team</option>
-                <option value="manager">Manager (also sees interns)</option>
+                <option value="member">Team portal only</option>
+                <option value="manager">Team + Manager portal (interns)</option>
               </select>
             </label>
           </div>
@@ -238,7 +278,8 @@ function AddMember({ token, api, onClose, onCreated, onAuthError }) {
             Cancel
           </button>
           <button className="btn btn-primary" disabled={busy}>
-            {busy ? <Loader2 size={16} className="spin" /> : <Plus size={16} />} Add and get invite link
+            {busy ? <Loader2 size={16} className="spin" /> : existing ? null : <Plus size={16} />}{" "}
+            {existing ? "Save changes" : "Add and get invite link"}
           </button>
         </div>
       </form>
