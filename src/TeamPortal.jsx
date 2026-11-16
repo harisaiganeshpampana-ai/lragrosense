@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { CalendarCheck, ClipboardList, ExternalLink, LogOut, Sprout, Users } from "lucide-react";
+import { CalendarCheck, ClipboardList, ListTodo, LogOut, MessageSquare, Sprout, Users } from "lucide-react";
 import PortalLogin from "./PortalLogin";
 import TeamPeople from "./TeamPeople";
 import FieldReports from "./AdminFieldReports";
 import TeamDailyUpdates from "./TeamDailyUpdates";
+import TeamChat from "./TeamChat";
+import TeamTasks from "./TeamTasks";
 import { portalApi, readSession, saveSession } from "./portalApi";
 
 const SESSION_KEY = "lr_team_session";
 
-// Portal for the intern manager (e.g. Sandeep): manage interns and review their work
+// Team portal: team chat + tasks for the core team. Managers (e.g. Sandeep)
+// also get the intern tabs.
 export default function TeamPortal() {
   const [session, setSession] = useState(() => readSession(SESSION_KEY));
-  const [tab, setTab] = useState("interns"); // interns | reports | updates
+  const [tab, setTab] = useState("chat"); // chat | tasks | interns | reports | updates
 
   const logout = () => {
     saveSession(SESSION_KEY, null);
@@ -37,8 +40,8 @@ export default function TeamPortal() {
       <div className="fr-page">
         <PortalLogin
           title="Team portal"
-          subtitle="For LR AgroSense team leads: manage interns and review their field reports."
-          allowedRole="manager"
+          subtitle="For the LR AgroSense core team: team chat, calls and tasks."
+          allowedRoles={["manager", "member"]}
           onLogin={(s) => {
             saveSession(SESSION_KEY, s);
             setSession(s);
@@ -49,6 +52,20 @@ export default function TeamPortal() {
   }
 
   const { token, user } = session;
+  const isManager = user.role === "manager";
+  const props = { token, api: portalApi, onAuthError: logout };
+
+  const tabs = [
+    ["chat", "Team chat", MessageSquare],
+    ["tasks", "Tasks", ListTodo],
+    ...(isManager
+      ? [
+          ["interns", "Interns", Users],
+          ["reports", "Field reports", ClipboardList],
+          ["updates", "Daily updates", CalendarCheck],
+        ]
+      : []),
+  ];
 
   return (
     <div className="dash">
@@ -64,9 +81,6 @@ export default function TeamPortal() {
             </div>
           </div>
           <div className="topbar-actions">
-            <a href="/intern.html" target="_blank" rel="noreferrer" className="btn btn-light">
-              <ExternalLink size={16} /> <span className="hide-sm">Intern portal</span>
-            </a>
             <button className="btn btn-light" onClick={logout}>
               <LogOut size={16} /> <span className="hide-sm">Log out</span>
             </button>
@@ -76,20 +90,18 @@ export default function TeamPortal() {
 
       <main className="dash-main">
         <div className="tabs">
-          <button className={tab === "interns" ? "active" : ""} onClick={() => setTab("interns")}>
-            <Users size={16} /> Interns
-          </button>
-          <button className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>
-            <ClipboardList size={16} /> Field reports
-          </button>
-          <button className={tab === "updates" ? "active" : ""} onClick={() => setTab("updates")}>
-            <CalendarCheck size={16} /> Daily updates
-          </button>
+          {tabs.map(([key, label, Icon]) => (
+            <button key={key} className={tab === key ? "active" : ""} onClick={() => setTab(key)}>
+              <Icon size={16} /> {label}
+            </button>
+          ))}
         </div>
 
-        {tab === "interns" && <TeamPeople role="intern" token={token} api={portalApi} onAuthError={logout} />}
-        {tab === "reports" && <FieldReports token={token} api={portalApi} onAuthError={logout} />}
-        {tab === "updates" && <TeamDailyUpdates token={token} api={portalApi} onAuthError={logout} />}
+        {tab === "chat" && <TeamChat {...props} />}
+        {tab === "tasks" && <TeamTasks {...props} />}
+        {isManager && tab === "interns" && <TeamPeople role="intern" {...props} />}
+        {isManager && tab === "reports" && <FieldReports {...props} />}
+        {isManager && tab === "updates" && <TeamDailyUpdates {...props} />}
       </main>
     </div>
   );

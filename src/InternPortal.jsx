@@ -35,7 +35,7 @@ export default function InternPortal() {
       <PortalLogin
         title="Intern portal"
         subtitle="Log in with the email and password LR AgroSense sent you, then submit your daily work."
-        allowedRole="intern"
+        allowedRoles={["intern"]}
         onLogin={(s) => {
           saveSession(SESSION_KEY, s);
           setSession(s);

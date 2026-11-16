@@ -3,7 +3,7 @@ import { Eye, EyeOff, Loader2, Sprout } from "lucide-react";
 import { portalApi } from "./portalApi";
 
 // Email + password login used by both the intern portal and the team portal
-export default function PortalLogin({ title, subtitle, allowedRole, onLogin }) {
+export default function PortalLogin({ title, subtitle, allowedRoles, onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -19,9 +19,9 @@ export default function PortalLogin({ title, subtitle, allowedRole, onLogin }) {
         method: "POST",
         body: { email: email.trim(), password },
       });
-      if (data.user.role !== allowedRole) {
+      if (!allowedRoles.includes(data.user.role)) {
         throw new Error(
-          allowedRole === "intern"
+          allowedRoles.includes("intern")
             ? "This login is for the team portal. Please use lragrosense.in/team.html."
             : "This login is for interns. Please use lragrosense.in/intern.html."
         );

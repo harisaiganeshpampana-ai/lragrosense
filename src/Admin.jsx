@@ -327,7 +327,7 @@ function Dashboard({ token, onLogout }) {
             className={tab === "team" ? "active" : ""}
             onClick={() => setTab("team")}
           >
-            <ClipboardList size={16} /> Intern team
+            <ClipboardList size={16} /> Team
           </button>
           <button className={tab === "outbox" ? "active" : ""} onClick={() => setTab("outbox")}>
             <Inbox size={16} /> Outbox

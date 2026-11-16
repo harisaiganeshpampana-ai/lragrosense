@@ -14,12 +14,19 @@ const CONFIG = {
     portal: "https://lragrosense.in/intern.html",
     intro: "Add an intern's Gmail. A password is made for them. Send both to the intern on WhatsApp.",
   },
+  member: {
+    listPath: "/api/admin/members",
+    title: "Core team",
+    singular: "core team member",
+    portal: "https://lragrosense.in/team.html",
+    intro: "Core team members can use the team chat, Google Meet calls and the tasks board. They cannot manage interns or see admin settings.",
+  },
   manager: {
     listPath: "/api/admin/managers",
     title: "Team managers",
     singular: "manager",
     portal: "https://lragrosense.in/team.html",
-    intro: "Managers (like Sandeep) can add interns, check field reports and read daily updates. They cannot see internships, applications or settings.",
+    intro: "Managers (like Sandeep) get the team chat and tasks, plus they can add interns, check field reports and read daily updates. They cannot see internships, applications or settings.",
   },
 };
 
@@ -34,7 +41,9 @@ function credentialsText(role, user, password) {
     "",
     role === "intern"
       ? "Log in and submit a report for every farmer you meet, plus a daily update. Please don't share this password."
-      : "Log in to manage interns and review their reports. Please don't share this password.",
+      : role === "member"
+      ? "Log in for our team chat, calls and tasks board. Please don't share this password."
+      : "Log in for team chat, tasks, and to manage interns and review their reports. Please don't share this password.",
   ].join("\n");
 }
 

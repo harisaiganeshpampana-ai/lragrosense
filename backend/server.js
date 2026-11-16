@@ -47,6 +47,17 @@
 |   Admin only:
 |            GET/POST /api/admin/managers        -> list / add manager logins (e.g. Sandeep)
 |            PUT/DELETE /api/admin/managers/:id  -> edit, reset password, remove
+|            GET/POST /api/admin/members         -> list / add core team member logins
+|            PUT/DELETE /api/admin/members/:id   -> edit, reset password, remove
+|
+|   Team workspace (core team: managers, members and the admin), inside team.html / admin.html:
+|            GET  /api/workspace/people          -> everyone in the core team
+|            GET  /api/workspace/messages        -> team chat (?after=ISO date for new ones)
+|            POST /api/workspace/messages        -> send a message (@Name emails that person)
+|            POST /api/workspace/calls           -> share a Google Meet link (emails the team)
+|            DELETE /api/workspace/messages/:id  -> delete your own message
+|            GET/POST /api/workspace/tasks       -> tasks board
+|            PUT/DELETE /api/workspace/tasks/:id -> edit, move or delete a task
 |
 | Settings come from environment variables (set them in Render):
 |   MONGODB_URI     your MongoDB connection string
@@ -373,7 +384,7 @@ const FieldPhoto = mongoose.model("FieldPhoto", fieldPhotoSchema);
 
 const portalUserSchema = new mongoose.Schema(
   {
-    role: { type: String, enum: ["intern", "manager"], required: true },
+    role: { type: String, enum: ["intern", "manager", "member"], required: true },
     name: { type: String, trim: true, required: true, maxlength: 100 },
     email: { type: String, trim: true, lowercase: true, required: true, unique: true, maxlength: 200 },
     phone: { type: String, trim: true, maxlength: 20, default: "" },
@@ -406,6 +417,37 @@ const dailyUpdateSchema = new mongoose.Schema(
 );
 
 const DailyUpdate = mongoose.model("DailyUpdate", dailyUpdateSchema);
+
+/* ---------------- Team workspace (chat + tasks) ---------------- */
+
+const teamMessageSchema = new mongoose.Schema(
+  {
+    authorId: { type: String, required: true }, // PortalUser id, or "admin"
+    authorName: { type: String, trim: true, required: true, maxlength: 100 },
+    kind: { type: String, enum: ["text", "call"], default: "text" },
+    text: { type: String, trim: true, maxlength: 2000, default: "" },
+    meetUrl: { type: String, trim: true, maxlength: 300, default: "" },
+  },
+  { timestamps: true }
+);
+teamMessageSchema.index({ createdAt: -1 });
+const TeamMessage = mongoose.model("TeamMessage", teamMessageSchema);
+
+const teamTaskSchema = new mongoose.Schema(
+  {
+    title: { type: String, trim: true, required: true, maxlength: 200 },
+    notes: { type: String, trim: true, maxlength: 3000, default: "" },
+    status: { type: String, enum: ["todo", "doing", "done"], default: "todo" },
+    assigneeId: { type: String, default: "" }, // PortalUser id, "admin", or "" for nobody
+    assigneeName: { type: String, trim: true, maxlength: 100, default: "" },
+    dueDate: { type: Date, default: null },
+    createdById: { type: String, default: "" },
+    createdByName: { type: String, trim: true, maxlength: 100, default: "" },
+    doneAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
+const TeamTask = mongoose.model("TeamTask", teamTaskSchema);
 
 // Passwords are stored only as a salted hash (scrypt), never as plain text
 function hashPassword(password) {
@@ -681,6 +723,7 @@ function requireRole(...roles) {
 }
 
 const requireIntern = requireRole("intern");
+const requireWorkspace = requireRole("manager", "member", "admin");
 const requireTeam = requireRole("manager", "admin");
 
 function passwordMatches(input) {
@@ -2273,7 +2316,7 @@ app.post("/api/portal/login", async (req, res, next) => {
   }
 });
 
-app.get("/api/portal/me", requireRole("intern", "manager"), (req, res) => {
+app.get("/api/portal/me", requireRole("intern", "manager", "member"), (req, res) => {
   res.json(publicUser(req.who.user));
 });
 
@@ -2611,6 +2654,296 @@ app.delete("/api/admin/managers/:id", requireAdmin, async (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
     const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "manager" });
     if (!user) return res.status(404).json({ error: "Login not found." });
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* ----- Admin only: core team member logins ----- */
+
+app.get("/api/admin/members", requireAdmin, async (req, res, next) => {
+  try {
+    const users = await PortalUser.find({ role: "member" }).sort({ createdAt: -1 }).lean();
+    res.json(users.map(publicUser));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/members", requireAdmin, async (req, res, next) => {
+  try {
+    const result = await createPortalUser("member", req.body || {});
+    if (result.error) return res.status(400).json({ error: result.error });
+    res.status(201).json({ user: publicUser(result.user), password: result.password });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/admin/members/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const result = await updatePortalUser("member", req.params.id, req.body || {});
+    if (result.error) return res.status(result.status || 400).json({ error: result.error });
+    res.json({ user: publicUser(result.user), password: result.password || undefined });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/admin/members/:id", requireAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
+    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "member" });
+    if (!user) return res.status(404).json({ error: "Login not found." });
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* ---------------- Team workspace ---------------- */
+
+const ADMIN_DISPLAY_NAME = "Hari (Founder)";
+const WORKSPACE_URL = `${SITE_URL}/team.html`;
+
+function whoAmI(req) {
+  if (req.who.role === "admin") return { id: "admin", name: ADMIN_DISPLAY_NAME };
+  return { id: String(req.who.user._id), name: req.who.user.name };
+}
+
+// Everyone in the core team (active managers + members, and the founder)
+async function workspacePeople() {
+  const users = await PortalUser.find({ role: { $in: ["manager", "member"] }, active: true })
+    .sort({ name: 1 })
+    .lean();
+  return [
+    { id: "admin", name: ADMIN_DISPLAY_NAME, role: "founder", email: ADMIN_EMAIL },
+    ...users.map((u) => ({ id: String(u._id), name: u.name, role: u.role, email: u.email })),
+  ];
+}
+
+// Email alerts are optional: they only go out when email (Brevo/Resend) is set up
+const lastAlertAt = new Map();
+async function alertPeople(people, subject, body, { throttleKey = "" } = {}) {
+  if (!emailConfigured()) return;
+  for (const person of people) {
+    if (!person.email) continue;
+    if (throttleKey) {
+      const key = `${throttleKey}:${person.id}`;
+      const last = lastAlertAt.get(key) || 0;
+      if (Date.now() - last < 10 * 60 * 1000) continue; // at most one per 10 minutes
+      lastAlertAt.set(key, Date.now());
+    }
+    deliverEmail({ to: person.email, toName: person.name, subject, body }).catch((err) =>
+      console.error("Workspace alert email failed:", err.message)
+    );
+  }
+}
+
+function findMentions(text, people) {
+  const lower = ` ${String(text).toLowerCase()} `;
+  if (/[\s(]@(all|team|everyone)\b/.test(lower)) return people;
+  return people.filter((p) => {
+    const first = p.name.split(/[\s(]/)[0].toLowerCase();
+    return first && lower.includes(`@${first}`);
+  });
+}
+
+app.get("/api/workspace/people", requireWorkspace, async (req, res, next) => {
+  try {
+    const people = await workspacePeople();
+    res.json({ me: whoAmI(req), people: people.map(({ email, ...p }) => p) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/workspace/messages", requireWorkspace, async (req, res, next) => {
+  try {
+    const after = req.query.after ? new Date(req.query.after) : null;
+    if (after && !Number.isNaN(after.getTime())) {
+      const items = await TeamMessage.find({ createdAt: { $gt: after } }).sort({ createdAt: 1 }).limit(200).lean();
+      return res.json(items);
+    }
+    const items = await TeamMessage.find().sort({ createdAt: -1 }).limit(200).lean();
+    res.json(items.reverse());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/workspace/messages", requireWorkspace, async (req, res, next) => {
+  try {
+    const text = cleanText(req.body?.text, 2000);
+    if (!text) return res.status(400).json({ error: "Message is empty." });
+    const me = whoAmI(req);
+    const message = await TeamMessage.create({ authorId: me.id, authorName: me.name, kind: "text", text });
+
+    const people = await workspacePeople();
+    const mentioned = findMentions(text, people).filter((p) => p.id !== me.id);
+    if (mentioned.length) {
+      alertPeople(
+        mentioned,
+        `${me.name} mentioned you in LR AgroSense team chat`,
+        `${me.name} wrote:\n\n"${text}"\n\nOpen the team chat: ${WORKSPACE_URL}`,
+        { throttleKey: "mention" }
+      );
+    }
+    res.status(201).json(message);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/workspace/calls", requireWorkspace, async (req, res, next) => {
+  try {
+    const meetUrl = cleanText(req.body?.meetUrl, 300);
+    const topic = cleanText(req.body?.topic, 200);
+    let url;
+    try {
+      url = new URL(meetUrl);
+    } catch {
+      return res.status(400).json({ error: "Please paste a full Google Meet link (https://meet.google.com/...)." });
+    }
+    if (url.protocol !== "https:" || url.hostname !== "meet.google.com") {
+      return res.status(400).json({ error: "Please paste a Google Meet link (https://meet.google.com/...)." });
+    }
+    const me = whoAmI(req);
+    const message = await TeamMessage.create({
+      authorId: me.id,
+      authorName: me.name,
+      kind: "call",
+      text: topic || "Team call",
+      meetUrl: url.toString(),
+    });
+    const people = (await workspacePeople()).filter((p) => p.id !== me.id);
+    alertPeople(
+      people,
+      `📞 ${me.name} started a call: ${topic || "Team call"}`,
+      `${me.name} started a team call${topic ? ` about "${topic}"` : ""}.\n\nJoin on Google Meet: ${url.toString()}\n\nTeam chat: ${WORKSPACE_URL}`
+    );
+    res.status(201).json(message);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/workspace/messages/:id", requireWorkspace, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Message not found." });
+    const message = await TeamMessage.findById(req.params.id);
+    if (!message) return res.status(404).json({ error: "Message not found." });
+    const me = whoAmI(req);
+    if (message.authorId !== me.id && me.id !== "admin") {
+      return res.status(403).json({ error: "You can only delete your own messages." });
+    }
+    await message.deleteOne();
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/workspace/tasks", requireWorkspace, async (req, res, next) => {
+  try {
+    res.json(await TeamTask.find().sort({ dueDate: 1, createdAt: -1 }).limit(1000).lean());
+  } catch (error) {
+    next(error);
+  }
+});
+
+async function resolveAssignee(id) {
+  if (!id) return { assigneeId: "", assigneeName: "", person: null };
+  const people = await workspacePeople();
+  const person = people.find((p) => p.id === String(id));
+  if (!person) return { error: "That team member was not found." };
+  return { assigneeId: person.id, assigneeName: person.name, person };
+}
+
+function taskEmail(task, byName) {
+  const due = task.dueDate ? `\nDue: ${new Date(task.dueDate).toLocaleDateString("en-IN")}` : "";
+  return {
+    subject: `New task for you: ${task.title}`,
+    body: `${byName} assigned you a task in LR AgroSense.\n\nTask: ${task.title}${due}${task.notes ? `\n\nNotes: ${task.notes}` : ""}\n\nOpen the tasks board: ${WORKSPACE_URL}`,
+  };
+}
+
+app.post("/api/workspace/tasks", requireWorkspace, async (req, res, next) => {
+  try {
+    const title = cleanText(req.body?.title, 200);
+    if (!title) return res.status(400).json({ error: "Please enter the task." });
+    const assignee = await resolveAssignee(req.body?.assigneeId);
+    if (assignee.error) return res.status(400).json({ error: assignee.error });
+    const due = req.body?.dueDate ? new Date(req.body.dueDate) : null;
+    const me = whoAmI(req);
+    const status = ["todo", "doing", "done"].includes(req.body?.status) ? req.body.status : "todo";
+    const task = await TeamTask.create({
+      title,
+      notes: cleanText(req.body?.notes, 3000),
+      status,
+      assigneeId: assignee.assigneeId,
+      assigneeName: assignee.assigneeName,
+      dueDate: due && !Number.isNaN(due.getTime()) ? due : null,
+      createdById: me.id,
+      createdByName: me.name,
+      doneAt: status === "done" ? new Date() : null,
+    });
+    if (assignee.person && assignee.person.id !== me.id) {
+      const mail = taskEmail(task, me.name);
+      alertPeople([assignee.person], mail.subject, mail.body);
+    }
+    res.status(201).json(task);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/workspace/tasks/:id", requireWorkspace, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Task not found." });
+    const task = await TeamTask.findById(req.params.id);
+    if (!task) return res.status(404).json({ error: "Task not found." });
+    const body = req.body || {};
+    const me = whoAmI(req);
+    if (typeof body.title === "string") {
+      const title = cleanText(body.title, 200);
+      if (!title) return res.status(400).json({ error: "Please enter the task." });
+      task.title = title;
+    }
+    if (typeof body.notes === "string") task.notes = cleanText(body.notes, 3000);
+    if (["todo", "doing", "done"].includes(body.status) && body.status !== task.status) {
+      task.status = body.status;
+      task.doneAt = body.status === "done" ? new Date() : null;
+    }
+    if ("dueDate" in body) {
+      const due = body.dueDate ? new Date(body.dueDate) : null;
+      task.dueDate = due && !Number.isNaN(due.getTime()) ? due : null;
+    }
+    let newPerson = null;
+    if ("assigneeId" in body && String(body.assigneeId || "") !== task.assigneeId) {
+      const assignee = await resolveAssignee(body.assigneeId);
+      if (assignee.error) return res.status(400).json({ error: assignee.error });
+      task.assigneeId = assignee.assigneeId;
+      task.assigneeName = assignee.assigneeName;
+      newPerson = assignee.person;
+    }
+    await task.save();
+    if (newPerson && newPerson.id !== me.id) {
+      const mail = taskEmail(task, me.name);
+      alertPeople([newPerson], mail.subject, mail.body);
+    }
+    res.json(task);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/workspace/tasks/:id", requireWorkspace, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Task not found." });
+    const task = await TeamTask.findByIdAndDelete(req.params.id);
+    if (!task) return res.status(404).json({ error: "Task not found." });
     res.json({ ok: true });
   } catch (error) {
     next(error);
