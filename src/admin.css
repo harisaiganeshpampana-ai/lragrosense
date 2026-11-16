@@ -741,3 +741,81 @@ a {
     justify-content: center;
   }
 }
+
+/* ---------------- Field reports tab ---------------- */
+
+.fr-admin-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+}
+
+.fr-admin-chip {
+  background: #eef1e7;
+  border: 1px solid #dfe3d8;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.fr-admin-filter {
+  margin-bottom: 14px;
+}
+
+.fr-admin-warn {
+  color: #b45309;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.fr-admin-warnbox {
+  background: #fff7e6;
+  border: 1px solid #f5d38a;
+  color: #8a5300;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.fr-admin-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.fr-admin-photo img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  background: #eef1e7;
+}
+
+.fr-admin-photo small {
+  display: block;
+  margin-top: 6px;
+  color: #4b574f;
+}
+
+.fr-admin-nophoto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 180px;
+  border-radius: 12px;
+  background: #eef1e7;
+  color: #4b574f;
+}
+
+.fr-admin-note {
+  margin-top: 16px;
+}
+
+@media (max-width: 700px) {
+  .fr-admin-cols {
+    grid-template-columns: 1fr;
+  }
+}

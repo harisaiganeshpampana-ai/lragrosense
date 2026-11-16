@@ -4,6 +4,7 @@ import Admin from "./Admin";
 
 import "./admin.css";
 import "./brand.css";
+import "./portal.css";
 
 ReactDOM.createRoot(document.getElementById("admin-root")).render(
   <React.StrictMode>

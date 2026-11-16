@@ -25,6 +25,29 @@
 |            POST /api/interview/:token/start    -> start, AI asks the first question
 |            POST /api/interview/:token/answer   -> send an answer, AI replies
 |
+|   Intern portal (lragrosense.in/intern.html) and Team portal for the intern manager
+|   (lragrosense.in/team.html). The admin or a manager creates intern logins
+|   (email + password); interns log in and submit daily work.
+|   Login:   POST /api/portal/login              -> email + password, returns a token
+|            GET  /api/portal/me                 -> the logged-in person
+|   Intern:  GET  /api/intern/config             -> problem list for the visit form
+|            POST /api/intern/field-reports      -> submit one farmer visit (with photo)
+|            POST /api/intern/daily-updates      -> submit today's work update
+|            GET  /api/intern/submissions        -> my reports and updates
+|   Team (manager or admin):
+|            GET/POST /api/team/interns          -> list / add intern logins
+|            PUT  /api/team/interns/:id          -> edit, turn on/off, reset password
+|            DELETE /api/team/interns/:id        -> remove an intern login
+|            GET  /api/team/field-reports        -> all farmer visit reports
+|            GET  /api/team/field-reports/:id/photo -> the visit photo
+|            PUT  /api/team/field-reports/:id    -> mark verified / rejected, add a note
+|            DELETE /api/team/field-reports/:id  -> delete a report
+|            GET  /api/team/daily-updates        -> all daily updates
+|            PUT  /api/team/daily-updates/:id    -> add a review note / mark seen
+|   Admin only:
+|            GET/POST /api/admin/managers        -> list / add manager logins (e.g. Sandeep)
+|            PUT/DELETE /api/admin/managers/:id  -> edit, reset password, remove
+|
 | Settings come from environment variables (set them in Render):
 |   MONGODB_URI     your MongoDB connection string
 |   ADMIN_PASSWORD  the password for the admin portal
@@ -271,6 +294,192 @@ const Interview = mongoose.model("Interview", interviewSchema);
 
 const INTERVIEW_DAYS = 7; // interview links work for 7 days
 
+/* ---------------- Field reports (intern farmer visits) ---------------- */
+
+const FIELD_PROBLEMS = [
+  "Walking to the field to switch the motor",
+  "Night-time power supply",
+  "Power cuts / low voltage",
+  "Motor burning / repairs",
+  "Over or under watering",
+  "Water shortage / borewell drying",
+  "Labour shortage",
+  "Pests and diseases",
+  "Low crop prices / market",
+  "High input costs",
+  "Weather / cyclone damage",
+  "Lack of credit / loans",
+];
+
+const fieldReportSchema = new mongoose.Schema(
+  {
+    // Intern (the login account that submitted it)
+    intern: { type: mongoose.Schema.Types.ObjectId, ref: "PortalUser", index: true, default: null },
+    internName: { type: String, trim: true, required: true, maxlength: 100 },
+    internPhone: { type: String, trim: true, required: true, maxlength: 20 },
+    internCollege: { type: String, trim: true, maxlength: 150, default: "" },
+    visitDate: { type: Date, required: true },
+    // Farmer
+    farmerName: { type: String, trim: true, required: true, maxlength: 100 },
+    farmerPhone: { type: String, trim: true, maxlength: 20, default: "" },
+    village: { type: String, trim: true, required: true, maxlength: 100 },
+    mandal: { type: String, trim: true, maxlength: 100, default: "" },
+    district: { type: String, trim: true, required: true, maxlength: 100 },
+    state: { type: String, trim: true, maxlength: 60, default: "Andhra Pradesh" },
+    // Farm
+    crops: { type: String, trim: true, required: true, maxlength: 200 },
+    landAcres: { type: Number, min: 0, max: 10000, default: null },
+    waterSource: { type: String, trim: true, maxlength: 60, default: "" },
+    irrigationMethod: { type: String, trim: true, maxlength: 60, default: "" },
+    pumpType: { type: String, trim: true, maxlength: 60, default: "" },
+    pumpHP: { type: Number, min: 0, max: 200, default: null },
+    phoneType: { type: String, trim: true, maxlength: 40, default: "" },
+    // Problems and interest
+    problems: { type: [String], default: [] },
+    otherProblems: { type: String, trim: true, maxlength: 1500, default: "" },
+    biggestProblem: { type: String, trim: true, required: true, maxlength: 1500 },
+    interest: { type: String, trim: true, maxlength: 20, default: "" },
+    priceRange: { type: String, trim: true, maxlength: 40, default: "" },
+    notes: { type: String, trim: true, maxlength: 2000, default: "" },
+    // Proof
+    hasPhoto: { type: Boolean, default: false },
+    photoTakenAt: { type: Date, default: null },
+    lat: { type: Number, default: null },
+    lng: { type: Number, default: null },
+    consent: { type: Boolean, required: true },
+    // Review by the team
+    status: { type: String, enum: ["new", "verified", "rejected"], default: "new" },
+    reviewNote: { type: String, trim: true, maxlength: 500, default: "" },
+  },
+  { timestamps: true }
+);
+
+const FieldReport = mongoose.model("FieldReport", fieldReportSchema);
+
+// Visit photos are stored separately so the reports list stays fast
+const fieldPhotoSchema = new mongoose.Schema(
+  {
+    report: { type: mongoose.Schema.Types.ObjectId, ref: "FieldReport", required: true, index: true },
+    contentType: { type: String, required: true },
+    size: { type: Number, required: true },
+    data: { type: Buffer, required: true },
+  },
+  { timestamps: true }
+);
+
+const FieldPhoto = mongoose.model("FieldPhoto", fieldPhotoSchema);
+
+/* ---------------- Portal logins (interns and managers) ---------------- */
+
+const portalUserSchema = new mongoose.Schema(
+  {
+    role: { type: String, enum: ["intern", "manager"], required: true },
+    name: { type: String, trim: true, required: true, maxlength: 100 },
+    email: { type: String, trim: true, lowercase: true, required: true, unique: true, maxlength: 200 },
+    phone: { type: String, trim: true, maxlength: 20, default: "" },
+    college: { type: String, trim: true, maxlength: 150, default: "" },
+    batch: { type: String, trim: true, maxlength: 60, default: "" },
+    passwordHash: { type: String, required: true },
+    active: { type: Boolean, default: true },
+    sessionVersion: { type: Number, default: 1 }, // goes up when the password is reset
+    lastLoginAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
+
+const PortalUser = mongoose.model("PortalUser", portalUserSchema);
+
+const dailyUpdateSchema = new mongoose.Schema(
+  {
+    intern: { type: mongoose.Schema.Types.ObjectId, ref: "PortalUser", required: true, index: true },
+    internName: { type: String, trim: true, maxlength: 100, default: "" },
+    date: { type: Date, required: true },
+    hours: { type: Number, min: 0, max: 24, default: null },
+    farmersMet: { type: Number, min: 0, max: 200, default: null },
+    work: { type: String, trim: true, required: true, maxlength: 3000 },
+    learnings: { type: String, trim: true, maxlength: 2000, default: "" },
+    blockers: { type: String, trim: true, maxlength: 2000, default: "" },
+    seen: { type: Boolean, default: false },
+    reviewNote: { type: String, trim: true, maxlength: 500, default: "" },
+  },
+  { timestamps: true }
+);
+
+const DailyUpdate = mongoose.model("DailyUpdate", dailyUpdateSchema);
+
+// Passwords are stored only as a salted hash (scrypt), never as plain text
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(String(password), salt, 32).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function checkPassword(password, stored) {
+  const [salt, hash] = String(stored || "").split(":");
+  if (!salt || !hash) return false;
+  const test = crypto.scryptSync(String(password || ""), salt, 32);
+  const real = Buffer.from(hash, "hex");
+  return real.length === test.length && crypto.timingSafeEqual(real, test);
+}
+
+// Easy-to-read passwords like LRAS-k7m3pq (no 0/o/1/l to avoid confusion)
+function makePassword() {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+  const bytes = crypto.randomBytes(6);
+  let out = "";
+  for (const b of bytes) out += chars[b % chars.length];
+  return `LRAS-${out}`;
+}
+
+function publicUser(u) {
+  return {
+    _id: u._id,
+    role: u.role,
+    name: u.name,
+    email: u.email,
+    phone: u.phone,
+    college: u.college,
+    batch: u.batch,
+    active: u.active,
+    lastLoginAt: u.lastLoginAt,
+    createdAt: u.createdAt,
+  };
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const MAX_PHOTO_BYTES = 2.5 * 1024 * 1024; // 2.5 MB (the page shrinks photos before sending)
+
+// Checks the uploaded photo really is a JPEG or PNG image
+function readFieldPhoto(data) {
+  if (!data) return { error: "Please add a photo with the farmer." };
+  let buffer;
+  try {
+    buffer = Buffer.from(String(data), "base64");
+  } catch {
+    return { error: "Could not read the photo. Please try again." };
+  }
+  if (!buffer.length) return { error: "The photo is empty. Please choose it again." };
+  if (buffer.length > MAX_PHOTO_BYTES) {
+    return { error: "Photo is too big. Please choose a smaller photo." };
+  }
+  const head = buffer.subarray(0, 4).toString("hex");
+  if (head.startsWith("ffd8ff")) return { photo: { contentType: "image/jpeg", size: buffer.length, data: buffer } };
+  if (head === "89504e47") return { photo: { contentType: "image/png", size: buffer.length, data: buffer } };
+  return { error: "Photo must be a JPG or PNG image." };
+}
+
+function cleanText(value, max) {
+  return String(value ?? "").trim().slice(0, max);
+}
+
+function cleanNumber(value, max) {
+  if (value === "" || value === null || value === undefined) return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0 || n > max) return null;
+  return n;
+}
+
 const MAX_RESUME_BYTES = 2 * 1024 * 1024; // 2 MB
 
 const RESUME_TYPES = {
@@ -418,6 +627,62 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+/* Portal tokens (interns and managers) carry the account id and role */
+function createPortalToken(user) {
+  const payload = Buffer.from(
+    JSON.stringify({
+      role: user.role,
+      uid: String(user._id),
+      v: user.sessionVersion,
+      exp: Date.now() + TOKEN_DAYS * 86400000,
+    })
+  ).toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+
+function readTokenData(token) {
+  if (!token || typeof token !== "string" || !token.includes(".")) return null;
+  const [payload, signature] = token.split(".");
+  const expected = sign(payload);
+  const a = Buffer.from(signature || "");
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  try {
+    const data = JSON.parse(Buffer.from(payload, "base64url").toString());
+    return data.exp > Date.now() ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+// Allows the listed roles. "admin" is the main admin-portal password login.
+function requireRole(...roles) {
+  return async (req, res, next) => {
+    try {
+      const header = req.headers.authorization || "";
+      const data = readTokenData(header.startsWith("Bearer ") ? header.slice(7) : "");
+      if (!data || !roles.includes(data.role)) {
+        return res.status(401).json({ error: "Please log in again." });
+      }
+      if (data.role === "admin") {
+        req.who = { role: "admin", name: "Admin" };
+        return next();
+      }
+      const user = await PortalUser.findById(data.uid);
+      if (!user || !user.active || user.sessionVersion !== data.v || user.role !== data.role) {
+        return res.status(401).json({ error: "Your login has ended. Please log in again." });
+      }
+      req.who = { role: user.role, name: user.name, user };
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+
+const requireIntern = requireRole("intern");
+const requireTeam = requireRole("manager", "admin");
+
 function passwordMatches(input) {
   const a = crypto.createHash("sha256").update(String(input || "")).digest();
   const b = crypto.createHash("sha256").update(ADMIN_PASSWORD).digest();
@@ -450,6 +715,8 @@ const applyLimiter = makeLimiter(8, 60 * 60 * 1000); // 8 applications / hour
 const interviewLimiter = makeLimiter(60, 60 * 60 * 1000); // 60 interview actions / hour
 const chatLimiter = makeLimiter(120, 60 * 60 * 1000); // 120 co-founder chat messages / hour
 const voiceLimiter = makeLimiter(150, 60 * 60 * 1000); // 150 voice clips / hour
+const fieldReportLimiter = makeLimiter(40, 60 * 60 * 1000); // 40 field reports / hour
+const portalLoginLimiter = makeLimiter(15, 15 * 60 * 1000); // 15 login tries / 15 min
 
 /* ---------------- AI interviewer (Google Gemini) ---------------- */
 
@@ -1980,6 +2247,376 @@ app.delete("/api/admin/internships/:id", requireAdmin, async (req, res, next) =>
   }
 });
 
+/* ---------------- Intern & team portal ---------------- */
+
+// Anyone with a portal login: sign in with email + password
+app.post("/api/portal/login", async (req, res, next) => {
+  try {
+    if (portalLoginLimiter.tooMany(req.ip)) {
+      return res.status(429).json({ error: "Too many attempts. Please wait 15 minutes and try again." });
+    }
+    const email = cleanText(req.body?.email, 200).toLowerCase();
+    const password = String(req.body?.password || "");
+    const user = email ? await PortalUser.findOne({ email }) : null;
+    if (!user || !checkPassword(password, user.passwordHash)) {
+      return res.status(401).json({ error: "Wrong email or password." });
+    }
+    if (!user.active) {
+      return res.status(403).json({ error: "Your login is turned off. Please contact your team lead." });
+    }
+    portalLoginLimiter.reset(req.ip);
+    user.lastLoginAt = new Date();
+    await user.save();
+    res.json({ token: createPortalToken(user), user: publicUser(user) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/portal/me", requireRole("intern", "manager"), (req, res) => {
+  res.json(publicUser(req.who.user));
+});
+
+/* ----- Intern ----- */
+
+app.get("/api/intern/config", requireIntern, (req, res) => {
+  res.json({ problems: FIELD_PROBLEMS });
+});
+
+// Intern: submit one farmer visit
+app.post("/api/intern/field-reports", requireIntern, async (req, res, next) => {
+  try {
+    if (fieldReportLimiter.tooMany(req.ip)) {
+      return res.status(429).json({ error: "Too many reports in a short time. Please try again in an hour." });
+    }
+    const body = req.body || {};
+    const me = req.who.user;
+    if (body.consent !== true) {
+      return res.status(400).json({ error: "Please confirm the farmer agreed to share these details." });
+    }
+    const visitDate = new Date(body.visitDate);
+    if (Number.isNaN(visitDate.getTime())) {
+      return res.status(400).json({ error: "Please choose the visit date." });
+    }
+    if (visitDate.getTime() > Date.now() + 36 * 60 * 60 * 1000) {
+      return res.status(400).json({ error: "The visit date cannot be in the future." });
+    }
+    const photo = readFieldPhoto(body.photo);
+    if (photo.error) return res.status(400).json({ error: photo.error });
+
+    const problems = Array.isArray(body.problems)
+      ? body.problems.filter((p) => FIELD_PROBLEMS.includes(p))
+      : [];
+    const takenAt = body.photoTakenAt ? new Date(body.photoTakenAt) : null;
+    const lat = cleanNumber(body.lat, 90);
+    const lng = cleanNumber(body.lng, 180);
+
+    const report = await FieldReport.create({
+      intern: me._id,
+      internName: me.name,
+      internPhone: me.phone || "-",
+      internCollege: me.college,
+      visitDate,
+      farmerName: cleanText(body.farmerName, 100),
+      farmerPhone: cleanText(body.farmerPhone, 20),
+      village: cleanText(body.village, 100),
+      mandal: cleanText(body.mandal, 100),
+      district: cleanText(body.district, 100),
+      state: cleanText(body.state, 60) || "Andhra Pradesh",
+      crops: cleanText(body.crops, 200),
+      landAcres: cleanNumber(body.landAcres, 10000),
+      waterSource: cleanText(body.waterSource, 60),
+      irrigationMethod: cleanText(body.irrigationMethod, 60),
+      pumpType: cleanText(body.pumpType, 60),
+      pumpHP: cleanNumber(body.pumpHP, 200),
+      phoneType: cleanText(body.phoneType, 40),
+      problems,
+      otherProblems: cleanText(body.otherProblems, 1500),
+      biggestProblem: cleanText(body.biggestProblem, 1500),
+      interest: cleanText(body.interest, 20),
+      priceRange: cleanText(body.priceRange, 40),
+      notes: cleanText(body.notes, 2000),
+      hasPhoto: true,
+      photoTakenAt: takenAt && !Number.isNaN(takenAt.getTime()) ? takenAt : null,
+      lat: lat === null || lng === null ? null : lat,
+      lng: lat === null || lng === null ? null : lng,
+      consent: true,
+    });
+    try {
+      await FieldPhoto.create({ report: report._id, ...photo.photo });
+    } catch (err) {
+      await FieldReport.deleteOne({ _id: report._id });
+      throw err;
+    }
+    res.status(201).json({ ok: true, id: report._id });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Intern: submit today's work update
+app.post("/api/intern/daily-updates", requireIntern, async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const date = new Date(body.date);
+    if (Number.isNaN(date.getTime())) return res.status(400).json({ error: "Please choose the date." });
+    if (date.getTime() > Date.now() + 36 * 60 * 60 * 1000) {
+      return res.status(400).json({ error: "The date cannot be in the future." });
+    }
+    const work = cleanText(body.work, 3000);
+    if (!work) return res.status(400).json({ error: "Please write what you did today." });
+    const update = await DailyUpdate.create({
+      intern: req.who.user._id,
+      internName: req.who.user.name,
+      date,
+      hours: cleanNumber(body.hours, 24),
+      farmersMet: cleanNumber(body.farmersMet, 200),
+      work,
+      learnings: cleanText(body.learnings, 2000),
+      blockers: cleanText(body.blockers, 2000),
+    });
+    res.status(201).json(update);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Intern: my own submissions
+app.get("/api/intern/submissions", requireIntern, async (req, res, next) => {
+  try {
+    const [reports, updates] = await Promise.all([
+      FieldReport.find({ intern: req.who.user._id })
+        .sort({ createdAt: -1 })
+        .select("farmerName village district crops visitDate status reviewNote createdAt")
+        .lean(),
+      DailyUpdate.find({ intern: req.who.user._id }).sort({ date: -1, createdAt: -1 }).lean(),
+    ]);
+    res.json({ reports, updates });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* ----- Team (manager such as Sandeep, or the admin) ----- */
+
+app.get("/api/team/interns", requireTeam, async (req, res, next) => {
+  try {
+    const [users, reportCounts, updateCounts] = await Promise.all([
+      PortalUser.find({ role: "intern" }).sort({ createdAt: -1 }).lean(),
+      FieldReport.aggregate([{ $group: { _id: "$intern", n: { $sum: 1 }, verified: { $sum: { $cond: [{ $eq: ["$status", "verified"] }, 1, 0] } }, last: { $max: "$createdAt" } } }]),
+      DailyUpdate.aggregate([{ $group: { _id: "$intern", n: { $sum: 1 }, last: { $max: "$date" } } }]),
+    ]);
+    const rc = new Map(reportCounts.map((r) => [String(r._id), r]));
+    const uc = new Map(updateCounts.map((r) => [String(r._id), r]));
+    res.json(
+      users.map((u) => ({
+        ...publicUser(u),
+        reports: rc.get(String(u._id))?.n || 0,
+        verified: rc.get(String(u._id))?.verified || 0,
+        lastReportAt: rc.get(String(u._id))?.last || null,
+        updates: uc.get(String(u._id))?.n || 0,
+        lastUpdateAt: uc.get(String(u._id))?.last || null,
+      }))
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+async function createPortalUser(role, body) {
+  const email = cleanText(body.email, 200).toLowerCase();
+  const name = cleanText(body.name, 100);
+  if (!name) return { error: "Please enter the name." };
+  if (!EMAIL_RE.test(email)) return { error: "Please enter a valid email address." };
+  if (await PortalUser.findOne({ email })) return { error: "This email already has a login." };
+  const password = cleanText(body.password, 60) || makePassword();
+  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+  const user = await PortalUser.create({
+    role,
+    name,
+    email,
+    phone: cleanText(body.phone, 20),
+    college: cleanText(body.college, 150),
+    batch: cleanText(body.batch, 60),
+    passwordHash: hashPassword(password),
+  });
+  return { user, password };
+}
+
+async function updatePortalUser(role, id, body) {
+  if (!mongoose.isValidObjectId(id)) return { error: "Login not found.", status: 404 };
+  const user = await PortalUser.findOne({ _id: id, role });
+  if (!user) return { error: "Login not found.", status: 404 };
+  for (const [key, max] of [["name", 100], ["phone", 20], ["college", 150], ["batch", 60]]) {
+    if (typeof body[key] === "string") user[key] = cleanText(body[key], max);
+  }
+  if (!user.name) return { error: "Please enter the name." };
+  if (typeof body.email === "string") {
+    const email = cleanText(body.email, 200).toLowerCase();
+    if (!EMAIL_RE.test(email)) return { error: "Please enter a valid email address." };
+    if (email !== user.email && (await PortalUser.findOne({ email }))) {
+      return { error: "This email already has a login." };
+    }
+    user.email = email;
+  }
+  if (typeof body.active === "boolean") user.active = body.active;
+  let password = "";
+  if (body.resetPassword) {
+    password = makePassword();
+    user.passwordHash = hashPassword(password);
+    user.sessionVersion += 1; // logs them out everywhere
+  }
+  await user.save();
+  return { user, password };
+}
+
+app.post("/api/team/interns", requireTeam, async (req, res, next) => {
+  try {
+    const result = await createPortalUser("intern", req.body || {});
+    if (result.error) return res.status(400).json({ error: result.error });
+    res.status(201).json({ user: publicUser(result.user), password: result.password });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/team/interns/:id", requireTeam, async (req, res, next) => {
+  try {
+    const result = await updatePortalUser("intern", req.params.id, req.body || {});
+    if (result.error) return res.status(result.status || 400).json({ error: result.error });
+    res.json({ user: publicUser(result.user), password: result.password || undefined });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/team/interns/:id", requireTeam, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
+    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "intern" });
+    if (!user) return res.status(404).json({ error: "Login not found." });
+    res.json({ ok: true }); // their reports and updates are kept
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/team/field-reports", requireTeam, async (req, res, next) => {
+  try {
+    const filter = {};
+    if (["new", "verified", "rejected"].includes(req.query.status)) filter.status = req.query.status;
+    if (req.query.intern && mongoose.isValidObjectId(req.query.intern)) filter.intern = req.query.intern;
+    res.json(await FieldReport.find(filter).sort({ createdAt: -1 }).limit(3000).lean());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/team/field-reports/:id/photo", requireTeam, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Photo not found." });
+    const photo = await FieldPhoto.findOne({ report: req.params.id });
+    if (!photo) return res.status(404).json({ error: "Photo not found." });
+    res.set("Content-Type", photo.contentType);
+    res.set("Cache-Control", "private, max-age=3600");
+    res.send(photo.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/team/field-reports/:id", requireTeam, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Report not found." });
+    const update = {};
+    if (["new", "verified", "rejected"].includes(req.body?.status)) update.status = req.body.status;
+    if (typeof req.body?.reviewNote === "string") update.reviewNote = cleanText(req.body.reviewNote, 500);
+    const report = await FieldReport.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
+    if (!report) return res.status(404).json({ error: "Report not found." });
+    res.json(report);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/team/field-reports/:id", requireTeam, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Report not found." });
+    const report = await FieldReport.findByIdAndDelete(req.params.id);
+    if (!report) return res.status(404).json({ error: "Report not found." });
+    await FieldPhoto.deleteMany({ report: report._id });
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/team/daily-updates", requireTeam, async (req, res, next) => {
+  try {
+    const filter = {};
+    if (req.query.intern && mongoose.isValidObjectId(req.query.intern)) filter.intern = req.query.intern;
+    res.json(await DailyUpdate.find(filter).sort({ date: -1, createdAt: -1 }).limit(3000).lean());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/team/daily-updates/:id", requireTeam, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Update not found." });
+    const update = {};
+    if (typeof req.body?.seen === "boolean") update.seen = req.body.seen;
+    if (typeof req.body?.reviewNote === "string") update.reviewNote = cleanText(req.body.reviewNote, 500);
+    const item = await DailyUpdate.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
+    if (!item) return res.status(404).json({ error: "Update not found." });
+    res.json(item);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* ----- Admin only: manager logins (e.g. Sandeep) ----- */
+
+app.get("/api/admin/managers", requireAdmin, async (req, res, next) => {
+  try {
+    const users = await PortalUser.find({ role: "manager" }).sort({ createdAt: -1 }).lean();
+    res.json(users.map(publicUser));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/managers", requireAdmin, async (req, res, next) => {
+  try {
+    const result = await createPortalUser("manager", req.body || {});
+    if (result.error) return res.status(400).json({ error: result.error });
+    res.status(201).json({ user: publicUser(result.user), password: result.password });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/admin/managers/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const result = await updatePortalUser("manager", req.params.id, req.body || {});
+    if (result.error) return res.status(result.status || 400).json({ error: result.error });
+    res.json({ user: publicUser(result.user), password: result.password || undefined });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/admin/managers/:id", requireAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: "Login not found." });
+    const user = await PortalUser.findOneAndDelete({ _id: req.params.id, role: "manager" });
+    if (!user) return res.status(404).json({ error: "Login not found." });
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 /* ---------------- Errors ---------------- */
 
 app.use((req, res) => {
@@ -1994,7 +2631,7 @@ app.use((error, req, res, next) => {
     return res.status(403).json({ error: "This website is not allowed." });
   }
   if (error.type === "entity.too.large") {
-    return res.status(413).json({ error: "Resume file is too big. Please upload a file under 2 MB." });
+    return res.status(413).json({ error: "The file is too big. Please choose a smaller file." });
   }
   if (error.status === 503) {
     return res.status(503).json({ error: error.message });

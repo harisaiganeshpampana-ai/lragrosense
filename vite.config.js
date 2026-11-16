@@ -20,6 +20,8 @@ export default defineConfig({
         internships: resolve(__dirname, "internships.html"),
         admin: resolve(__dirname, "admin.html"),
         interview: resolve(__dirname, "interview.html"),
+        intern: resolve(__dirname, "intern.html"),
+        team: resolve(__dirname, "team.html"),
       },
     },
   },

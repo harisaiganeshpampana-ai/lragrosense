@@ -1,0 +1,334 @@
+/* ===========================================================
+   Field report page (interns submit farmer visits)
+   =========================================================== */
+
+.fr-page {
+  background: var(--cream);
+  min-height: 100vh;
+}
+
+.fr-narrow {
+  max-width: 760px;
+}
+
+.fr-hero {
+  background:
+    radial-gradient(700px 300px at 85% 0%, rgba(124, 192, 75, 0.18), transparent 60%),
+    linear-gradient(180deg, var(--forest) 0%, var(--forest-2, #143826) 100%);
+  color: var(--white);
+  padding: 48px 0 56px;
+}
+
+.fr-hero h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  color: var(--white);
+  margin-top: 10px;
+}
+
+.fr-hero p {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.02rem;
+  max-width: 560px;
+}
+
+.fr-main {
+  padding-top: 24px;
+  padding-bottom: 64px;
+}
+
+.fr-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.fr-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.12rem;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.fr-card h2 span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--accent);
+  font-size: 0.9rem;
+  flex: none;
+}
+
+.fr-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fr-wide {
+  grid-column: 1 / -1;
+}
+
+.fr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.fr-field input,
+.fr-field select,
+.fr-field textarea {
+  font: inherit;
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  width: 100%;
+  min-width: 0;
+}
+
+.fr-field textarea {
+  resize: vertical;
+}
+
+.fr-field input:focus,
+.fr-field select:focus,
+.fr-field textarea:focus {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.fr-field small {
+  font-weight: 400;
+  color: var(--text);
+}
+
+.fr-hint {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: -4px 0 12px;
+}
+
+.fr-card > .fr-hint:last-child {
+  margin: 12px 0 0;
+}
+
+.fr-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fr-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 0.93rem;
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.fr-check.on {
+  border-color: var(--green);
+  background: var(--tint);
+}
+
+.fr-check input {
+  margin-top: 2px;
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.fr-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  color: var(--green);
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.fr-upload:hover {
+  border-color: var(--green);
+  background: var(--tint);
+}
+
+.fr-photo {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.fr-photo img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: var(--tint);
+  display: block;
+}
+
+.fr-photo-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+
+.fr-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 16px;
+  font-size: 0.93rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.fr-consent input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  accent-color: var(--green);
+  flex: none;
+}
+
+.fr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.fr-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.fr-btn-primary {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.fr-btn-primary:hover:not(:disabled) {
+  background: var(--green);
+}
+
+.fr-btn-light {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--line);
+  width: 100%;
+}
+
+.fr-submit {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+}
+
+.fr-error {
+  background: #fdecea;
+  color: #8a1c12;
+  border: 1px solid #f5c2bc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+}
+
+.fr-foot {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-top: 14px;
+}
+
+.fr-done {
+  text-align: center;
+  padding: 40px 22px;
+  color: var(--green);
+}
+
+.fr-done h2 {
+  justify-content: center;
+  margin: 14px 0 8px;
+}
+
+.fr-done p {
+  color: var(--text);
+  margin-bottom: 22px;
+}
+
+.fr-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.fr-page .spin {
+  animation: fr-spin 0.9s linear infinite;
+}
+
+@keyframes fr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .fr-grid,
+  .fr-checks {
+    grid-template-columns: 1fr;
+  }
+
+  .fr-card {
+    padding: 18px 16px;
+  }
+}

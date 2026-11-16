@@ -1,0 +1,394 @@
+/* ===========================================================
+   Intern portal, team portal and the admin "Intern team" tab
+   =========================================================== */
+
+:root {
+  --forest: #0d2a1e;
+  --forest-2: #143826;
+  --green: #2f8f46;
+  --leaf: #7cc04b;
+  --accent: #e6b93b;
+  --cream: #f7f4ec;
+  --tint: #eef1e7;
+  --ink: #15201a;
+  --text: #4b574f;
+  --line: #dfe3d8;
+  --white: #ffffff;
+  --radius: 18px;
+}
+
+/* Login */
+
+.pt-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(700px 360px at 85% 0%, rgba(124, 192, 75, 0.2), transparent 60%),
+    linear-gradient(180deg, var(--forest) 0%, var(--forest-2) 100%);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.pt-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.5);
+}
+
+.pt-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pt-login-brand strong {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.pt-login-brand span {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.pt-login-sub {
+  color: var(--text);
+  font-size: 0.93rem;
+  margin: 2px 0 6px;
+}
+
+.pt-pass {
+  position: relative;
+}
+
+.pt-pass input {
+  padding-right: 46px;
+}
+
+.pt-pass button {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Intern portal */
+
+.pt-hero h1 {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+}
+
+.pt-logout {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pt-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 5px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+}
+
+.pt-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  padding: 11px 6px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.pt-tabs button.on {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.pt-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pt-stats div {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.pt-stats strong {
+  display: block;
+  font-size: 1.6rem;
+  color: var(--forest);
+}
+
+.pt-stats span {
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.pt-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pt-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.pt-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.pt-list li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pt-list strong {
+  color: var(--ink);
+}
+
+.pt-list span {
+  color: var(--text);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.pt-list em {
+  font-style: normal;
+  font-size: 0.86rem;
+  color: #8a5300;
+  background: #fff7e6;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 2px;
+}
+
+.pt-badge {
+  flex: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.pt-verified {
+  background: #e3f4e6;
+  color: #1f6b33;
+}
+
+.pt-rejected {
+  background: #fdecea;
+  color: #8a1c12;
+}
+
+.pt-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+/* Team portal & admin tab */
+
+.pt-intro {
+  color: #4b574f;
+  font-size: 0.92rem;
+  margin: -6px 0 14px;
+}
+
+.pt-person {
+  cursor: default;
+}
+
+.pt-meta {
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.pt-off {
+  color: #8a1c12;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.pt-cred {
+  display: grid;
+  gap: 10px;
+  background: #eef1e7;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.pt-cred span {
+  display: block;
+  font-size: 0.8rem;
+  color: #4b574f;
+}
+
+.pt-cred strong {
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.pt-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.03em;
+}
+
+.pt-warn {
+  background: #fff7e6;
+  border: 1px solid #f5d38a;
+  color: #8a5300;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  margin: 12px 0;
+}
+
+.pt-msg {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: #f7f4ec;
+  border: 1px solid #dfe3d8;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0;
+}
+
+.pt-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pt-subtabs button {
+  border: 1px solid #dfe3d8;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #4b574f;
+}
+
+.pt-subtabs button.on {
+  background: #0d2a1e;
+  border-color: #0d2a1e;
+  color: #fff;
+}
+
+.pt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.pt-update {
+  padding: 16px 18px;
+}
+
+.pt-update-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.pt-update-head strong {
+  display: block;
+}
+
+.pt-update-head span {
+  font-size: 0.86rem;
+  color: #4b574f;
+}
+
+.pt-update-work {
+  white-space: pre-wrap;
+  margin: 0 0 8px;
+}
+
+.pt-update-extra {
+  font-size: 0.9rem;
+  margin: 0 0 6px;
+  color: #4b574f;
+  white-space: pre-wrap;
+}
+
+.pt-blocker {
+  color: #8a1c12;
+}
+
+.pt-note {
+  width: 100%;
+  margin-top: 6px;
+  font: inherit;
+  font-size: 0.9rem;
+  border: 1px solid #dfe3d8;
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+
+@media (max-width: 480px) {
+  .pt-tabs button {
+    font-size: 0.82rem;
+    flex-direction: column;
+    gap: 3px;
+  }
+}

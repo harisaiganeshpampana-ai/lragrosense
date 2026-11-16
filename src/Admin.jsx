@@ -20,10 +20,12 @@ import {
   Bot,
   Inbox,
   Sparkles,
+  ClipboardList,
 } from "lucide-react";
 import { API_BASE } from "./config";
 import { DEFAULT_INSTRUCTIONS, InterviewBadge, InterviewPanel } from "./AdminInterview";
 import { Cofounder, Outbox, ScreenBadge, ScreenPanel } from "./AdminCofounder";
+import AdminTeam from "./AdminTeam";
 
 const TOKEN_KEY = "lr_admin_token";
 
@@ -194,7 +196,7 @@ function Dashboard({ token, onLogout }) {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(null); // null | "new" | item
   const [busyId, setBusyId] = useState("");
-  const [tab, setTab] = useState("internships"); // internships | applications | outbox | cofounder
+  const [tab, setTab] = useState("internships"); // internships | applications | team | outbox | cofounder
   const [appFilter, setAppFilter] = useState("");
   const [draftCount, setDraftCount] = useState(0);
 
@@ -321,6 +323,12 @@ function Dashboard({ token, onLogout }) {
           >
             <Users size={16} /> Applications
           </button>
+          <button
+            className={tab === "team" ? "active" : ""}
+            onClick={() => setTab("team")}
+          >
+            <ClipboardList size={16} /> Intern team
+          </button>
           <button className={tab === "outbox" ? "active" : ""} onClick={() => setTab("outbox")}>
             <Inbox size={16} /> Outbox
             {draftCount > 0 && <span className="tab-count">{draftCount}</span>}
@@ -330,7 +338,9 @@ function Dashboard({ token, onLogout }) {
           </button>
         </div>
 
-        {tab === "outbox" ? (
+        {tab === "team" ? (
+          <AdminTeam token={token} api={api} onAuthError={onLogout} />
+        ) : tab === "outbox" ? (
           <Outbox token={token} api={api} onAuthError={onLogout} onCount={setDraftCount} />
         ) : tab === "cofounder" ? (
           <Cofounder token={token} api={api} onAuthError={onLogout} />
