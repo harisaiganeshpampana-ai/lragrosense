@@ -1415,3 +1415,62 @@ p {
     flex: 1 1 100%;
   }
 }
+
+/* ---------- Team ---------- */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.team-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.team-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, var(--green), var(--forest));
+  color: var(--white);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.team-card h3 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 2px 0 6px;
+  color: var(--ink);
+}
+.team-card p {
+  color: var(--text);
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+  flex: 1;
+}
+.team-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  word-break: break-all;
+}
+.team-mail:hover {
+  text-decoration: underline;
+}
+@media (max-width: 980px) {
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .team-grid { grid-template-columns: 1fr; }
+}

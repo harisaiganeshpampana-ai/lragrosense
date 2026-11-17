@@ -37,6 +37,37 @@ import { CONTACT_EMAIL } from "./config";
 ----------------------------------------------------------- */
 
 const EMAIL = CONTACT_EMAIL;
+const FOUNDER_EMAIL = "hari@lragrosense.in";
+
+// Core team shown in the "Our team" section (add an email once the person has a company mailbox)
+const team = [
+  {
+    initials: "HS",
+    name: "Pampana Hari Sai Ganesh",
+    role: "Founder & CEO",
+    text: "B.Sc. Agriculture. Leads product, hardware and strategy.",
+    email: "hari@lragrosense.in",
+  },
+  {
+    initials: "SS",
+    name: "Sai Sandeep",
+    role: "Head of Operations",
+    text: "Runs programs, the internship, field data and partnerships.",
+    email: "sandeep@lragrosense.in",
+  },
+  {
+    initials: "S",
+    name: "Sireesha",
+    role: "Head of Agronomy",
+    text: "Crop advisory and irrigation guidelines for farmers.",
+  },
+  {
+    initials: "BS",
+    name: "Bhukya Sirisha",
+    role: "Head of Research & Protected Cultivation",
+    text: "Field research and protected cultivation.",
+  },
+];
 const LINKEDIN = "https://www.linkedin.com/company/lr-agrosense/";
 
 const navLinks = [
@@ -45,6 +76,7 @@ const navLinks = [
   { id: "apps", label: "Apps" },
   { id: "roadmap", label: "Roadmap" },
   { id: "about", label: "About" },
+  { id: "team", label: "Team" },
   { href: "/internships.html", label: "Internships" },
 ];
 
@@ -629,17 +661,46 @@ function App() {
             <div className="founder">
               <div className="founder-avatar">HS</div>
               <div>
-                <span className="founder-role">Founder</span>
+                <span className="founder-role">Founder &amp; CEO</span>
                 <h3>Pampana Hari Sai Ganesh</h3>
                 <p>
                   B.Sc. Agriculture student who started LR AgroSense to bring
                   practical, affordable technology to the farmers he studies
                   and works alongside.
                 </p>
+                <a href={`mailto:${FOUNDER_EMAIL}`} className="link">
+                  <Mail size={16} /> {FOUNDER_EMAIL}
+                </a>
+                <br />
                 <a href={LINKEDIN} target="_blank" rel="noreferrer" className="link">
                   <Linkedin size={16} /> Follow on LinkedIn <ArrowUpRight size={14} />
                 </a>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* TEAM */}
+        <section id="team" className="section section-tint">
+          <div className="container">
+            <div className="section-head center">
+              <span className="eyebrow">Our team</span>
+              <h2>The people building LR AgroSense.</h2>
+            </div>
+            <div className="team-grid">
+              {team.map((m) => (
+                <article key={m.name} className="team-card">
+                  <div className="team-avatar">{m.initials}</div>
+                  <span className="founder-role">{m.role}</span>
+                  <h3>{m.name}</h3>
+                  <p>{m.text}</p>
+                  {m.email && (
+                    <a href={`mailto:${m.email}`} className="team-mail">
+                      <Mail size={15} /> {m.email}
+                    </a>
+                  )}
+                </article>
+              ))}
             </div>
           </div>
         </section>
@@ -702,6 +763,9 @@ function App() {
               <a className="btn btn-accent" href={`mailto:${EMAIL}`}>
                 <Mail size={18} /> {EMAIL}
               </a>
+              <a className="btn btn-ghost" href={`mailto:${FOUNDER_EMAIL}`}>
+                <Mail size={18} /> Founder: {FOUNDER_EMAIL}
+              </a>
               <a className="btn btn-ghost" href={LINKEDIN} target="_blank" rel="noreferrer">
                 <Linkedin size={18} /> LinkedIn
               </a>
@@ -744,6 +808,9 @@ function App() {
             <h4>Contact</h4>
             <a href={`mailto:${EMAIL}`}>
               <Mail size={15} /> {EMAIL}
+            </a>
+            <a href={`mailto:${FOUNDER_EMAIL}`}>
+              <Mail size={15} /> {FOUNDER_EMAIL}
             </a>
             <a href={LINKEDIN} target="_blank" rel="noreferrer">
               <Linkedin size={15} /> LinkedIn
