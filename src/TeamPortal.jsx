@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
+  Bell,
   Eye,
   EyeOff,
   FileText,
@@ -311,31 +312,85 @@ function Workspace({ session, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [error, setError] = useState("");
   const [, bump] = useState(0);
+  const [notifPerm, setNotifPerm] = useState(() => (typeof Notification === "undefined" ? "unsupported" : Notification.permission));
+  const prevSummaryRef = useRef(null);
+  const viewKeyRef = useRef("team");
+  const peopleRef = useRef([]);
+  const meRef = useRef(null);
 
   const handleError = (err) => {
     if (err.status === 401) onLogout();
     else setError(err.message);
   };
 
+  // Pop-up notification for new messages while the portal is open (even in a background tab)
+  const notifyNew = (prev, next) => {
+    if (!prev || typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    const items = [["team", next.team, prev.team, "New message in #general", null]];
+    for (const [id, info] of Object.entries(next.dms || {})) {
+      const person = peopleRef.current.find((x) => x.id === id);
+      items.push([id, info, prev.dms?.[id], `New message from ${person?.name || "a teammate"}`, person]);
+    }
+    for (const [key, info, before, title, person] of items) {
+      if (!info || info.fromMe) continue;
+      if (before && new Date(info.last) <= new Date(before.last)) continue;
+      if (!document.hidden && key === viewKeyRef.current) continue;
+      try {
+        const n = new Notification(title, {
+          body: "Open the LR AgroSense team portal to read it.",
+          tag: `lr-${key}`,
+          icon: "/favicon.png",
+        });
+        n.onclick = () => {
+          window.focus();
+          setView(person ? { type: "dm", person } : { type: "team" });
+          n.close();
+        };
+      } catch {
+        /* some phones only allow notifications from installed apps */
+      }
+    }
+  };
+
   const loadSummary = () =>
     portalApi("/api/workspace/dm-summary", { token })
-      .then(setSummary)
+      .then((next) => {
+        notifyNew(prevSummaryRef.current, next);
+        prevSummaryRef.current = next;
+        setSummary(next);
+      })
       .catch((err) => err.status === 401 && onLogout());
+
+  const enableNotifications = async () => {
+    try {
+      const result = await Notification.requestPermission();
+      setNotifPerm(result);
+      if (result === "granted") {
+        new Notification("Notifications are on 🌱", { body: "You'll get a pop-up for new team messages.", icon: "/favicon.png" });
+      }
+    } catch {
+      setNotifPerm("unsupported");
+    }
+  };
 
   useEffect(() => {
     portalApi("/api/workspace/people", { token })
       .then((p) => {
         setMe(p.me);
         setPeople(p.people);
+        meRef.current = p.me;
+        peopleRef.current = p.people;
       })
       .catch(handleError);
     loadSummary();
-    const id = setInterval(() => !document.hidden && loadSummary(), 12000);
+    // Keep checking in the background too, so notifications arrive while you're on another tab
+    const id = setInterval(loadSummary, 12000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const viewKey = view.type === "dm" ? view.person.id : view.type;
+  viewKeyRef.current = viewKey;
   useEffect(() => {
     if (view.type !== "files") writeSeen(viewKey);
     bump((n) => n + 1);
@@ -346,6 +401,13 @@ function Workspace({ session, onLogout }) {
     if (!info || info.fromMe || key === viewKey) return false;
     return !seen[key] || new Date(info.last) > new Date(seen[key]);
   };
+
+  // Unread count on the browser tab, e.g. "(2) LR AgroSense Team"
+  const unreadCount =
+    (unread("team", summary.team) ? 1 : 0) + Object.entries(summary.dms || {}).filter(([id, info]) => unread(id, info)).length;
+  useEffect(() => {
+    document.title = unreadCount ? `(${unreadCount}) LR AgroSense Team` : "LR AgroSense Team";
+  }, [unreadCount]);
 
   const others = useMemo(() => {
     const list = people.filter((p) => !me || p.id !== me.id);
@@ -407,6 +469,15 @@ function Workspace({ session, onLogout }) {
             <FolderOpen size={16} />
             <span>Files</span>
           </button>
+          {notifPerm === "default" && (
+            <button className="ws-nav-item ws-notif-btn" onClick={enableNotifications}>
+              <Bell size={16} />
+              <span>Turn on notifications</span>
+            </button>
+          )}
+          {notifPerm === "denied" && (
+            <p className="ws-nav-empty">🔕 Notifications are blocked. Allow them in your browser's site settings for lragrosense.in.</p>
+          )}
         </nav>
 
         <div className="ws-me">

@@ -1094,3 +1094,12 @@ a {
     right: 10px;
   }
 }
+
+.ws-notif-btn {
+  margin-top: 14px;
+  background: rgba(79, 91, 213, 0.18);
+  color: #fff;
+}
+.ws-notif-btn:hover {
+  background: var(--ws-accent);
+}
