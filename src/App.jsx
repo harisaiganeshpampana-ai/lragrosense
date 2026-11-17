@@ -810,7 +810,7 @@ function App() {
           <div className="footer-col">
             <h4>Legal</h4>
             <a href="/privacy.html">Privacy Policy</a>
-            <a href="/terms.html">Terms &amp; Conditions</a>
+            <a href="/terms.html">Terms of Use</a>
           </div>
         </div>
         <div className="container footer-bottom">
