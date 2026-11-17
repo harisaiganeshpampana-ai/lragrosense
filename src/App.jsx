@@ -55,18 +55,6 @@ const team = [
     text: "Runs programs, the internship, field data and partnerships.",
     email: "sandeep@lragrosense.in",
   },
-  {
-    initials: "S",
-    name: "Sireesha",
-    role: "Head of Agronomy",
-    text: "Crop advisory and irrigation guidelines for farmers.",
-  },
-  {
-    initials: "BS",
-    name: "Bhukya Sirisha",
-    role: "Head of Research & Protected Cultivation",
-    text: "Field research and protected cultivation.",
-  },
 ];
 const LINKEDIN = "https://www.linkedin.com/company/lr-agrosense/";
 
